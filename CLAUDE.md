@@ -114,6 +114,49 @@ API key is in `.env.local` as `CLAUDE_REPORT_API_KEY`.
 - **Database:** Supabase (PostgreSQL)
 - **Animation:** Framer Motion
 - **Auth:** Supabase Auth
+- **Payments:** PayPal
+
+---
+
+## Product Platform (E-commerce)
+
+### Customer URLs
+
+| URL | Description |
+|-----|-------------|
+| `/products` | Product catalog (templates, courses, tools) |
+| `/products/[slug]` | Individual product page with checkout |
+| `/login` | Customer login |
+| `/signup` | Customer registration |
+| `/dashboard` | Customer dashboard (overview) |
+| `/dashboard/purchases` | View/download purchased products |
+| `/dashboard/subscriptions` | Manage subscriptions |
+
+### Product Categories
+- `template` - Automation templates (n8n workflows, etc.)
+- `course` - Training courses and tutorials
+- `tool` - Software tools and utilities
+- `service` - Service packages
+- `subscription` - Recurring subscription plans
+
+### PayPal Integration
+
+1. **Get credentials** from https://developer.paypal.com
+2. **Add to `.env.local`**:
+   ```env
+   PAYPAL_CLIENT_ID=your_client_id
+   PAYPAL_CLIENT_SECRET=your_client_secret
+   ```
+3. Use **sandbox credentials** for development
+4. Switch to **live credentials** for production
+
+### Checkout Flow
+1. User clicks "Pay with PayPal" on product page
+2. `/api/checkout/paypal/create` creates PayPal order
+3. User redirected to PayPal to approve payment
+4. PayPal redirects to `/api/checkout/paypal/capture`
+5. Payment captured, purchase recorded
+6. User redirected to `/dashboard/purchases`
 
 ---
 
@@ -134,6 +177,11 @@ API key is in `.env.local` as `CLAUDE_REPORT_API_KEY`.
 | `claude_capabilities` | Claude's tools/skills | name, category, status, source, metadata |
 | `claude_upgrades` | Upgrade history | action, description, details, verified |
 | `claude_usage` | Usage analytics | capability_name, success, duration_ms, context |
+| `profiles` | User profiles | full_name, company, avatar_url, paypal_customer_id |
+| `products` | Product catalog | name, slug, price, category, features[], file_url |
+| `purchases` | One-time purchases | user_id, product_id, paypal_order_id, download_token |
+| `subscriptions` | User subscriptions | user_id, plan, paypal_subscription_id, status |
+| `download_logs` | Download tracking | purchase_id, ip_address, user_agent |
 
 ### Features
 - **Indexes** on all frequently queried columns (display_order, is_published, category)
@@ -180,9 +228,17 @@ scripts/
 ## Environment Variables (.env.local)
 
 ```env
+# Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://cywmdjldapzrnabsoosd.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
+
+# Claude Self-Reporting
+CLAUDE_REPORT_API_KEY=<api-key>
+
+# PayPal (get from https://developer.paypal.com)
+PAYPAL_CLIENT_ID=<client-id>
+PAYPAL_CLIENT_SECRET=<client-secret>
 ```
 
 ---

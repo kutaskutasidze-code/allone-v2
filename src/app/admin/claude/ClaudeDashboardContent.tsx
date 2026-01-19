@@ -13,7 +13,6 @@ import {
   TrendingUp,
   AlertCircle,
   RefreshCw,
-  GitBranch,
 } from 'lucide-react';
 import {
   BarChart,
@@ -60,15 +59,6 @@ interface ClaudeDashboardContentProps {
     successRate: number;
     avgDurationMs: number | null;
     topCapabilities: Array<{ name: string; count: number }>;
-  };
-  patterns: {
-    total: number;
-    topPatterns: Array<{ sequence: string[]; successRate: number; totalUses: number }>;
-  };
-  sessions: {
-    total7d: number;
-    avgDurationMins: number | null;
-    outcomes: Record<string, number>;
   };
 }
 
@@ -118,8 +108,6 @@ export function ClaudeDashboardContent({
   verifiedCount,
   pendingCount,
   usage,
-  patterns,
-  sessions,
 }: ClaudeDashboardContentProps) {
   const totalCapabilities = capabilities.length;
 
@@ -335,63 +323,6 @@ export function ClaudeDashboardContent({
           )}
         </motion.div>
       </div>
-
-      {/* Top Patterns */}
-      {patterns.topPatterns.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="p-5 bg-white border border-[var(--gray-200)] rounded-xl"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
-              <GitBranch className="h-4 w-4 text-[var(--gray-500)]" />
-            </div>
-            <div>
-              <h2 className="text-sm font-medium text-[var(--black)]">Top Patterns</h2>
-              <p className="text-xs text-[var(--gray-500)]">
-                {patterns.total} patterns tracked · {sessions.total7d} sessions (7d)
-              </p>
-            </div>
-          </div>
-          <div className="space-y-3">
-            {patterns.topPatterns.map((pattern, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 bg-[var(--gray-50)] rounded-lg"
-              >
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  {pattern.sequence.map((tool, i) => (
-                    <span key={i} className="flex items-center">
-                      <span className="px-2 py-1 text-xs font-medium bg-white border border-[var(--gray-200)] rounded">
-                        {tool}
-                      </span>
-                      {i < pattern.sequence.length - 1 && (
-                        <span className="mx-1 text-[var(--gray-400)]">→</span>
-                      )}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-[var(--gray-500)]">{pattern.totalUses}x</span>
-                  <span
-                    className={`px-2 py-0.5 text-xs rounded ${
-                      pattern.successRate >= 80
-                        ? 'bg-green-50 text-green-600'
-                        : pattern.successRate >= 50
-                        ? 'bg-yellow-50 text-yellow-600'
-                        : 'bg-red-50 text-red-600'
-                    }`}
-                  >
-                    {pattern.successRate}%
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
 
       {/* Recent Upgrades */}
       <motion.div

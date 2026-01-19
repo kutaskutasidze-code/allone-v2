@@ -3,15 +3,15 @@ import type { NavItem } from '@/types';
 export const navigation: NavItem[] = [
   { label: 'Home', href: '/', key: 'home' },
   { label: 'Services', href: '/#services', key: 'services' },
+  { label: 'Products', href: '/products', key: 'products' },
   { label: 'About', href: '/about', key: 'about' },
-  { label: 'Projects', href: '/#projects', key: 'projects' },
   { label: 'Contact', href: '/contact', key: 'contact' },
 ];
 
 export const footerLinks = {
   company: [
     { label: 'About Us', href: '/about' },
-    { label: 'Our Projects', href: '/#projects' },
+    { label: 'Products', href: '/products' },
     { label: 'Contact', href: '/contact' },
   ],
   services: [
@@ -19,5 +19,11 @@ export const footerLinks = {
     { label: 'Workflow Automation', href: '/#services' },
     { label: 'Custom AI Solutions', href: '/#services' },
     { label: 'AI Consulting', href: '/#services' },
+  ],
+  resources: [
+    { label: 'Templates', href: '/products?category=template' },
+    { label: 'Courses', href: '/products?category=course' },
+    { label: 'Login', href: '/login' },
+    { label: 'Dashboard', href: '/dashboard' },
   ],
 };

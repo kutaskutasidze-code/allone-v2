@@ -30,17 +30,6 @@ interface Usage {
   used_at: string;
 }
 
-interface PatternRow {
-  sequence: string[];
-  success_count: number;
-  fail_count: number;
-}
-
-interface Session {
-  duration_mins: number | null;
-  outcome: string;
-}
-
 async function getClaudeStats() {
   const supabase = await createClient();
 
@@ -111,56 +100,6 @@ async function getClaudeStats() {
   const verifiedCount = (upgrades || []).filter((u: Upgrade) => u.verified).length;
   const pendingCount = (upgrades || []).filter((u: Upgrade) => !u.verified).length;
 
-  // Get patterns (with fallback if table doesn't exist)
-  let patterns: Array<{ sequence: string[]; successRate: number; totalUses: number }> = [];
-  let patternsTotal = 0;
-  try {
-    const { data: patternsData } = await supabase
-      .from('claude_patterns')
-      .select('sequence, success_count, fail_count')
-      .order('success_count', { ascending: false })
-      .limit(5);
-
-    if (patternsData) {
-      patternsTotal = patternsData.length;
-      patterns = patternsData.map((p: PatternRow) => ({
-        sequence: p.sequence,
-        totalUses: p.success_count + p.fail_count,
-        successRate: p.success_count + p.fail_count > 0
-          ? Math.round((p.success_count / (p.success_count + p.fail_count)) * 100)
-          : 0,
-      }));
-    }
-  } catch {
-    // Table might not exist yet
-  }
-
-  // Get sessions (with fallback)
-  let sessionsTotal = 0;
-  let avgSessionDuration: number | null = null;
-  const sessionOutcomes: Record<string, number> = {};
-  try {
-    const { data: sessionsData } = await supabase
-      .from('claude_sessions')
-      .select('duration_mins, outcome')
-      .gte('created_at', sevenDaysAgo.toISOString());
-
-    if (sessionsData) {
-      sessionsTotal = sessionsData.length;
-      const durations = sessionsData
-        .filter((s: Session) => s.duration_mins)
-        .map((s: Session) => s.duration_mins as number);
-      avgSessionDuration = durations.length > 0
-        ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
-        : null;
-      sessionsData.forEach((s: Session) => {
-        sessionOutcomes[s.outcome] = (sessionOutcomes[s.outcome] || 0) + 1;
-      });
-    }
-  } catch {
-    // Table might not exist yet
-  }
-
   return {
     capabilities: capabilities || [],
     capsByCategory,
@@ -174,15 +113,6 @@ async function getClaudeStats() {
       successRate: Math.round(successRate * 10) / 10,
       avgDurationMs: avgDuration,
       topCapabilities,
-    },
-    patterns: {
-      total: patternsTotal,
-      topPatterns: patterns,
-    },
-    sessions: {
-      total7d: sessionsTotal,
-      avgDurationMins: avgSessionDuration,
-      outcomes: sessionOutcomes,
     },
   };
 }
