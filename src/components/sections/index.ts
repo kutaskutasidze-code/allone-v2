@@ -7,3 +7,5 @@ export { ProjectsGrid } from './ProjectsGrid';
 export { WorkComingSoon } from './WorkComingSoon';
 export { CTA } from './CTA';
 export { ContactForm } from './ContactForm';
+export { Testimonials } from './Testimonials';
+export { Newsletter } from './Newsletter';

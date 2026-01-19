@@ -7,8 +7,7 @@ import { config } from '../config.js';
 import { logger } from './logger.js';
 
 // Add stealth plugin
-const puppeteer = puppeteerExtra.default || puppeteerExtra;
-puppeteer.use(StealthPlugin());
+puppeteerExtra.use(StealthPlugin());
 
 let browser: Browser | null = null;
 let page: Page | null = null;
@@ -26,7 +25,7 @@ export async function initBrowser(): Promise<Page> {
 
   logger.info('Launching browser...');
 
-  browser = await puppeteer.launch({
+  browser = await puppeteerExtra.launch({
     headless: config.headless,
     args: [
       '--no-sandbox',

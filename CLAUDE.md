@@ -61,6 +61,47 @@ node scripts/setup-db.mjs
 | `/admin/values` | Edit company values |
 | `/admin/about` | Edit about page content |
 | `/admin/settings` | Contact info settings |
+| `/admin/claude` | **Claude Capabilities Dashboard** |
+| `/admin/claude/capabilities` | List all capabilities |
+| `/admin/claude/upgrades` | Upgrade history with verification |
+
+---
+
+## Claude Self-Reporting
+
+Claude can report upgrades and usage via API:
+
+### Report an Upgrade
+```bash
+curl -X POST https://www.allone.ge/api/admin/claude/upgrades \
+  -H "Content-Type: application/json" \
+  -H "X-Claude-API-Key: $CLAUDE_REPORT_API_KEY" \
+  -d '{
+    "action": "install",
+    "capability": {
+      "name": "new-tool",
+      "category": "skill",
+      "source": "github.com/user/repo"
+    },
+    "description": "Installed new tool for X",
+    "details": { "commands": ["/new-command"] }
+  }'
+```
+
+### Report Usage
+```bash
+curl -X POST https://www.allone.ge/api/admin/claude/usage \
+  -H "Content-Type: application/json" \
+  -H "X-Claude-API-Key: $CLAUDE_REPORT_API_KEY" \
+  -d '{
+    "capability_name": "native-access",
+    "success": true,
+    "duration_ms": 245,
+    "context": "Sent email via SMTP"
+  }'
+```
+
+API key is in `.env.local` as `CLAUDE_REPORT_API_KEY`.
 
 ---
 
@@ -90,6 +131,9 @@ node scripts/setup-db.mjs
 | `contact_info` | Contact details | email, location, phone |
 | `about_content` | About page | hero_title, story_paragraphs[], etc. |
 | `categories` | Project categories | name, display_order |
+| `claude_capabilities` | Claude's tools/skills | name, category, status, source, metadata |
+| `claude_upgrades` | Upgrade history | action, description, details, verified |
+| `claude_usage` | Usage analytics | capability_name, success, duration_ms, context |
 
 ### Features
 - **Indexes** on all frequently queried columns (display_order, is_published, category)

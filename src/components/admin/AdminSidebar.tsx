@@ -22,6 +22,7 @@ import {
   ChevronLeft,
   Menu,
   X,
+  Bot,
 } from 'lucide-react';
 
 const navigationSections = [
@@ -53,6 +54,12 @@ const navigationSections = [
     items: [
       { name: 'About Page', href: '/admin/about', icon: FileText },
       { name: 'Contact', href: '/admin/settings', icon: Settings },
+    ],
+  },
+  {
+    label: 'AI',
+    items: [
+      { name: 'Claude', href: '/admin/claude', icon: Bot },
     ],
   },
 ];

@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { sendEmail } from '@/lib/email';
 import { success, error, validationError, rateLimited, methodNotAllowed } from '@/lib/api-response';
 import { contactFormSchema } from '@/lib/validations';
@@ -42,6 +43,28 @@ export async function POST(request: NextRequest) {
     });
 
     logger.info('Contact form email sent', { email: validated.email });
+
+    // Save lead to database
+    try {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+
+      await supabase.from('leads').insert({
+        name: validated.name,
+        email: validated.email,
+        company: validated.company || null,
+        notes: `Service: ${validated.service}\n\n${validated.message}`,
+        source: 'contact_form',
+        status: 'new',
+      });
+
+      logger.info('Lead saved to database', { email: validated.email });
+    } catch (dbErr) {
+      // Log but don't fail - email was already sent
+      logger.error('Failed to save lead', { error: String(dbErr), email: validated.email });
+    }
 
     return success({ message: 'Message sent successfully!' });
   } catch (err) {
