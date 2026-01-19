@@ -79,9 +79,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/sales', request.url));
   }
 
+  // Redirect logged-in users from home page to dashboard
+  if (request.nextUrl.pathname === '/' && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // Redirect logged-in users from login/signup pages to dashboard
+  if ((request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup') && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ['/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*'],
+  matcher: ['/', '/login', '/signup', '/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*'],
 };

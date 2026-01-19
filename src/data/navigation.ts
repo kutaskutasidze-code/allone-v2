@@ -2,17 +2,14 @@ import type { NavItem } from '@/types';
 
 export const navigation: NavItem[] = [
   { label: 'Home', href: '/', key: 'home' },
-  { label: 'Services', href: '/#services', key: 'services' },
-  { label: 'Resources', href: '/products', key: 'resources' },
-  { label: 'About', href: '/about', key: 'about' },
+  { label: 'AI Studio', href: '/products', key: 'products' },
   { label: 'Contact', href: '/contact', key: 'contact' },
-  { label: 'Login', href: '/login', key: 'login' },
 ];
 
 export const footerLinks = {
   company: [
     { label: 'About Us', href: '/about' },
-    { label: 'Resources', href: '/products' },
+    { label: 'Products', href: '/products' },
     { label: 'Contact', href: '/contact' },
   ],
   services: [

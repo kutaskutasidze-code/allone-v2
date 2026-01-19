@@ -3,15 +3,12 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Container } from '@/components/layout';
-import { BackgroundPaths } from '@/components/ui/BackgroundPaths';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { ShimmerText } from '@/components/ui/ShimmerText';
 
 export function CTA() {
   return (
     <section className="relative overflow-hidden bg-white min-h-[500px] flex items-center">
-      {/* Animated background paths */}
-      <BackgroundPaths />
 
       <Container>
         <motion.div

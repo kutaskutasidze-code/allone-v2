@@ -40,11 +40,11 @@ node scripts/setup-db.mjs
 | **Project URL** | https://cywmdjldapzrnabsoosd.supabase.co |
 
 ### API Keys
-- **Anon Key:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5d21kamxkYXB6cm5hYnNvb3NkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY1NjAyNDAsImV4cCI6MjA4MjEzNjI0MH0.GwQy2Pxbxi-9SwrD3QobxBxmJl5TnHWtLr1b-zoAK8U`
-- **Service Role Key:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5d21kamxkYXB6cm5hYnNvb3NkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjU2MDI0MCwiZXhwIjoyMDgyMTM2MjQwfQ.LkcaXgiD8p4bvWK89S4OKQffteUN4mmwwwWLJ-EQNPY`
+- **Anon Key:** See `.env.local`
+- **Service Role Key:** See `.env.local`
 
 ### Database Password
-`Allone@Secure2024!`
+See Supabase Dashboard or `.env.local`
 
 ---
 

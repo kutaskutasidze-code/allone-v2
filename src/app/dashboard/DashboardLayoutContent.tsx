@@ -3,17 +3,20 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import {
   LayoutDashboard,
-  ShoppingBag,
-  CreditCard,
   Settings,
   LogOut,
   Menu,
   X,
-  User
+  Terminal,
+  Mic,
+  FileText,
+  Zap,
+  Circle,
+  ChevronRight
 } from 'lucide-react';
 
 interface DashboardLayoutContentProps {
@@ -30,8 +33,13 @@ interface DashboardLayoutContentProps {
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/purchases', label: 'My Purchases', icon: ShoppingBag },
-  { href: '/dashboard/subscriptions', label: 'Subscriptions', icon: CreditCard },
+  { href: '/products', label: 'AI Studio', icon: Terminal, external: true },
+  { href: '/dashboard/voice', label: 'Voice AI', icon: Mic },
+  { href: '/dashboard/rag', label: 'RAG Bots', icon: FileText },
+  { href: '/dashboard/bots', label: 'Workflows', icon: Zap },
+];
+
+const bottomNav = [
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -47,113 +55,140 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
     router.refresh();
   };
 
+  const isActive = (href: string) => {
+    if (href === '/dashboard') return pathname === href;
+    return pathname.startsWith(href);
+  };
+
   return (
-    <div className="min-h-screen bg-[var(--gray-50)]">
+    <div className="min-h-screen bg-white">
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b border-[var(--gray-200)]">
-        <Link href="/" className="text-xl font-bold text-[var(--black)]">ALLONE</Link>
+      <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--gray-200)]">
+        <Link href="/" className="text-base font-medium text-[var(--black)] tracking-tight">ALLONE</Link>
         <button
           onClick={() => setSidebarOpen(true)}
           className="p-2 text-[var(--gray-600)] hover:text-[var(--black)]"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-5 h-5" />
         </button>
       </div>
 
       {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar */}
-      <motion.aside
-        initial={false}
-        animate={{ x: sidebarOpen ? 0 : '-100%' }}
-        className="fixed lg:static inset-y-0 left-0 w-64 bg-white border-r border-[var(--gray-200)] z-50 lg:translate-x-0 transition-transform"
+      <aside
+        className={`fixed lg:static inset-y-0 left-0 w-56 bg-white border-r border-[var(--gray-200)] z-50 transform transition-transform lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
         <div className="h-full flex flex-col">
           {/* Logo */}
-          <div className="p-6 border-b border-[var(--gray-200)] flex items-center justify-between">
-            <Link href="/" className="text-xl font-bold text-[var(--black)]">ALLONE</Link>
+          <div className="h-14 px-4 flex items-center justify-between border-b border-[var(--gray-200)]">
+            <Link href="/" className="text-base font-medium text-[var(--black)] tracking-tight">
+              ALLONE
+            </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="p-1 text-[var(--gray-500)] hover:text-[var(--black)] lg:hidden"
+              className="p-1 text-[var(--gray-400)] hover:text-[var(--black)] lg:hidden"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* User Info */}
-          <div className="p-4 border-b border-[var(--gray-200)]">
+          {/* User */}
+          <div className="px-4 py-4 border-b border-[var(--gray-200)]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[var(--accent)]/10 flex items-center justify-center">
-                {user.user_metadata?.avatar_url ? (
-                  <img
-                    src={user.user_metadata.avatar_url}
-                    alt=""
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="w-5 h-5 text-[var(--accent)]" />
-                )}
+              <div className="w-8 h-8 rounded-md bg-[var(--black)] flex items-center justify-center text-white text-xs font-medium">
+                {(user.user_metadata?.full_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-[var(--black)] truncate">
-                  {user.user_metadata?.full_name || 'User'}
+                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
                 </p>
-                <p className="text-xs text-[var(--gray-500)] truncate">
-                  {user.email}
-                </p>
+                <div className="flex items-center gap-1">
+                  <Circle className="w-1.5 h-1.5 fill-green-500 text-green-500" />
+                  <span className="text-xs text-[var(--gray-400)]">Online</span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
-            {navItems.map((item) => {
+          <nav className="flex-1 px-2 py-4">
+            <div className="space-y-0.5">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.href);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors group ${
+                      active
+                        ? 'bg-[var(--gray-100)] text-[var(--black)]'
+                        : 'text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-[var(--black)]'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${active ? 'text-[var(--black)]' : 'text-[var(--gray-400)] group-hover:text-[var(--gray-600)]'}`} />
+                    <span className="flex-1">{item.label}</span>
+                    {item.external && (
+                      <ChevronRight className="w-3 h-3 text-[var(--gray-300)]" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+
+          {/* Bottom */}
+          <div className="px-2 py-4 border-t border-[var(--gray-200)] space-y-0.5">
+            {bottomNav.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const active = isActive(item.href);
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-[var(--accent)] text-white'
-                      : 'text-[var(--gray-600)] hover:bg-[var(--gray-100)] hover:text-[var(--black)]'
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
+                    active
+                      ? 'bg-[var(--gray-100)] text-[var(--black)]'
+                      : 'text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-[var(--black)]'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-4 h-4" />
                   {item.label}
                 </Link>
               );
             })}
-          </nav>
-
-          {/* Logout */}
-          <div className="p-4 border-t border-[var(--gray-200)]">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+              className="flex items-center gap-3 px-3 py-2 w-full rounded-md text-sm text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-red-600 transition-colors"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4" />
               Sign Out
             </button>
           </div>
         </div>
-      </motion.aside>
+      </aside>
 
       {/* Main Content */}
-      <div className="lg:ml-64">
-        <main className="p-6 lg:p-8">
+      <div className="lg:ml-56 min-h-screen">
+        <main className="p-4 lg:p-6">
           {children}
         </main>
       </div>
