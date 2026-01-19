@@ -40,20 +40,26 @@ export interface AuthResult {
 export async function requireAuth(): Promise<AuthResult> {
   const supabase = await createClient();
 
-  const { data: { session }, error } = await supabase.auth.getSession();
+  // Use getUser() instead of getSession() for proper server-side JWT validation
+  // getSession() only reads from cookies without validating with Supabase server
+  // getUser() validates the JWT signature server-side, preventing session hijacking
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-  if (error) {
-    throw new AuthError('Session error');
+  if (userError || !user) {
+    throw new AuthError('Unauthorized');
   }
 
+  // Get session for any additional session data needed
+  const { data: { session } } = await supabase.auth.getSession();
+
   if (!session) {
-    throw new AuthError('Unauthorized');
+    throw new AuthError('Session expired');
   }
 
   return {
     supabase,
     session,
-    userId: session.user.id,
+    userId: user.id,
   };
 }
 
