@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import ProductsContent from './ProductsContent';
 
 export const metadata: Metadata = {
-  title: 'Products | ALLONE - AI Automation Templates & Courses',
+  title: 'Templates & Resources | ALLONE - AI Automation',
   description: 'Ready-to-use automation templates, workflows, and courses for your business.',
 };
 

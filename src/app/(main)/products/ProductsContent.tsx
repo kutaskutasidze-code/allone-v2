@@ -64,17 +64,14 @@ export default function ProductsContent({ products }: ProductsContentProps) {
   return (
     <div className="min-h-screen bg-[var(--gray-50)]">
       {/* Header */}
-      <div className="bg-white border-b border-[var(--gray-200)]">
+      <div className="bg-white border-b border-[var(--gray-200)] pt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <Link href="/" className="text-sm text-[var(--accent)] hover:underline mb-4 inline-block">
-            ← Back to Home
-          </Link>
           <motion.h1
             className="text-4xl font-bold text-[var(--black)] mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            Products & Resources
+            Templates & Resources
           </motion.h1>
           <motion.p
             className="text-lg text-[var(--gray-600)] max-w-2xl"

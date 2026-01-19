@@ -113,14 +113,14 @@ export default function ProductDetailContent({ product }: ProductDetailContentPr
   return (
     <div className="min-h-screen bg-[var(--gray-50)]">
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-[var(--gray-200)]">
+      <div className="bg-white border-b border-[var(--gray-200)] pt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             href="/products"
             className="inline-flex items-center gap-2 text-sm text-[var(--gray-600)] hover:text-[var(--accent)] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Products
+            Back to Resources
           </Link>
         </div>
       </div>

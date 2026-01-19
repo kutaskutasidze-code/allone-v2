@@ -3,15 +3,16 @@ import type { NavItem } from '@/types';
 export const navigation: NavItem[] = [
   { label: 'Home', href: '/', key: 'home' },
   { label: 'Services', href: '/#services', key: 'services' },
-  { label: 'Products', href: '/products', key: 'products' },
+  { label: 'Resources', href: '/products', key: 'resources' },
   { label: 'About', href: '/about', key: 'about' },
   { label: 'Contact', href: '/contact', key: 'contact' },
+  { label: 'Login', href: '/login', key: 'login' },
 ];
 
 export const footerLinks = {
   company: [
     { label: 'About Us', href: '/about' },
-    { label: 'Products', href: '/products' },
+    { label: 'Resources', href: '/products' },
     { label: 'Contact', href: '/contact' },
   ],
   services: [
