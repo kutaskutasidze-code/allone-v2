@@ -526,7 +526,8 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
   };
 
   return (
-    <div className="h-screen bg-white flex overflow-hidden">
+    <div className="min-h-screen bg-white pt-20">
+      <div className="h-[calc(100vh-5rem)] flex overflow-hidden">
       {/* Sidebar */}
       <AnimatePresence>
         {showSidebar && (
@@ -620,7 +621,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
         {/* Messages */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto pt-24"
+          className="flex-1 overflow-y-auto"
           style={{ overscrollBehavior: 'contain' }}
         >
           <div className="max-w-3xl mr-auto ml-8 px-4 py-6">
@@ -791,6 +792,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
             </p>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
