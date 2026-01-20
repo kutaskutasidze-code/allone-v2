@@ -16,8 +16,7 @@ import {
   FileText,
   Zap,
   Circle,
-  ChevronRight,
-  CreditCard
+  ChevronRight
 } from 'lucide-react';
 
 interface DashboardLayoutContentProps {
@@ -41,7 +40,6 @@ const navItems = [
 ];
 
 const bottomNav = [
-  { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
