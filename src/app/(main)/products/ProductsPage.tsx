@@ -565,7 +565,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
     <div className="min-h-screen bg-white">
       {/* Dynamic Island Navigation - Same as Dashboard */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
-        <motion.header
+        <motion.div
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
@@ -671,7 +671,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
               )}
             </button>
           </nav>
-        </motion.header>
+        </motion.div>
       </div>
 
       {/* Click outside to close user menu */}
