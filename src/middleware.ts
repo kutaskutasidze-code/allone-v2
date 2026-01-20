@@ -89,9 +89,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
+  // Redirect logged-in users from contact page to dashboard
+  if (request.nextUrl.pathname === '/contact' && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ['/', '/login', '/signup', '/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*'],
+  matcher: ['/', '/login', '/signup', '/contact', '/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*'],
 };

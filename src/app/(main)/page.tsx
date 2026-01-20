@@ -22,11 +22,6 @@ const WorkComingSoon = dynamic(
   { loading: () => <div className="min-h-[400px] animate-pulse bg-neutral-100" /> }
 );
 
-const Testimonials = dynamic(
-  () => import('@/components/sections/Testimonials').then((mod) => ({ default: mod.Testimonials })),
-  { loading: () => <div className="min-h-[400px] animate-pulse bg-zinc-50" /> }
-);
-
 const Newsletter = dynamic(
   () => import('@/components/sections/Newsletter').then((mod) => ({ default: mod.Newsletter })),
   { loading: () => <div className="min-h-[200px] animate-pulse bg-white" /> }
@@ -48,7 +43,6 @@ export default async function HomePage() {
       <Hero />
       <ServicesNew services={services} />
       <DashboardShowcase />
-      <Testimonials />
       <Clients clients={clients} />
       <WorkComingSoon />
       <Newsletter />

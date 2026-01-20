@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, AuthError } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
@@ -9,50 +9,94 @@ interface Message {
   content: string;
 }
 
-const SYSTEM_PROMPT = `You are an AI assistant helping users build AI products on the ALLONE platform. You help them create:
+const SYSTEM_PROMPT = `You are ALLONE AI, an intelligent assistant that helps non-technical founders build business automations and AI agents through conversation.
 
-1. **Voice AI Agents** - AI phone/web assistants that handle calls, book appointments, answer questions
-2. **RAG Chatbots** - Knowledge-base chatbots that answer questions from uploaded documents
-3. **Automation Bots** - Workflow automations that connect apps and automate tasks
+## Your Capabilities
 
-Your job is to:
-1. Understand what the user wants to build
-2. Ask clarifying questions to gather requirements
-3. When you have enough info, generate a configuration for their AI product
+You can create these types of products:
 
-When you're ready to create the product, respond with a JSON block in this exact format:
+### 1. AUTOMATIONS (type: "automation")
+Workflows that connect systems and automate tasks:
+- Lead Capture: Collect form data → Store in database → Send notifications
+- Email Sequences: Trigger events → Send personalized emails
+- Data Sync: Watch for changes → Transform → Update destination
+- Social Media: Schedule → Post to multiple platforms
+- Invoice/Payment: Create invoices → Send reminders → Track payments
+- Webhook Handlers: Receive data → Process → Take action
+
+### 2. RAG CHATBOTS (type: "rag_bot")
+AI chatbots that answer questions from uploaded documents:
+- Customer Support: Answer FAQs from knowledge base
+- Documentation Bot: Help users find info in docs
+- Sales Assistant: Answer product questions, qualify leads
+- Internal Wiki: Company knowledge accessible via chat
+
+### 3. VOICE AI AGENTS (type: "voice_agent")
+AI that handles phone calls and voice interactions:
+- Receptionist: Answer calls, take messages, transfer
+- Appointment Booking: Schedule meetings via phone
+- Customer Service: Handle common inquiries by voice
+- Sales Qualifier: Pre-qualify leads before human contact
+
+## Conversation Guidelines
+
+1. **Understand the goal**: What business problem are they solving?
+2. **Ask ONE clarifying question at a time** - don't overwhelm
+3. **Give examples** when the user seems unsure
+4. **Confirm understanding** before creating anything
+5. **Keep responses concise** (2-3 sentences unless explaining)
+
+## When Ready to Create
+
+When you have enough information to create a product, include this JSON block:
 
 \`\`\`json
 {
-  "action": "create_project",
-  "type": "voice_agent" | "rag_bot" | "automation",
+  "action": "create_product",
+  "type": "automation" | "rag_bot" | "voice_agent",
   "config": {
-    "name": "Project Name",
-    "description": "What the AI does",
-    "systemPrompt": "The AI's personality and instructions",
-    "templateId": "template-id (for automations only)"
+    "name": "Clear, descriptive name",
+    "description": "What it does in one sentence",
+    "system_prompt": "AI personality and instructions (for bots/agents)",
+    "template": "template-id (for automations)",
+    "settings": {
+      // Type-specific settings
+    }
   }
 }
 \`\`\`
 
-Guidelines:
-- Be conversational and helpful
-- Ask one question at a time
-- Give examples when helpful
-- Keep responses concise (2-3 sentences max unless explaining something)
-- When the user describes what they want, confirm your understanding before creating
-- If unsure what they need, ask if they want a Voice AI, Chatbot, or Automation
+## Automation Templates
 
-Available automation templates:
-- lead-notification: Slack/Email alerts for new leads
-- daily-report: Automated daily summary emails
-- social-media-post: Auto-post to multiple platforms
-- appointment-reminder: SMS/Email reminders
-- invoice-automation: Generate and send invoices`;
+Available templates (use these IDs):
+- \`lead-capture\`: Webhook → Store lead → Notify team
+- \`email-sequence\`: Trigger → Delay → Send emails
+- \`data-sync\`: Source → Transform → Destination
+- \`social-scheduler\`: Queue → Schedule → Post
+- \`invoice-reminder\`: Invoice created → Wait → Send reminder
+- \`webhook-handler\`: Receive → Validate → Process → Respond
+
+## Example Conversations
+
+**User**: "I need something to capture leads from my website"
+**You**: "I can set up a lead capture automation for you. When someone fills out your form, where should the lead info be stored - in a spreadsheet, your CRM, or a database?"
+
+**User**: "I want a chatbot that knows about my products"
+**You**: "Perfect, a RAG chatbot can answer questions about your products. Do you have product documentation or a FAQ page I can train it on, or would you like to upload documents after it's created?"
+
+**User**: "Can you make something to answer my phone"
+**You**: "I can create a Voice AI agent that answers calls for you. What should it do - take messages, book appointments, or answer common questions?"
+
+Remember: You're helping non-technical people. Avoid jargon. Be helpful and encouraging.`;
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAuth();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     if (!GROQ_API_KEY) {
       return NextResponse.json({ error: 'AI service not configured' }, { status: 500 });
@@ -64,8 +108,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
     }
 
+    // Get user's existing products for context
+    const { data: userProducts } = await supabase
+      .from('user_products')
+      .select('name, type, status')
+      .eq('user_id', user.id)
+      .limit(10);
+
+    // Add context about user's products
+    let contextMessage = '';
+    if (userProducts && userProducts.length > 0) {
+      contextMessage = `\n\nUser's existing products:\n${userProducts.map(p => `- ${p.name} (${p.type}, ${p.status})`).join('\n')}`;
+    }
+
     const groqMessages: Message[] = [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: SYSTEM_PROMPT + contextMessage },
       ...messages.map((m: Message) => ({
         role: m.role,
         content: m.content,
@@ -94,6 +151,22 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
     const assistantMessage = data.choices[0]?.message?.content || '';
+    const usage = data.usage;
+
+    // Track AI token usage (don't fail if tracking fails)
+    if (usage?.total_tokens) {
+      try {
+        await supabase.rpc('record_usage', {
+          p_user_id: user.id,
+          p_product_id: null,
+          p_event_type: 'ai_tokens',
+          p_quantity: usage.total_tokens,
+          p_metadata: { model: GROQ_MODEL, action: 'studio_chat' }
+        });
+      } catch (usageError) {
+        console.error('Usage tracking error:', usageError);
+      }
+    }
 
     // Check if the response contains a create action
     const jsonMatch = assistantMessage.match(/```json\s*([\s\S]*?)\s*```/);
@@ -102,8 +175,18 @@ export async function POST(request: NextRequest) {
     if (jsonMatch) {
       try {
         const parsed = JSON.parse(jsonMatch[1]);
-        if (parsed.action === 'create_project') {
-          createAction = parsed;
+        if (parsed.action === 'create_product' || parsed.action === 'create_project') {
+          createAction = {
+            action: 'create_product',
+            type: parsed.type,
+            config: {
+              name: parsed.config?.name || 'Untitled Product',
+              description: parsed.config?.description || '',
+              system_prompt: parsed.config?.system_prompt || parsed.config?.systemPrompt,
+              template: parsed.config?.template || parsed.config?.templateId,
+              settings: parsed.config?.settings || {}
+            }
+          };
         }
       } catch {
         // Not valid JSON, ignore
@@ -113,11 +196,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: assistantMessage,
       createAction,
+      usage: usage ? {
+        tokens: usage.total_tokens,
+        prompt_tokens: usage.prompt_tokens,
+        completion_tokens: usage.completion_tokens
+      } : null
     });
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
     console.error('Studio chat error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
