@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
@@ -15,9 +16,10 @@ import {
   Mic,
   FileText,
   Zap,
-  Circle,
-  ChevronRight
+  User,
+  CreditCard
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface DashboardLayoutContentProps {
   children: React.ReactNode;
@@ -33,18 +35,17 @@ interface DashboardLayoutContentProps {
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/products', label: 'AI Studio', icon: Terminal, external: true },
+  { href: '/products', label: 'AI Studio', icon: Terminal },
   { href: '/dashboard/voice', label: 'Voice AI', icon: Mic },
   { href: '/dashboard/rag', label: 'RAG Bots', icon: FileText },
   { href: '/dashboard/bots', label: 'Workflows', icon: Zap },
-];
-
-const bottomNav = [
+  { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 export default function DashboardLayoutContent({ children, user }: DashboardLayoutContentProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -62,71 +63,44 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--gray-200)]">
-        <Link href="/" className="text-base font-medium text-[var(--black)] tracking-tight">ALLONE</Link>
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="p-2 text-[var(--gray-600)] hover:text-[var(--black)]"
+      {/* Dynamic Island Navigation */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+        <motion.header
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+          className={cn(
+            'pointer-events-auto mt-4 mx-4',
+            'px-3 md:px-5 py-2.5',
+            'rounded-full',
+            'bg-white/30 backdrop-blur-xl',
+            'border border-white/30',
+            'shadow-lg shadow-black/[0.05]'
+          )}
         >
-          <Menu className="w-5 h-5" />
-        </button>
-      </div>
-
-      {/* Mobile Sidebar Overlay */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed lg:static inset-y-0 left-0 w-56 bg-white border-r border-[var(--gray-200)] z-50 transform transition-transform lg:translate-x-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div className="h-full flex flex-col">
-          {/* Logo */}
-          <div className="h-14 px-4 flex items-center justify-between border-b border-[var(--gray-200)]">
-            <Link href="/" className="text-base font-medium text-[var(--black)] tracking-tight">
-              ALLONE
-            </Link>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="p-1 text-[var(--gray-400)] hover:text-[var(--black)] lg:hidden"
+          <nav className="flex items-center gap-1 md:gap-2">
+            {/* Logo */}
+            <Link
+              href="/"
+              className="group flex items-center gap-2 pr-2 md:pr-4"
             >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+              <Image
+                src="/images/allone-logo.png"
+                alt="Allone"
+                width={22}
+                height={22}
+                className="group-hover:scale-110 transition-transform duration-300"
+              />
+              <span className="text-sm font-semibold text-[var(--black)] tracking-tight hidden sm:block">
+                ALLONE
+              </span>
+            </Link>
 
-          {/* User */}
-          <div className="px-4 py-4 border-b border-[var(--gray-200)]">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-md bg-[var(--black)] flex items-center justify-center text-white text-xs font-medium">
-                {(user.user_metadata?.full_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[var(--black)] truncate">
-                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
-                </p>
-                <div className="flex items-center gap-1">
-                  <Circle className="w-1.5 h-1.5 fill-green-500 text-green-500" />
-                  <span className="text-xs text-[var(--gray-400)]">Online</span>
-                </div>
-              </div>
-            </div>
-          </div>
+            {/* Divider */}
+            <div className="hidden md:block w-px h-5 bg-black/10" />
 
-          {/* Navigation */}
-          <nav className="flex-1 px-2 py-4">
-            <div className="space-y-0.5">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-0.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
@@ -135,63 +109,173 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors group ${
+                    className={cn(
+                      'flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full transition-all duration-200',
                       active
-                        ? 'bg-[var(--gray-100)] text-[var(--black)]'
-                        : 'text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-[var(--black)]'
-                    }`}
-                  >
-                    <Icon className={`w-4 h-4 ${active ? 'text-[var(--black)]' : 'text-[var(--gray-400)] group-hover:text-[var(--gray-600)]'}`} />
-                    <span className="flex-1">{item.label}</span>
-                    {item.external && (
-                      <ChevronRight className="w-3 h-3 text-[var(--gray-300)]" />
+                        ? 'text-[var(--black)] bg-black/5'
+                        : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
                     )}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {item.label}
                   </Link>
                 );
               })}
             </div>
-          </nav>
 
-          {/* Bottom */}
-          <div className="px-2 py-4 border-t border-[var(--gray-200)] space-y-0.5">
-            {bottomNav.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.href);
+            {/* Divider */}
+            <div className="hidden md:block w-px h-5 bg-black/10 ml-1" />
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
-                    active
-                      ? 'bg-[var(--gray-100)] text-[var(--black)]'
-                      : 'text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-[var(--black)]'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {item.label}
-                </Link>
-              );
-            })}
+            {/* User Menu - Desktop */}
+            <div className="hidden md:block relative ml-1">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center gap-2 py-1 px-2 rounded-full hover:bg-black/5 transition-colors"
+              >
+                <div className="w-6 h-6 rounded-full bg-[var(--black)] flex items-center justify-center">
+                  <User className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="text-xs font-medium text-[var(--black)] max-w-[60px] truncate">
+                  {user.email?.split('@')[0]}
+                </span>
+              </button>
+
+              <AnimatePresence>
+                {showUserMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full mt-2 w-44 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden"
+                  >
+                    <div className="px-4 py-3 border-b border-black/5">
+                      <p className="text-xs text-[var(--gray-500)]">Signed in as</p>
+                      <p className="text-sm font-medium text-[var(--black)] truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50/50 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Mobile Menu Button */}
             <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 px-3 py-2 w-full rounded-md text-sm text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-red-600 transition-colors"
+              type="button"
+              className="md:hidden p-1.5 rounded-full hover:bg-black/5 transition-colors touch-manipulation ml-1"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
-              <LogOut className="w-4 h-4" />
-              Sign Out
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5 text-[var(--black)]" />
+              ) : (
+                <Menu className="w-5 h-5 text-[var(--black)]" />
+              )}
             </button>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="lg:ml-56 min-h-screen">
-        <main className="p-4 lg:p-6">
-          {children}
-        </main>
+          </nav>
+        </motion.header>
       </div>
+
+      {/* Click outside to close user menu */}
+      {showUserMenu && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowUserMenu(false)}
+        />
+      )}
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 md:hidden"
+          >
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-white/60 backdrop-blur-2xl"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            {/* Content */}
+            <div className="relative flex flex-col h-full pt-20 pb-8 px-6">
+              <nav className="flex-1 space-y-1">
+                {navItems.map((item, index) => {
+                  const Icon = item.icon;
+                  const active = isActive(item.href);
+
+                  return (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={cn(
+                          'flex items-center gap-3 py-3 px-4 text-base font-medium rounded-xl transition-colors',
+                          active
+                            ? 'text-[var(--black)] bg-black/5'
+                            : 'text-[var(--gray-500)]'
+                        )}
+                      >
+                        <Icon className="w-5 h-5" />
+                        {item.label}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </nav>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
+                className="pt-6 border-t border-[var(--gray-200)]"
+              >
+                <div className="flex items-center gap-3 px-4 py-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-[var(--black)] flex items-center justify-center">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[var(--black)]">
+                      {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                    </p>
+                    <p className="text-xs text-[var(--gray-400)]">{user.email}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 py-3 px-4 text-red-600 font-medium rounded-xl hover:bg-red-50/50 transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Sign Out
+                </button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content - with top padding for navbar */}
+      <main className="pt-20 px-4 lg:px-8 pb-8">
+        <div className="max-w-6xl mx-auto">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

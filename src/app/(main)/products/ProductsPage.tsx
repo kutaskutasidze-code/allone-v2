@@ -129,7 +129,6 @@ export default function ProductsPage({
       <>
         <style jsx global>{`
           footer { display: none !important; }
-          header { display: none !important; }
           main { padding-top: 0 !important; }
         `}</style>
         <AIStudio subscription={subscription} projects={projects} />
@@ -621,10 +620,10 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
         {/* Messages */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto"
+          className="flex-1 overflow-y-auto pt-16"
           style={{ overscrollBehavior: 'contain' }}
         >
-          <div className="max-w-3xl mx-auto px-4 py-6">
+          <div className="max-w-3xl ml-auto mr-8 px-4 py-6">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -759,7 +758,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
 
         {/* Input Area */}
         <div className="border-t border-[var(--gray-200)] p-4 flex-shrink-0 bg-white">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-3xl ml-auto mr-8">
             <div className={`relative rounded-xl border transition-all duration-200 ${inputFocused ? 'border-[var(--black)] bg-white shadow-sm' : 'border-[var(--gray-200)] bg-[var(--gray-50)]'}`}>
               <textarea
                 ref={inputRef}
