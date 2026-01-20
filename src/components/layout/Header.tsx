@@ -97,64 +97,89 @@ export function Header() {
 
   return (
     <>
-      <header
-        className={cn(
-          'fixed top-0 left-0 right-0 z-50',
-          'transition-all duration-300',
-          isScrolled
-            ? 'py-3 bg-white/70 backdrop-blur-xl border-b border-black/5 supports-[backdrop-filter]:bg-white/60'
-            : 'py-5 bg-transparent'
-        )}
-      >
-        <Container>
-          <nav className="flex items-center justify-between">
+      {/* Dynamic Island Navigation */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+        <motion.header
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+          className={cn(
+            'pointer-events-auto mt-4 mx-4',
+            'px-4 md:px-6 py-3',
+            'rounded-full',
+            'bg-white/60 backdrop-blur-2xl',
+            'border border-white/20',
+            'shadow-lg shadow-black/[0.08]',
+            'transition-all duration-500 ease-out',
+            isScrolled && 'bg-white/80 shadow-xl shadow-black/[0.12]'
+          )}
+        >
+          <nav className="flex items-center gap-2 md:gap-8">
             {/* Logo */}
             <Link
               href="/"
-              className="group flex items-center gap-2.5"
+              className="group flex items-center gap-2"
             >
               <Image
                 src="/images/allone-logo.png"
                 alt="Allone"
-                width={28}
-                height={28}
-                className="group-hover:scale-105 transition-transform duration-300"
+                width={24}
+                height={24}
+                className="group-hover:scale-110 transition-transform duration-300"
               />
-              <span className="text-base font-medium text-[var(--black)] tracking-tight">
+              <span className="text-sm font-semibold text-[var(--black)] tracking-tight">
                 ALLONE
               </span>
             </Link>
 
             {/* Desktop Navigation - Center */}
-            <div className="hidden md:flex items-center gap-8">
-              {navigation.map((item) => (
+            <div className="hidden md:flex items-center gap-1">
+              {navigation
+                .filter(item => user ? item.key !== 'contact' : true)
+                .map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'text-sm font-medium transition-colors duration-200',
+                    'text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200',
                     pathname === item.href || (item.href === '/products' && pathname.startsWith('/products'))
-                      ? 'text-[var(--black)]'
-                      : 'text-[var(--gray-500)] hover:text-[var(--black)]'
+                      ? 'text-[var(--black)] bg-black/5'
+                      : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
                   )}
                 >
                   {item.label}
                 </Link>
               ))}
+              {user && (
+                <Link
+                  href="/dashboard"
+                  className={cn(
+                    'text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200',
+                    pathname.startsWith('/dashboard')
+                      ? 'text-[var(--black)] bg-black/5'
+                      : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
+                  )}
+                >
+                  Home
+                </Link>
+              )}
             </div>
 
+            {/* Divider */}
+            <div className="hidden md:block w-px h-5 bg-black/10" />
+
             {/* Right Side - Login/Profile */}
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden md:flex items-center">
               {user ? (
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center gap-2 py-1.5 px-3 rounded-full bg-[var(--gray-100)] hover:bg-[var(--gray-200)] transition-colors"
+                    className="flex items-center gap-2 py-1 px-2 rounded-full hover:bg-black/5 transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-full bg-[var(--black)] flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
+                    <div className="w-6 h-6 rounded-full bg-[var(--black)] flex items-center justify-center">
+                      <User className="w-3.5 h-3.5 text-white" />
                     </div>
-                    <span className="text-sm font-medium text-[var(--black)] max-w-[100px] truncate">
+                    <span className="text-sm font-medium text-[var(--black)] max-w-[80px] truncate">
                       {user.email?.split('@')[0]}
                     </span>
                   </button>
@@ -166,18 +191,18 @@ export function Header() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg shadow-black/10 border border-[var(--gray-200)] overflow-hidden"
+                        className="absolute right-0 top-full mt-2 w-48 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden"
                       >
                         <Link
                           href="/dashboard"
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-[var(--gray-700)] hover:bg-[var(--gray-50)] transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-[var(--gray-700)] hover:bg-black/5 transition-colors"
                         >
                           <LayoutDashboard className="w-4 h-4" />
-                          Dashboard
+                          Home
                         </Link>
                         <button
                           onClick={handleSignOut}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-[var(--gray-100)]"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50/50 transition-colors border-t border-black/5"
                         >
                           <LogOut className="w-4 h-4" />
                           Sign Out
@@ -189,7 +214,7 @@ export function Header() {
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="text-sm font-medium text-[var(--black)] py-2 px-5 rounded-full bg-[var(--gray-100)] hover:bg-[var(--gray-200)] transition-colors"
+                  className="text-sm font-medium text-white py-1.5 px-4 rounded-full bg-[var(--black)] hover:bg-[var(--gray-800)] transition-colors"
                 >
                   Login
                 </button>
@@ -199,7 +224,7 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="md:hidden p-2 -mr-2 touch-manipulation"
+              className="md:hidden p-1.5 rounded-full hover:bg-black/5 transition-colors touch-manipulation"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
@@ -210,8 +235,8 @@ export function Header() {
               )}
             </button>
           </nav>
-        </Container>
-      </header>
+        </motion.header>
+      </div>
 
       {/* Click outside to close user menu */}
       {showUserMenu && (
@@ -229,42 +254,77 @@ export function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 md:hidden bg-white/95 backdrop-blur-xl"
+            className="fixed inset-0 z-40 md:hidden"
           >
-            <div className="flex flex-col h-full pt-24 pb-8 px-6">
-              <nav className="flex-1 space-y-1">
-                {navigation.map((item) => (
-                  <div key={item.href}>
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-white/60 backdrop-blur-2xl" />
+
+            {/* Content */}
+            <div className="relative flex flex-col h-full pt-24 pb-8 px-6">
+              <nav className="flex-1 space-y-2">
+                {navigation
+                  .filter(item => user ? item.key !== 'contact' : true)
+                  .map((item) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
                     <a
                       href={item.href}
                       onClick={(e) => handleMobileNavClick(e, item.href)}
                       className={cn(
-                        'block py-4 text-xl font-medium border-b border-[var(--gray-200)]',
-                        'active:bg-gray-100 touch-manipulation',
+                        'block py-4 px-4 text-xl font-medium rounded-2xl transition-colors',
+                        'active:bg-black/5 touch-manipulation',
                         pathname === item.href
-                          ? 'text-[var(--black)]'
-                          : 'text-[var(--gray-400)]'
+                          ? 'text-[var(--black)] bg-black/5'
+                          : 'text-[var(--gray-500)]'
                       )}
                     >
                       {item.label}
                     </a>
-                  </div>
+                  </motion.div>
                 ))}
+                {user && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                  >
+                    <Link
+                      href="/dashboard"
+                      className={cn(
+                        'block py-4 px-4 text-xl font-medium rounded-2xl transition-colors',
+                        pathname.startsWith('/dashboard')
+                          ? 'text-[var(--black)] bg-black/5'
+                          : 'text-[var(--gray-500)]'
+                      )}
+                    >
+                      Home
+                    </Link>
+                  </motion.div>
+                )}
               </nav>
 
-              <div className="pt-6 border-t border-[var(--gray-200)]">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+                className="pt-6"
+              >
                 {user ? (
                   <div className="space-y-3">
                     <Link
                       href="/dashboard"
-                      className="flex items-center gap-3 py-3 px-4 bg-[var(--gray-100)] rounded-xl text-[var(--black)] font-medium"
+                      className="flex items-center gap-3 py-3 px-4 bg-white/80 backdrop-blur-xl rounded-2xl text-[var(--black)] font-medium border border-white/20 shadow-lg shadow-black/5"
                     >
                       <LayoutDashboard className="w-5 h-5" />
-                      Dashboard
+                      Home
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-3 py-3 px-4 text-red-600 font-medium"
+                      className="w-full flex items-center gap-3 py-3 px-4 text-red-600 font-medium rounded-2xl hover:bg-red-50/50 transition-colors"
                     >
                       <LogOut className="w-5 h-5" />
                       Sign Out
@@ -273,12 +333,12 @@ export function Header() {
                 ) : (
                   <button
                     onClick={handleLogin}
-                    className="w-full py-3 px-4 bg-[var(--black)] text-white font-medium rounded-xl"
+                    className="w-full py-3.5 px-4 bg-[var(--black)] text-white font-medium rounded-full shadow-lg shadow-black/20"
                   >
                     Login
                   </button>
                 )}
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         )}
