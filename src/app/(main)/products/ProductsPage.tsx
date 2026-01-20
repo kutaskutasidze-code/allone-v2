@@ -536,7 +536,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
             animate={{ width: 260, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="h-full border-r border-[var(--gray-200)] flex flex-col bg-[var(--gray-50)] overflow-hidden"
+            className="h-full border-r border-[var(--gray-200)] flex flex-col bg-white overflow-hidden"
           >
             <div className="p-3 border-b border-[var(--gray-200)]">
               <button
