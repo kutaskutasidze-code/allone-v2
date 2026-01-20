@@ -160,7 +160,7 @@ export function Header() {
                       : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
                   )}
                 >
-                  Home
+                  Dashboard
                 </Link>
               )}
             </div>
@@ -198,7 +198,7 @@ export function Header() {
                           className="flex items-center gap-3 px-4 py-3 text-sm text-[var(--gray-700)] hover:bg-black/5 transition-colors"
                         >
                           <LayoutDashboard className="w-4 h-4" />
-                          Home
+                          Dashboard
                         </Link>
                         <button
                           onClick={handleSignOut}
@@ -301,7 +301,7 @@ export function Header() {
                           : 'text-[var(--gray-500)]'
                       )}
                     >
-                      Home
+                      Dashboard
                     </Link>
                   </motion.div>
                 )}
@@ -320,7 +320,7 @@ export function Header() {
                       className="flex items-center gap-3 py-3 px-4 bg-white/80 backdrop-blur-xl rounded-2xl text-[var(--black)] font-medium border border-white/20 shadow-lg shadow-black/5"
                     >
                       <LayoutDashboard className="w-5 h-5" />
-                      Home
+                      Dashboard
                     </Link>
                     <button
                       onClick={handleSignOut}
