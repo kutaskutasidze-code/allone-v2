@@ -107,11 +107,11 @@ export function Header() {
             'pointer-events-auto mt-4 mx-4',
             'px-4 md:px-6 py-3',
             'rounded-full',
-            'bg-white/60 backdrop-blur-2xl',
-            'border border-white/20',
-            'shadow-lg shadow-black/[0.08]',
+            'bg-white/30 backdrop-blur-xl',
+            'border border-white/30',
+            'shadow-lg shadow-black/[0.05]',
             'transition-all duration-500 ease-out',
-            isScrolled && 'bg-white/80 shadow-xl shadow-black/[0.12]'
+            isScrolled && 'bg-white/50 shadow-xl shadow-black/[0.08]'
           )}
         >
           <nav className="flex items-center gap-2 md:gap-8">
