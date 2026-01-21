@@ -1,20 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import {
   User,
-  Mail,
   Building,
   Check,
   Loader2,
   Circle,
   CreditCard,
   LogOut,
-  AlertCircle
+  AlertCircle,
+  Shuffle,
+  Upload,
+  X,
+  Sparkles
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Profile {
   id: string;
@@ -22,6 +26,9 @@ interface Profile {
   full_name: string;
   company: string;
   avatar_url: string;
+  avatar_style: string;
+  avatar_seed: string;
+  custom_avatar_url: string | null;
   created_at: string;
 }
 
@@ -33,15 +40,37 @@ interface Subscription {
   paypal_subscription_id: string;
 }
 
+// DiceBear avatar styles (free)
+const AVATAR_STYLES = [
+  { id: 'avataaars', name: 'Avataaars', desc: 'Cartoon style' },
+  { id: 'bottts', name: 'Bottts', desc: 'Robot style' },
+  { id: 'lorelei', name: 'Lorelei', desc: 'Artistic portraits' },
+  { id: 'notionists', name: 'Notionists', desc: 'Notion-like' },
+  { id: 'open-peeps', name: 'Open Peeps', desc: 'Hand-drawn' },
+  { id: 'pixel-art', name: 'Pixel Art', desc: 'Retro pixels' },
+  { id: 'thumbs', name: 'Thumbs', desc: 'Thumbs up/down' },
+  { id: 'fun-emoji', name: 'Fun Emoji', desc: 'Cute emojis' },
+];
+
+function getDiceBearUrl(style: string, seed: string) {
+  return `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}`;
+}
+
 export default function SettingsPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [fullName, setFullName] = useState('');
   const [company, setCompany] = useState('');
+  const [avatarStyle, setAvatarStyle] = useState('avataaars');
+  const [avatarSeed, setAvatarSeed] = useState('');
+  const [customAvatarUrl, setCustomAvatarUrl] = useState<string | null>(null);
+  const [useCustomAvatar, setUseCustomAvatar] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -58,6 +87,10 @@ export default function SettingsPage() {
         setProfile(profileData);
         setFullName(profileData.full_name || '');
         setCompany(profileData.company || '');
+        setAvatarStyle(profileData.avatar_style || 'avataaars');
+        setAvatarSeed(profileData.avatar_seed || profileData.email || '');
+        setCustomAvatarUrl(profileData.custom_avatar_url);
+        setUseCustomAvatar(!!profileData.custom_avatar_url);
       }
 
       // Fetch subscription
@@ -86,7 +119,13 @@ export default function SettingsPage() {
       const res = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name: fullName, company }),
+        body: JSON.stringify({
+          full_name: fullName,
+          company,
+          avatar_style: avatarStyle,
+          avatar_seed: avatarSeed,
+          custom_avatar_url: useCustomAvatar ? customAvatarUrl : null,
+        }),
       });
 
       if (res.ok) {
@@ -103,6 +142,61 @@ export default function SettingsPage() {
       setMessage({ type: 'error', text: 'Connection error' });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleRandomizeSeed = () => {
+    const randomSeed = Math.random().toString(36).substring(2, 15);
+    setAvatarSeed(randomSeed);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setMessage({ type: 'error', text: 'Please select an image file' });
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setMessage({ type: 'error', text: 'Image must be smaller than 2MB' });
+      return;
+    }
+
+    setIsUploading(true);
+    setMessage(null);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('public')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('public')
+        .getPublicUrl(filePath);
+
+      setCustomAvatarUrl(publicUrl);
+      setUseCustomAvatar(true);
+      setMessage({ type: 'success', text: 'Avatar uploaded! Click Save to apply.' });
+    } catch (error) {
+      console.error('Upload error:', error);
+      setMessage({ type: 'error', text: 'Failed to upload image' });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -139,6 +233,10 @@ export default function SettingsPage() {
     router.push('/');
     router.refresh();
   };
+
+  const currentAvatarUrl = useCustomAvatar && customAvatarUrl
+    ? customAvatarUrl
+    : getDiceBearUrl(avatarStyle, avatarSeed);
 
   if (isLoading) {
     return (
@@ -183,7 +281,7 @@ export default function SettingsPage() {
         </motion.div>
       )}
 
-      {/* Profile Section */}
+      {/* Avatar Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -191,20 +289,129 @@ export default function SettingsPage() {
         className="mb-8"
       >
         <div className="flex items-center gap-2 mb-4">
+          <span className="text-xs font-mono text-[var(--gray-400)] uppercase tracking-wider">Avatar</span>
+        </div>
+
+        <div className="border border-[var(--gray-200)] rounded-xl overflow-hidden">
+          {/* Current Avatar Preview */}
+          <div className="p-6 bg-[var(--gray-50)] flex items-center gap-6">
+            <div className="relative">
+              <img
+                src={currentAvatarUrl}
+                alt="Avatar preview"
+                className="w-24 h-24 rounded-2xl bg-white shadow-sm"
+              />
+              {isUploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-2xl">
+                  <Loader2 className="w-6 h-6 animate-spin text-white" />
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-[var(--black)] mb-1">Your Avatar</p>
+              <p className="text-xs text-[var(--gray-500)] mb-3">
+                {useCustomAvatar ? 'Custom uploaded image' : `${AVATAR_STYLES.find(s => s.id === avatarStyle)?.name || 'DiceBear'} style`}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white border border-[var(--gray-200)] rounded-lg hover:border-[var(--black)] transition-colors"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  Upload
+                </button>
+                {useCustomAvatar && (
+                  <button
+                    onClick={() => {
+                      setUseCustomAvatar(false);
+                      setCustomAvatarUrl(null);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    Remove
+                  </button>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+            </div>
+          </div>
+
+          {/* Style Selector */}
+          {!useCustomAvatar && (
+            <div className="p-6 border-t border-[var(--gray-200)]">
+              <div className="flex items-center justify-between mb-4">
+                <label className="text-xs text-[var(--gray-500)] font-mono uppercase tracking-wider">
+                  Avatar Style
+                </label>
+                <button
+                  onClick={handleRandomizeSeed}
+                  className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-[var(--gray-600)] hover:text-[var(--black)] transition-colors"
+                >
+                  <Shuffle className="w-3.5 h-3.5" />
+                  Randomize
+                </button>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {AVATAR_STYLES.map((style) => (
+                  <button
+                    key={style.id}
+                    onClick={() => setAvatarStyle(style.id)}
+                    className={cn(
+                      'relative p-2 rounded-xl border-2 transition-all',
+                      avatarStyle === style.id
+                        ? 'border-[var(--black)] bg-[var(--gray-50)]'
+                        : 'border-transparent hover:border-[var(--gray-200)]'
+                    )}
+                  >
+                    <img
+                      src={getDiceBearUrl(style.id, avatarSeed)}
+                      alt={style.name}
+                      className="w-full aspect-square rounded-lg bg-white"
+                    />
+                    <p className="text-[10px] font-medium text-[var(--black)] mt-1.5 truncate">
+                      {style.name}
+                    </p>
+                    {avatarStyle === style.id && (
+                      <div className="absolute top-1 right-1 w-4 h-4 bg-[var(--black)] rounded-full flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 text-white" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Profile Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="mb-8"
+      >
+        <div className="flex items-center gap-2 mb-4">
           <span className="text-xs font-mono text-[var(--gray-400)] uppercase tracking-wider">Profile</span>
         </div>
 
         <div className="border border-[var(--gray-200)] rounded-xl overflow-hidden">
-          {/* Avatar & Email */}
+          {/* Email */}
           <div className="p-6 border-b border-[var(--gray-200)] bg-[var(--gray-50)]">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-[var(--black)] flex items-center justify-center text-white text-xl font-medium">
-                {(fullName?.[0] || profile?.email?.[0] || 'U').toUpperCase()}
-              </div>
+              <Sparkles className="w-5 h-5 text-[var(--gray-400)]" />
               <div>
                 <p className="text-sm text-[var(--gray-500)] font-mono">{profile?.email}</p>
                 <p className="text-xs text-[var(--gray-400)] mt-1">
-                  member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '—'}
+                  member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : ''}
                 </p>
               </div>
             </div>
@@ -288,7 +495,6 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <p className="text-2xl font-light capitalize">{subscription.plan}</p>
-                <p className="text-xs text-white/40 mt-1 font-mono">$100/month</p>
               </div>
               <div className="p-6 space-y-4">
                 <div className="flex items-center justify-between text-sm">
@@ -321,7 +527,7 @@ export default function SettingsPage() {
                 <span className="text-sm text-[var(--gray-500)]">No active subscription</span>
               </div>
               <a
-                href="/products"
+                href="/dashboard/billing"
                 className="block w-full py-3 bg-[var(--black)] text-white text-sm font-medium rounded-lg hover:bg-[var(--gray-800)] transition-colors text-center"
               >
                 Subscribe Now

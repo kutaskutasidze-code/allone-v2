@@ -27,10 +27,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const subscriptionId = searchParams.get('subscription_id');
-    const userId = searchParams.get('user_id');
+    // Note: user_id from URL is not used - subscription is identified by PayPal subscription ID
+    // which is already linked to the correct user when created
 
-    if (!subscriptionId || !userId) {
-      return NextResponse.redirect(new URL('/products?error=missing_params', request.url));
+    if (!subscriptionId) {
+      return NextResponse.redirect(new URL('/dashboard/billing?error=missing_subscription', request.url));
     }
 
     // Get subscription details from PayPal
@@ -65,11 +66,11 @@ export async function GET(request: NextRequest) {
       })
       .eq('paypal_subscription_id', subscriptionId);
 
-    // Redirect to dashboard with success
+    // Redirect to billing page with success
     const origin = request.headers.get('origin') || 'https://allone.ge';
-    return NextResponse.redirect(new URL('/dashboard?subscribed=true', origin));
+    return NextResponse.redirect(new URL('/dashboard/billing?activated=true', origin));
   } catch (error) {
     console.error('Activate subscription error:', error);
-    return NextResponse.redirect(new URL('/products?error=activation_failed', request.url));
+    return NextResponse.redirect(new URL('/dashboard/billing?error=activation_failed', request.url));
   }
 }

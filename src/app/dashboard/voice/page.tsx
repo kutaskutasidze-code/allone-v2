@@ -9,7 +9,7 @@ async function getVoiceAgents() {
   if (!user) redirect('/login?redirect=/dashboard/voice');
 
   const { data: projects } = await supabase
-    .from('user_projects')
+    .from('user_products')
     .select('*')
     .eq('user_id', user.id)
     .eq('type', 'voice_agent')

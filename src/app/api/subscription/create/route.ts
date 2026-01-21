@@ -8,10 +8,29 @@ const PAYPAL_API_BASE = process.env.NODE_ENV === 'production'
   ? 'https://api-m.paypal.com'
   : 'https://api-m.sandbox.paypal.com';
 
-// ALLONE AI Platform subscription plan
-const PLAN_PRICE = '100.00';
-const PLAN_NAME = 'ALLONE AI Platform';
-const PLAN_DESCRIPTION = 'Access to Voice AI, RAG Chatbots, and Automation builders';
+// Subscription tiers configuration
+const TIERS = {
+  starter: {
+    name: 'Starter',
+    price: '29.00',
+    description: 'Perfect for individuals and small projects',
+    limits: { voice_agents: 5, rag_bots: 2, automations: 10, api_calls: 500 }
+  },
+  pro: {
+    name: 'Pro',
+    price: '99.00',
+    description: 'For growing teams and businesses',
+    limits: { voice_agents: 20, rag_bots: 10, automations: 50, api_calls: 2500 }
+  },
+  business: {
+    name: 'Business',
+    price: '299.00',
+    description: 'Unlimited access for enterprises',
+    limits: { voice_agents: -1, rag_bots: -1, automations: -1, api_calls: 10000 }
+  }
+} as const;
+
+type TierKey = keyof typeof TIERS;
 
 async function getPayPalAccessToken() {
   const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64');
@@ -29,41 +48,67 @@ async function getPayPalAccessToken() {
   return data.access_token;
 }
 
-// Create or get existing PayPal product
-async function getOrCreateProduct(accessToken: string) {
-  // Check if we have a stored product ID
-  const adminClient = createAdminClient();
-  const { data: setting } = await adminClient
+// Get or create PayPal product (only once)
+async function getOrCreateProduct(accessToken: string, adminClient: ReturnType<typeof createAdminClient>) {
+  // Check if we have stored product ID
+  const { data: config } = await adminClient
     .from('contact_info')
-    .select('*')
-    .limit(1)
+    .select('paypal_product_id')
     .single();
 
-  // For simplicity, store PayPal product ID in a metadata field or create new each time
-  // In production, you'd store this in a settings table
+  if (config?.paypal_product_id) {
+    return config.paypal_product_id;
+  }
 
-  // Create product
-  const productResponse = await fetch(`${PAYPAL_API_BASE}/v1/catalogs/products`, {
+  // Create new product
+  const response = await fetch(`${PAYPAL_API_BASE}/v1/catalogs/products`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
-      name: PLAN_NAME,
-      description: PLAN_DESCRIPTION,
+      name: 'ALLONE AI Platform',
+      description: 'AI-powered Voice Agents, RAG Chatbots, and Automation tools',
       type: 'SERVICE',
       category: 'SOFTWARE',
     }),
   });
 
-  const product = await productResponse.json();
+  const product = await response.json();
+
+  // Store product ID for future use
+  await adminClient
+    .from('contact_info')
+    .update({ paypal_product_id: product.id })
+    .eq('id', config?.id);
+
   return product.id;
 }
 
-// Create or get existing billing plan
-async function getOrCreatePlan(accessToken: string, productId: string) {
-  const planResponse = await fetch(`${PAYPAL_API_BASE}/v1/billing/plans`, {
+// Get or create plan for a specific tier
+async function getOrCreatePlan(
+  accessToken: string,
+  productId: string,
+  tierKey: TierKey,
+  adminClient: ReturnType<typeof createAdminClient>
+) {
+  const tier = TIERS[tierKey];
+  const planIdField = `paypal_plan_${tierKey}`;
+
+  // Check if we have stored plan ID
+  const { data: config } = await adminClient
+    .from('contact_info')
+    .select('*')
+    .single();
+
+  const storedPlanId = config?.[planIdField as keyof typeof config];
+  if (storedPlanId) {
+    return storedPlanId as string;
+  }
+
+  // Create new plan
+  const response = await fetch(`${PAYPAL_API_BASE}/v1/billing/plans`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -71,44 +116,39 @@ async function getOrCreatePlan(accessToken: string, productId: string) {
     },
     body: JSON.stringify({
       product_id: productId,
-      name: `${PLAN_NAME} - Monthly`,
-      description: PLAN_DESCRIPTION,
-      billing_cycles: [
-        {
-          frequency: {
-            interval_unit: 'MONTH',
-            interval_count: 1,
-          },
-          tenure_type: 'REGULAR',
-          sequence: 1,
-          total_cycles: 0, // Infinite
-          pricing_scheme: {
-            fixed_price: {
-              value: PLAN_PRICE,
-              currency_code: 'USD',
-            },
-          },
-        },
-      ],
+      name: `ALLONE ${tier.name} - Monthly`,
+      description: tier.description,
+      billing_cycles: [{
+        frequency: { interval_unit: 'MONTH', interval_count: 1 },
+        tenure_type: 'REGULAR',
+        sequence: 1,
+        total_cycles: 0,
+        pricing_scheme: {
+          fixed_price: { value: tier.price, currency_code: 'USD' }
+        }
+      }],
       payment_preferences: {
         auto_bill_outstanding: true,
-        setup_fee: {
-          value: '0',
-          currency_code: 'USD',
-        },
+        setup_fee: { value: '0', currency_code: 'USD' },
         setup_fee_failure_action: 'CONTINUE',
-        payment_failure_threshold: 3,
-      },
+        payment_failure_threshold: 3
+      }
     }),
   });
 
-  const plan = await planResponse.json();
+  const plan = await response.json();
+
+  // Store plan ID
+  await adminClient
+    .from('contact_info')
+    .update({ [planIdField]: plan.id })
+    .eq('id', config?.id);
+
   return plan.id;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if user is authenticated
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -116,29 +156,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    // Check if user already has an active subscription
+    const body = await request.json();
+    const tierKey = body.tier as TierKey;
+
+    if (!tierKey || !TIERS[tierKey]) {
+      return NextResponse.json({
+        error: 'Invalid tier. Choose: starter, pro, or business'
+      }, { status: 400 });
+    }
+
+    const tier = TIERS[tierKey];
     const adminClient = createAdminClient();
-    const { data: existingSubscription } = await adminClient
+
+    // Check for existing active subscription
+    const { data: existing } = await adminClient
       .from('subscriptions')
       .select('*')
       .eq('user_id', user.id)
-      .eq('status', 'active')
+      .in('status', ['active', 'pending'])
       .single();
 
-    if (existingSubscription) {
-      return NextResponse.json({ error: 'Already subscribed' }, { status: 400 });
+    if (existing?.status === 'active') {
+      return NextResponse.json({
+        error: 'You already have an active subscription. Cancel it first to change plans.'
+      }, { status: 400 });
     }
 
-    // Get PayPal access token
+    // Get PayPal tokens
     const accessToken = await getPayPalAccessToken();
-
-    // Get or create product and plan
-    const productId = await getOrCreateProduct(accessToken);
-    const planId = await getOrCreatePlan(accessToken, productId);
+    const productId = await getOrCreateProduct(accessToken, adminClient);
+    const planId = await getOrCreatePlan(accessToken, productId, tierKey, adminClient);
 
     // Create subscription
     const origin = request.headers.get('origin') || 'https://allone.ge';
-    const subscriptionResponse = await fetch(`${PAYPAL_API_BASE}/v1/billing/subscriptions`, {
+    const response = await fetch(`${PAYPAL_API_BASE}/v1/billing/subscriptions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -146,47 +197,62 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         plan_id: planId,
-        subscriber: {
-          email_address: user.email,
-        },
+        subscriber: { email_address: user.email },
         application_context: {
           brand_name: 'ALLONE',
           locale: 'en-US',
           shipping_preference: 'NO_SHIPPING',
           user_action: 'SUBSCRIBE_NOW',
-          return_url: `${origin}/api/subscription/activate?user_id=${user.id}`,
-          cancel_url: `${origin}/products?cancelled=true`,
+          return_url: `${origin}/api/subscription/activate?subscription_id={subscription_id}`,
+          cancel_url: `${origin}/dashboard/billing?cancelled=true`,
         },
       }),
     });
 
-    const subscription = await subscriptionResponse.json();
+    const subscription = await response.json();
 
-    if (!subscriptionResponse.ok) {
-      console.error('PayPal subscription creation failed:', subscription);
+    if (!response.ok) {
+      console.error('PayPal error:', subscription);
       return NextResponse.json({ error: 'Failed to create subscription' }, { status: 500 });
     }
 
-    // Find approval URL
     const approvalUrl = subscription.links?.find(
       (link: { rel: string; href: string }) => link.rel === 'approve'
     )?.href;
 
-    // Store pending subscription
+    // Delete any pending subscription and create new one
+    await adminClient
+      .from('subscriptions')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('status', 'pending');
+
     await adminClient.from('subscriptions').insert({
       user_id: user.id,
-      plan: 'platform',
+      plan: tierKey,
       paypal_subscription_id: subscription.id,
       status: 'pending',
-      limits: { voice_agents: 3, rag_bots: 5, automations: 10 },
+      limits: tier.limits,
     });
 
     return NextResponse.json({
       subscriptionId: subscription.id,
       approvalUrl,
+      tier: tierKey,
+      price: tier.price,
     });
   } catch (error) {
     console.error('Create subscription error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
+}
+
+// GET endpoint to fetch available tiers
+export async function GET() {
+  return NextResponse.json({
+    tiers: Object.entries(TIERS).map(([key, tier]) => ({
+      id: key,
+      ...tier,
+    })),
+  });
 }

@@ -66,6 +66,18 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect dashboard routes
+  if (
+    request.nextUrl.pathname.startsWith('/dashboard') &&
+    !request.nextUrl.pathname.startsWith('/api/')
+  ) {
+    if (!isAuthenticated) {
+      const redirectUrl = new URL('/login', request.url);
+      redirectUrl.searchParams.set('redirect', request.nextUrl.pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
   // API routes - don't redirect, just refresh session
   // The API routes handle their own auth responses
 
@@ -98,5 +110,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/login', '/signup', '/contact', '/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*'],
+  matcher: ['/', '/login', '/signup', '/contact', '/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*', '/dashboard', '/dashboard/:path*'],
 };

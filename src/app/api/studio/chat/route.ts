@@ -4,12 +4,51 @@ import { createClient } from '@/lib/supabase/server';
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
+// Input validation constants
+const MAX_MESSAGE_LENGTH = 4000;
+const MAX_MESSAGES = 50;
+
+// Simple in-memory rate limiting
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX = 20; // 20 requests per minute
+
+function checkRateLimit(userId: string): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const record = rateLimitStore.get(userId);
+
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(userId, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return { allowed: true, remaining: RATE_LIMIT_MAX - 1 };
+  }
+
+  if (record.count >= RATE_LIMIT_MAX) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  record.count++;
+  return { allowed: true, remaining: RATE_LIMIT_MAX - record.count };
+}
+
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
 const SYSTEM_PROMPT = `You are ALLONE AI, an intelligent assistant that helps non-technical founders build business automations and AI agents through conversation.
+
+## CRITICAL: What You CAN and CANNOT Do
+
+### You CAN:
+- Create products by outputting a JSON config block (the system will process it)
+- Help users describe what they want to build
+- Explain how each product type works
+
+### You CANNOT:
+- Connect phone numbers manually - phone numbers are assigned AUTOMATICALLY when creating voice agents
+- Make test calls - users must test by calling their assigned number
+- Access external systems directly
+- Modify products after creation (users do this in their dashboard)
 
 ## Your Capabilities
 
@@ -21,22 +60,19 @@ Workflows that connect systems and automate tasks:
 - Email Sequences: Trigger events → Send personalized emails
 - Data Sync: Watch for changes → Transform → Update destination
 - Social Media: Schedule → Post to multiple platforms
-- Invoice/Payment: Create invoices → Send reminders → Track payments
-- Webhook Handlers: Receive data → Process → Take action
 
 ### 2. RAG CHATBOTS (type: "rag_bot")
 AI chatbots that answer questions from uploaded documents:
 - Customer Support: Answer FAQs from knowledge base
 - Documentation Bot: Help users find info in docs
 - Sales Assistant: Answer product questions, qualify leads
-- Internal Wiki: Company knowledge accessible via chat
 
 ### 3. VOICE AI AGENTS (type: "voice_agent")
 AI that handles phone calls and voice interactions:
 - Receptionist: Answer calls, take messages, transfer
 - Appointment Booking: Schedule meetings via phone
 - Customer Service: Handle common inquiries by voice
-- Sales Qualifier: Pre-qualify leads before human contact
+- A phone number is AUTOMATICALLY assigned when the agent is created
 
 ## Conversation Guidelines
 
@@ -45,10 +81,11 @@ AI that handles phone calls and voice interactions:
 3. **Give examples** when the user seems unsure
 4. **Confirm understanding** before creating anything
 5. **Keep responses concise** (2-3 sentences unless explaining)
+6. **NEVER pretend to do things** - if something requires dashboard action, tell them
 
 ## When Ready to Create
 
-When you have enough information to create a product, include this JSON block:
+When you have enough information to create a product, include this JSON block. The system will automatically process it and create the product:
 
 \`\`\`json
 {
@@ -59,12 +96,12 @@ When you have enough information to create a product, include this JSON block:
     "description": "What it does in one sentence",
     "system_prompt": "AI personality and instructions (for bots/agents)",
     "template": "template-id (for automations)",
-    "settings": {
-      // Type-specific settings
-    }
+    "assign_phone": true
   }
 }
 \`\`\`
+
+For voice_agent type, ALWAYS include "assign_phone": true to automatically assign a phone number.
 
 ## Automation Templates
 
@@ -73,8 +110,6 @@ Available templates (use these IDs):
 - \`email-sequence\`: Trigger → Delay → Send emails
 - \`data-sync\`: Source → Transform → Destination
 - \`social-scheduler\`: Queue → Schedule → Post
-- \`invoice-reminder\`: Invoice created → Wait → Send reminder
-- \`webhook-handler\`: Receive → Validate → Process → Respond
 
 ## Example Conversations
 
@@ -85,9 +120,16 @@ Available templates (use these IDs):
 **You**: "Perfect, a RAG chatbot can answer questions about your products. Do you have product documentation or a FAQ page I can train it on, or would you like to upload documents after it's created?"
 
 **User**: "Can you make something to answer my phone"
-**You**: "I can create a Voice AI agent that answers calls for you. What should it do - take messages, book appointments, or answer common questions?"
+**You**: "I can create a Voice AI agent that answers calls for you. A phone number will be automatically assigned when it's created. What should the AI do when someone calls - take messages, book appointments, or answer common questions?"
 
-Remember: You're helping non-technical people. Avoid jargon. Be helpful and encouraging.`;
+## After Product Creation
+
+When a product is successfully created, tell the user:
+- For Voice AI: "Your voice agent is ready! A phone number has been assigned. You can see it in your Voice AI dashboard and test it by calling that number."
+- For RAG Bot: "Your chatbot is ready! You can upload documents and get the embed code from your RAG Bots dashboard."
+- For Automation: "Your automation is ready! Configure the trigger and actions in your Workflows dashboard."
+
+Remember: You're helping non-technical people. Avoid jargon. Be helpful and encouraging. NEVER pretend to do actions you can't actually perform.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -106,6 +148,35 @@ export async function POST(request: NextRequest) {
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
+    }
+
+    // Rate limiting
+    const rateLimit = checkRateLimit(user.id);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment before trying again.' },
+        { status: 429, headers: { 'X-RateLimit-Remaining': '0' } }
+      );
+    }
+
+    // Input validation
+    if (messages.length > MAX_MESSAGES) {
+      return NextResponse.json(
+        { error: `Too many messages. Maximum ${MAX_MESSAGES} messages allowed.` },
+        { status: 400 }
+      );
+    }
+
+    for (const msg of messages) {
+      if (typeof msg.content !== 'string') {
+        return NextResponse.json({ error: 'Invalid message format' }, { status: 400 });
+      }
+      if (msg.content.length > MAX_MESSAGE_LENGTH) {
+        return NextResponse.json(
+          { error: `Message too long. Maximum ${MAX_MESSAGE_LENGTH} characters allowed.` },
+          { status: 400 }
+        );
+      }
     }
 
     // Get user's existing products for context

@@ -65,61 +65,84 @@ class VoiceNoobClient {
     return response.json();
   }
 
-  // Agent CRUD
+  // Agent CRUD - using /api/v1/ prefix
   async createAgent(input: CreateAgentInput): Promise<VoiceAgent> {
-    return this.request<VoiceAgent>('/api/agents', {
+    return this.request<VoiceAgent>('/api/v1/agents', {
       method: 'POST',
       body: JSON.stringify({
         name: input.name,
         system_prompt: input.system_prompt,
-        voice_id: input.voice_id || 'alloy',
-        ai_tier: input.ai_tier || 'balanced',
-        tools: input.tools || ['end_call'],
+        voice: input.voice_id || 'alloy',
+        pricing_tier: input.ai_tier || 'balanced',
+        enabled_tools: input.tools || [],
       }),
     });
   }
 
   async getAgent(agentId: string): Promise<VoiceAgent> {
-    return this.request<VoiceAgent>(`/api/agents/${agentId}`);
+    return this.request<VoiceAgent>(`/api/v1/agents/${agentId}`);
   }
 
   async listAgents(): Promise<VoiceAgent[]> {
-    return this.request<VoiceAgent[]>('/api/agents');
+    return this.request<VoiceAgent[]>('/api/v1/agents');
   }
 
   async updateAgent(
     agentId: string,
     updates: Partial<CreateAgentInput>
   ): Promise<VoiceAgent> {
-    return this.request<VoiceAgent>(`/api/agents/${agentId}`, {
+    return this.request<VoiceAgent>(`/api/v1/agents/${agentId}`, {
       method: 'PATCH',
       body: JSON.stringify(updates),
     });
   }
 
   async deleteAgent(agentId: string): Promise<void> {
-    await this.request(`/api/agents/${agentId}`, {
+    await this.request(`/api/v1/agents/${agentId}`, {
       method: 'DELETE',
     });
   }
 
   // Phone number management
-  async assignPhoneNumber(agentId: string): Promise<{ phone_number: string }> {
-    return this.request<{ phone_number: string }>(
-      `/api/agents/${agentId}/phone`,
-      { method: 'POST' }
-    );
+  async searchPhoneNumbers(areaCode?: string): Promise<Array<{ phone_number: string; region: string; monthly_cost: number }>> {
+    const params = new URLSearchParams();
+    if (areaCode) params.append('area_code', areaCode);
+    return this.request(`/api/v1/telephony/phone-numbers/search?${params}`);
   }
 
-  async releasePhoneNumber(agentId: string): Promise<void> {
-    await this.request(`/api/agents/${agentId}/phone`, {
+  async purchasePhoneNumber(phoneNumber: string): Promise<{ id: string; phone_number: string }> {
+    return this.request('/api/v1/telephony/phone-numbers/purchase', {
+      method: 'POST',
+      body: JSON.stringify({ phone_number: phoneNumber }),
+    });
+  }
+
+  async assignPhoneNumber(agentId: string): Promise<{ phone_number: string }> {
+    // First search for available numbers
+    const available = await this.searchPhoneNumbers();
+    if (!available || available.length === 0) {
+      throw new Error('No phone numbers available');
+    }
+    // Purchase the first available number
+    const purchased = await this.purchasePhoneNumber(available[0].phone_number);
+    // Update agent with the phone number
+    await this.updateAgent(agentId, {});  // This might need to link the number to the agent
+    return { phone_number: purchased.phone_number };
+  }
+
+  async listPhoneNumbers(): Promise<Array<{ id: string; phone_number: string; agent_id?: string }>> {
+    return this.request('/api/v1/phone-numbers');
+  }
+
+  async releasePhoneNumber(phoneNumberId: string): Promise<void> {
+    await this.request(`/api/v1/telephony/phone-numbers/${phoneNumberId}`, {
       method: 'DELETE',
     });
   }
 
   // Agent stats
   async getAgentStats(agentId: string): Promise<AgentStats> {
-    return this.request<AgentStats>(`/api/agents/${agentId}/stats`);
+    return this.request<AgentStats>(`/api/v1/calls/agent/${agentId}/stats`);
   }
 
   // Call history
@@ -142,70 +165,43 @@ class VoiceNoobClient {
     if (options?.limit) params.append('limit', options.limit.toString());
     if (options?.offset) params.append('offset', options.offset.toString());
 
-    return this.request(`/api/agents/${agentId}/calls?${params}`);
+    return this.request(`/api/v1/calls?agent_id=${agentId}&${params}`);
   }
 
-  // Test call
+  // Initiate outbound call
   async initiateTestCall(
     agentId: string,
     phoneNumber: string
   ): Promise<{ call_id: string }> {
     return this.request<{ call_id: string }>(
-      `/api/agents/${agentId}/test-call`,
+      `/api/v1/telephony/calls`,
       {
         method: 'POST',
-        body: JSON.stringify({ phone_number: phoneNumber }),
+        body: JSON.stringify({
+          agent_id: agentId,
+          to_number: phoneNumber,
+        }),
       }
     );
   }
 
-  // Available voices
-  async getAvailableVoices(): Promise<
-    Array<{
-      id: string;
-      name: string;
-      language: string;
-      preview_url?: string;
-    }>
-  > {
-    return this.request('/api/voices');
+  // Get agent embed info
+  async getAgentEmbed(agentId: string): Promise<{ public_id: string; embed_url: string }> {
+    return this.request(`/api/v1/agents/${agentId}/embed`);
   }
 
-  // Available tools/integrations
-  async getAvailableTools(): Promise<
-    Array<{
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      config_schema?: Record<string, unknown>;
-    }>
-  > {
-    return this.request('/api/tools');
-  }
-
-  // Widget embed code generator
-  getEmbedCode(agentId: string, options?: {
-    position?: 'bottom-right' | 'bottom-left';
-    theme?: 'light' | 'dark';
-    buttonText?: string;
-  }): string {
-    const config = {
-      agentId,
-      position: options?.position || 'bottom-right',
-      theme: options?.theme || 'light',
-      buttonText: options?.buttonText || 'Talk to AI',
-    };
+  // Widget embed code generator - uses voice-noob's embed system
+  getEmbedCode(agentId: string, publicId?: string): string {
+    const embedUrl = publicId
+      ? `${this.apiUrl}/api/public/embed/${publicId}`
+      : `${this.apiUrl}/api/v1/agents/${agentId}/embed`;
 
     return `<!-- ALLONE Voice AI Widget -->
-<script>
-  (function(w,d,s,o,f,js,fjs){
-    w['ALLONE_Voice']=o;w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};
-    js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];
-    js.id='allone-voice-widget';js.src=f;js.async=1;fjs.parentNode.insertBefore(js,fjs);
-  }(window,document,'script','alloneVoice','https://cdn.allone.ge/voice-widget.js'));
-  alloneVoice('init', ${JSON.stringify(config)});
-</script>`;
+<iframe
+  src="${embedUrl}"
+  style="position: fixed; bottom: 20px; right: 20px; width: 400px; height: 600px; border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 9999;"
+  allow="microphone"
+></iframe>`;
   }
 }
 

@@ -28,6 +28,9 @@ export async function GET() {
       full_name: profile?.full_name || user.user_metadata?.full_name || '',
       company: profile?.company || '',
       avatar_url: profile?.avatar_url || user.user_metadata?.avatar_url || '',
+      avatar_style: profile?.avatar_style || 'avataaars',
+      avatar_seed: profile?.avatar_seed || user.email || user.id,
+      custom_avatar_url: profile?.custom_avatar_url || null,
       created_at: user.created_at,
     });
   } catch (error) {
@@ -46,27 +49,36 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { full_name, company } = body;
+    const { full_name, company, avatar_style, avatar_seed, custom_avatar_url } = body;
 
-    // Update auth user metadata
-    const { error: authUpdateError } = await supabase.auth.updateUser({
-      data: { full_name },
-    });
+    // Build update object - only include fields that were provided
+    const profileUpdate: Record<string, unknown> = {
+      id: user.id,
+      updated_at: new Date().toISOString(),
+    };
 
-    if (authUpdateError) {
-      console.error('Auth update error:', authUpdateError);
-      return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+    if (full_name !== undefined) profileUpdate.full_name = full_name;
+    if (company !== undefined) profileUpdate.company = company;
+    if (avatar_style !== undefined) profileUpdate.avatar_style = avatar_style;
+    if (avatar_seed !== undefined) profileUpdate.avatar_seed = avatar_seed;
+    if (custom_avatar_url !== undefined) profileUpdate.custom_avatar_url = custom_avatar_url;
+
+    // Update auth user metadata for full_name
+    if (full_name !== undefined) {
+      const { error: authUpdateError } = await supabase.auth.updateUser({
+        data: { full_name },
+      });
+
+      if (authUpdateError) {
+        console.error('Auth update error:', authUpdateError);
+        return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+      }
     }
 
     // Upsert profile in profiles table
     const { error: profileError } = await supabase
       .from('profiles')
-      .upsert({
-        id: user.id,
-        full_name,
-        company,
-        updated_at: new Date().toISOString(),
-      }, {
+      .upsert(profileUpdate, {
         onConflict: 'id',
       });
 

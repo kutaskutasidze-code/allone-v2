@@ -1,13 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import {
-  LayoutDashboard,
   Settings,
   LogOut,
   Menu,
@@ -33,8 +32,13 @@ interface DashboardLayoutContentProps {
   };
 }
 
+interface ProfileData {
+  avatar_style: string;
+  avatar_seed: string;
+  custom_avatar_url: string | null;
+}
+
 const navItems = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { href: '/dashboard/studio', label: 'AI Studio', icon: Terminal },
   { href: '/dashboard/voice', label: 'Voice AI', icon: Mic },
   { href: '/dashboard/rag', label: 'RAG Bots', icon: FileText },
@@ -43,12 +47,37 @@ const navItems = [
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
+function getDiceBearUrl(style: string, seed: string) {
+  return `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}`;
+}
+
 export default function DashboardLayoutContent({ children, user }: DashboardLayoutContentProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+
+  useEffect(() => {
+    // Fetch profile for avatar settings
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+          const data = await res.json();
+          setProfile({
+            avatar_style: data.avatar_style || 'avataaars',
+            avatar_seed: data.avatar_seed || user.email || user.id,
+            custom_avatar_url: data.custom_avatar_url,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+    fetchProfile();
+  }, [user.email, user.id]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -60,6 +89,10 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
     if (href === '/dashboard') return pathname === href;
     return pathname.startsWith(href);
   };
+
+  // Get avatar URL
+  const avatarUrl = profile?.custom_avatar_url ||
+    (profile ? getDiceBearUrl(profile.avatar_style, profile.avatar_seed) : null);
 
   return (
     <div className="min-h-screen bg-white">
@@ -132,11 +165,19 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center gap-2 py-1 px-2 rounded-full hover:bg-black/5 transition-colors"
               >
-                <div className="w-6 h-6 rounded-full bg-[var(--black)] flex items-center justify-center">
-                  <User className="w-3.5 h-3.5 text-white" />
-                </div>
-                <span className="text-xs font-medium text-[var(--black)] max-w-[60px] truncate">
-                  {user.email?.split('@')[0]}
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar"
+                    className="w-6 h-6 rounded-full bg-white"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-[var(--black)] flex items-center justify-center">
+                    <User className="w-3.5 h-3.5 text-white" />
+                  </div>
+                )}
+                <span className="text-xs font-medium text-[var(--black)] max-w-[80px] truncate">
+                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
                 </span>
               </button>
 
@@ -247,9 +288,17 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                 className="pt-6 border-t border-[var(--gray-200)]"
               >
                 <div className="flex items-center gap-3 px-4 py-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-[var(--black)] flex items-center justify-center">
-                    <User className="w-5 h-5 text-white" />
-                  </div>
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt="Avatar"
+                      className="w-10 h-10 rounded-full bg-white"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-[var(--black)] flex items-center justify-center">
+                      <User className="w-5 h-5 text-white" />
+                    </div>
+                  )}
                   <div>
                     <p className="text-sm font-medium text-[var(--black)]">
                       {user.user_metadata?.full_name || user.email?.split('@')[0]}

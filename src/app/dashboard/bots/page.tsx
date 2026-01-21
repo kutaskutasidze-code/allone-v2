@@ -9,7 +9,7 @@ async function getAutomations() {
   if (!user) redirect('/login?redirect=/dashboard/bots');
 
   const { data: projects } = await supabase
-    .from('user_projects')
+    .from('user_products')
     .select('*')
     .eq('user_id', user.id)
     .eq('type', 'automation')
