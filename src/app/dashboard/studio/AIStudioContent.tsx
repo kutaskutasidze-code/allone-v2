@@ -377,7 +377,7 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
   const allSessions = [...sessions.starred, ...sessions.recent];
 
   return (
-    <div className="flex h-[calc(100vh-6rem)]">
+    <div className="flex h-[calc(100vh-5rem)]">
       {/* Sidebar - Full Left */}
       <AnimatePresence>
         {showSidebar && (

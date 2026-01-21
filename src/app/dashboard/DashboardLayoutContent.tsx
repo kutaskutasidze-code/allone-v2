@@ -320,8 +320,13 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
       </AnimatePresence>
 
       {/* Main Content - with top padding for navbar */}
-      <main className="pt-20 px-4 lg:px-8 pb-8">
-        <div className="max-w-6xl mx-auto">
+      <main className={cn(
+        "pt-20",
+        pathname === '/dashboard/studio' ? 'px-0 pb-0' : 'px-4 lg:px-8 pb-8'
+      )}>
+        <div className={cn(
+          pathname === '/dashboard/studio' ? 'max-w-none' : 'max-w-6xl mx-auto'
+        )}>
           {children}
         </div>
       </main>
