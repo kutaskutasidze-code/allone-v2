@@ -378,22 +378,22 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
 
   return (
     <div className="flex h-[calc(100vh-6rem)]">
-      {/* Sidebar */}
+      {/* Sidebar - Full Left */}
       <AnimatePresence>
         {showSidebar && (
           <motion.div
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 280, opacity: 1 }}
+            animate={{ width: 260, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="flex-shrink-0 border-r border-[var(--gray-200)] bg-white overflow-hidden"
+            className="flex-shrink-0 border-r border-[var(--gray-200)] bg-[var(--gray-50)] overflow-hidden"
           >
-            <div className="w-[280px] h-full flex flex-col">
+            <div className="w-[260px] h-full flex flex-col">
               {/* New Chat Button */}
-              <div className="p-3">
+              <div className="p-2 border-b border-[var(--gray-200)]">
                 <button
                   onClick={startNewChat}
-                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[var(--black)] text-white text-sm font-medium hover:bg-[var(--gray-800)] transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--black)] text-white text-sm font-medium hover:bg-[var(--gray-800)] transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   New Chat
@@ -401,7 +401,7 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
               </div>
 
               {/* Sessions List */}
-              <div className="flex-1 overflow-y-auto px-3 pb-3">
+              <div className="flex-1 overflow-y-auto p-2">
                 {loadingSessions ? (
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="w-5 h-5 animate-spin text-[var(--gray-400)]" />
@@ -414,8 +414,8 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                 ) : (
                   <>
                     {sessions.starred.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-xs font-medium text-[var(--gray-500)] uppercase tracking-wide px-2 mb-2">
+                      <div className="mb-3">
+                        <p className="text-[10px] font-semibold text-[var(--gray-400)] uppercase tracking-wider mb-1.5">
                           Starred
                         </p>
                         {sessions.starred.map((session) => (
@@ -432,7 +432,7 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                     )}
                     {sessions.recent.length > 0 && (
                       <div>
-                        <p className="text-xs font-medium text-[var(--gray-500)] uppercase tracking-wide px-2 mb-2">
+                        <p className="text-[10px] font-semibold text-[var(--gray-400)] uppercase tracking-wider mb-1.5">
                           Recent
                         </p>
                         {sessions.recent.map((session) => (
@@ -718,15 +718,15 @@ function SessionItem({
   return (
     <div
       className={cn(
-        'group relative flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors mb-1',
-        isActive ? 'bg-[var(--gray-100)]' : 'hover:bg-[var(--gray-50)]'
+        'group relative flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-colors',
+        isActive ? 'bg-white shadow-sm' : 'hover:bg-white/60'
       )}
       onClick={onSelect}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
-      <MessageSquare className="w-4 h-4 text-[var(--gray-400)] flex-shrink-0" />
-      <span className="text-sm text-[var(--black)] truncate flex-1">
+      <MessageSquare className="w-3.5 h-3.5 text-[var(--gray-400)] flex-shrink-0" />
+      <span className="text-[13px] text-[var(--gray-700)] truncate flex-1">
         {session.title}
       </span>
 
