@@ -492,7 +492,7 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
         {/* Chat Container */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[var(--gray-50)]">
+          <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-[var(--gray-50)]">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center px-4">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--black)] to-[var(--gray-600)] flex items-center justify-center mb-4">
@@ -549,21 +549,21 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                     )}
                   >
                     {message.role === 'assistant' && (
-                      <div className="w-8 h-8 rounded-full bg-[var(--black)] flex items-center justify-center flex-shrink-0">
-                        <Bot className="w-4 h-4 text-white" />
+                      <div className="w-9 h-9 rounded-full bg-[var(--black)] flex items-center justify-center flex-shrink-0">
+                        <Bot className="w-5 h-5 text-white" />
                       </div>
                     )}
                     <motion.div
-                      whileHover={{ scale: 1.01 }}
+                      whileHover={{ scale: 1.005 }}
                       transition={{ duration: 0.15 }}
                       className={cn(
-                        'max-w-[80%] rounded-2xl px-4 py-3 shadow-sm',
+                        'max-w-[70%] rounded-2xl px-5 py-4 shadow-sm',
                         message.role === 'user'
                           ? 'bg-[var(--black)] text-white'
                           : 'bg-white border border-[var(--gray-200)]'
                       )}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
                       {message.createAction && (
                         <div className="mt-3 pt-3 border-t border-[var(--gray-200)]">
                           <div className="flex items-center gap-2 text-xs text-[var(--gray-500)]">
@@ -574,8 +574,8 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                       )}
                     </motion.div>
                     {message.role === 'user' && (
-                      <div className="w-8 h-8 rounded-full bg-[var(--gray-200)] flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-[var(--gray-600)]" />
+                      <div className="w-9 h-9 rounded-full bg-[var(--gray-200)] flex items-center justify-center flex-shrink-0">
+                        <User className="w-5 h-5 text-[var(--gray-600)]" />
                       </div>
                     )}
                   </motion.div>
@@ -587,8 +587,8 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     className="flex gap-3"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[var(--black)] flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-white" />
+                    <div className="w-9 h-9 rounded-full bg-[var(--black)] flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-white" />
                     </div>
                     <div className="bg-white border border-[var(--gray-200)] rounded-2xl px-4 py-3">
                       <div className="flex items-center gap-1.5">
@@ -617,8 +617,8 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-[var(--gray-200)] bg-white">
-            <form onSubmit={handleSubmit} className="flex gap-3">
+          <div className="p-4 md:p-6 border-t border-[var(--gray-200)] bg-white">
+            <form onSubmit={handleSubmit} className="flex gap-3 max-w-4xl mx-auto">
               <div className="flex-1 relative">
                 <textarea
                   ref={inputRef}
@@ -629,12 +629,12 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                   rows={1}
                   maxLength={MAX_MESSAGE_LENGTH}
                   className={cn(
-                    "w-full px-4 py-3 rounded-xl border focus:ring-1 resize-none text-sm",
+                    "w-full px-5 py-4 rounded-xl border focus:ring-1 resize-none text-[15px]",
                     input.length > MAX_MESSAGE_LENGTH * 0.9
                       ? "border-red-300 focus:border-red-500 focus:ring-red-500"
                       : "border-[var(--gray-200)] focus:border-[var(--black)] focus:ring-[var(--black)]"
                   )}
-                  style={{ minHeight: '48px', maxHeight: '120px' }}
+                  style={{ minHeight: '56px', maxHeight: '150px' }}
                 />
                 {input.length > MAX_MESSAGE_LENGTH * 0.8 && (
                   <span className={cn(
@@ -652,16 +652,16 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                 whileTap={input.trim() && !isLoading ? { scale: 0.98 } : {}}
                 transition={{ duration: 0.15 }}
                 className={cn(
-                  'px-4 py-3 rounded-xl font-medium text-sm flex items-center gap-2 transition-all',
+                  'px-5 py-4 rounded-xl font-medium text-[15px] flex items-center gap-2 transition-all',
                   input.trim() && !isLoading
                     ? 'bg-[var(--black)] text-white hover:bg-[var(--gray-800)] hover:shadow-md'
                     : 'bg-[var(--gray-100)] text-[var(--gray-400)] cursor-not-allowed'
                 )}
               >
                 {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  <Send className="w-4 h-4" />
+                  <Send className="w-5 h-5" />
                 )}
                 Send
               </motion.button>
