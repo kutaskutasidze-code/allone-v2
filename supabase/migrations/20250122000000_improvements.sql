@@ -100,6 +100,7 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS custom_avatar_url TEXT;
 -- AUTO-UPDATE TIMESTAMPS
 -- =====================================================
 
-CREATE TRIGGER IF NOT EXISTS update_chat_sessions_updated_at
+DROP TRIGGER IF EXISTS update_chat_sessions_updated_at ON chat_sessions;
+CREATE TRIGGER update_chat_sessions_updated_at
   BEFORE UPDATE ON chat_sessions
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();

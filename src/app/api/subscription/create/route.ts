@@ -53,7 +53,7 @@ async function getOrCreateProduct(accessToken: string, adminClient: ReturnType<t
   // Check if we have stored product ID
   const { data: config } = await adminClient
     .from('contact_info')
-    .select('paypal_product_id')
+    .select('id, paypal_product_id')
     .single();
 
   if (config?.paypal_product_id) {
