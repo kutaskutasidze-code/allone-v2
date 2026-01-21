@@ -35,7 +35,7 @@ interface DashboardLayoutContentProps {
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/products', label: 'AI Studio', icon: Terminal },
+  { href: '/dashboard/studio', label: 'AI Studio', icon: Terminal },
   { href: '/dashboard/voice', label: 'Voice AI', icon: Mic },
   { href: '/dashboard/rag', label: 'RAG Bots', icon: FileText },
   { href: '/dashboard/bots', label: 'Workflows', icon: Zap },
