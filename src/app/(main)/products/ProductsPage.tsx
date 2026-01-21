@@ -745,6 +745,18 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
         )}
       </AnimatePresence>
 
+      {/* Sidebar border line - full height */}
+      <AnimatePresence>
+        {showSidebar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed left-[260px] top-0 bottom-0 w-px bg-zinc-200 z-30"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Main Content */}
       <div className="pt-20 h-screen">
         <div className="h-[calc(100vh-5rem)] flex overflow-hidden">
@@ -756,7 +768,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
             animate={{ width: 260, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="h-full border-r border-[var(--gray-200)] flex flex-col bg-white overflow-hidden"
+            className="h-full flex flex-col bg-white overflow-hidden"
           >
             <div className="p-3 border-b border-[var(--gray-200)]">
               <button

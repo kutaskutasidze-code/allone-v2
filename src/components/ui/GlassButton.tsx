@@ -23,93 +23,6 @@ const sizeClasses: Record<GlassButtonSize, string> = {
   lg: 'px-8 py-3.5 text-sm',
 };
 
-// Generate smooth keyframes (24 steps for ultra-smooth rotation)
-const generateGlowKeyframes = () => {
-  const steps = 24;
-  const keyframes: string[] = [];
-  for (let i = 0; i <= steps; i++) {
-    const angle = (i / steps) * Math.PI * 2;
-    const x = Math.sin(angle) * 2;
-    const y = -Math.cos(angle) * 2;
-    const x2 = Math.sin(angle) * 1;
-    const y2 = -Math.cos(angle) * 1;
-    keyframes.push(
-      `inset ${x.toFixed(2)}px ${y.toFixed(2)}px 8px rgba(255,255,255,0.5), inset ${x2.toFixed(2)}px ${y2.toFixed(2)}px 3px rgba(255,255,255,0.7)`
-    );
-  }
-  return keyframes;
-};
-
-const glowKeyframes = generateGlowKeyframes();
-
-function AnimatedGlowButton({
-  children,
-  className,
-  size,
-  href,
-  ...props
-}: {
-  children: React.ReactNode;
-  className?: string;
-  size: GlassButtonSize;
-  href?: string;
-} & Omit<HTMLMotionProps<'button'>, 'ref' | 'children'>) {
-  const buttonContent = (
-    <>
-      {/* Black background with animated inner glow */}
-      <motion.div
-        className="absolute inset-0 rounded-full bg-[var(--black)] border border-zinc-600"
-        animate={{ boxShadow: glowKeyframes }}
-        transition={{
-          boxShadow: {
-            duration: 3,
-            repeat: Infinity,
-            ease: "linear",
-          }
-        }}
-      />
-
-      {/* Content */}
-      <span className="relative z-10">{children}</span>
-    </>
-  );
-
-  const commonClasses = cn(
-    'relative inline-flex items-center justify-center rounded-full',
-    'font-medium tracking-wide text-white',
-    'transition-all duration-300 ease-out',
-    'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gray-400)]/30 focus-visible:ring-offset-2',
-    'disabled:opacity-50 disabled:cursor-not-allowed',
-    sizeClasses[size],
-    className
-  );
-
-  if (href) {
-    return (
-      <motion.a
-        href={href}
-        className={commonClasses}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.15 }}
-      >
-        {buttonContent}
-      </motion.a>
-    );
-  }
-
-  return (
-    <motion.button
-      className={commonClasses}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.15 }}
-      {...props}
-    >
-      {buttonContent}
-    </motion.button>
-  );
-}
 
 export const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
   (
@@ -162,30 +75,15 @@ export const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
 
     const isPrimary = variant === 'primary';
 
-    // Use animated glow button for primary variant
-    if (isPrimary) {
-      return (
-        <AnimatedGlowButton
-          className={className}
-          size={size}
-          href={href}
-          disabled={disabled || isLoading}
-          {...props}
-        >
-          {content}
-        </AnimatedGlowButton>
-      );
-    }
-
-    // Secondary variant - regular button
     const commonClasses = cn(
       'relative inline-flex items-center justify-center rounded-full',
       'font-medium tracking-wide',
       'transition-all duration-300 ease-out',
       'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--gray-400)]/30 focus-visible:ring-offset-2',
       'disabled:opacity-50 disabled:cursor-not-allowed',
-      'border',
-      'bg-white text-[var(--black)] border-[var(--gray-300)] hover:border-[var(--gray-400)]',
+      isPrimary
+        ? 'bg-[var(--black)] text-white hover:bg-zinc-800'
+        : 'border bg-white text-[var(--black)] border-[var(--gray-300)] hover:border-[var(--gray-400)]',
       sizeClasses[size],
       className
     );

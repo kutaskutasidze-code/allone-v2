@@ -2,14 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import {
-  MessageSquare,
-  Plus,
-  ArrowRight,
-  Database,
-  FileText,
-  MessagesSquare
-} from 'lucide-react';
+import { MessageSquare, Plus, ArrowRight } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -33,132 +26,67 @@ export default function RAGBotsContent({ projects, limit }: RAGBotsContentProps)
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--black)]">RAG Chatbots</h1>
-          <p className="text-[var(--gray-600)]">
-            {projects.length}/{limit} bots created
-          </p>
+          <h1 className="text-xl font-medium text-zinc-900">RAG Bots</h1>
+          <p className="text-sm text-zinc-500">{projects.length}/{limit} bots</p>
         </div>
         {canCreate && (
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--black)] text-white font-medium rounded-xl hover:bg-[var(--gray-800)] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Create Bot
+            New
           </Link>
         )}
       </div>
 
-      {/* Projects Grid */}
       {projects.length > 0 ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-2">
           {projects.map((project, index) => (
             <motion.div
               key={project.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: index * 0.05 }}
             >
               <Link
                 href={`/dashboard/rag/${project.id}`}
-                className="block bg-white rounded-xl border border-[var(--gray-200)] p-5 hover:border-[var(--accent)]/50 hover:shadow-lg transition-all group"
+                className="flex items-center gap-4 p-4 rounded-lg border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-all group"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0">
-                    <MessageSquare className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-[var(--black)] truncate group-hover:text-[var(--accent)] transition-colors">
-                      {project.name}
-                    </h3>
-                    {project.description && (
-                      <p className="text-sm text-[var(--gray-500)] truncate mt-1">
-                        {project.description}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-4 mt-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        project.status === 'active'
-                          ? 'bg-green-100 text-green-700'
-                          : project.status === 'draft'
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-gray-100 text-gray-700'
-                      }`}>
-                        {project.status}
-                      </span>
-                      <span className="flex items-center gap-1 text-xs text-[var(--gray-500)]">
-                        <MessagesSquare className="w-3 h-3" />
-                        {project.usage_count || 0} chats
-                      </span>
-                    </div>
-                  </div>
-                  <ArrowRight className="w-5 h-5 text-[var(--gray-400)] group-hover:text-[var(--accent)] transition-colors flex-shrink-0" />
+                <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-zinc-600" />
                 </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-zinc-900 truncate">{project.name}</h3>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="text-xs text-zinc-500">{project.status}</span>
+                    <span className="text-xs text-zinc-400">·</span>
+                    <span className="text-xs text-zinc-500">{project.usage_count || 0} chats</span>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-zinc-600 transition-colors" />
               </Link>
             </motion.div>
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[var(--gray-200)] p-12 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-4">
-            <MessageSquare className="w-8 h-8 text-white" />
+        <div className="border border-zinc-200 rounded-lg p-12 text-center">
+          <div className="w-12 h-12 rounded-lg bg-zinc-100 flex items-center justify-center mx-auto mb-4">
+            <MessageSquare className="w-6 h-6 text-zinc-400" />
           </div>
-          <h3 className="text-lg font-semibold text-[var(--black)] mb-2">No RAG Bots Yet</h3>
-          <p className="text-[var(--gray-500)] mb-6 max-w-md mx-auto">
-            Create your first RAG chatbot to answer questions from your documents, website, or knowledge base.
+          <h3 className="font-medium text-zinc-900 mb-2">No bots yet</h3>
+          <p className="text-sm text-zinc-500 mb-6 max-w-sm mx-auto">
+            Create RAG chatbots to answer questions from your documents.
           </p>
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--black)] text-white font-medium rounded-xl hover:bg-[var(--gray-800)] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Create Your First Bot
+            Create Bot
           </Link>
-        </div>
-      )}
-
-      {/* Quick Stats */}
-      {projects.length > 0 && (
-        <div className="grid grid-cols-3 gap-4 mt-8">
-          <div className="bg-white rounded-xl border border-[var(--gray-200)] p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <MessageSquare className="w-5 h-5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-[var(--black)]">{projects.length}</p>
-                <p className="text-sm text-[var(--gray-500)]">Total Bots</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl border border-[var(--gray-200)] p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Database className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-[var(--black)]">
-                  {projects.filter(p => p.status === 'active').length}
-                </p>
-                <p className="text-sm text-[var(--gray-500)]">Active</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl border border-[var(--gray-200)] p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-teal-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-[var(--black)]">
-                  {projects.reduce((sum, p) => sum + (p.usage_count || 0), 0)}
-                </p>
-                <p className="text-sm text-[var(--gray-500)]">Total Chats</p>
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </div>
