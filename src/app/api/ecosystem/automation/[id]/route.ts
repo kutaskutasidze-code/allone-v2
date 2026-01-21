@@ -35,7 +35,7 @@ export async function GET(
 
     // Fetch workflow details from b0t
     let workflow = null;
-    let runs = [];
+    let runs: unknown[] = [];
     if (automation.config?.b0t_workflow_id) {
       try {
         workflow = await b0tClient.getWorkflow(automation.config.b0t_workflow_id);
