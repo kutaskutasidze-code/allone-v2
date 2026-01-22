@@ -104,6 +104,7 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isNear, setIsNear] = useState(false);
+  const [liquidRadius, setLiquidRadius] = useState('50px');
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -130,25 +131,49 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
     fetchProfile();
   }, [user.email, user.id]);
 
-  // Track mouse proximity to navbar
+  // Track mouse proximity to navbar and compute liquid border-radius
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!headerRef.current) return;
     const bounds = headerRef.current.getBoundingClientRect();
     const distanceToNav = Math.abs(e.clientY - (bounds.top + bounds.height / 2));
-    const horizontalIn = e.clientX >= bounds.left - 50 && e.clientX <= bounds.right + 50;
+    const horizontalIn = e.clientX >= bounds.left - 60 && e.clientX <= bounds.right + 60;
 
     if (distanceToNav < 120 && horizontalIn) {
       setIsNear(true);
       mouseX.set(e.clientX);
+
+      // Compute liquid border-radius based on mouse position
+      const relX = (e.clientX - bounds.left) / bounds.width; // 0 to 1
+      const relY = Math.max(0, 1 - distanceToNav / 120); // intensity (0 to 1)
+
+      // Create asymmetric organic border-radius
+      const base = 50;
+      const variance = 20 * relY;
+      const tl = base - variance * relX + variance * 0.3;
+      const tr = base + variance * relX - variance * 0.5;
+      const br = base - variance * (1 - relX) + variance * 0.4;
+      const bl = base + variance * (1 - relX) - variance * 0.2;
+
+      // Add secondary radius for more organic feel
+      const tl2 = base + variance * 0.5;
+      const tr2 = base - variance * 0.3;
+      const br2 = base + variance * 0.2;
+      const bl2 = base - variance * 0.4;
+
+      setLiquidRadius(
+        `${tl}% ${tr}% ${br}% ${bl}% / ${tl2}% ${tr2}% ${br2}% ${bl2}%`
+      );
     } else {
       setIsNear(false);
       mouseX.set(-1);
+      setLiquidRadius('50px');
     }
   }, [mouseX]);
 
   const handleMouseLeave = useCallback(() => {
     setIsNear(false);
     mouseX.set(-1);
+    setLiquidRadius('50px');
   }, [mouseX]);
 
   useEffect(() => {
@@ -180,13 +205,13 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
           onMouseLeave={handleMouseLeave}
+          style={{ borderRadius: liquidRadius }}
           className={cn(
             'pointer-events-auto mt-4 mx-4',
             'px-3 md:px-5 py-2.5',
-            'rounded-full',
             'backdrop-blur-xl',
             'border',
-            'transition-all duration-500 ease-out',
+            'transition-all duration-300 ease-out',
             isNear
               ? 'bg-white/60 border-white/50 shadow-xl shadow-black/[0.08] scale-[1.02]'
               : 'bg-white/30 border-white/30 shadow-lg shadow-black/[0.05] scale-100'

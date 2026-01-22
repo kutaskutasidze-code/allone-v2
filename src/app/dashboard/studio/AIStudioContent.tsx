@@ -12,7 +12,6 @@ import {
   FileText,
   Plus,
   ChevronRight,
-  Sparkles,
   CheckCircle2,
   Star,
   Trash2,
@@ -489,57 +488,69 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
           <div className="flex-1 overflow-y-auto py-8 px-4 md:px-8 space-y-5 bg-[#fafafa] scroll-smooth">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center px-4">
+                {/* Animated liquid blob */}
                 <motion.div
-                  initial={{ scale: 0.6, opacity: 0, rotate: -10 }}
-                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className="w-24 h-24 rounded-[28px] bg-gradient-to-br from-[#1d1d1f] to-[#3a3a3c] flex items-center justify-center mb-8 shadow-2xl shadow-black/20"
-                >
-                  <Sparkles className="w-12 h-12 text-white/90" />
-                </motion.div>
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-20 h-20 bg-[#1d1d1f] mb-10 shadow-2xl shadow-black/30"
+                  style={{
+                    animation: 'blob 8s ease-in-out infinite',
+                    borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
+                  }}
+                />
+                <style jsx>{`
+                  @keyframes blob {
+                    0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+                    25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+                    50% { border-radius: 50% 60% 30% 60% / 30% 50% 70% 50%; }
+                    75% { border-radius: 40% 60% 50% 40% / 60% 40% 60% 30%; }
+                    100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+                  }
+                `}</style>
                 <motion.h2
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-3xl font-bold text-[#1d1d1f] mb-3 tracking-tight"
+                  transition={{ duration: 0.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-[28px] font-bold text-[#1d1d1f] mb-2 tracking-tight"
                 >
                   What would you like to build?
                 </motion.h2>
                 <motion.p
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-[#86868b] max-w-md mb-12 leading-relaxed text-[15px]"
+                  transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-[#86868b] max-w-sm mb-14 leading-relaxed text-[14px]"
                 >
-                  Describe what you need in plain English, and I&apos;ll help you create automations, voice agents, or AI chatbots.
+                  Describe what you need and I&apos;ll create automations, voice agents, or chatbots.
                 </motion.p>
 
-                {/* Quick Prompts */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full max-w-2xl">
+                {/* Quick Prompts - Premium style */}
+                <div className="flex flex-col gap-2 w-full max-w-md">
                   {QUICK_PROMPTS.map((prompt, index) => {
                     const Icon = prompt.icon;
                     return (
                       <motion.button
                         key={index}
                         onClick={() => handleQuickPrompt(prompt.prompt)}
-                        initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -16 }}
+                        animate={{ opacity: 1, x: 0 }}
                         transition={{
-                          duration: 0.5,
-                          delay: 0.3 + index * 0.08,
+                          duration: 0.4,
+                          delay: 0.35 + index * 0.06,
                           ease: [0.16, 1, 0.3, 1]
                         }}
-                        whileHover={{ y: -3, scale: 1.01 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-black/[0.04] shadow-sm hover:shadow-md transition-all duration-300 text-left group"
+                        whileHover={{ x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="flex items-center gap-3 py-3 px-4 rounded-xl hover:bg-black/[0.03] transition-all duration-200 text-left group"
                       >
-                        <div className="w-10 h-10 rounded-xl bg-[#f5f5f7] flex items-center justify-center group-hover:bg-[#1d1d1f] transition-colors duration-300">
-                          <Icon className="w-[18px] h-[18px] text-[#6e6e73] group-hover:text-white transition-colors duration-300" />
+                        <div className="w-8 h-8 rounded-full bg-[#1d1d1f] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
+                          <Icon className="w-3.5 h-3.5 text-white" />
                         </div>
-                        <span className="text-[13px] font-medium text-[#1d1d1f] flex-1 leading-tight">
+                        <span className="text-[14px] text-[#1d1d1f] flex-1">
                           {prompt.label}
                         </span>
-                        <ChevronRight className="w-3.5 h-3.5 text-[#d2d2d7] group-hover:text-[#1d1d1f] group-hover:translate-x-0.5 transition-all duration-200" />
+                        <ChevronRight className="w-4 h-4 text-[#d2d2d7] group-hover:text-[#86868b] group-hover:translate-x-0.5 transition-all duration-200" />
                       </motion.button>
                     );
                   })}
@@ -662,49 +673,45 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
           </div>
 
           {/* Input Area */}
-          <div className="p-4 md:p-5 bg-[#fafafa]">
-            <form onSubmit={handleSubmit} className="flex items-end gap-2.5 max-w-3xl mx-auto">
-              <div className="flex-1 relative">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Describe what you want to build..."
-                  rows={1}
-                  maxLength={MAX_MESSAGE_LENGTH}
-                  className={cn(
-                    "w-full px-4 py-3.5 rounded-[22px] border focus:ring-0 focus:outline-none resize-none text-[14px] transition-all duration-200 bg-white placeholder:text-[#aeaeb2]",
-                    input.length > MAX_MESSAGE_LENGTH * 0.9
-                      ? "border-red-200 focus:border-red-300"
-                      : "border-black/[0.06] focus:border-black/[0.12]"
-                  )}
-                  style={{ minHeight: '48px', maxHeight: '140px' }}
-                />
-                {input.length > MAX_MESSAGE_LENGTH * 0.8 && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className={cn(
-                      "absolute bottom-2 right-4 text-[10px]",
-                      input.length > MAX_MESSAGE_LENGTH * 0.9 ? "text-red-400" : "text-[#aeaeb2]"
-                    )}
-                  >
-                    {input.length}/{MAX_MESSAGE_LENGTH}
-                  </motion.span>
+          <div className="px-4 md:px-6 py-4 bg-[#fafafa]">
+            <form onSubmit={handleSubmit} className="max-w-3xl mx-auto relative">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Describe what you want to build..."
+                rows={1}
+                maxLength={MAX_MESSAGE_LENGTH}
+                className={cn(
+                  "w-full pl-5 pr-14 py-3.5 rounded-full border focus:ring-0 focus:outline-none resize-none text-[14px] transition-all duration-200 bg-white placeholder:text-[#c7c7cc]",
+                  input.length > MAX_MESSAGE_LENGTH * 0.9
+                    ? "border-red-200"
+                    : "border-black/[0.06] focus:border-black/[0.12]"
                 )}
-              </div>
+                style={{ minHeight: '48px', maxHeight: '48px' }}
+              />
+              {input.length > MAX_MESSAGE_LENGTH * 0.8 && (
+                <span
+                  className={cn(
+                    "absolute left-5 bottom-1 text-[10px]",
+                    input.length > MAX_MESSAGE_LENGTH * 0.9 ? "text-red-400" : "text-[#c7c7cc]"
+                  )}
+                >
+                  {input.length}/{MAX_MESSAGE_LENGTH}
+                </span>
+              )}
               <motion.button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                whileHover={input.trim() && !isLoading ? { scale: 1.05 } : {}}
-                whileTap={input.trim() && !isLoading ? { scale: 0.92 } : {}}
+                whileHover={input.trim() && !isLoading ? { scale: 1.08 } : {}}
+                whileTap={input.trim() && !isLoading ? { scale: 0.9 } : {}}
                 transition={{ duration: 0.15 }}
                 className={cn(
-                  'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200 mb-1',
+                  'absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200',
                   input.trim() && !isLoading
-                    ? 'bg-[#1d1d1f] text-white shadow-sm'
-                    : 'bg-[#e5e5ea] text-[#aeaeb2] cursor-not-allowed'
+                    ? 'bg-[#1d1d1f] text-white'
+                    : 'bg-[#e5e5ea] text-[#c7c7cc] cursor-not-allowed'
                 )}
               >
                 {isLoading ? (

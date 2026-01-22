@@ -57,6 +57,7 @@ export function Header() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isNear, setIsNear] = useState(false);
+  const [liquidRadius, setLiquidRadius] = useState('50px');
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -72,7 +73,7 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Track mouse proximity to navbar
+  // Track mouse proximity to navbar and compute liquid shape
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!headerRef.current) return;
     const bounds = headerRef.current.getBoundingClientRect();
@@ -82,9 +83,29 @@ export function Header() {
     if (distanceToNav < 100 && horizontalIn) {
       setIsNear(true);
       mouseX.set(e.clientX);
+
+      const relX = (e.clientX - bounds.left) / bounds.width;
+      const relY = Math.max(0, 1 - distanceToNav / 100);
+
+      const base = 50;
+      const variance = 18 * relY;
+      const tl = base - variance * relX + variance * 0.3;
+      const tr = base + variance * relX - variance * 0.5;
+      const br = base - variance * (1 - relX) + variance * 0.4;
+      const bl = base + variance * (1 - relX) - variance * 0.2;
+
+      const tl2 = base + variance * 0.5;
+      const tr2 = base - variance * 0.3;
+      const br2 = base + variance * 0.2;
+      const bl2 = base - variance * 0.4;
+
+      setLiquidRadius(
+        `${tl}% ${tr}% ${br}% ${bl}% / ${tl2}% ${tr2}% ${br2}% ${bl2}%`
+      );
     } else {
       setIsNear(false);
       mouseX.set(-1);
+      setLiquidRadius('50px');
     }
   }, [mouseX]);
 
@@ -169,14 +190,14 @@ export function Header() {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          onMouseLeave={() => { setIsNear(false); mouseX.set(-1); }}
+          onMouseLeave={() => { setIsNear(false); mouseX.set(-1); setLiquidRadius('50px'); }}
+          style={{ borderRadius: liquidRadius }}
           className={cn(
             'pointer-events-auto mt-4 mx-4',
             'px-4 md:px-6 py-3',
-            'rounded-full',
             'backdrop-blur-xl',
             'border',
-            'transition-all duration-500 ease-out',
+            'transition-all duration-300 ease-out',
             isNear
               ? 'bg-white/60 border-white/50 shadow-xl shadow-black/[0.08] scale-[1.02]'
               : isScrolled
