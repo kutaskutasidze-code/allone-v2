@@ -9,110 +9,140 @@ const slides = [
     id: 1,
     type: 'title',
     title: 'Allone',
-    subtitle: 'AI Automation for the Next Billion Businesses',
-    location: 'Tbilisi, Georgia',
-    tagline: 'Investment Opportunity',
+    subtitle: 'We build AI tools that run businesses automatically',
+    tagline: 'Tbilisi, Georgia',
   },
   {
     id: 2,
-    type: 'highlight',
-    label: 'The Opportunity',
-    title: 'Georgia\'s Unfair Advantage',
+    type: 'problem',
+    title: 'The Problem',
+    statement: 'Small businesses can\'t afford AI',
     points: [
-      { value: '$0.10', label: 'per kWh electricity', detail: '40-70% below US/EU' },
-      { value: '3-5x', label: 'lower developer costs', detail: 'vs. Western markets' },
-      { value: '0%', label: 'income tax', detail: 'Years 1-3 for startups' },
+      { text: 'Hiring an AI developer costs $150,000+/year', icon: '💰' },
+      { text: 'Custom AI solutions take 6-12 months to build', icon: '⏳' },
+      { text: 'Most businesses are stuck with manual repetitive work', icon: '🔄' },
     ],
+    bottom: '90% of small businesses want AI but can\'t access it',
   },
   {
     id: 3,
-    type: 'funding',
-    label: 'Investment Structure',
-    title: 'Three-Stage Funding',
-    stages: [
-      { amount: '$20K', valuation: '$500K-800K', dilution: '2.5-4%', milestone: 'MVP + Beta Users' },
-      { amount: '$200K', valuation: '$2-4M', dilution: '5-10%', milestone: 'First Revenue + Data Center' },
-      { amount: '$3M', valuation: '$12-15M', dilution: '17-20%', milestone: 'Proven Unit Economics' },
+    type: 'solution',
+    title: 'Our Solution',
+    statement: 'Ready-made AI tools at $300/month',
+    products: [
+      { name: 'Voice Agents', desc: 'AI answers your phone 24/7, books appointments, takes orders' },
+      { name: 'Smart Chatbots', desc: 'AI learns your business documents & answers customer questions' },
+      { name: 'Automations', desc: 'AI handles repetitive tasks: emails, data entry, follow-ups' },
     ],
-    total: '25-35% total ownership',
+    analogy: 'Think of it as hiring a digital employee that never sleeps — for $10/day',
   },
   {
     id: 4,
-    type: 'metrics',
-    label: 'Unit Economics',
-    title: 'Conservative Projections',
-    metrics: [
-      { label: 'Average Deal Size', value: '$300', sub: '/month' },
-      { label: 'Gross Margin', value: '70%', sub: 'target' },
-      { label: 'Customer Lifetime', value: '15', sub: 'months' },
-      { label: 'LTV', value: '$3,150', sub: 'per customer' },
-      { label: 'Target LTV:CAC', value: '3:1', sub: 'ratio' },
-      { label: 'Max CAC', value: '$1,050', sub: 'sustainable' },
+    type: 'market',
+    title: 'The Market',
+    statement: 'AI automation is a $200B+ industry by 2030',
+    layers: [
+      { label: 'Total Market', value: '$200B+', desc: 'Global AI automation' },
+      { label: 'Our Segment', value: '$15B', desc: 'SMB AI tools' },
+      { label: 'Year 3 Target', value: '$2M', desc: 'Realistic annual revenue' },
     ],
+    context: 'Similar companies have grown 10-50x in 2-3 years',
   },
   {
     id: 5,
-    type: 'datacenter',
-    label: 'Infrastructure',
-    title: 'GPU Data Center Economics',
-    investment: '$120K initial',
-    config: '8x NVIDIA L40S GPUs',
-    pricing: '$1.25/hour (vs $1.95+ Western)',
-    table: [
-      { util: '50%', revenue: '$3,600', profit: '$1,200-2,000' },
-      { util: '75%', revenue: '$5,400', profit: '$3,000-3,800' },
-      { util: '90%', revenue: '$6,480', profit: '$4,080-4,880' },
+    type: 'revenue',
+    title: 'How We Make Money',
+    statement: 'Simple recurring revenue model',
+    model: [
+      { metric: 'Monthly price', value: '$300', note: 'per customer' },
+      { metric: 'Our cost to serve', value: '$90', note: 'per customer' },
+      { metric: 'Profit per customer', value: '$210', note: '70% margin' },
+      { metric: 'Customer stays', value: '15 months', note: 'average' },
+      { metric: 'Lifetime value', value: '$3,150', note: 'per customer' },
     ],
-    breakeven: '~50% utilization',
+    insight: 'Every customer we sign generates $3,150 in profit over their lifetime',
   },
   {
     id: 6,
-    type: 'comparables',
-    label: 'Market Validation',
-    title: 'Comparable Valuations',
-    companies: [
-      { name: 'n8n', valuation: '$2.5B', multiple: '62.5x ARR', funding: '$180M' },
-      { name: 'Zapier', valuation: '$5B', multiple: '30x ARR', funding: '$2.68M total' },
-      { name: 'Vapi', valuation: '$130M', multiple: '15-30x', funding: 'Dec 2024' },
-      { name: 'Synthflow', valuation: '-', multiple: '-', funding: '$30M Series A' },
+    type: 'advantage',
+    title: 'Why Georgia?',
+    statement: 'Our costs are 3-5x lower than competitors',
+    comparisons: [
+      { item: 'Developer salary', georgia: '$2,500/mo', usa: '$12,000/mo', savings: '5x cheaper' },
+      { item: 'Electricity (data center)', georgia: '$0.10/kWh', usa: '$0.17/kWh', savings: '40% cheaper' },
+      { item: 'Office & operations', georgia: '$1,500/mo', usa: '$8,000/mo', savings: '5x cheaper' },
     ],
+    tax: 'Plus: 0% income tax for first 3 years (government program)',
   },
   {
     id: 7,
-    type: 'costs',
-    label: 'Operational Efficiency',
-    title: 'Georgian Cost Advantage',
-    teams: [
-      { role: 'Junior Full-Stack', georgia: '$12-18K', western: '$80-120K' },
-      { role: 'Senior Full-Stack', georgia: '$34-48K', western: '$150-200K' },
-      { role: 'AI/ML Engineer', georgia: '$42-60K', western: '$180-250K' },
+    type: 'plan',
+    title: 'The Plan',
+    statement: 'Three clear phases to profitability',
+    phases: [
+      {
+        phase: 'Phase 1',
+        investment: '$40K',
+        equity: '10%',
+        timeline: '0-6 months',
+        milestone: 'Build product + First paying customers',
+        deliverables: ['Working product', 'First 10-20 paying customers', '$3,000-6,000 monthly revenue'],
+      },
+      {
+        phase: 'Phase 2',
+        investment: '$200K',
+        equity: '15%',
+        timeline: '6-18 months',
+        milestone: 'Data center + Scale sales team',
+        deliverables: ['Own GPU servers (cuts costs 60%)', '50-100 customers', '$15,000-30,000 monthly revenue'],
+      },
+      {
+        phase: 'Phase 3',
+        investment: '$1M',
+        equity: '15%',
+        timeline: '18-36 months',
+        milestone: 'Proven business model + Rapid growth',
+        deliverables: ['200+ customers', '$60,000+ monthly revenue', 'Profitable operations'],
+      },
     ],
-    savings: '3-5x cost reduction',
   },
   {
     id: 8,
-    type: 'incentives',
-    label: 'Tax Benefits',
-    title: 'Innovative Startup Status',
-    timeline: [
-      { period: 'Years 1-3', income: '0%', corporate: 'Standard' },
-      { period: 'Years 4-6', income: '5%', corporate: '5%' },
-      { period: 'Years 7-10', income: '10%', corporate: '10%' },
+    type: 'returns',
+    title: 'Your Return',
+    statement: 'Total investment: $1.24M for 40% ownership',
+    scenarios: [
+      { scenario: 'Conservative', revenue: '$720K/year', valuation: '$5M', yourShare: '$2M', multiple: '1.6x' },
+      { scenario: 'Base Case', revenue: '$2M/year', valuation: '$15M', yourShare: '$6M', multiple: '4.8x' },
+      { scenario: 'Upside', revenue: '$5M/year', valuation: '$40M', yourShare: '$16M', multiple: '12.9x' },
     ],
-    note: '10-year progressive tax benefit',
+    timeline: 'Comparable companies reach these valuations in 3-5 years',
+    exit: 'Exit options: acquisition by larger company, or ongoing dividends from profits',
   },
   {
     id: 9,
-    type: 'closing',
-    title: 'Investment Thesis',
-    bullets: [
-      'Structural cost advantages create sustainable moat',
-      'Stage-gated structure de-risks capital deployment',
-      'AI automation market at 15-60x ARR multiples',
-      'Georgian ecosystem actively supporting startups',
+    type: 'team',
+    title: 'Why Us',
+    strengths: [
+      'Technical founders with AI/ML expertise',
+      'Based in Tbilisi — lowest operating costs in Europe',
+      'Product already built and functional',
+      'Access to Georgian tech talent pool',
     ],
-    ask: '$20K → $200K → $3M',
-    target: '25-35% ownership',
+  },
+  {
+    id: 10,
+    type: 'ask',
+    title: 'The Ask',
+    investment: '$1.24M total',
+    equity: '40% ownership',
+    structure: 'Deployed in 3 phases tied to clear milestones',
+    rounds: [
+      { amount: '$40K', equity: '10%', trigger: 'Now — to build & launch' },
+      { amount: '$200K', equity: '15%', trigger: 'After first revenue' },
+      { amount: '$1M', equity: '15%', trigger: 'After proven model' },
+    ],
+    closing: 'You only invest more when we prove each milestone.',
   },
 ];
 
@@ -151,24 +181,29 @@ export default function PitchPage() {
   const slide = slides[currentSlide];
 
   const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
+    enter: (dir: number) => ({
+      x: dir > 0 ? 800 : -800,
       opacity: 0,
+      scale: 0.95,
     }),
     center: {
       x: 0,
       opacity: 1,
+      scale: 1,
     },
-    exit: (direction: number) => ({
-      x: direction < 0 ? 1000 : -1000,
+    exit: (dir: number) => ({
+      x: dir < 0 ? 800 : -800,
       opacity: 0,
+      scale: 0.95,
     }),
   };
 
+  const stagger = (i: number, base = 0.15) => ({ delay: 0.2 + i * base });
+
   return (
-    <div className="min-h-screen bg-[#000] text-white overflow-hidden select-none">
+    <div className="min-h-screen bg-[#fafafa] text-[#1d1d1f] overflow-hidden select-none">
       {/* Slide Content */}
-      <div className="h-screen flex items-center justify-center p-8 md:p-16">
+      <div className="h-screen flex items-center justify-center p-8 md:p-20">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={slide.id}
@@ -177,123 +212,200 @@ export default function PitchPage() {
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="w-full max-w-6xl"
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            className="w-full max-w-5xl"
           >
+            {/* TITLE */}
             {slide.type === 'title' && (
               <div className="text-center">
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                  className="mb-8"
-                >
-                  <span className="text-xs tracking-[0.3em] text-white/40 uppercase">{slide.tagline}</span>
-                </motion.div>
                 <motion.h1
-                  initial={{ y: 40, opacity: 0 }}
+                  initial={{ y: 30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3, duration: 0.6 }}
-                  className="text-8xl md:text-[12rem] font-bold tracking-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent"
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                  className="text-7xl md:text-[10rem] font-bold tracking-tight text-[#1d1d1f]"
                 >
                   {slide.title}
                 </motion.h1>
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                  className="text-xl md:text-2xl text-white/60 mt-6 font-light"
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  className="text-xl md:text-3xl text-[#6e6e73] mt-6 font-light max-w-2xl mx-auto"
                 >
                   {slide.subtitle}
                 </motion.p>
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7, duration: 0.5 }}
-                  className="text-sm text-white/30 mt-4"
+                  transition={{ delay: 0.6 }}
+                  className="text-base text-[#86868b] mt-8"
                 >
-                  {slide.location}
+                  {slide.tagline}
                 </motion.p>
               </div>
             )}
 
-            {slide.type === 'highlight' && (
+            {/* PROBLEM */}
+            {slide.type === 'problem' && (
               <div>
-                <motion.span
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-xs tracking-[0.2em] text-blue-400 uppercase"
-                >
-                  {slide.label}
-                </motion.span>
                 <motion.h2
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-5xl md:text-7xl font-bold mt-4 mb-16"
+                  className="text-5xl md:text-7xl font-bold mb-4"
                 >
                   {slide.title}
                 </motion.h2>
-                <div className="grid md:grid-cols-3 gap-8">
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-2xl text-[#6e6e73] mb-12"
+                >
+                  {slide.statement}
+                </motion.p>
+                <div className="space-y-6">
                   {slide.points?.map((point, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={stagger(i)}
+                      className="flex items-center gap-6 bg-white rounded-2xl p-6 shadow-sm border border-[#e5e5e7]"
+                    >
+                      <span className="text-4xl">{point.icon}</span>
+                      <span className="text-xl text-[#1d1d1f]">{point.text}</span>
+                    </motion.div>
+                  ))}
+                </div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                  className="text-lg text-[#86868b] mt-8 text-center italic"
+                >
+                  {slide.bottom}
+                </motion.p>
+              </div>
+            )}
+
+            {/* SOLUTION */}
+            {slide.type === 'solution' && (
+              <div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-5xl md:text-7xl font-bold mb-4"
+                >
+                  {slide.title}
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-2xl text-[#6e6e73] mb-12"
+                >
+                  {slide.statement}
+                </motion.p>
+                <div className="grid md:grid-cols-3 gap-6">
+                  {slide.products?.map((product, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 + i * 0.15 }}
-                      className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10"
+                      transition={stagger(i)}
+                      className="bg-white rounded-3xl p-8 shadow-sm border border-[#e5e5e7]"
                     >
-                      <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                        {point.value}
-                      </div>
-                      <div className="text-lg text-white/80 mt-2">{point.label}</div>
-                      <div className="text-sm text-white/40 mt-1">{point.detail}</div>
+                      <h3 className="text-xl font-semibold mb-3">{product.name}</h3>
+                      <p className="text-[#6e6e73] leading-relaxed">{product.desc}</p>
                     </motion.div>
                   ))}
                 </div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                  className="mt-10 bg-[#1d1d1f] text-white rounded-2xl p-6 text-center"
+                >
+                  <p className="text-lg font-light">{slide.analogy}</p>
+                </motion.div>
               </div>
             )}
 
-            {slide.type === 'funding' && (
+            {/* MARKET */}
+            {slide.type === 'market' && (
               <div>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-xs tracking-[0.2em] text-emerald-400 uppercase"
-                >
-                  {slide.label}
-                </motion.span>
                 <motion.h2
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-5xl md:text-7xl font-bold mt-4 mb-12"
+                  className="text-5xl md:text-7xl font-bold mb-4"
                 >
                   {slide.title}
                 </motion.h2>
-                <div className="space-y-4">
-                  {slide.stages?.map((stage, i) => (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-2xl text-[#6e6e73] mb-12"
+                >
+                  {slide.statement}
+                </motion.p>
+                <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                  {slide.layers?.map((layer, i) => (
                     <motion.div
                       key={i}
-                      initial={{ opacity: 0, x: -50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 + i * 0.15 }}
-                      className="flex items-center gap-6 bg-white/5 rounded-2xl p-6 border border-white/10"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={stagger(i, 0.2)}
+                      className="bg-white rounded-3xl p-8 shadow-sm border border-[#e5e5e7] text-center w-full md:w-64"
                     >
-                      <div className="text-4xl md:text-5xl font-bold text-emerald-400 w-32">{stage.amount}</div>
-                      <div className="flex-1 grid grid-cols-3 gap-4">
-                        <div>
-                          <div className="text-xs text-white/40 uppercase tracking-wider">Valuation</div>
-                          <div className="text-lg text-white/80">{stage.valuation}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-white/40 uppercase tracking-wider">Dilution</div>
-                          <div className="text-lg text-white/80">{stage.dilution}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-white/40 uppercase tracking-wider">Milestone</div>
-                          <div className="text-lg text-white/80">{stage.milestone}</div>
-                        </div>
+                      <div className="text-sm text-[#86868b] uppercase tracking-wider mb-2">{layer.label}</div>
+                      <div className="text-4xl md:text-5xl font-bold text-[#1d1d1f]">{layer.value}</div>
+                      <div className="text-sm text-[#6e6e73] mt-2">{layer.desc}</div>
+                    </motion.div>
+                  ))}
+                </div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-lg text-[#86868b] mt-8 text-center"
+                >
+                  {slide.context}
+                </motion.p>
+              </div>
+            )}
+
+            {/* REVENUE */}
+            {slide.type === 'revenue' && (
+              <div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-5xl md:text-7xl font-bold mb-4"
+                >
+                  {slide.title}
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-2xl text-[#6e6e73] mb-10"
+                >
+                  {slide.statement}
+                </motion.p>
+                <div className="bg-white rounded-3xl p-8 shadow-sm border border-[#e5e5e7]">
+                  {slide.model?.map((item, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={stagger(i, 0.1)}
+                      className="flex items-center justify-between py-4 border-b border-[#e5e5e7] last:border-0"
+                    >
+                      <span className="text-lg text-[#6e6e73]">{item.metric}</span>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold text-[#1d1d1f]">{item.value}</span>
+                        <span className="text-sm text-[#86868b] ml-2">{item.note}</span>
                       </div>
                     </motion.div>
                   ))}
@@ -302,185 +414,50 @@ export default function PitchPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.7 }}
-                  className="mt-8 text-center text-xl text-white/60"
+                  className="mt-8 bg-[#f5f5f7] rounded-2xl p-6 text-center"
                 >
-                  {slide.total}
+                  <p className="text-lg font-medium text-[#1d1d1f]">{slide.insight}</p>
                 </motion.div>
               </div>
             )}
 
-            {slide.type === 'metrics' && (
+            {/* ADVANTAGE */}
+            {slide.type === 'advantage' && (
               <div>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-xs tracking-[0.2em] text-purple-400 uppercase"
-                >
-                  {slide.label}
-                </motion.span>
                 <motion.h2
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-5xl md:text-7xl font-bold mt-4 mb-12"
+                  className="text-5xl md:text-7xl font-bold mb-4"
                 >
                   {slide.title}
                 </motion.h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                  {slide.metrics?.map((metric, i) => (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-2xl text-[#6e6e73] mb-10"
+                >
+                  {slide.statement}
+                </motion.p>
+                <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-[#e5e5e7]">
+                  <div className="grid grid-cols-4 gap-4 p-4 bg-[#f5f5f7] text-sm font-medium text-[#86868b]">
+                    <div>Item</div>
+                    <div>Georgia</div>
+                    <div>USA</div>
+                    <div>Savings</div>
+                  </div>
+                  {slide.comparisons?.map((row, i) => (
                     <motion.div
                       key={i}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.15 + i * 0.1 }}
-                      className="bg-white/5 rounded-2xl p-6 border border-white/10 text-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={stagger(i)}
+                      className="grid grid-cols-4 gap-4 p-4 border-t border-[#e5e5e7]"
                     >
-                      <div className="text-3xl md:text-4xl font-bold text-purple-400">{metric.value}</div>
-                      <div className="text-sm text-white/40 mt-1">{metric.sub}</div>
-                      <div className="text-xs text-white/60 mt-2 uppercase tracking-wider">{metric.label}</div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {slide.type === 'datacenter' && (
-              <div>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-xs tracking-[0.2em] text-orange-400 uppercase"
-                >
-                  {slide.label}
-                </motion.span>
-                <motion.h2
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-5xl md:text-6xl font-bold mt-4 mb-8"
-                >
-                  {slide.title}
-                </motion.h2>
-                <div className="grid md:grid-cols-2 gap-8">
-                  <motion.div
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="space-y-4"
-                  >
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <div className="text-sm text-white/40">Initial Investment</div>
-                      <div className="text-3xl font-bold text-orange-400">{slide.investment}</div>
-                    </div>
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <div className="text-sm text-white/40">Configuration</div>
-                      <div className="text-xl text-white/80">{slide.config}</div>
-                    </div>
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <div className="text-sm text-white/40">Pricing Advantage</div>
-                      <div className="text-xl text-white/80">{slide.pricing}</div>
-                    </div>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-white/5 rounded-2xl p-6 border border-white/10"
-                  >
-                    <div className="text-sm text-white/40 mb-4">Revenue by Utilization</div>
-                    <div className="space-y-3">
-                      {slide.table?.map((row, i) => (
-                        <div key={i} className="flex items-center justify-between py-2 border-b border-white/10 last:border-0">
-                          <span className="text-white/60">{row.util}</span>
-                          <span className="text-white/80">{row.revenue}/mo</span>
-                          <span className="text-emerald-400 font-medium">{row.profit}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-white/10 text-center">
-                      <span className="text-sm text-white/40">Break-even: </span>
-                      <span className="text-orange-400 font-medium">{slide.breakeven}</span>
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            )}
-
-            {slide.type === 'comparables' && (
-              <div>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-xs tracking-[0.2em] text-cyan-400 uppercase"
-                >
-                  {slide.label}
-                </motion.span>
-                <motion.h2
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-5xl md:text-7xl font-bold mt-4 mb-12"
-                >
-                  {slide.title}
-                </motion.h2>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {slide.companies?.map((company, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 + i * 0.1 }}
-                      className="bg-white/5 rounded-2xl p-6 border border-white/10 flex items-center justify-between"
-                    >
-                      <div>
-                        <div className="text-2xl font-bold">{company.name}</div>
-                        <div className="text-sm text-white/40 mt-1">{company.funding}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-cyan-400">{company.valuation}</div>
-                        <div className="text-sm text-white/60">{company.multiple}</div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {slide.type === 'costs' && (
-              <div>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-xs tracking-[0.2em] text-pink-400 uppercase"
-                >
-                  {slide.label}
-                </motion.span>
-                <motion.h2
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-5xl md:text-7xl font-bold mt-4 mb-12"
-                >
-                  {slide.title}
-                </motion.h2>
-                <div className="space-y-4">
-                  {slide.teams?.map((team, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 + i * 0.1 }}
-                      className="bg-white/5 rounded-2xl p-6 border border-white/10 flex items-center"
-                    >
-                      <div className="flex-1 text-lg">{team.role}</div>
-                      <div className="text-right mr-8">
-                        <div className="text-xs text-white/40">Georgia</div>
-                        <div className="text-2xl font-bold text-pink-400">{team.georgia}</div>
-                      </div>
-                      <div className="text-right opacity-40">
-                        <div className="text-xs text-white/40">Western</div>
-                        <div className="text-xl line-through">{team.western}</div>
-                      </div>
+                      <div className="text-[#1d1d1f] font-medium">{row.item}</div>
+                      <div className="text-[#1d1d1f] font-bold">{row.georgia}</div>
+                      <div className="text-[#86868b] line-through">{row.usa}</div>
+                      <div className="text-green-600 font-semibold">{row.savings}</div>
                     </motion.div>
                   ))}
                 </div>
@@ -488,49 +465,103 @@ export default function PitchPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
-                  className="mt-8 text-center text-2xl text-pink-400 font-bold"
+                  className="mt-6 bg-green-50 border border-green-200 rounded-2xl p-5 text-center"
                 >
-                  {slide.savings}
+                  <p className="text-lg text-green-800 font-medium">{slide.tax}</p>
                 </motion.div>
               </div>
             )}
 
-            {slide.type === 'incentives' && (
+            {/* PLAN */}
+            {slide.type === 'plan' && (
               <div>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-xs tracking-[0.2em] text-yellow-400 uppercase"
-                >
-                  {slide.label}
-                </motion.span>
                 <motion.h2
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-5xl md:text-7xl font-bold mt-4 mb-12"
+                  className="text-5xl md:text-6xl font-bold mb-4"
                 >
                   {slide.title}
                 </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-xl text-[#6e6e73] mb-8"
+                >
+                  {slide.statement}
+                </motion.p>
+                <div className="space-y-4">
+                  {slide.phases?.map((phase, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={stagger(i, 0.2)}
+                      className="bg-white rounded-2xl p-6 shadow-sm border border-[#e5e5e7]"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <span className="text-sm font-medium text-[#86868b]">{phase.phase} · {phase.timeline}</span>
+                          <h3 className="text-lg font-semibold text-[#1d1d1f] mt-1">{phase.milestone}</h3>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-[#1d1d1f]">{phase.investment}</div>
+                          <div className="text-sm font-medium text-blue-600">→ {phase.equity} equity</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {phase.deliverables.map((d, j) => (
+                          <span key={j} className="text-sm bg-[#f5f5f7] text-[#6e6e73] rounded-full px-3 py-1">
+                            {d}
+                          </span>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* RETURNS */}
+            {slide.type === 'returns' && (
+              <div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-5xl md:text-6xl font-bold mb-4"
+                >
+                  {slide.title}
+                </motion.h2>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="text-xl text-[#6e6e73] mb-10"
+                >
+                  {slide.statement}
+                </motion.p>
                 <div className="grid md:grid-cols-3 gap-6">
-                  {slide.timeline?.map((period, i) => (
+                  {slide.scenarios?.map((s, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 + i * 0.15 }}
-                      className="bg-white/5 rounded-3xl p-8 border border-white/10 text-center"
+                      transition={stagger(i, 0.2)}
+                      className={`rounded-3xl p-8 text-center border ${
+                        i === 1 ? 'bg-[#1d1d1f] text-white border-transparent shadow-lg' : 'bg-white border-[#e5e5e7] shadow-sm'
+                      }`}
                     >
-                      <div className="text-lg text-white/60 mb-4">{period.period}</div>
-                      <div className="space-y-4">
-                        <div>
-                          <div className="text-4xl font-bold text-yellow-400">{period.income}</div>
-                          <div className="text-xs text-white/40 uppercase tracking-wider">Income Tax</div>
-                        </div>
-                        <div>
-                          <div className="text-2xl font-semibold text-white/60">{period.corporate}</div>
-                          <div className="text-xs text-white/40 uppercase tracking-wider">Corporate Tax</div>
-                        </div>
+                      <div className={`text-sm uppercase tracking-wider mb-4 ${i === 1 ? 'text-white/60' : 'text-[#86868b]'}`}>
+                        {s.scenario}
+                      </div>
+                      <div className={`text-lg mb-1 ${i === 1 ? 'text-white/80' : 'text-[#6e6e73]'}`}>
+                        {s.revenue} revenue
+                      </div>
+                      <div className={`text-3xl font-bold mb-1 ${i === 1 ? 'text-white' : 'text-[#1d1d1f]'}`}>
+                        {s.yourShare}
+                      </div>
+                      <div className={`text-sm ${i === 1 ? 'text-white/60' : 'text-[#86868b]'}`}>
+                        your 40% = {s.multiple} return
                       </div>
                     </motion.div>
                   ))}
@@ -538,15 +569,17 @@ export default function PitchPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7 }}
-                  className="mt-8 text-center text-lg text-white/40"
+                  transition={{ delay: 0.8 }}
+                  className="mt-8 text-center space-y-2"
                 >
-                  {slide.note}
+                  <p className="text-[#6e6e73]">{slide.timeline}</p>
+                  <p className="text-sm text-[#86868b]">{slide.exit}</p>
                 </motion.div>
               </div>
             )}
 
-            {slide.type === 'closing' && (
+            {/* TEAM */}
+            {slide.type === 'team' && (
               <div className="text-center">
                 <motion.h2
                   initial={{ opacity: 0, y: 20 }}
@@ -555,32 +588,68 @@ export default function PitchPage() {
                 >
                   {slide.title}
                 </motion.h2>
-                <div className="max-w-2xl mx-auto space-y-4 mb-12">
-                  {slide.bullets?.map((bullet, i) => (
+                <div className="max-w-2xl mx-auto space-y-6">
+                  {slide.strengths?.map((strength, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={stagger(i)}
+                      className="flex items-center gap-4 text-left bg-white rounded-2xl p-5 shadow-sm border border-[#e5e5e7]"
+                    >
+                      <div className="w-3 h-3 rounded-full bg-[#1d1d1f]" />
+                      <span className="text-xl text-[#1d1d1f]">{strength}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ASK */}
+            {slide.type === 'ask' && (
+              <div className="text-center">
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-5xl md:text-7xl font-bold mb-12"
+                >
+                  {slide.title}
+                </motion.h2>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="inline-block bg-[#1d1d1f] text-white rounded-3xl p-10 mb-8"
+                >
+                  <div className="text-5xl md:text-6xl font-bold">{slide.investment}</div>
+                  <div className="text-2xl text-white/80 mt-2">for {slide.equity}</div>
+                  <div className="text-base text-white/50 mt-4">{slide.structure}</div>
+                </motion.div>
+                <div className="max-w-lg mx-auto space-y-3 mb-8">
+                  {slide.rounds?.map((round, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 + i * 0.1 }}
-                      className="flex items-center gap-4 text-left"
+                      transition={stagger(i)}
+                      className="flex items-center justify-between bg-white rounded-xl p-4 shadow-sm border border-[#e5e5e7]"
                     >
-                      <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400" />
-                      <span className="text-lg text-white/80">{bullet}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl font-bold">{round.amount}</span>
+                        <span className="text-sm text-blue-600 font-medium">({round.equity})</span>
+                      </div>
+                      <span className="text-sm text-[#6e6e73]">{round.trigger}</span>
                     </motion.div>
                   ))}
                 </div>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="inline-block bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-3xl p-8 border border-white/10"
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-xl text-[#6e6e73] font-medium"
                 >
-                  <div className="text-sm text-white/40 uppercase tracking-wider mb-2">The Ask</div>
-                  <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                    {slide.ask}
-                  </div>
-                  <div className="text-lg text-white/60 mt-2">{slide.target}</div>
-                </motion.div>
+                  {slide.closing}
+                </motion.p>
               </div>
             )}
           </motion.div>
@@ -588,13 +657,13 @@ export default function PitchPage() {
       </div>
 
       {/* Navigation */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm border border-[#e5e5e7]">
         <button
           onClick={prevSlide}
           disabled={currentSlide === 0}
-          className="p-3 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          className="p-2 rounded-full hover:bg-[#f5f5f7] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-5 h-5 text-[#1d1d1f]" />
         </button>
 
         <div className="flex items-center gap-2">
@@ -610,8 +679,8 @@ export default function PitchPage() {
               <Circle
                 className={`w-2 h-2 transition-all ${
                   i === currentSlide
-                    ? 'fill-white text-white scale-125'
-                    : 'text-white/30 group-hover:text-white/60'
+                    ? 'fill-[#1d1d1f] text-[#1d1d1f] scale-125'
+                    : 'text-[#d2d2d7] group-hover:text-[#86868b]'
                 }`}
               />
             </button>
@@ -621,20 +690,15 @@ export default function PitchPage() {
         <button
           onClick={nextSlide}
           disabled={currentSlide === slides.length - 1}
-          className="p-3 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+          className="p-2 rounded-full hover:bg-[#f5f5f7] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-5 h-5 text-[#1d1d1f]" />
         </button>
       </div>
 
       {/* Slide Counter */}
-      <div className="fixed top-8 right-8 text-sm text-white/30">
+      <div className="fixed top-8 right-8 text-sm text-[#86868b]">
         {currentSlide + 1} / {slides.length}
-      </div>
-
-      {/* Keyboard hint */}
-      <div className="fixed bottom-8 right-8 text-xs text-white/20">
-        ← → or Space to navigate
       </div>
     </div>
   );
