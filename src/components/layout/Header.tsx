@@ -1,25 +1,67 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Container } from './Container';
 import { navigation } from '@/data/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+
+// Liquid nav link with magnetic effect
+function LiquidNavLink({ href, label, isActive, mouseX }: {
+  href: string;
+  label: string;
+  isActive: boolean;
+  mouseX: ReturnType<typeof useMotionValue<number>>;
+}) {
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  const distance = useTransform(mouseX, (val: number) => {
+    if (!ref.current || val === -1) return 200;
+    const bounds = ref.current.getBoundingClientRect();
+    const itemCenterX = bounds.left + bounds.width / 2;
+    return Math.abs(val - itemCenterX);
+  });
+
+  const scale = useTransform(distance, [0, 100, 200], [1.12, 1.04, 1]);
+  const y = useTransform(distance, [0, 100, 200], [-1.5, -0.5, 0]);
+
+  const springScale = useSpring(scale, { stiffness: 400, damping: 30 });
+  const springY = useSpring(y, { stiffness: 400, damping: 30 });
+
+  return (
+    <motion.div style={{ scale: springScale, y: springY }}>
+      <Link
+        ref={ref}
+        href={href}
+        className={cn(
+          'text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-200',
+          isActive
+            ? 'text-[var(--black)] bg-black/5'
+            : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
+        )}
+      >
+        {label}
+      </Link>
+    </motion.div>
+  );
+}
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isNear, setIsNear] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const headerRef = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(-1);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +71,27 @@ export function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Track mouse proximity to navbar
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!headerRef.current) return;
+    const bounds = headerRef.current.getBoundingClientRect();
+    const distanceToNav = Math.abs(e.clientY - (bounds.top + bounds.height / 2));
+    const horizontalIn = e.clientX >= bounds.left - 60 && e.clientX <= bounds.right + 60;
+
+    if (distanceToNav < 100 && horizontalIn) {
+      setIsNear(true);
+      mouseX.set(e.clientX);
+    } else {
+      setIsNear(false);
+      mouseX.set(-1);
+    }
+  }, [mouseX]);
+
+  useEffect(() => {
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [handleMouseMove]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -95,23 +158,30 @@ export function Header() {
     router.push(`/login?redirectTo=${encodeURIComponent(currentPath)}`);
   };
 
+  const filteredNavigation = navigation.filter(item => user ? item.key !== 'contact' : true);
+
   return (
     <>
       {/* Dynamic Island Navigation */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
         <motion.header
+          ref={headerRef}
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+          onMouseLeave={() => { setIsNear(false); mouseX.set(-1); }}
           className={cn(
             'pointer-events-auto mt-4 mx-4',
             'px-4 md:px-6 py-3',
             'rounded-full',
-            'bg-white/30 backdrop-blur-xl',
-            'border border-white/30',
-            'shadow-lg shadow-black/[0.05]',
+            'backdrop-blur-xl',
+            'border',
             'transition-all duration-500 ease-out',
-            isScrolled && 'bg-white/50 shadow-xl shadow-black/[0.08]'
+            isNear
+              ? 'bg-white/60 border-white/50 shadow-xl shadow-black/[0.08] scale-[1.02]'
+              : isScrolled
+                ? 'bg-white/50 border-white/40 shadow-xl shadow-black/[0.08]'
+                : 'bg-white/30 border-white/30 shadow-lg shadow-black/[0.05]'
           )}
         >
           <nav className="flex items-center gap-2 md:gap-8">
@@ -132,36 +202,24 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Desktop Navigation - Center */}
+            {/* Desktop Navigation with Liquid Effect */}
             <div className="hidden md:flex items-center gap-1">
-              {navigation
-                .filter(item => user ? item.key !== 'contact' : true)
-                .map((item) => (
-                <Link
+              {filteredNavigation.map((item) => (
+                <LiquidNavLink
                   key={item.href}
                   href={item.href}
-                  className={cn(
-                    'text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200',
-                    pathname === item.href || (item.href === '/products' && pathname.startsWith('/products'))
-                      ? 'text-[var(--black)] bg-black/5'
-                      : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
-                  )}
-                >
-                  {item.label}
-                </Link>
+                  label={item.label}
+                  isActive={pathname === item.href || (item.href === '/products' && pathname.startsWith('/products'))}
+                  mouseX={mouseX}
+                />
               ))}
               {user && (
-                <Link
+                <LiquidNavLink
                   href="/dashboard"
-                  className={cn(
-                    'text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200',
-                    pathname.startsWith('/dashboard')
-                      ? 'text-[var(--black)] bg-black/5'
-                      : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
-                  )}
-                >
-                  Dashboard
-                </Link>
+                  label="Dashboard"
+                  isActive={pathname.startsWith('/dashboard')}
+                  mouseX={mouseX}
+                />
               )}
             </div>
 
@@ -190,8 +248,8 @@ export function Header() {
                         initial={{ opacity: 0, y: 8, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-48 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 border border-white/20 overflow-hidden"
+                        transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+                        className="absolute right-0 top-full mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-black/10 border border-white/40 overflow-hidden"
                       >
                         <Link
                           href="/dashboard"
@@ -212,12 +270,14 @@ export function Header() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <button
+                <motion.button
                   onClick={handleLogin}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   className="text-sm font-medium text-white py-1.5 px-4 rounded-full bg-[var(--black)] hover:bg-[var(--gray-800)] transition-colors"
                 >
                   Login
-                </button>
+                </motion.button>
               )}
             </div>
 
@@ -262,9 +322,7 @@ export function Header() {
             {/* Content */}
             <div className="relative flex flex-col h-full pt-24 pb-8 px-6">
               <nav className="flex-1 space-y-2">
-                {navigation
-                  .filter(item => user ? item.key !== 'contact' : true)
-                  .map((item) => (
+                {filteredNavigation.map((item) => (
                   <motion.div
                     key={item.href}
                     initial={{ opacity: 0, x: -20 }}

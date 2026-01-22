@@ -383,19 +383,19 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
         {showSidebar && (
           <motion.div
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 260, opacity: 1 }}
+            animate={{ width: 250, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex-shrink-0 border-r border-[var(--gray-200)] bg-[var(--gray-50)] overflow-hidden"
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="flex-shrink-0 border-r border-black/[0.04] bg-[#f5f5f7]/80 overflow-hidden"
           >
-            <div className="w-[260px] h-full flex flex-col">
+            <div className="w-[250px] h-full flex flex-col">
               {/* New Chat Button */}
-              <div className="p-2 border-b border-[var(--gray-200)]">
+              <div className="p-2.5 border-b border-black/[0.04]">
                 <button
                   onClick={startNewChat}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--black)] text-white text-sm font-medium hover:bg-[var(--gray-800)] transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-[#1d1d1f] text-white text-[13px] font-medium hover:bg-[#3a3a3c] transition-colors"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5" />
                   New Chat
                 </button>
               </div>
@@ -458,32 +458,26 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--gray-200)] bg-white">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/[0.04] bg-white/80 backdrop-blur-xl">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setShowSidebar(!showSidebar)}
-              className="p-2 rounded-lg hover:bg-[var(--gray-100)] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-black/[0.04] transition-colors"
             >
               {showSidebar ? (
-                <PanelLeftClose className="w-5 h-5 text-[var(--gray-600)]" />
+                <PanelLeftClose className="w-[18px] h-[18px] text-[#86868b]" />
               ) : (
-                <PanelLeft className="w-5 h-5 text-[var(--gray-600)]" />
+                <PanelLeft className="w-[18px] h-[18px] text-[#86868b]" />
               )}
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-[var(--black)]">AI Studio</h1>
-              <p className="text-xs text-[var(--gray-500)]">
-                Build AI products through conversation
-              </p>
+              <h1 className="text-[15px] font-semibold text-[#1d1d1f] tracking-tight">AI Studio</h1>
             </div>
           </div>
           {profile?.pricing_tiers && (
             <div className="text-right">
-              <p className="text-xs text-[var(--gray-500)]">
-                {profile.pricing_tiers.name} Plan
-              </p>
-              <p className="text-sm font-medium text-[var(--black)]">
-                {products.length} / {profile.pricing_tiers.max_products === -1 ? 'Unlimited' : profile.pricing_tiers.max_products} products
+              <p className="text-[11px] text-[#86868b] font-medium">
+                {profile.pricing_tiers.name} · {products.length}/{profile.pricing_tiers.max_products === -1 ? '∞' : profile.pricing_tiers.max_products}
               </p>
             </div>
           )}
@@ -492,60 +486,60 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
         {/* Chat Container */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto py-6 px-4 md:px-8 space-y-6 bg-gradient-to-b from-[var(--gray-50)] to-white scroll-smooth">
+          <div className="flex-1 overflow-y-auto py-8 px-4 md:px-8 space-y-5 bg-[#fafafa] scroll-smooth">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center px-4">
                 <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[var(--black)] via-[var(--gray-700)] to-[var(--gray-600)] flex items-center justify-center mb-6 shadow-xl"
+                  initial={{ scale: 0.6, opacity: 0, rotate: -10 }}
+                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-24 h-24 rounded-[28px] bg-gradient-to-br from-[#1d1d1f] to-[#3a3a3c] flex items-center justify-center mb-8 shadow-2xl shadow-black/20"
                 >
-                  <Sparkles className="w-10 h-10 text-white" />
+                  <Sparkles className="w-12 h-12 text-white/90" />
                 </motion.div>
                 <motion.h2
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 }}
-                  className="text-2xl font-semibold text-[var(--black)] mb-3"
+                  transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-3xl font-bold text-[#1d1d1f] mb-3 tracking-tight"
                 >
                   What would you like to build?
                 </motion.h2>
                 <motion.p
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                  className="text-[var(--gray-500)] max-w-md mb-10 leading-relaxed"
+                  transition={{ duration: 0.5, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-[#86868b] max-w-md mb-12 leading-relaxed text-[15px]"
                 >
                   Describe what you need in plain English, and I&apos;ll help you create automations, voice agents, or AI chatbots.
                 </motion.p>
 
                 {/* Quick Prompts */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full max-w-2xl">
                   {QUICK_PROMPTS.map((prompt, index) => {
                     const Icon = prompt.icon;
                     return (
                       <motion.button
                         key={index}
                         onClick={() => handleQuickPrompt(prompt.prompt)}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{
-                          duration: 0.4,
-                          delay: index * 0.1,
-                          ease: [0.25, 0.1, 0.25, 1]
+                          duration: 0.5,
+                          delay: 0.3 + index * 0.08,
+                          ease: [0.16, 1, 0.3, 1]
                         }}
-                        whileHover={{ y: -4 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-[var(--gray-100)] shadow-sm hover:shadow-lg hover:border-[var(--gray-200)] transition-all duration-300 text-left group"
+                        whileHover={{ y: -3, scale: 1.01 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-black/[0.04] shadow-sm hover:shadow-md transition-all duration-300 text-left group"
                       >
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[var(--gray-100)] to-[var(--gray-50)] flex items-center justify-center group-hover:from-[var(--black)] group-hover:to-[var(--gray-700)] transition-all duration-300">
-                          <Icon className="w-5 h-5 text-[var(--gray-600)] group-hover:text-white transition-colors duration-300" />
+                        <div className="w-10 h-10 rounded-xl bg-[#f5f5f7] flex items-center justify-center group-hover:bg-[#1d1d1f] transition-colors duration-300">
+                          <Icon className="w-[18px] h-[18px] text-[#6e6e73] group-hover:text-white transition-colors duration-300" />
                         </div>
-                        <span className="text-sm font-medium text-[var(--black)] flex-1">
+                        <span className="text-[13px] font-medium text-[#1d1d1f] flex-1 leading-tight">
                           {prompt.label}
                         </span>
-                        <ChevronRight className="w-4 h-4 text-[var(--gray-300)] group-hover:text-[var(--black)] group-hover:translate-x-1 transition-all duration-200" />
+                        <ChevronRight className="w-3.5 h-3.5 text-[#d2d2d7] group-hover:text-[#1d1d1f] group-hover:translate-x-0.5 transition-all duration-200" />
                       </motion.button>
                     );
                   })}
@@ -556,11 +550,11 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                 {messages.map((message, index) => (
                   <motion.div
                     key={message.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{
-                      duration: 0.3,
-                      ease: [0.25, 0.1, 0.25, 1],
+                      duration: 0.35,
+                      ease: [0.16, 1, 0.3, 1],
                       delay: index === messages.length - 1 ? 0.05 : 0
                     }}
                     className={cn(
@@ -570,94 +564,90 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                   >
                     {message.role === 'assistant' && (
                       <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
+                        initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.2, delay: 0.1 }}
-                        className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--black)] to-[var(--gray-700)] flex items-center justify-center flex-shrink-0 shadow-sm"
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1d1d1f] to-[#3a3a3c] flex items-center justify-center flex-shrink-0 shadow-sm mt-1"
                       >
-                        <Bot className="w-5 h-5 text-white" />
+                        <Bot className="w-4 h-4 text-white" />
                       </motion.div>
                     )}
-                    <div className="relative max-w-[70%]">
-                      <motion.div
+                    <div className="relative max-w-[72%]">
+                      <div
                         className={cn(
-                          'rounded-2xl px-5 py-4 transition-shadow duration-200',
+                          'rounded-[20px] px-4 py-3 transition-all duration-200',
                           message.role === 'user'
-                            ? 'bg-[var(--black)] text-white shadow-md hover:shadow-lg'
-                            : 'bg-white border border-[var(--gray-100)] shadow-sm hover:shadow-md'
+                            ? 'bg-[#1d1d1f] text-white shadow-sm'
+                            : 'bg-white border border-black/[0.04] shadow-sm'
                         )}
                       >
-                        <p className="text-[15px] leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+                        <p className="text-[14px] leading-[1.5] whitespace-pre-wrap break-words">{message.content}</p>
                         {message.createAction && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
-                            className="mt-3 pt-3 border-t border-[var(--gray-200)]/50"
+                            transition={{ duration: 0.3 }}
+                            className="mt-3 pt-3 border-t border-black/[0.06]"
                           >
-                            <div className="flex items-center gap-2 text-xs text-[var(--gray-500)]">
+                            <div className="flex items-center gap-2 text-xs text-[#86868b]">
                               <motion.div
                                 animate={{ rotate: 360 }}
-                                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
                               >
-                                <Loader2 className="w-4 h-4 text-green-500" />
+                                <Loader2 className="w-3.5 h-3.5 text-[#34c759]" />
                               </motion.div>
                               Creating {productTypeLabels[message.createAction.type]}...
                             </div>
                           </motion.div>
                         )}
-                      </motion.div>
+                      </div>
                       {/* Timestamp on hover */}
-                      <motion.span
-                        initial={{ opacity: 0 }}
+                      <span
                         className={cn(
-                          'absolute -bottom-5 text-[10px] text-[var(--gray-400)] opacity-0 group-hover/message:opacity-100 transition-opacity duration-200',
-                          message.role === 'user' ? 'right-0' : 'left-0'
+                          'absolute -bottom-5 text-[10px] text-[#aeaeb2] opacity-0 group-hover/message:opacity-100 transition-opacity duration-300',
+                          message.role === 'user' ? 'right-1' : 'left-1'
                         )}
                       >
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </motion.span>
+                      </span>
                     </div>
                     {message.role === 'user' && (
                       <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
+                        initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.2, delay: 0.1 }}
-                        className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--gray-200)] to-[var(--gray-300)] flex items-center justify-center flex-shrink-0 shadow-sm"
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        className="w-8 h-8 rounded-full bg-[#e5e5ea] flex items-center justify-center flex-shrink-0 mt-1"
                       >
-                        <User className="w-5 h-5 text-[var(--gray-600)]" />
+                        <User className="w-4 h-4 text-[#636366]" />
                       </motion.div>
                     )}
                   </motion.div>
                 ))}
                 {isLoading && (
                   <motion.div
-                    initial={{ opacity: 0, y: 12 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="flex gap-3"
                   >
-                    <motion.div
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--black)] to-[var(--gray-700)] flex items-center justify-center shadow-sm"
-                    >
-                      <Bot className="w-5 h-5 text-white" />
-                    </motion.div>
-                    <div className="bg-white border border-[var(--gray-100)] rounded-2xl px-5 py-4 shadow-sm">
-                      <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1d1d1f] to-[#3a3a3c] flex items-center justify-center shadow-sm mt-1">
+                      <Bot className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="bg-white border border-black/[0.04] rounded-[20px] px-4 py-3.5 shadow-sm">
+                      <div className="flex items-center gap-1.5">
                         {[0, 1, 2].map((i) => (
                           <motion.span
                             key={i}
-                            className="w-2 h-2 rounded-full bg-[var(--gray-400)]"
+                            className="w-[7px] h-[7px] rounded-full bg-[#c7c7cc]"
                             animate={{
-                              y: [0, -6, 0],
+                              scale: [1, 1.3, 1],
                               opacity: [0.4, 1, 0.4],
                             }}
                             transition={{
-                              duration: 0.8,
+                              duration: 1,
                               repeat: Infinity,
-                              delay: i * 0.15,
+                              delay: i * 0.2,
                               ease: 'easeInOut',
                             }}
                           />
@@ -672,8 +662,8 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
           </div>
 
           {/* Input Area */}
-          <div className="p-4 md:p-6 border-t border-[var(--gray-100)] bg-white/80 backdrop-blur-sm">
-            <form onSubmit={handleSubmit} className="flex gap-3 max-w-3xl mx-auto">
+          <div className="p-4 md:p-5 bg-[#fafafa]">
+            <form onSubmit={handleSubmit} className="flex items-end gap-2.5 max-w-3xl mx-auto">
               <div className="flex-1 relative">
                 <textarea
                   ref={inputRef}
@@ -684,20 +674,20 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                   rows={1}
                   maxLength={MAX_MESSAGE_LENGTH}
                   className={cn(
-                    "w-full px-5 py-4 rounded-2xl border-2 focus:ring-0 focus:outline-none resize-none text-[15px] transition-all duration-200 bg-[var(--gray-50)]",
+                    "w-full px-4 py-3.5 rounded-[22px] border focus:ring-0 focus:outline-none resize-none text-[14px] transition-all duration-200 bg-white placeholder:text-[#aeaeb2]",
                     input.length > MAX_MESSAGE_LENGTH * 0.9
-                      ? "border-red-300 focus:border-red-400"
-                      : "border-transparent focus:border-[var(--gray-200)] focus:bg-white"
+                      ? "border-red-200 focus:border-red-300"
+                      : "border-black/[0.06] focus:border-black/[0.12]"
                   )}
-                  style={{ minHeight: '56px', maxHeight: '150px' }}
+                  style={{ minHeight: '48px', maxHeight: '140px' }}
                 />
                 {input.length > MAX_MESSAGE_LENGTH * 0.8 && (
                   <motion.span
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     className={cn(
-                      "absolute bottom-2 right-4 text-[10px] font-medium",
-                      input.length > MAX_MESSAGE_LENGTH * 0.9 ? "text-red-500" : "text-[var(--gray-400)]"
+                      "absolute bottom-2 right-4 text-[10px]",
+                      input.length > MAX_MESSAGE_LENGTH * 0.9 ? "text-red-400" : "text-[#aeaeb2]"
                     )}
                   >
                     {input.length}/{MAX_MESSAGE_LENGTH}
@@ -707,14 +697,14 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
               <motion.button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                whileHover={input.trim() && !isLoading ? { scale: 1.03 } : {}}
-                whileTap={input.trim() && !isLoading ? { scale: 0.97 } : {}}
+                whileHover={input.trim() && !isLoading ? { scale: 1.05 } : {}}
+                whileTap={input.trim() && !isLoading ? { scale: 0.92 } : {}}
                 transition={{ duration: 0.15 }}
                 className={cn(
-                  'px-6 py-4 rounded-2xl font-medium text-[15px] flex items-center gap-2 transition-all duration-200',
+                  'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200 mb-1',
                   input.trim() && !isLoading
-                    ? 'bg-[var(--black)] text-white shadow-md hover:shadow-lg'
-                    : 'bg-[var(--gray-100)] text-[var(--gray-400)] cursor-not-allowed'
+                    ? 'bg-[#1d1d1f] text-white shadow-sm'
+                    : 'bg-[#e5e5ea] text-[#aeaeb2] cursor-not-allowed'
                 )}
               >
                 {isLoading ? (
@@ -722,12 +712,11 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   >
-                    <Loader2 className="w-5 h-5" />
+                    <Loader2 className="w-4 h-4" />
                   </motion.div>
                 ) : (
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4" />
                 )}
-                <span className="hidden sm:inline">Send</span>
               </motion.button>
             </form>
           </div>
