@@ -105,7 +105,7 @@ const slides = [
     id: 9,
     type: 'closing',
     title: 'Investment Thesis',
-    points: [
+    bullets: [
       'Structural cost advantages create sustainable moat',
       'Stage-gated structure de-risks capital deployment',
       'AI automation market at 15-60x ARR multiples',
@@ -556,7 +556,7 @@ export default function PitchPage() {
                   {slide.title}
                 </motion.h2>
                 <div className="max-w-2xl mx-auto space-y-4 mb-12">
-                  {slide.points?.map((point, i) => (
+                  {slide.bullets?.map((bullet, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -20 }}
@@ -565,7 +565,7 @@ export default function PitchPage() {
                       className="flex items-center gap-4 text-left"
                     >
                       <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400" />
-                      <span className="text-lg text-white/80">{point}</span>
+                      <span className="text-lg text-white/80">{bullet}</span>
                     </motion.div>
                   ))}
                 </div>
