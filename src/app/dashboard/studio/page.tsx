@@ -2,6 +2,9 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import AIStudioContent from './AIStudioContent';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
   title: 'AI Studio | Allone',
   description: 'Build AI ecosystems through conversation',
