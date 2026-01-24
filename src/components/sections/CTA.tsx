@@ -1,10 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
 import { Container } from '@/components/layout';
-import { GlassButton } from '@/components/ui/GlassButton';
 import { ShimmerText } from '@/components/ui/ShimmerText';
+import SlideTextButton from '@/components/kokonutui/slide-text-button';
 
 export function CTA() {
   return (
@@ -57,23 +56,19 @@ export function CTA() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <GlassButton
+            <SlideTextButton
+              text="Start a conversation"
+              hoverText="Let's talk →"
               href="/contact"
-              variant="primary"
-              size="lg"
-              rightIcon={<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />}
-              className="group"
-            >
-              Start a conversation
-            </GlassButton>
-            <GlassButton
+              className="h-12 px-10 rounded-full"
+            />
+            <SlideTextButton
+              text="View our work"
+              hoverText="See projects →"
               href="/projects"
-              variant="secondary"
-              size="lg"
-              leftIcon={<Sparkles className="w-4 h-4" />}
-            >
-              View our work
-            </GlassButton>
+              variant="ghost"
+              className="h-12 px-10 rounded-full"
+            />
           </motion.div>
         </motion.div>
       </Container>

@@ -5,11 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LayoutDashboard, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { navigation } from '@/data/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import ProfileDropdown from '@/components/kokonutui/profile-dropdown';
+import SlideTextButton from '@/components/kokonutui/slide-text-button';
 
 // Liquid nav link with magnetic effect
 function LiquidNavLink({ href, label, isActive, mouseX }: {
@@ -55,9 +57,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [isNear, setIsNear] = useState(false);
-  const [liquidRadius, setLiquidRadius] = useState('50px');
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -73,7 +73,7 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Track mouse proximity to navbar and compute liquid shape
+  // Track mouse proximity to navbar for magnetic nav items
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!headerRef.current) return;
     const bounds = headerRef.current.getBoundingClientRect();
@@ -83,29 +83,9 @@ export function Header() {
     if (distanceToNav < 100 && horizontalIn) {
       setIsNear(true);
       mouseX.set(e.clientX);
-
-      const relX = (e.clientX - bounds.left) / bounds.width;
-      const relY = Math.max(0, 1 - distanceToNav / 100);
-
-      const base = 50;
-      const variance = 18 * relY;
-      const tl = base - variance * relX + variance * 0.3;
-      const tr = base + variance * relX - variance * 0.5;
-      const br = base - variance * (1 - relX) + variance * 0.4;
-      const bl = base + variance * (1 - relX) - variance * 0.2;
-
-      const tl2 = base + variance * 0.5;
-      const tr2 = base - variance * 0.3;
-      const br2 = base + variance * 0.2;
-      const bl2 = base - variance * 0.4;
-
-      setLiquidRadius(
-        `${tl}% ${tr}% ${br}% ${bl}% / ${tl2}% ${tr2}% ${br2}% ${bl2}%`
-      );
     } else {
       setIsNear(false);
       mouseX.set(-1);
-      setLiquidRadius('50px');
     }
   }, [mouseX]);
 
@@ -130,7 +110,6 @@ export function Header() {
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
-    setShowUserMenu(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -170,7 +149,6 @@ export function Header() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    setShowUserMenu(false);
     router.refresh();
   };
 
@@ -190,19 +168,18 @@ export function Header() {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          onMouseLeave={() => { setIsNear(false); mouseX.set(-1); setLiquidRadius('50px'); }}
-          style={{ borderRadius: liquidRadius }}
+          onMouseLeave={() => { setIsNear(false); mouseX.set(-1); }}
           className={cn(
             'pointer-events-auto mt-4 mx-4',
             'px-4 md:px-6 py-3',
-            'backdrop-blur-xl',
+            'backdrop-blur-2xl rounded-full',
             'border',
             'transition-all duration-300 ease-out',
             isNear
-              ? 'bg-white/60 border-white/50 shadow-xl shadow-black/[0.08] scale-[1.02]'
+              ? 'bg-white/25 border-white/40 shadow-xl shadow-black/[0.06] scale-[1.02]'
               : isScrolled
-                ? 'bg-white/50 border-white/40 shadow-xl shadow-black/[0.08]'
-                : 'bg-white/30 border-white/30 shadow-lg shadow-black/[0.05]'
+                ? 'bg-white/20 border-white/30 shadow-lg shadow-black/[0.05]'
+                : 'bg-white/15 border-white/20 shadow-md shadow-black/[0.03]'
           )}
         >
           <nav className="flex items-center gap-2 md:gap-8">
@@ -250,55 +227,22 @@ export function Header() {
             {/* Right Side - Login/Profile */}
             <div className="hidden md:flex items-center">
               {user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center gap-2 py-1 px-2 rounded-full hover:bg-black/5 transition-colors"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-[var(--black)] flex items-center justify-center">
-                      <User className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-[var(--black)] max-w-[80px] truncate">
-                      {user.email?.split('@')[0]}
-                    </span>
-                  </button>
-
-                  <AnimatePresence>
-                    {showUserMenu && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                        transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-                        className="absolute right-0 top-full mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-black/10 border border-white/40 overflow-hidden"
-                      >
-                        <Link
-                          href="/dashboard"
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-[var(--gray-700)] hover:bg-black/5 transition-colors"
-                        >
-                          <LayoutDashboard className="w-4 h-4" />
-                          Dashboard
-                        </Link>
-                        <button
-                          onClick={handleSignOut}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50/50 transition-colors border-t border-black/5"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          Sign Out
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <ProfileDropdown
+                  glass
+                  profile={{
+                    name: user.email?.split('@')[0] ?? 'User',
+                    email: user.email ?? '',
+                  }}
+                  onSignOut={handleSignOut}
+                />
               ) : (
-                <motion.button
-                  onClick={handleLogin}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="text-sm font-medium text-white py-1.5 px-4 rounded-full bg-[var(--black)] hover:bg-[var(--gray-800)] transition-colors"
-                >
-                  Login
-                </motion.button>
+                <SlideTextButton
+                  text="Login"
+                  hoverText="Get Started"
+                  href="#"
+                  className="!h-8 !min-w-0 !px-5 !text-sm !rounded-full"
+                  onClick={(e) => { e.preventDefault(); handleLogin(); }}
+                />
               )}
             </div>
 
@@ -319,13 +263,6 @@ export function Header() {
         </motion.header>
       </div>
 
-      {/* Click outside to close user menu */}
-      {showUserMenu && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setShowUserMenu(false)}
-        />
-      )}
 
       {/* Mobile Menu */}
       <AnimatePresence>
@@ -337,8 +274,8 @@ export function Header() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 md:hidden"
           >
-            {/* Backdrop */}
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-2xl" />
+            {/* Backdrop - frosted glass */}
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl" />
 
             {/* Content */}
             <div className="relative flex flex-col h-full pt-24 pb-8 px-6">

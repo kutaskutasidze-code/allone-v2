@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Container } from '@/components/layout';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { GlassButton } from '@/components/ui/GlassButton';
-import { ArrowRight, Send } from 'lucide-react';
+import { ArrowRight, Send, Mic } from 'lucide-react';
 import { LiquidMetal, PulsingBorder } from '@paper-design/shaders-react';
 
 interface Node {
@@ -238,6 +238,8 @@ export function Hero() {
   const [isLoading, setIsLoading] = useState(false);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const [shaderReady, setShaderReady] = useState(false);
+  const [isVoiceActive, setIsVoiceActive] = useState(false);
+  const [voiceTime, setVoiceTime] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -282,6 +284,21 @@ export function Hero() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
+
+  // Voice mode timer
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (isVoiceActive) {
+      intervalId = setInterval(() => setVoiceTime(t => t + 1), 1000);
+    } else {
+      setVoiceTime(0);
+    }
+    return () => clearInterval(intervalId);
+  }, [isVoiceActive]);
+
+  const toggleVoice = useCallback(() => {
+    setIsVoiceActive(prev => !prev);
+  }, []);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -426,8 +443,40 @@ export function Hero() {
                     </div>
                   ))}
 
+                  {/* Voice mode visualization - AI Voice style */}
+                  {isVoiceActive && (
+                    <div className="flex flex-col items-center gap-2 py-4 animate-fade-in">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
+                        className="w-10 h-10 rounded-xl flex items-center justify-center bg-none hover:bg-black/5 transition-colors"
+                        type="button"
+                      >
+                        <div
+                          className="w-4 h-4 rounded-sm animate-spin bg-black cursor-pointer"
+                          style={{ animationDuration: '3s' }}
+                        />
+                      </button>
+                      <span className="font-mono text-sm text-black/70">
+                        {`${Math.floor(voiceTime / 60).toString().padStart(2, '0')}:${(voiceTime % 60).toString().padStart(2, '0')}`}
+                      </span>
+                      <div className="h-4 w-48 flex items-center justify-center gap-0.5">
+                        {[...Array(40)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="w-0.5 rounded-full bg-black/50 animate-pulse"
+                            style={{
+                              height: `${20 + Math.random() * 80}%`,
+                              animationDelay: `${i * 0.05}s`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-xs text-black/60">Listening...</p>
+                    </div>
+                  )}
+
                   {/* Loading indicator */}
-                  {isLoading && (
+                  {isLoading && !isVoiceActive && (
                     <div className="flex items-center gap-1.5 py-2">
                       <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
                       <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse [animation-delay:150ms]" />
@@ -480,15 +529,19 @@ export function Hero() {
 
               {/* Inner content - LiquidMetal + Button */}
               <div className={`relative z-10 flex items-center gap-2 sm:gap-3 ${isChatActive ? '' : 'pl-2 sm:pl-4'}`}>
-                {/* LiquidMetal circle on left - hidden on mobile when chat active */}
-                <div className={`flex-shrink-0 transition-all duration-500 overflow-hidden ${isChatActive ? 'opacity-0 scale-90 w-0' : 'opacity-100 scale-100'}`}>
+                {/* LiquidMetal circle with AI Voice - hidden when chat active */}
+                <div
+                  className={`flex-shrink-0 relative transition-all duration-500 overflow-hidden cursor-pointer ${isChatActive ? 'opacity-0 scale-90 w-0' : 'opacity-100 scale-100'}`}
+                  onClick={(e) => { e.stopPropagation(); if (!isChatActive) { openChat(); setTimeout(() => toggleVoice(), 300); } }}
+                >
+                  {/* LiquidMetal background */}
                   <LiquidMetal
-                    speed={0.68}
+                    speed={isVoiceActive ? 1.2 : 0.68}
                     softness={0.1}
                     repetition={2}
-                    shiftRed={0.3}
-                    shiftBlue={0.3}
-                    distortion={0.07}
+                    shiftRed={isVoiceActive ? 0.5 : 0.3}
+                    shiftBlue={isVoiceActive ? 0.5 : 0.3}
+                    distortion={isVoiceActive ? 0.12 : 0.07}
                     contour={0.4}
                     scale={0.6}
                     rotation={0}
@@ -499,6 +552,10 @@ export function Hero() {
                     colorTint="#FFFFFF"
                     className="w-[44px] h-[44px] sm:w-[56px] sm:h-[56px] rounded-full"
                   />
+                  {/* Mic icon overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Mic className="w-4 h-4 sm:w-5 sm:h-5 text-black/60 drop-shadow-sm" />
+                  </div>
                 </div>
 
                 {/* Ask AI button / Input area */}
@@ -541,20 +598,32 @@ export function Hero() {
                     `}
                   />
 
-                  {/* Send button - always visible when chat active */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); sendMessage(); }}
-                    disabled={isLoading || !input.trim()}
-                    className={`
-                      absolute right-4 top-1/2 -translate-y-1/2
-                      transition-all duration-200
-                      ${isChatActive
-                        ? 'opacity-100 text-black hover:text-black/70 disabled:opacity-40'
-                        : 'opacity-0 pointer-events-none'}
-                    `}
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
+                  {/* Action buttons - mic + send */}
+                  <div className={`
+                    absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1
+                    transition-all duration-200
+                    ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+                  `}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
+                      className={`
+                        p-1.5 rounded-full transition-all duration-200
+                        ${isVoiceActive
+                          ? 'bg-black text-white scale-110'
+                          : 'text-black/40 hover:text-black/70 hover:bg-black/5'}
+                      `}
+                      aria-label={isVoiceActive ? 'Stop voice' : 'Start voice'}
+                    >
+                      <Mic className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); sendMessage(); }}
+                      disabled={isLoading || !input.trim() || isVoiceActive}
+                      className="p-1.5 text-black hover:text-black/70 disabled:opacity-30 transition-all duration-200"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
