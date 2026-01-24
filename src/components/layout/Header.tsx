@@ -95,17 +95,17 @@ export function Header() {
 
   return (
     <>
-      {/* Morphic Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+      {/* Morphic Navigation - no card, bare pills */}
+      <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
         <motion.header
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          className="pointer-events-auto mt-4 mx-4 px-3 md:px-4 py-2.5 backdrop-blur-2xl rounded-2xl border border-white/20 bg-white/10 shadow-md shadow-black/[0.03]"
+          className="pointer-events-auto mt-4 mx-4 px-3 md:px-4 py-2.5 flex items-center justify-center"
         >
           <nav className="flex items-center gap-3 md:gap-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 pr-2">
+            <Link href="/" className="flex items-center gap-2 pr-1">
               <Image
                 src="/images/allone-logo.png"
                 alt="Allone"
@@ -131,7 +131,7 @@ export function Header() {
                     key={item.key}
                     href={item.href}
                     className={cn(
-                      'flex items-center justify-center px-4 py-1.5 text-sm text-white transition-all duration-300 bg-black/80 backdrop-blur-sm',
+                      'flex items-center justify-center px-4 py-1.5 text-sm text-white transition-all duration-300 bg-black/80',
                       active
                         ? 'mx-1.5 rounded-xl font-semibold bg-black'
                         : cn(
@@ -148,7 +148,7 @@ export function Header() {
             </div>
 
             {/* Right Side - Login/Profile */}
-            <div className="hidden md:flex items-center ml-2">
+            <div className="hidden md:flex items-center ml-1">
               {user ? (
                 <ProfileDropdown
                   glass
@@ -171,7 +171,7 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="md:hidden p-1.5 rounded-lg hover:bg-black/5 transition-colors touch-manipulation ml-auto"
+              className="md:hidden p-1.5 rounded-lg hover:bg-black/5 transition-colors touch-manipulation"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
@@ -195,10 +195,8 @@ export function Header() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 md:hidden"
           >
-            {/* Backdrop */}
             <div className="absolute inset-0 bg-white/60 backdrop-blur-3xl" />
 
-            {/* Content */}
             <div className="relative flex flex-col h-full pt-24 pb-8 px-6">
               {/* Morphic nav for mobile */}
               <div className="flex flex-col items-center gap-2">
@@ -233,7 +231,6 @@ export function Header() {
                 </div>
               </div>
 
-              {/* Bottom action */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -244,7 +241,7 @@ export function Header() {
                   <div className="space-y-3">
                     <Link
                       href="/dashboard"
-                      className="flex items-center gap-3 py-3 px-4 bg-white/80 backdrop-blur-xl rounded-2xl text-[var(--black)] font-medium border border-white/20 shadow-lg shadow-black/5"
+                      className="flex items-center gap-3 py-3 px-4 bg-black text-white font-medium rounded-xl"
                     >
                       <LayoutDashboard className="w-5 h-5" />
                       Dashboard
@@ -260,7 +257,7 @@ export function Header() {
                 ) : (
                   <button
                     onClick={handleLogin}
-                    className="w-full py-3.5 px-4 bg-black text-white font-medium rounded-xl shadow-lg shadow-black/20"
+                    className="w-full py-3.5 px-4 bg-black text-white font-medium rounded-xl"
                   >
                     Login
                   </button>

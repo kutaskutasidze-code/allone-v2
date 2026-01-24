@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import {
   LogOut,
@@ -33,15 +33,15 @@ interface ProfileData {
   custom_avatar_url: string | null;
 }
 
-// Main nav items (shown in the navbar)
+// Main nav items (shown in the morphic bar)
 const navItems = [
-  { href: '/dashboard/studio', label: 'AI Studio' },
-  { href: '/dashboard/voice', label: 'Voice AI' },
-  { href: '/dashboard/rag', label: 'RAG Bots' },
-  { href: '/dashboard/bots', label: 'Workflows' },
+  { href: '/dashboard/studio', label: 'AI Studio', key: 'studio' },
+  { href: '/dashboard/voice', label: 'Voice AI', key: 'voice' },
+  { href: '/dashboard/rag', label: 'RAG Bots', key: 'rag' },
+  { href: '/dashboard/bots', label: 'Workflows', key: 'bots' },
 ];
 
-// Items moved to dropdown
+// Items in user dropdown
 const dropdownItems = [
   { href: '/dashboard/billing', label: 'Billing' },
   { href: '/dashboard/settings', label: 'Settings' },
@@ -51,57 +51,13 @@ function getDiceBearUrl(style: string, seed: string) {
   return `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}`;
 }
 
-// Liquid nav item with magnetic effect
-function LiquidNavItem({ item, isActive, mouseX, navRef }: {
-  item: typeof navItems[0];
-  isActive: boolean;
-  mouseX: ReturnType<typeof useMotionValue<number>>;
-  navRef: React.RefObject<HTMLDivElement | null>;
-}) {
-  const ref = useRef<HTMLAnchorElement>(null);
-
-  const distance = useTransform(mouseX, (val: number) => {
-    if (!ref.current || !navRef.current || val === -1) return 150;
-    const bounds = ref.current.getBoundingClientRect();
-    const itemCenterX = bounds.left + bounds.width / 2;
-    return Math.abs(val - itemCenterX);
-  });
-
-  const scale = useTransform(distance, [0, 80, 150], [1.15, 1.05, 1]);
-  const y = useTransform(distance, [0, 80, 150], [-2, -0.5, 0]);
-
-  const springScale = useSpring(scale, { stiffness: 400, damping: 30 });
-  const springY = useSpring(y, { stiffness: 400, damping: 30 });
-
-  return (
-    <motion.div style={{ scale: springScale, y: springY }}>
-      <Link
-        ref={ref}
-        href={item.href}
-        className={cn(
-          'flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full transition-colors duration-200',
-          isActive
-            ? 'text-[var(--black)] bg-black/[0.06]'
-            : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/[0.04]'
-        )}
-      >
-        {item.label}
-      </Link>
-    </motion.div>
-  );
-}
-
 export default function DashboardLayoutContent({ children, user }: DashboardLayoutContentProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [isNear, setIsNear] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-  const navRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const mouseX = useMotionValue(-1);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -122,32 +78,6 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
     fetchProfile();
   }, [user.email, user.id]);
 
-  // Track mouse proximity to navbar for magnetic nav items
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!headerRef.current) return;
-    const bounds = headerRef.current.getBoundingClientRect();
-    const distanceToNav = Math.abs(e.clientY - (bounds.top + bounds.height / 2));
-    const horizontalIn = e.clientX >= bounds.left - 60 && e.clientX <= bounds.right + 60;
-
-    if (distanceToNav < 120 && horizontalIn) {
-      setIsNear(true);
-      mouseX.set(e.clientX);
-    } else {
-      setIsNear(false);
-      mouseX.set(-1);
-    }
-  }, [mouseX]);
-
-  const handleMouseLeave = useCallback(() => {
-    setIsNear(false);
-    mouseX.set(-1);
-  }, [mouseX]);
-
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [handleMouseMove]);
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/');
@@ -164,61 +94,57 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
 
   return (
     <div className={cn("bg-white", pathname === '/dashboard/studio' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]')}>
-      {/* Dynamic Island Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none pt-[env(safe-area-inset-top)]">
+      {/* Morphic Navigation - bare pills, no card */}
+      <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none pt-[env(safe-area-inset-top)]">
         <motion.header
-          ref={headerRef}
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          onMouseLeave={handleMouseLeave}
-          className={cn(
-            'pointer-events-auto mt-3 sm:mt-4 mx-3 sm:mx-4',
-            'px-3 md:px-5 py-2.5',
-            'backdrop-blur-xl rounded-full',
-            'border',
-            'transition-all duration-300 ease-out',
-            isNear
-              ? 'bg-white/60 border-white/50 shadow-xl shadow-black/[0.08] scale-[1.02]'
-              : 'bg-white/30 border-white/30 shadow-lg shadow-black/[0.05] scale-100'
-          )}
+          className="pointer-events-auto mt-3 sm:mt-4 mx-3 sm:mx-4 px-3 md:px-4 py-2.5 flex items-center justify-center"
         >
-          <nav className="flex items-center gap-1 md:gap-2">
+          <nav className="flex items-center gap-3 md:gap-4">
             {/* Logo */}
-            <Link
-              href="/"
-              className="group flex items-center gap-2 pr-2 md:pr-4"
-            >
+            <Link href="/" className="flex items-center gap-2 pr-1">
               <Image
                 src="/images/allone-logo.png"
                 alt="Allone"
                 width={22}
                 height={22}
-                className="group-hover:scale-110 transition-transform duration-300"
               />
               <span className="text-sm font-semibold text-[var(--black)] tracking-tight hidden sm:block">
                 ALLONE
               </span>
             </Link>
 
-            {/* Divider */}
-            <div className="hidden md:block w-px h-5 bg-black/10" />
+            {/* Morphic Nav - Desktop */}
+            <div className="hidden md:flex items-center overflow-hidden rounded-xl">
+              {navItems.map((item, index) => {
+                const active = isActive(item.href);
+                const prevActive = index > 0 && isActive(navItems[index - 1].href);
+                const nextActive = index < navItems.length - 1 && isActive(navItems[index + 1].href);
+                const isFirst = index === 0;
+                const isLast = index === navItems.length - 1;
 
-            {/* Desktop Navigation with Liquid Effect */}
-            <div ref={navRef} className="hidden md:flex items-center gap-0.5">
-              {navItems.map((item) => (
-                <LiquidNavItem
-                  key={item.href}
-                  item={item}
-                  isActive={isActive(item.href)}
-                  mouseX={mouseX}
-                  navRef={navRef}
-                />
-              ))}
+                return (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    className={cn(
+                      'flex items-center justify-center px-4 py-1.5 text-sm text-white transition-all duration-300 bg-black/80',
+                      active
+                        ? 'mx-1.5 rounded-xl font-semibold bg-black'
+                        : cn(
+                            'font-medium',
+                            (prevActive || isFirst) && 'rounded-l-xl',
+                            (nextActive || isLast) && 'rounded-r-xl'
+                          )
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
-
-            {/* Divider */}
-            <div className="hidden md:block w-px h-5 bg-black/10 ml-1" />
 
             {/* User Menu - Desktop */}
             <div className="hidden md:block relative ml-1">
@@ -236,7 +162,7 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                     className="w-6 h-6 rounded-full bg-white"
                   />
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-[var(--black)] flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
                     <User className="w-3.5 h-3.5 text-white" />
                   </div>
                 )}
@@ -258,7 +184,6 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                     transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
                     className="absolute right-0 top-full mt-2 w-52 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-black/10 border border-white/40 overflow-hidden"
                   >
-                    {/* User info */}
                     <div className="px-4 py-3 border-b border-black/5">
                       <p className="text-xs text-[var(--gray-500)]">Signed in as</p>
                       <p className="text-sm font-medium text-[var(--black)] truncate">
@@ -266,26 +191,24 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                       </p>
                     </div>
 
-                    {/* Billing & Settings */}
                     <div className="py-1">
                       {dropdownItems.map((item) => (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setShowUserMenu(false)}
-                            className={cn(
-                              'flex items-center gap-3 px-4 py-2.5 text-sm transition-colors',
-                              isActive(item.href)
-                                ? 'text-[var(--black)] bg-black/5'
-                                : 'text-[var(--gray-600)] hover:text-[var(--black)] hover:bg-black/[0.03]'
-                            )}
-                          >
-                            {item.label}
-                          </Link>
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setShowUserMenu(false)}
+                          className={cn(
+                            'flex items-center gap-3 px-4 py-2.5 text-sm transition-colors',
+                            isActive(item.href)
+                              ? 'text-[var(--black)] bg-black/5'
+                              : 'text-[var(--gray-600)] hover:text-[var(--black)] hover:bg-black/[0.03]'
+                          )}
+                        >
+                          {item.label}
+                        </Link>
                       ))}
                     </div>
 
-                    {/* Sign out */}
                     <div className="border-t border-black/5">
                       <button
                         onClick={handleLogout}
@@ -303,7 +226,7 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="md:hidden p-1.5 rounded-full hover:bg-black/5 transition-colors touch-manipulation ml-1"
+              className="md:hidden p-1.5 rounded-lg hover:bg-black/5 transition-colors touch-manipulation"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
@@ -335,43 +258,64 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 md:hidden"
           >
-            {/* Backdrop */}
             <div
               className="absolute inset-0 bg-white/60 backdrop-blur-2xl"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
-            {/* Content */}
             <div className="relative flex flex-col h-full pt-20 pb-8 px-6">
-              <nav className="flex-1 space-y-1">
-                {[...navItems, ...dropdownItems].map((item, index) => (
-                    <motion.div
-                      key={item.href}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                    >
+              {/* Morphic nav for mobile */}
+              <div className="flex flex-col items-center gap-4 pt-4">
+                <div className="flex items-center overflow-hidden rounded-xl">
+                  {navItems.map((item, index) => {
+                    const active = isActive(item.href);
+                    const prevActive = index > 0 && isActive(navItems[index - 1].href);
+                    const nextActive = index < navItems.length - 1 && isActive(navItems[index + 1].href);
+                    const isFirst = index === 0;
+                    const isLast = index === navItems.length - 1;
+
+                    return (
                       <Link
+                        key={item.key}
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          'flex items-center gap-3 py-3 px-4 text-base font-medium rounded-xl transition-colors',
-                          isActive(item.href)
-                            ? 'text-[var(--black)] bg-black/5'
-                            : 'text-[var(--gray-500)]'
+                          'flex items-center justify-center px-4 py-2.5 text-sm text-white transition-all duration-300 bg-black/80',
+                          active
+                            ? 'mx-1.5 rounded-xl font-semibold bg-black'
+                            : cn(
+                                'font-medium',
+                                (prevActive || isFirst) && 'rounded-l-xl',
+                                (nextActive || isLast) && 'rounded-r-xl'
+                              )
                         )}
                       >
                         {item.label}
                       </Link>
-                    </motion.div>
-                ))}
-              </nav>
+                    );
+                  })}
+                </div>
+
+                {/* Extra links */}
+                <div className="flex gap-4 mt-2">
+                  {dropdownItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-sm text-[var(--gray-500)] hover:text-[var(--black)] transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.3 }}
-                className="pt-6 border-t border-[var(--gray-200)]"
+                className="mt-auto pt-6 border-t border-black/5"
               >
                 <div className="flex items-center gap-3 px-4 py-3 mb-3">
                   {avatarUrl ? (
@@ -381,7 +325,7 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                       className="w-10 h-10 rounded-full bg-white"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[var(--black)] flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center">
                       <User className="w-5 h-5 text-white" />
                     </div>
                   )}

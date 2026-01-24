@@ -242,6 +242,7 @@ export function Hero() {
   const [voiceTime, setVoiceTime] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   // Wait for shader to initialize before showing button
   useEffect(() => {
@@ -297,8 +298,84 @@ export function Hero() {
   }, [isVoiceActive]);
 
   const toggleVoice = useCallback(() => {
-    setIsVoiceActive(prev => !prev);
-  }, []);
+    if (isVoiceActive) {
+      // Stop listening
+      recognitionRef.current?.stop();
+      setIsVoiceActive(false);
+      return;
+    }
+
+    // Start listening with Web Speech API
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setInput('Voice recognition not supported in this browser');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognitionRef.current = recognition;
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0].transcript)
+        .join('');
+      setInput(transcript);
+
+      // If final result, auto-send
+      if (event.results[event.results.length - 1].isFinal) {
+        setIsVoiceActive(false);
+        // Send after a short delay to show the transcribed text
+        setTimeout(() => {
+          const fakeInput = transcript.trim();
+          if (fakeInput) {
+            setInput('');
+            const userMessage: Message = {
+              id: Date.now().toString(),
+              role: 'user',
+              content: fakeInput,
+            };
+            setMessages(prev => [...prev, userMessage]);
+            setIsLoading(true);
+
+            fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                messages: [...messages, userMessage].map(m => ({ role: m.role, content: m.content })),
+              }),
+            })
+              .then(res => res.json())
+              .then(data => {
+                if (data.error) throw new Error(data.error);
+                const id = (Date.now() + 1).toString();
+                setMessages(prev => [...prev, { id, role: 'assistant', content: data.reply }]);
+                setStreamingMessageId(id);
+              })
+              .catch(() => {
+                const id = (Date.now() + 1).toString();
+                setMessages(prev => [...prev, { id, role: 'assistant', content: "Sorry, I couldn't connect. Please try again." }]);
+                setStreamingMessageId(id);
+              })
+              .finally(() => setIsLoading(false));
+          }
+        }, 300);
+      }
+    };
+
+    recognition.onerror = () => {
+      setIsVoiceActive(false);
+    };
+
+    recognition.onend = () => {
+      setIsVoiceActive(false);
+    };
+
+    recognition.start();
+    setIsVoiceActive(true);
+  }, [isVoiceActive, messages]);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
