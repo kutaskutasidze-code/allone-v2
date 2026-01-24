@@ -12,24 +12,12 @@ import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import ProfileDropdown from '@/components/kokonutui/profile-dropdown';
 
-
 export function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
 
   useEffect(() => {
     const getUser = async () => {
@@ -94,81 +82,73 @@ export function Header() {
     router.push(`/login?redirectTo=${encodeURIComponent(currentPath)}`);
   };
 
-  const filteredNavigation = navigation.filter(item => user ? item.key !== 'contact' : true);
+  // Build nav items based on auth state
+  const navItems = [
+    ...navigation.filter(item => user ? item.key !== 'contact' : true),
+    ...(user ? [{ label: 'Dashboard', href: '/dashboard', key: 'dashboard' }] : []),
+  ];
+
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    return pathname.startsWith(href);
+  };
 
   return (
     <>
-      {/* Dynamic Island Navigation */}
+      {/* Morphic Navigation */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
         <motion.header
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-          className={cn(
-            'pointer-events-auto mt-4 mx-4',
-            'px-4 md:px-6 py-3',
-            'backdrop-blur-2xl rounded-full',
-            'border',
-            'transition-all duration-300 ease-out',
-            isScrolled
-              ? 'bg-white/20 border-white/30 shadow-lg shadow-black/[0.05]'
-              : 'bg-white/15 border-white/20 shadow-md shadow-black/[0.03]'
-          )}
+          className="pointer-events-auto mt-4 mx-4 px-3 md:px-4 py-2.5 backdrop-blur-2xl rounded-2xl border border-white/20 bg-white/10 shadow-md shadow-black/[0.03]"
         >
-          <nav className="flex items-center gap-2 md:gap-8">
+          <nav className="flex items-center gap-3 md:gap-4">
             {/* Logo */}
-            <Link
-              href="/"
-              className="group flex items-center gap-2"
-            >
+            <Link href="/" className="flex items-center gap-2 pr-2">
               <Image
                 src="/images/allone-logo.png"
                 alt="Allone"
-                width={24}
-                height={24}
-                className="group-hover:scale-110 transition-transform duration-300"
+                width={22}
+                height={22}
               />
-              <span className="text-sm font-semibold text-[var(--black)] tracking-tight">
+              <span className="text-sm font-semibold text-[var(--black)] tracking-tight hidden sm:inline">
                 ALLONE
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1">
-              {filteredNavigation.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-200',
-                    (pathname === item.href || (item.href === '/products' && pathname.startsWith('/products')))
-                      ? 'text-[var(--black)] bg-black/5'
-                      : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              {user && (
-                <Link
-                  href="/dashboard"
-                  className={cn(
-                    'text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-200',
-                    pathname.startsWith('/dashboard')
-                      ? 'text-[var(--black)] bg-black/5'
-                      : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/5'
-                  )}
-                >
-                  Dashboard
-                </Link>
-              )}
+            {/* Morphic Nav - Desktop */}
+            <div className="hidden md:flex items-center overflow-hidden rounded-xl">
+              {navItems.map((item, index) => {
+                const active = isActive(item.href);
+                const prevActive = index > 0 && isActive(navItems[index - 1].href);
+                const nextActive = index < navItems.length - 1 && isActive(navItems[index + 1].href);
+                const isFirst = index === 0;
+                const isLast = index === navItems.length - 1;
+
+                return (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    className={cn(
+                      'flex items-center justify-center px-4 py-1.5 text-sm text-white transition-all duration-300 bg-black/80 backdrop-blur-sm',
+                      active
+                        ? 'mx-1.5 rounded-xl font-semibold bg-black'
+                        : cn(
+                            'font-medium',
+                            (prevActive || isFirst) && 'rounded-l-xl',
+                            (nextActive || isLast) && 'rounded-r-xl'
+                          )
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
 
-            {/* Divider */}
-            <div className="hidden md:block w-px h-5 bg-black/10" />
-
             {/* Right Side - Login/Profile */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden md:flex items-center ml-2">
               {user ? (
                 <ProfileDropdown
                   glass
@@ -181,7 +161,7 @@ export function Header() {
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="text-sm font-medium text-white py-1.5 px-4 rounded-full bg-[var(--black)]/80 backdrop-blur-sm hover:bg-[var(--black)] transition-all duration-200"
+                  className="text-sm font-medium text-[var(--black)] py-1.5 px-4 rounded-xl border border-black/10 hover:bg-black/5 transition-all duration-200"
                 >
                   Login
                 </button>
@@ -191,7 +171,7 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="md:hidden p-1.5 rounded-full hover:bg-black/5 transition-colors touch-manipulation"
+              className="md:hidden p-1.5 rounded-lg hover:bg-black/5 transition-colors touch-manipulation ml-auto"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
@@ -205,7 +185,6 @@ export function Header() {
         </motion.header>
       </div>
 
-
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
@@ -216,60 +195,50 @@ export function Header() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 md:hidden"
           >
-            {/* Backdrop - frosted glass */}
-            <div className="absolute inset-0 bg-white/40 backdrop-blur-3xl" />
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-white/60 backdrop-blur-3xl" />
 
             {/* Content */}
             <div className="relative flex flex-col h-full pt-24 pb-8 px-6">
-              <nav className="flex-1 space-y-2">
-                {filteredNavigation.map((item) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <a
-                      href={item.href}
-                      onClick={(e) => handleMobileNavClick(e, item.href)}
-                      className={cn(
-                        'block py-4 px-4 text-xl font-medium rounded-2xl transition-colors',
-                        'active:bg-black/5 touch-manipulation',
-                        pathname === item.href
-                          ? 'text-[var(--black)] bg-black/5'
-                          : 'text-[var(--gray-500)]'
-                      )}
-                    >
-                      {item.label}
-                    </a>
-                  </motion.div>
-                ))}
-                {user && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                  >
-                    <Link
-                      href="/dashboard"
-                      className={cn(
-                        'block py-4 px-4 text-xl font-medium rounded-2xl transition-colors',
-                        pathname.startsWith('/dashboard')
-                          ? 'text-[var(--black)] bg-black/5'
-                          : 'text-[var(--gray-500)]'
-                      )}
-                    >
-                      Dashboard
-                    </Link>
-                  </motion.div>
-                )}
-              </nav>
+              {/* Morphic nav for mobile */}
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center overflow-hidden rounded-xl">
+                  {navItems.map((item, index) => {
+                    const active = isActive(item.href);
+                    const prevActive = index > 0 && isActive(navItems[index - 1].href);
+                    const nextActive = index < navItems.length - 1 && isActive(navItems[index + 1].href);
+                    const isFirst = index === 0;
+                    const isLast = index === navItems.length - 1;
 
+                    return (
+                      <a
+                        key={item.key}
+                        href={item.href}
+                        onClick={(e) => handleMobileNavClick(e, item.href)}
+                        className={cn(
+                          'flex items-center justify-center px-5 py-2.5 text-sm text-white transition-all duration-300 bg-black/80',
+                          active
+                            ? 'mx-1.5 rounded-xl font-semibold bg-black'
+                            : cn(
+                                'font-medium',
+                                (prevActive || isFirst) && 'rounded-l-xl',
+                                (nextActive || isLast) && 'rounded-r-xl'
+                              )
+                        )}
+                      >
+                        {item.label}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Bottom action */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
-                className="pt-6"
+                className="mt-auto pt-6"
               >
                 {user ? (
                   <div className="space-y-3">
@@ -291,7 +260,7 @@ export function Header() {
                 ) : (
                   <button
                     onClick={handleLogin}
-                    className="w-full py-3.5 px-4 bg-[var(--black)] text-white font-medium rounded-full shadow-lg shadow-black/20"
+                    className="w-full py-3.5 px-4 bg-black text-white font-medium rounded-xl shadow-lg shadow-black/20"
                   >
                     Login
                   </button>
