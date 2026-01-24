@@ -13,7 +13,6 @@ async function getVoiceAgents() {
     .select('*')
     .eq('user_id', user.id)
     .eq('type', 'voice_agent')
-    .neq('status', 'deleted')
     .order('created_at', { ascending: false });
 
   // Check subscription for limits

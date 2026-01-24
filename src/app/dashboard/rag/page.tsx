@@ -13,7 +13,6 @@ async function getRAGBots() {
     .select('*')
     .eq('user_id', user.id)
     .eq('type', 'rag_bot')
-    .neq('status', 'deleted')
     .order('created_at', { ascending: false });
 
   // Check subscription for limits

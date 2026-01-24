@@ -7,16 +7,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import {
-  Settings,
   LogOut,
   Menu,
   X,
-  Terminal,
-  Mic,
-  FileText,
-  Zap,
   User,
-  CreditCard,
   ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -41,16 +35,16 @@ interface ProfileData {
 
 // Main nav items (shown in the navbar)
 const navItems = [
-  { href: '/dashboard/studio', label: 'AI Studio', icon: Terminal },
-  { href: '/dashboard/voice', label: 'Voice AI', icon: Mic },
-  { href: '/dashboard/rag', label: 'RAG Bots', icon: FileText },
-  { href: '/dashboard/bots', label: 'Workflows', icon: Zap },
+  { href: '/dashboard/studio', label: 'AI Studio' },
+  { href: '/dashboard/voice', label: 'Voice AI' },
+  { href: '/dashboard/rag', label: 'RAG Bots' },
+  { href: '/dashboard/bots', label: 'Workflows' },
 ];
 
 // Items moved to dropdown
 const dropdownItems = [
-  { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+  { href: '/dashboard/billing', label: 'Billing' },
+  { href: '/dashboard/settings', label: 'Settings' },
 ];
 
 function getDiceBearUrl(style: string, seed: string) {
@@ -65,7 +59,6 @@ function LiquidNavItem({ item, isActive, mouseX, navRef }: {
   navRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const Icon = item.icon;
 
   const distance = useTransform(mouseX, (val: number) => {
     if (!ref.current || !navRef.current || val === -1) return 150;
@@ -92,7 +85,6 @@ function LiquidNavItem({ item, isActive, mouseX, navRef }: {
             : 'text-[var(--gray-500)] hover:text-[var(--black)] hover:bg-black/[0.04]'
         )}
       >
-        <Icon className="w-3.5 h-3.5" />
         {item.label}
       </Link>
     </motion.div>
@@ -104,7 +96,6 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isNear, setIsNear] = useState(false);
-  const [liquidRadius, setLiquidRadius] = useState('50px');
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -131,7 +122,7 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
     fetchProfile();
   }, [user.email, user.id]);
 
-  // Track mouse proximity to navbar and compute liquid border-radius
+  // Track mouse proximity to navbar for magnetic nav items
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!headerRef.current) return;
     const bounds = headerRef.current.getBoundingClientRect();
@@ -141,39 +132,15 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
     if (distanceToNav < 120 && horizontalIn) {
       setIsNear(true);
       mouseX.set(e.clientX);
-
-      // Compute liquid border-radius based on mouse position
-      const relX = (e.clientX - bounds.left) / bounds.width; // 0 to 1
-      const relY = Math.max(0, 1 - distanceToNav / 120); // intensity (0 to 1)
-
-      // Create asymmetric organic border-radius
-      const base = 50;
-      const variance = 20 * relY;
-      const tl = base - variance * relX + variance * 0.3;
-      const tr = base + variance * relX - variance * 0.5;
-      const br = base - variance * (1 - relX) + variance * 0.4;
-      const bl = base + variance * (1 - relX) - variance * 0.2;
-
-      // Add secondary radius for more organic feel
-      const tl2 = base + variance * 0.5;
-      const tr2 = base - variance * 0.3;
-      const br2 = base + variance * 0.2;
-      const bl2 = base - variance * 0.4;
-
-      setLiquidRadius(
-        `${tl}% ${tr}% ${br}% ${bl}% / ${tl2}% ${tr2}% ${br2}% ${bl2}%`
-      );
     } else {
       setIsNear(false);
       mouseX.set(-1);
-      setLiquidRadius('50px');
     }
   }, [mouseX]);
 
   const handleMouseLeave = useCallback(() => {
     setIsNear(false);
     mouseX.set(-1);
-    setLiquidRadius('50px');
   }, [mouseX]);
 
   useEffect(() => {
@@ -196,20 +163,19 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
     (profile ? getDiceBearUrl(profile.avatar_style, profile.avatar_seed) : null);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className={cn("bg-white", pathname === '/dashboard/studio' ? 'h-[100dvh] overflow-hidden' : 'min-h-[100dvh]')}>
       {/* Dynamic Island Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center pointer-events-none pt-[env(safe-area-inset-top)]">
         <motion.header
           ref={headerRef}
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
           onMouseLeave={handleMouseLeave}
-          style={{ borderRadius: liquidRadius }}
           className={cn(
-            'pointer-events-auto mt-4 mx-4',
+            'pointer-events-auto mt-3 sm:mt-4 mx-3 sm:mx-4',
             'px-3 md:px-5 py-2.5',
-            'backdrop-blur-xl',
+            'backdrop-blur-xl rounded-full',
             'border',
             'transition-all duration-300 ease-out',
             isNear
@@ -302,9 +268,7 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
 
                     {/* Billing & Settings */}
                     <div className="py-1">
-                      {dropdownItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
+                      {dropdownItems.map((item) => (
                           <Link
                             key={item.href}
                             href={item.href}
@@ -316,11 +280,9 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                                 : 'text-[var(--gray-600)] hover:text-[var(--black)] hover:bg-black/[0.03]'
                             )}
                           >
-                            <Icon className="w-4 h-4" />
                             {item.label}
                           </Link>
-                        );
-                      })}
+                      ))}
                     </div>
 
                     {/* Sign out */}
@@ -382,11 +344,7 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
             {/* Content */}
             <div className="relative flex flex-col h-full pt-20 pb-8 px-6">
               <nav className="flex-1 space-y-1">
-                {[...navItems, ...dropdownItems].map((item, index) => {
-                  const Icon = item.icon;
-                  const active = isActive(item.href);
-
-                  return (
+                {[...navItems, ...dropdownItems].map((item, index) => (
                     <motion.div
                       key={item.href}
                       initial={{ opacity: 0, x: -20 }}
@@ -398,17 +356,15 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
                           'flex items-center gap-3 py-3 px-4 text-base font-medium rounded-xl transition-colors',
-                          active
+                          isActive(item.href)
                             ? 'text-[var(--black)] bg-black/5'
                             : 'text-[var(--gray-500)]'
                         )}
                       >
-                        <Icon className="w-5 h-5" />
                         {item.label}
                       </Link>
                     </motion.div>
-                  );
-                })}
+                ))}
               </nav>
 
               <motion.div
@@ -451,11 +407,12 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
 
       {/* Main Content */}
       <main className={cn(
-        "pt-20",
-        pathname === '/dashboard/studio' ? 'px-0 pb-0' : 'px-4 lg:px-8 pb-8'
+        pathname === '/dashboard/studio'
+          ? 'h-[100dvh] overflow-hidden'
+          : 'pt-20 px-4 lg:px-8 pb-8'
       )}>
         <div className={cn(
-          pathname === '/dashboard/studio' ? 'max-w-none' : 'max-w-6xl mx-auto'
+          pathname === '/dashboard/studio' ? 'h-full' : 'max-w-6xl mx-auto'
         )}>
           {children}
         </div>

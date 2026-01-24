@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { TypewriterTitle } from '@/components/ui/TypewriterTitle';
+import SlideTextButton from '@/components/kokonutui/slide-text-button';
 
 // Skeleton card variations for organic feel
 const skeletonCards = [
@@ -197,12 +197,13 @@ export function WorkComingSoon() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="flex justify-center mt-10"
         >
-          <Link
+          <SlideTextButton
+            text="See all projects"
+            hoverText="Browse work →"
             href="/projects"
-            className="px-8 py-4 rounded-full border border-zinc-900 text-zinc-900 font-medium hover:bg-zinc-900 hover:text-white transition-all duration-300"
-          >
-            See all projects &rarr;
-          </Link>
+            variant="ghost"
+            className="h-12 px-10 rounded-full border-zinc-900/20"
+          />
         </motion.div>
       </div>
     </section>

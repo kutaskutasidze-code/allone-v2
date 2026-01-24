@@ -13,7 +13,6 @@ async function getAutomations() {
     .select('*')
     .eq('user_id', user.id)
     .eq('type', 'automation')
-    .neq('status', 'deleted')
     .order('created_at', { ascending: false });
 
   // Check subscription for limits

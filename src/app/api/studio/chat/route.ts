@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'AI service not configured' }, { status: 500 });
     }
 
-    const { messages } = await request.json();
+    const { messages, fileContext } = await request.json();
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: 'Messages are required' }, { status: 400 });
@@ -192,12 +192,25 @@ export async function POST(request: NextRequest) {
       contextMessage = `\n\nUser's existing products:\n${userProducts.map(p => `- ${p.name} (${p.type}, ${p.status})`).join('\n')}`;
     }
 
+    // Build messages with file context injected into the last user message
+    const processedMessages = messages.map((m: Message, i: number) => {
+      if (fileContext?.extractedText && i === messages.length - 1 && m.role === 'user') {
+        const truncatedText = fileContext.extractedText.slice(0, 3000);
+        return {
+          role: m.role,
+          content: `[User uploaded: ${fileContext.fileName}]\n--- Document Content ---\n${truncatedText}\n---\n\nUser message: ${m.content}`,
+        };
+      }
+      return { role: m.role, content: m.content };
+    });
+
+    const fileCapabilityNote = fileContext
+      ? '\n\nThe user has uploaded a document. Analyze its content and use it to help with their request. For RAG bots, suggest using it as knowledge base content. For automations, reference any data schemas found in the document.'
+      : '';
+
     const groqMessages: Message[] = [
-      { role: 'system', content: SYSTEM_PROMPT + contextMessage },
-      ...messages.map((m: Message) => ({
-        role: m.role,
-        content: m.content,
-      })),
+      { role: 'system', content: SYSTEM_PROMPT + contextMessage + fileCapabilityNote },
+      ...processedMessages,
     ];
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -211,6 +224,7 @@ export async function POST(request: NextRequest) {
         messages: groqMessages,
         temperature: 0.7,
         max_tokens: 1024,
+        stream: true,
       }),
     });
 
@@ -220,58 +234,98 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'AI service error' }, { status: 500 });
     }
 
-    const data = await response.json();
-    const assistantMessage = data.choices[0]?.message?.content || '';
-    const usage = data.usage;
-
-    // Track AI token usage (don't fail if tracking fails)
-    if (usage?.total_tokens) {
-      try {
-        await supabase.rpc('record_usage', {
-          p_user_id: user.id,
-          p_product_id: null,
-          p_event_type: 'ai_tokens',
-          p_quantity: usage.total_tokens,
-          p_metadata: { model: GROQ_MODEL, action: 'studio_chat' }
-        });
-      } catch (usageError) {
-        console.error('Usage tracking error:', usageError);
-      }
-    }
-
-    // Check if the response contains a create action
-    const jsonMatch = assistantMessage.match(/```json\s*([\s\S]*?)\s*```/);
-    let createAction = null;
-
-    if (jsonMatch) {
-      try {
-        const parsed = JSON.parse(jsonMatch[1]);
-        if (parsed.action === 'create_product' || parsed.action === 'create_project') {
-          createAction = {
-            action: 'create_product',
-            type: parsed.type,
-            config: {
-              name: parsed.config?.name || 'Untitled Product',
-              description: parsed.config?.description || '',
-              system_prompt: parsed.config?.system_prompt || parsed.config?.systemPrompt,
-              template: parsed.config?.template || parsed.config?.templateId,
-              settings: parsed.config?.settings || {}
-            }
-          };
+    // Stream the response
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        const reader = response.body?.getReader();
+        if (!reader) {
+          controller.close();
+          return;
         }
-      } catch {
-        // Not valid JSON, ignore
-      }
-    }
 
-    return NextResponse.json({
-      message: assistantMessage,
-      createAction,
-      usage: usage ? {
-        tokens: usage.total_tokens,
-        prompt_tokens: usage.prompt_tokens,
-        completion_tokens: usage.completion_tokens
-      } : null
+        const decoder = new TextDecoder();
+        let fullMessage = '';
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (!line.startsWith('data: ')) continue;
+              const data = line.slice(6).trim();
+              if (data === '[DONE]') continue;
+
+              try {
+                const parsed = JSON.parse(data);
+                const content = parsed.choices?.[0]?.delta?.content;
+                if (content) {
+                  fullMessage += content;
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'chunk', content })}\n\n`));
+                }
+              } catch {
+                // Skip unparseable chunks
+              }
+            }
+          }
+
+          // After streaming complete, check for create action and send final message
+          const jsonMatch = fullMessage.match(/```json\s*([\s\S]*?)\s*```/);
+          let createAction = null;
+
+          if (jsonMatch) {
+            try {
+              const parsed = JSON.parse(jsonMatch[1]);
+              if (parsed.action === 'create_product' || parsed.action === 'create_project') {
+                createAction = {
+                  action: 'create_product',
+                  type: parsed.type,
+                  config: {
+                    name: parsed.config?.name || 'Untitled Product',
+                    description: parsed.config?.description || '',
+                    system_prompt: parsed.config?.system_prompt || parsed.config?.systemPrompt,
+                    template: parsed.config?.template || parsed.config?.templateId,
+                    settings: parsed.config?.settings || {}
+                  }
+                };
+              }
+            } catch {
+              // Not valid JSON, ignore
+            }
+          }
+
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done', createAction })}\n\n`));
+
+          // Track usage in background
+          try {
+            await supabase.rpc('record_usage', {
+              p_user_id: user.id,
+              p_product_id: null,
+              p_event_type: 'ai_tokens',
+              p_quantity: Math.ceil(fullMessage.length / 4) + groqMessages.reduce((a, m) => a + Math.ceil(m.content.length / 4), 0),
+              p_metadata: { model: GROQ_MODEL, action: 'studio_chat' }
+            });
+          } catch { /* ignore tracking errors */ }
+
+        } catch (err) {
+          console.error('Stream error:', err);
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message: 'Stream interrupted' })}\n\n`));
+        } finally {
+          controller.close();
+        }
+      }
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
   } catch (error) {
     console.error('Studio chat error:', error);
