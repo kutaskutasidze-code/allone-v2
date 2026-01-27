@@ -606,35 +606,6 @@ export function Hero() {
 
               {/* Inner content - LiquidMetal + Button */}
               <div className={`relative z-10 flex items-center gap-2 sm:gap-3 ${isChatActive ? '' : 'pl-2 sm:pl-4'}`}>
-                {/* LiquidMetal circle with AI Voice - hidden when chat active */}
-                <div
-                  className={`flex-shrink-0 relative transition-all duration-500 overflow-hidden cursor-pointer ${isChatActive ? 'opacity-0 scale-90 w-0' : 'opacity-100 scale-100'}`}
-                  onClick={(e) => { e.stopPropagation(); if (!isChatActive) { openChat(); setTimeout(() => toggleVoice(), 300); } }}
-                >
-                  {/* LiquidMetal background */}
-                  <LiquidMetal
-                    speed={isVoiceActive ? 1.2 : 0.68}
-                    softness={0.1}
-                    repetition={2}
-                    shiftRed={isVoiceActive ? 0.5 : 0.3}
-                    shiftBlue={isVoiceActive ? 0.5 : 0.3}
-                    distortion={isVoiceActive ? 0.12 : 0.07}
-                    contour={0.4}
-                    scale={0.6}
-                    rotation={0}
-                    shape="circle"
-                    angle={70}
-                    image="https://workers.paper.design/file-assets/01KF3FJDBVRQRC2Z21M10KBDQ5/01KF3JVMCGH3M6TG0XEQ9ZA6S3.svg"
-                    colorBack="#00000000"
-                    colorTint="#FFFFFF"
-                    className="w-[44px] h-[44px] sm:w-[56px] sm:h-[56px] rounded-full"
-                  />
-                  {/* Mic icon overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Mic className="w-4 h-4 sm:w-5 sm:h-5 text-black/60 drop-shadow-sm" />
-                  </div>
-                </div>
-
                 {/* Ask AI button / Input area */}
                 <div
                   className={`
