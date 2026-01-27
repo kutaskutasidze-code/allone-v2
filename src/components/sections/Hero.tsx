@@ -618,7 +618,7 @@ export function Hero() {
                   {/* LiquidMetal sparkle + "Ask AI" text */}
                   <div
                     className={`
-                      flex items-center gap-2
+                      flex items-center gap-2 -ml-2 sm:-ml-3
                       transition-all duration-300
                       ${isChatActive ? 'opacity-0 scale-90 absolute' : 'opacity-100 scale-100'}
                     `}
@@ -638,7 +638,7 @@ export function Hero() {
                       image="https://workers.paper.design/file-assets/01KF3FJDBVRQRC2Z21M10KBDQ5/01KF3JVMCGH3M6TG0XEQ9ZA6S3.svg"
                       colorBack="#00000000"
                       colorTint="#FFFFFF"
-                      className="w-[28px] h-[28px] sm:w-[32px] sm:h-[32px] rounded-full flex-shrink-0"
+                      className="w-[36px] h-[36px] sm:w-[42px] sm:h-[42px] rounded-full flex-shrink-0"
                     />
                     <span className="text-sm sm:text-base font-medium tracking-wide text-[var(--black)] pr-2 sm:pr-4">
                       Ask AI
