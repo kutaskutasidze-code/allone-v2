@@ -641,19 +641,38 @@ export function Hero() {
                     relative h-[44px] sm:h-[50px] rounded-full
                     flex items-center justify-center
                     transition-all duration-500 ease-out
-                    ${!isChatActive ? 'w-[120px] sm:w-[140px]' : 'w-[calc(100vw-64px)] sm:w-[400px] md:w-[460px]'}
+                    ${!isChatActive ? 'w-[140px] sm:w-[160px]' : 'w-[calc(100vw-64px)] sm:w-[400px] md:w-[460px]'}
                   `}
                 >
-                  {/* "Ask AI" text */}
-                  <span
+                  {/* LiquidMetal sparkle + "Ask AI" text */}
+                  <div
                     className={`
-                      text-sm sm:text-base font-medium tracking-wide text-[var(--black)]
-                      transition-all duration-300 pr-2 sm:pr-4
+                      flex items-center gap-2
+                      transition-all duration-300
                       ${isChatActive ? 'opacity-0 scale-90 absolute' : 'opacity-100 scale-100'}
                     `}
                   >
-                    Ask AI
-                  </span>
+                    <LiquidMetal
+                      speed={0.68}
+                      softness={0.1}
+                      repetition={2}
+                      shiftRed={0.3}
+                      shiftBlue={0.3}
+                      distortion={0.07}
+                      contour={0.4}
+                      scale={0.6}
+                      rotation={0}
+                      shape="circle"
+                      angle={70}
+                      image="https://workers.paper.design/file-assets/01KF3FJDBVRQRC2Z21M10KBDQ5/01KF3JVMCGH3M6TG0XEQ9ZA6S3.svg"
+                      colorBack="#00000000"
+                      colorTint="#FFFFFF"
+                      className="w-[28px] h-[28px] sm:w-[32px] sm:h-[32px] rounded-full flex-shrink-0"
+                    />
+                    <span className="text-sm sm:text-base font-medium tracking-wide text-[var(--black)] pr-2 sm:pr-4">
+                      Ask AI
+                    </span>
+                  </div>
 
                   {/* Input */}
                   <input
