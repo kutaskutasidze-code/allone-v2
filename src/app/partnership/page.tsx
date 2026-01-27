@@ -61,9 +61,9 @@ const content = {
         title: 'Why Allone',
         statement: 'Proven delivery, not promises',
         credentials: [
-          'Team with Big4 and tech startup backgrounds',
+          'Proven track record across industries',
           'Full-stack: strategy through deployment',
-          'Georgian-speaking with regional expertise',
+          'Global reach with local delivery',
           'Flexible engagement models',
         ],
       },
@@ -98,9 +98,9 @@ const content = {
         id: 7,
         type: 'benefits',
         title: 'What You Get',
-        statement: '20-40% commission on every project',
+        statement: 'Commission on every project you bring',
         benefits: [
-          { category: 'Revenue', items: ['20-40% commission based on involvement', 'Recurring revenue on subscriptions', 'No cap on earnings'], icon: 'dollar' },
+          { category: 'Revenue', items: ['Commission based on involvement level', 'Recurring revenue on subscriptions', 'No cap on earnings'], icon: 'dollar' },
           { category: 'Support', items: ['Team training session', 'Co-branded proposals', 'Dedicated partner manager'], icon: 'handshake' },
           { category: 'Growth', items: ['Expand service offerings', 'Tech-forward positioning', 'AI capabilities without hiring'], icon: 'trending' },
         ],
@@ -111,9 +111,9 @@ const content = {
         title: 'Choose Your Model',
         statement: 'Flexible partnership options',
         options: [
-          { name: 'Referral', desc: 'Simple introductions, minimal involvement, 20% commission', highlight: false },
-          { name: 'Strategic', desc: 'Joint meetings, co-branded work, 30% commission', highlight: true },
-          { name: 'White-Label', desc: 'We work under your brand, 40% commission', highlight: false },
+          { name: 'Referral', desc: 'Simple introductions, minimal involvement', highlight: false },
+          { name: 'Strategic', desc: 'Joint meetings, co-branded deliverables', highlight: true },
+          { name: 'White-Label', desc: 'We work under your brand', highlight: false },
         ],
       },
       {
@@ -178,9 +178,9 @@ const content = {
         title: 'რატომ Allone',
         statement: 'დადასტურებული შედეგები, არა დაპირებები',
         credentials: [
-          'გუნდი Big4 და ტექ სტარტაპის გამოცდილებით',
+          'დადასტურებული გამოცდილება სხვადასხვა ინდუსტრიაში',
           'სრული ციკლი: სტრატეგიიდან დანერგვამდე',
-          'ქართულენოვანი რეგიონული ექსპერტიზით',
+          'გლობალური მისწვდომა, ლოკალური მიწოდება',
           'მოქნილი თანამშრომლობის მოდელები',
         ],
       },
@@ -215,9 +215,9 @@ const content = {
         id: 7,
         type: 'benefits',
         title: 'რას იღებთ',
-        statement: '20-40% საკომისიო ყველა პროექტზე',
+        statement: 'საკომისიო ყველა პროექტზე რომელსაც მოიყვანთ',
         benefits: [
-          { category: 'შემოსავალი', items: ['20-40% საკომისიო ჩართულობის მიხედვით', 'რეკურენტული შემოსავალი გამოწერებზე', 'შემოსავლის ლიმიტი არ არის'], icon: 'dollar' },
+          { category: 'შემოსავალი', items: ['საკომისიო ჩართულობის დონის მიხედვით', 'რეკურენტული შემოსავალი გამოწერებზე', 'შემოსავლის ლიმიტი არ არის'], icon: 'dollar' },
           { category: 'მხარდაჭერა', items: ['გუნდის ტრენინგი', 'თანაბრენდირებული წინადადებები', 'პერსონალური პარტნიორის მენეჯერი'], icon: 'handshake' },
           { category: 'ზრდა', items: ['სერვისების გაფართოება', 'ტექნოლოგიური პოზიციონირება', 'AI შესაძლებლობები დაქირავების გარეშე'], icon: 'trending' },
         ],
@@ -228,9 +228,9 @@ const content = {
         title: 'აირჩიეთ მოდელი',
         statement: 'მოქნილი პარტნიორობის ვარიანტები',
         options: [
-          { name: 'რეფერალი', desc: 'მარტივი გაცნობა, მინიმალური ჩართულობა, 20% საკომისიო', highlight: false },
-          { name: 'სტრატეგიული', desc: 'ერთობლივი შეხვედრები, თანაბრენდირება, 30% საკომისიო', highlight: true },
-          { name: 'White-Label', desc: 'თქვენი ბრენდით ვმუშაობთ, 40% საკომისიო', highlight: false },
+          { name: 'რეფერალი', desc: 'მარტივი გაცნობა, მინიმალური ჩართულობა', highlight: false },
+          { name: 'სტრატეგიული', desc: 'ერთობლივი შეხვედრები, თანაბრენდირებული მასალები', highlight: true },
+          { name: 'White-Label', desc: 'თქვენი ბრენდით ვმუშაობთ', highlight: false },
         ],
       },
       {
@@ -275,12 +275,12 @@ HOW IT WORKS:
 5. You receive commission when the client pays
 
 COMMISSION:
-Commission rates are negotiable based on involvement level, project complexity, and exclusivity. We're flexible and focused on terms that work for both parties.
+Commission rates are negotiable based on involvement level, project complexity, and partnership type. We're flexible and focused on terms that work for both parties. Rates are discussed during the discovery call.
 
 PARTNERSHIP MODELS:
-- Referral Partner: Simple introductions, minimal involvement, commission on closed deals
-- Strategic Partner: Joint client meetings, co-branded deliverables, higher commission
-- White-Label Partner: We work under your brand, you own the relationship
+- Referral Partner: Simple introductions, minimal involvement
+- Strategic Partner: Joint client meetings, co-branded deliverables
+- White-Label Partner: We work under your brand, you own the client relationship
 
 WHAT WE BUILD:
 - AI Assistants: Custom chatbots, virtual assistants, customer service AI
