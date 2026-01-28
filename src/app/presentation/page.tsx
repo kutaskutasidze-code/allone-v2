@@ -519,7 +519,7 @@ export default function PresentationPage() {
                 </motion.p>
                 <div className="grid md:grid-cols-2 gap-6 md:gap-10">
                   <div className="space-y-3 md:space-y-4">
-                    {slide.points?.map((point, i) => (
+                    {(slide.points as string[])?.map((point, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, x: -20 }}
@@ -718,7 +718,7 @@ export default function PresentationPage() {
                   {slide.statement}
                 </motion.p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                  {slide.points?.map((point, i) => (
+                  {(slide.points as { title: string; desc: string; icon: string }[])?.map((point, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 15 }}
