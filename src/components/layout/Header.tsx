@@ -105,20 +105,20 @@ export function Header() {
         >
           <nav className="flex items-center gap-3 md:gap-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 pr-1">
+            <Link href="/" className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-md shadow-sm">
               <Image
                 src="/images/allone-logo.png"
                 alt="Allone"
                 width={22}
                 height={22}
               />
-              <span className="text-sm font-semibold text-[var(--black)] tracking-tight hidden sm:inline">
+              <span className="text-sm font-semibold text-zinc-900 tracking-tight hidden sm:inline">
                 ALLONE
               </span>
             </Link>
 
-            {/* Morphic Nav - Desktop */}
-            <div className="hidden md:flex items-center overflow-hidden rounded-xl">
+            {/* Glass Morph Nav - Desktop */}
+            <div className="hidden md:flex items-center">
               {navItems.map((item, index) => {
                 const active = isActive(item.href);
                 const prevActive = index > 0 && isActive(navItems[index - 1].href);
@@ -131,13 +131,15 @@ export function Header() {
                     key={item.key}
                     href={item.href}
                     className={cn(
-                      'flex items-center justify-center px-4 py-1.5 text-sm text-white transition-all duration-300 bg-black/80',
+                      'flex items-center justify-center px-4 py-1.5 text-sm transition-all duration-300',
                       active
-                        ? 'mx-1.5 rounded-xl font-semibold bg-black'
+                        ? 'mx-1.5 rounded-xl bg-black text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
                         : cn(
-                            'font-medium',
-                            (prevActive || isFirst) && 'rounded-l-xl',
-                            (nextActive || isLast) && 'rounded-r-xl'
+                            'bg-white/80 backdrop-blur-xl saturate-[180%] text-zinc-800 font-medium border-y border-white/30 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] hover:bg-white/95',
+                            (prevActive || isFirst) && 'rounded-l-xl border-l',
+                            (nextActive || isLast) && 'rounded-r-xl border-r',
+                            !prevActive && !isFirst && 'border-l-0',
+                            !nextActive && !isLast && 'border-r-0'
                           )
                     )}
                   >
@@ -161,7 +163,7 @@ export function Header() {
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="text-sm font-medium text-[var(--black)] py-1.5 px-4 rounded-xl border border-black/10 hover:bg-black/5 transition-all duration-200"
+                  className="text-sm font-medium text-zinc-900 py-1.5 px-4 rounded-xl bg-white/90 backdrop-blur-md shadow-sm hover:bg-white transition-all duration-200"
                 >
                   Login
                 </button>
@@ -171,14 +173,14 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="md:hidden p-1.5 rounded-lg hover:bg-black/5 transition-colors touch-manipulation"
+              className="md:hidden p-2 rounded-xl bg-white/90 backdrop-blur-md shadow-sm hover:bg-white transition-colors touch-manipulation"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMobileMenuOpen ? (
-                <X className="w-5 h-5 text-[var(--black)]" />
+                <X className="w-5 h-5 text-zinc-900" />
               ) : (
-                <Menu className="w-5 h-5 text-[var(--black)]" />
+                <Menu className="w-5 h-5 text-zinc-900" />
               )}
             </button>
           </nav>
@@ -198,37 +200,37 @@ export function Header() {
             <div className="absolute inset-0 bg-white/60 backdrop-blur-3xl" />
 
             <div className="relative flex flex-col h-full pt-24 pb-8 px-6">
-              {/* Morphic nav for mobile */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex items-center overflow-hidden rounded-xl">
-                  {navItems.map((item, index) => {
-                    const active = isActive(item.href);
-                    const prevActive = index > 0 && isActive(navItems[index - 1].href);
-                    const nextActive = index < navItems.length - 1 && isActive(navItems[index + 1].href);
-                    const isFirst = index === 0;
-                    const isLast = index === navItems.length - 1;
+              {/* Glass morph nav for mobile */}
+              <div className="flex items-center justify-center">
+                {navItems.map((item, index) => {
+                  const active = isActive(item.href);
+                  const prevActive = index > 0 && isActive(navItems[index - 1].href);
+                  const nextActive = index < navItems.length - 1 && isActive(navItems[index + 1].href);
+                  const isFirst = index === 0;
+                  const isLast = index === navItems.length - 1;
 
-                    return (
-                      <a
-                        key={item.key}
-                        href={item.href}
-                        onClick={(e) => handleMobileNavClick(e, item.href)}
-                        className={cn(
-                          'flex items-center justify-center px-5 py-2.5 text-sm text-white transition-all duration-300 bg-black/80',
-                          active
-                            ? 'mx-1.5 rounded-xl font-semibold bg-black'
-                            : cn(
-                                'font-medium',
-                                (prevActive || isFirst) && 'rounded-l-xl',
-                                (nextActive || isLast) && 'rounded-r-xl'
-                              )
-                        )}
-                      >
-                        {item.label}
-                      </a>
-                    );
-                  })}
-                </div>
+                  return (
+                    <a
+                      key={item.key}
+                      href={item.href}
+                      onClick={(e) => handleMobileNavClick(e, item.href)}
+                      className={cn(
+                        'flex items-center justify-center px-5 py-2.5 text-sm transition-all duration-300',
+                        active
+                          ? 'mx-1.5 rounded-xl bg-black text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
+                          : cn(
+                              'bg-white/80 backdrop-blur-xl saturate-[180%] text-zinc-800 font-medium border-y border-white/30 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]',
+                              (prevActive || isFirst) && 'rounded-l-xl border-l',
+                              (nextActive || isLast) && 'rounded-r-xl border-r',
+                              !prevActive && !isFirst && 'border-l-0',
+                              !nextActive && !isLast && 'border-r-0'
+                            )
+                      )}
+                    >
+                      {item.label}
+                    </a>
+                  );
+                })}
               </div>
 
               <motion.div

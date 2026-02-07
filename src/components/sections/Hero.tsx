@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Container } from '@/components/layout';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { GlassButton } from '@/components/ui/GlassButton';
-import { ArrowRight, Send, Mic } from 'lucide-react';
-import { LiquidMetal, PulsingBorder } from '@paper-design/shaders-react';
+import { ArrowRight, Send } from 'lucide-react';
+import { PulsingBorder } from '@paper-design/shaders-react';
 
 interface Node {
   x: number;
@@ -238,11 +238,8 @@ export function Hero() {
   const [isLoading, setIsLoading] = useState(false);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const [shaderReady, setShaderReady] = useState(false);
-  const [isVoiceActive, setIsVoiceActive] = useState(false);
-  const [voiceTime, setVoiceTime] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   // Wait for shader to initialize before showing button
   useEffect(() => {
@@ -285,97 +282,6 @@ export function Hero() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
-
-  // Voice mode timer
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    if (isVoiceActive) {
-      intervalId = setInterval(() => setVoiceTime(t => t + 1), 1000);
-    } else {
-      setVoiceTime(0);
-    }
-    return () => clearInterval(intervalId);
-  }, [isVoiceActive]);
-
-  const toggleVoice = useCallback(() => {
-    if (isVoiceActive) {
-      // Stop listening
-      recognitionRef.current?.stop();
-      setIsVoiceActive(false);
-      return;
-    }
-
-    // Start listening with Web Speech API
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setInput('Voice recognition not supported in this browser');
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-    recognitionRef.current = recognition;
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = Array.from(event.results)
-        .map(result => result[0].transcript)
-        .join('');
-      setInput(transcript);
-
-      // If final result, auto-send
-      if (event.results[event.results.length - 1].isFinal) {
-        setIsVoiceActive(false);
-        // Send after a short delay to show the transcribed text
-        setTimeout(() => {
-          const fakeInput = transcript.trim();
-          if (fakeInput) {
-            setInput('');
-            const userMessage: Message = {
-              id: Date.now().toString(),
-              role: 'user',
-              content: fakeInput,
-            };
-            setMessages(prev => [...prev, userMessage]);
-            setIsLoading(true);
-
-            fetch('/api/chat', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                messages: [...messages, userMessage].map(m => ({ role: m.role, content: m.content })),
-              }),
-            })
-              .then(res => res.json())
-              .then(data => {
-                if (data.error) throw new Error(data.error);
-                const id = (Date.now() + 1).toString();
-                setMessages(prev => [...prev, { id, role: 'assistant', content: data.reply }]);
-                setStreamingMessageId(id);
-              })
-              .catch(() => {
-                const id = (Date.now() + 1).toString();
-                setMessages(prev => [...prev, { id, role: 'assistant', content: "Sorry, I couldn't connect. Please try again." }]);
-                setStreamingMessageId(id);
-              })
-              .finally(() => setIsLoading(false));
-          }
-        }, 300);
-      }
-    };
-
-    recognition.onerror = () => {
-      setIsVoiceActive(false);
-    };
-
-    recognition.onend = () => {
-      setIsVoiceActive(false);
-    };
-
-    recognition.start();
-    setIsVoiceActive(true);
-  }, [isVoiceActive, messages]);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -520,40 +426,8 @@ export function Hero() {
                     </div>
                   ))}
 
-                  {/* Voice mode visualization - AI Voice style */}
-                  {isVoiceActive && (
-                    <div className="flex flex-col items-center gap-2 py-4 animate-fade-in">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
-                        className="w-10 h-10 rounded-xl flex items-center justify-center bg-none hover:bg-black/5 transition-colors"
-                        type="button"
-                      >
-                        <div
-                          className="w-4 h-4 rounded-sm animate-spin bg-black cursor-pointer"
-                          style={{ animationDuration: '3s' }}
-                        />
-                      </button>
-                      <span className="font-mono text-sm text-black/70">
-                        {`${Math.floor(voiceTime / 60).toString().padStart(2, '0')}:${(voiceTime % 60).toString().padStart(2, '0')}`}
-                      </span>
-                      <div className="h-4 w-48 flex items-center justify-center gap-0.5">
-                        {[...Array(40)].map((_, i) => (
-                          <div
-                            key={i}
-                            className="w-0.5 rounded-full bg-black/50 animate-pulse"
-                            style={{
-                              height: `${20 + Math.random() * 80}%`,
-                              animationDelay: `${i * 0.05}s`,
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-xs text-black/60">Listening...</p>
-                    </div>
-                  )}
-
                   {/* Loading indicator */}
-                  {isLoading && !isVoiceActive && (
+                  {isLoading && (
                     <div className="flex items-center gap-1.5 py-2">
                       <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
                       <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse [animation-delay:150ms]" />
@@ -604,7 +478,7 @@ export function Hero() {
                 />
               </div>
 
-              {/* Inner content - LiquidMetal + Button */}
+              {/* Inner content - Button */}
               <div className={`relative z-10 flex items-center gap-2 sm:gap-3 ${isChatActive ? '' : 'pl-2 sm:pl-4'}`}>
                 {/* Ask AI button / Input area */}
                 <div
@@ -665,27 +539,15 @@ export function Hero() {
                     `}
                   />
 
-                  {/* Action buttons - mic + send */}
+                  {/* Send button */}
                   <div className={`
                     absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1
                     transition-all duration-200
                     ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}
                   `}>
                     <button
-                      onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
-                      className={`
-                        p-1.5 rounded-full transition-all duration-200
-                        ${isVoiceActive
-                          ? 'bg-black text-white scale-110'
-                          : 'text-black/40 hover:text-black/70 hover:bg-black/5'}
-                      `}
-                      aria-label={isVoiceActive ? 'Stop voice' : 'Start voice'}
-                    >
-                      <Mic className="w-3.5 h-3.5" />
-                    </button>
-                    <button
                       onClick={(e) => { e.stopPropagation(); sendMessage(); }}
-                      disabled={isLoading || !input.trim() || isVoiceActive}
+                      disabled={isLoading || !input.trim()}
                       className="p-1.5 text-black hover:text-black/70 disabled:opacity-30 transition-all duration-200"
                     >
                       <Send className="w-3.5 h-3.5" />

@@ -66,14 +66,14 @@ export default function ProfileDropdown({
                             className={cn(
                                 "flex items-center gap-2 py-1.5 px-3 rounded-full transition-all duration-200 focus:outline-none",
                                 glass
-                                    ? "bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:border-white/30 shadow-sm"
+                                    ? "bg-white/70 backdrop-blur-md hover:bg-white/90 shadow-sm"
                                     : "bg-white border border-zinc-200/60 hover:border-zinc-300 hover:bg-zinc-50/80 hover:shadow-sm"
                             )}
                         >
                             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center">
                                 <User className="w-3.5 h-3.5 text-white" />
                             </div>
-                            <span className="text-sm font-medium text-[var(--black)] max-w-[80px] truncate">
+                            <span className="text-sm font-medium text-zinc-900 max-w-[80px] truncate">
                                 {profile.name}
                             </span>
                         </button>

@@ -22,15 +22,6 @@ const WorkComingSoon = dynamic(
   { loading: () => <div className="min-h-[400px] animate-pulse bg-neutral-100" /> }
 );
 
-const Newsletter = dynamic(
-  () => import('@/components/sections/Newsletter').then((mod) => ({ default: mod.Newsletter })),
-  { loading: () => <div className="min-h-[200px] animate-pulse bg-white" /> }
-);
-
-const CTA = dynamic(
-  () => import('@/components/sections/CTA').then((mod) => ({ default: mod.CTA })),
-  { loading: () => <div className="min-h-[300px] animate-pulse bg-black" /> }
-);
 
 export default async function HomePage() {
   const [clients, services] = await Promise.all([
@@ -45,8 +36,6 @@ export default async function HomePage() {
       <DashboardShowcase />
       <Clients clients={clients} />
       <WorkComingSoon />
-      <Newsletter />
-      <CTA />
     </>
   );
 }

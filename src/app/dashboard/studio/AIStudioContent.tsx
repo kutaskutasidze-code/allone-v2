@@ -23,7 +23,6 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LiquidMetal, PulsingBorder } from '@paper-design/shaders-react';
 
 // Web Speech API types are in src/types/speech.d.ts
 
@@ -118,7 +117,6 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [attachedFile, setAttachedFile] = useState<AttachedFile | null>(null);
   const [chatMode, setChatMode] = useState<'chat' | 'voice'>('chat');
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
@@ -156,6 +154,13 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
   useEffect(() => {
     loadSessions();
   }, []);
+
+  // Auto-focus chat input when in chat mode
+  useEffect(() => {
+    if (chatMode === 'chat') {
+      setTimeout(() => chatInputRef.current?.focus(), 100);
+    }
+  }, [chatMode]);
 
   const loadSessions = async () => {
     try {
@@ -424,7 +429,6 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
 
   const handleQuickPrompt = async (prompt: string) => {
     setShowTranscript(true);
-    setIsChatOpen(true);
     let sessionId = currentSessionId;
     if (!sessionId) {
       sessionId = await createNewSession();
@@ -862,17 +866,27 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
             {showSidebar ? <PanelLeftClose className="w-[18px] h-[18px] text-[#86868b]" /> : <PanelLeft className="w-[18px] h-[18px] text-[#86868b]" />}
           </button>
 
-          {/* Chat / Voice Toggle */}
-          <div className="flex items-center bg-[#f5f5f7] rounded-full p-0.5">
+          {/* Chat / Voice Toggle - Glass Style */}
+          <div className="flex items-center gap-1 p-1 rounded-full bg-white/40 backdrop-blur-xl saturate-[180%] border border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
             <button
-              onClick={() => { setChatMode('chat'); setIsChatOpen(false); }}
-              className={cn('px-3 py-1 text-xs font-medium rounded-full transition-all', chatMode === 'chat' ? 'bg-[#1d1d1f] text-white' : 'text-[#86868b]')}
+              onClick={() => setChatMode('chat')}
+              className={cn(
+                'px-4 py-1.5 text-xs font-medium rounded-full transition-all duration-200',
+                chatMode === 'chat'
+                  ? 'bg-black text-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
+                  : 'bg-white/70 text-[#1d1d1f] shadow-[0_2px_6px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] hover:bg-white/90'
+              )}
             >
               Chat
             </button>
             <button
               onClick={() => setChatMode('voice')}
-              className={cn('px-3 py-1 text-xs font-medium rounded-full transition-all', chatMode === 'voice' ? 'bg-[#1d1d1f] text-white' : 'text-[#86868b]')}
+              className={cn(
+                'px-4 py-1.5 text-xs font-medium rounded-full transition-all duration-200',
+                chatMode === 'voice'
+                  ? 'bg-black text-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]'
+                  : 'bg-white/70 text-[#1d1d1f] shadow-[0_2px_6px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] hover:bg-white/90'
+              )}
             >
               Voice
             </button>
@@ -892,12 +906,9 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
           {chatMode === 'chat' && (
             <div className="flex flex-col items-center justify-center w-full h-full">
               {/* Messages - no borders, no backgrounds, just text */}
-              <div className={cn(
-                "w-full max-w-lg transition-all duration-500 px-4",
-                isChatOpen ? "flex-1 opacity-100" : "h-0 opacity-0 overflow-hidden"
-              )}>
+              <div className="w-full max-w-lg flex-1 px-4">
                 <div ref={messagesEndRef} className="h-full overflow-y-auto flex flex-col justify-end pb-6" style={{ scrollbarWidth: 'none' }}>
-                  {messages.length === 0 && isChatOpen && (
+                  {messages.length === 0 && (
                     <div className="flex flex-col items-center justify-center gap-3 pb-8">
                       {QUICK_PROMPTS.map((prompt, index) => {
                         const Icon = prompt.icon;
@@ -935,86 +946,37 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                 </div>
               </div>
 
-              {/* Metallic Ask AI Button */}
+              {/* Chat Input */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="relative flex flex-col justify-center items-center mb-8 [&_*:focus-visible]:!outline-none"
               >
-                {!isChatOpen ? (
-                  <div
-                    onClick={() => { setIsChatOpen(true); setTimeout(() => chatInputRef.current?.focus(), 100); }}
-                    className="relative w-[200px] sm:w-[220px] h-[60px] sm:h-[68px] cursor-pointer flex items-center justify-center"
-                  >
-                    <div className="absolute inset-0 rounded-full overflow-hidden">
-                      <PulsingBorder
-                        speed={0.79}
-                        roundness={1}
-                        thickness={0.025}
-                        softness={0.85}
-                        intensity={0.2}
-                        bloom={0.25}
-                        spots={5}
-                        spotSize={0.5}
-                        pulse={0.2}
-                        smoke={0.3}
-                        smokeSize={0.6}
-                        scale={0.6}
-                        rotation={0}
-                        aspectRatio="auto"
-                        colors={['#233944', '#262426', '#F6F3F3C2']}
-                        colorBack="#ffffff"
-                        className="w-full h-full"
-                      />
-                    </div>
-                    <div className="relative z-10 flex items-center justify-center">
-                      <LiquidMetal
-                        speed={0.68}
-                        softness={0.1}
-                        repetition={2}
-                        shiftRed={0.3}
-                        shiftBlue={0.3}
-                        distortion={0.07}
-                        contour={0.4}
-                        scale={0.6}
-                        rotation={0}
-                        shape="circle"
-                        angle={70}
-                        image="https://workers.paper.design/file-assets/01KF3FJDBVRQRC2Z21M10KBDQ5/01KF3JVMCGH3M6TG0XEQ9ZA6S3.svg"
-                        colorBack="#00000000"
-                        colorTint="#FFFFFF"
-                        className="w-[40px] h-[40px] sm:w-[46px] sm:h-[46px] rounded-full mr-3"
-                      />
-                      <span className="text-sm sm:text-base font-medium tracking-wide text-[#1d1d1f]">Ask AI</span>
-                    </div>
+                <div className="w-[calc(100vw-48px)] sm:w-[460px] md:w-[520px] h-[48px] flex items-center px-4">
+                  <input
+                    ref={chatInputRef}
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit(); } }}
+                    disabled={isLoading}
+                    placeholder="Ask anything..."
+                    className="flex-1 h-full bg-transparent text-sm text-[#1d1d1f] outline-none border-none ring-0 focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none caret-[#1d1d1f] placeholder:text-[#a1a1a6]"
+                  />
+                  <div className="flex items-center gap-2.5 ml-2">
+                    <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[#a1a1a6] hover:text-[#1d1d1f] transition-colors">
+                      <Paperclip className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleChatSubmit()} disabled={isLoading || !input.trim()} className="text-[#1d1d1f] disabled:opacity-20 transition-opacity">
+                      <Send className="w-4 h-4" />
+                    </button>
                   </div>
-                ) : (
-                  <div className="w-[calc(100vw-48px)] sm:w-[460px] md:w-[520px] h-[48px] flex items-center px-4">
-                    <input
-                      ref={chatInputRef}
-                      type="text"
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit(); } }}
-                      disabled={isLoading}
-                      placeholder="Ask anything..."
-                      className="flex-1 h-full bg-transparent text-sm text-[#1d1d1f] outline-none border-none ring-0 focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none caret-[#1d1d1f] placeholder:text-[#a1a1a6]"
-                    />
-                    <div className="flex items-center gap-2.5 ml-2">
-                      <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[#a1a1a6] hover:text-[#1d1d1f] transition-colors">
-                        <Paperclip className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => handleChatSubmit()} disabled={isLoading || !input.trim()} className="text-[#1d1d1f] disabled:opacity-20 transition-opacity">
-                        <Send className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <input ref={fileInputRef} type="file" accept={ACCEPTED_FILE_TYPES} onChange={handleFileSelect} className="hidden" />
-                  </div>
-                )}
+                  <input ref={fileInputRef} type="file" accept={ACCEPTED_FILE_TYPES} onChange={handleFileSelect} className="hidden" />
+                </div>
 
                 {/* Attached file indicator */}
-                {attachedFile && isChatOpen && (
+                {attachedFile && (
                   <div className="flex items-center gap-1.5 text-[11px] text-[#86868b] mt-1">
                     <FileText className="w-3 h-3" />
                     <span className="max-w-[150px] truncate">{attachedFile.name}</span>
@@ -1022,16 +984,6 @@ export default function AIStudioContent({ user, products, profile }: AIStudioCon
                       <button onClick={removeAttachedFile} className="hover:text-[#1d1d1f]"><X className="w-3 h-3" /></button>
                     )}
                   </div>
-                )}
-
-                {/* Close button */}
-                {isChatOpen && (
-                  <button
-                    onClick={() => { setIsChatOpen(false); }}
-                    className="mt-2 p-1.5 text-[#a1a1a6] hover:text-[#1d1d1f] transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
                 )}
               </motion.div>
             </div>

@@ -116,8 +116,8 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
               </span>
             </Link>
 
-            {/* Morphic Nav - Desktop */}
-            <div className="hidden md:flex items-center overflow-hidden rounded-xl">
+            {/* Glass Morph Nav - Desktop */}
+            <div className="hidden md:flex items-center">
               {navItems.map((item, index) => {
                 const active = isActive(item.href);
                 const prevActive = index > 0 && isActive(navItems[index - 1].href);
@@ -130,13 +130,15 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                     key={item.key}
                     href={item.href}
                     className={cn(
-                      'flex items-center justify-center px-4 py-1.5 text-sm text-white transition-all duration-300 bg-black/80',
+                      'flex items-center justify-center px-4 py-1.5 text-sm transition-all duration-300',
                       active
-                        ? 'mx-1.5 rounded-xl font-semibold bg-black'
+                        ? 'mx-1.5 rounded-xl bg-black text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
                         : cn(
-                            'font-medium',
-                            (prevActive || isFirst) && 'rounded-l-xl',
-                            (nextActive || isLast) && 'rounded-r-xl'
+                            'bg-white/80 backdrop-blur-xl saturate-[180%] text-zinc-800 font-medium border-y border-white/30 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] hover:bg-white/95',
+                            (prevActive || isFirst) && 'rounded-l-xl border-l',
+                            (nextActive || isLast) && 'rounded-r-xl border-r',
+                            !prevActive && !isFirst && 'border-l-0',
+                            !nextActive && !isLast && 'border-r-0'
                           )
                     )}
                   >
@@ -264,9 +266,9 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
             />
 
             <div className="relative flex flex-col h-full pt-20 pb-8 px-6">
-              {/* Morphic nav for mobile */}
+              {/* Glass morph nav for mobile */}
               <div className="flex flex-col items-center gap-4 pt-4">
-                <div className="flex items-center overflow-hidden rounded-xl">
+                <div className="flex items-center">
                   {navItems.map((item, index) => {
                     const active = isActive(item.href);
                     const prevActive = index > 0 && isActive(navItems[index - 1].href);
@@ -280,13 +282,15 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
-                          'flex items-center justify-center px-4 py-2.5 text-sm text-white transition-all duration-300 bg-black/80',
+                          'flex items-center justify-center px-4 py-2.5 text-sm transition-all duration-300',
                           active
-                            ? 'mx-1.5 rounded-xl font-semibold bg-black'
+                            ? 'mx-1.5 rounded-xl bg-black text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
                             : cn(
-                                'font-medium',
-                                (prevActive || isFirst) && 'rounded-l-xl',
-                                (nextActive || isLast) && 'rounded-r-xl'
+                                'bg-white/80 backdrop-blur-xl saturate-[180%] text-zinc-800 font-medium border-y border-white/30 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]',
+                                (prevActive || isFirst) && 'rounded-l-xl border-l',
+                                (nextActive || isLast) && 'rounded-r-xl border-r',
+                                !prevActive && !isFirst && 'border-l-0',
+                                !nextActive && !isLast && 'border-r-0'
                               )
                         )}
                       >
