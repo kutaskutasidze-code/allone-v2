@@ -5,19 +5,11 @@ import { motion, useScroll, useTransform, useSpring, MotionValue, useInView } fr
 import { cn } from '@/lib/utils';
 import { SPRING_CONFIG, DIRECTION_TRANSFORMS, easeOutCubic, type Direction } from './constants';
 
-// Simple static card wrapper (no animated border)
+// Dark card wrapper for Ciridae-style design
 function StaticCard({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("relative rounded-3xl h-full", className)}>
-      {/* Static border */}
-      <div
-        className="absolute inset-0 rounded-3xl"
-        style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.06) 100%)",
-        }}
-      />
-      {/* Inner card */}
-      <div className="relative z-10 m-[2px] rounded-[22px] bg-[#0a0a0a] overflow-hidden h-[calc(100%-4px)]">
+    <div className={cn("relative h-full", className)}>
+      <div className="relative z-10 bg-[#141414] overflow-hidden h-full">
         {children}
       </div>
     </div>

@@ -105,14 +105,15 @@ export function Header() {
         >
           <nav className="flex items-center gap-3 md:gap-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 backdrop-blur-md shadow-sm">
+            <Link href="/" className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--black)]/90 backdrop-blur-md border border-white/10">
               <Image
                 src="/images/allone-logo.png"
                 alt="Allone"
                 width={22}
                 height={22}
+                className="invert"
               />
-              <span className="text-sm font-semibold text-zinc-900 tracking-tight hidden sm:inline">
+              <span className="text-sm font-semibold text-white tracking-tight hidden sm:inline">
                 ALLONE
               </span>
             </Link>
@@ -133,9 +134,9 @@ export function Header() {
                     className={cn(
                       'flex items-center justify-center px-4 py-1.5 text-sm transition-all duration-300',
                       active
-                        ? 'mx-1.5 rounded-xl bg-black text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
+                        ? 'mx-1.5 rounded-xl bg-white text-[var(--black)] font-semibold shadow-[0_2px_8px_rgba(255,255,255,0.1)]'
                         : cn(
-                            'bg-white/80 backdrop-blur-xl saturate-[180%] text-zinc-800 font-medium border-y border-white/30 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] hover:bg-white/95',
+                            'bg-[var(--black)]/80 backdrop-blur-xl text-white/70 font-medium border-y border-white/10 hover:bg-[var(--black)] hover:text-white',
                             (prevActive || isFirst) && 'rounded-l-xl border-l',
                             (nextActive || isLast) && 'rounded-r-xl border-r',
                             !prevActive && !isFirst && 'border-l-0',
@@ -163,7 +164,7 @@ export function Header() {
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="text-sm font-medium text-zinc-900 py-1.5 px-4 rounded-xl bg-white/90 backdrop-blur-md shadow-sm hover:bg-white transition-all duration-200"
+                  className="text-sm font-medium text-white py-1.5 px-4 rounded-xl bg-[var(--black)]/90 backdrop-blur-md border border-white/10 hover:bg-[var(--black)] transition-all duration-200"
                 >
                   Login
                 </button>
@@ -173,14 +174,14 @@ export function Header() {
             {/* Mobile Menu Button */}
             <button
               type="button"
-              className="md:hidden p-2 rounded-xl bg-white/90 backdrop-blur-md shadow-sm hover:bg-white transition-colors touch-manipulation"
+              className="md:hidden p-2 rounded-xl bg-[var(--black)]/90 backdrop-blur-md border border-white/10 hover:bg-[var(--black)] transition-colors touch-manipulation"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMobileMenuOpen ? (
-                <X className="w-5 h-5 text-zinc-900" />
+                <X className="w-5 h-5 text-white" />
               ) : (
-                <Menu className="w-5 h-5 text-zinc-900" />
+                <Menu className="w-5 h-5 text-white" />
               )}
             </button>
           </nav>
@@ -197,7 +198,7 @@ export function Header() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-40 md:hidden"
           >
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-3xl" />
+            <div className="absolute inset-0 bg-[var(--black)]/80 backdrop-blur-3xl" />
 
             <div className="relative flex flex-col h-full pt-24 pb-8 px-6">
               {/* Glass morph nav for mobile */}
@@ -217,9 +218,9 @@ export function Header() {
                       className={cn(
                         'flex items-center justify-center px-5 py-2.5 text-sm transition-all duration-300',
                         active
-                          ? 'mx-1.5 rounded-xl bg-black text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
+                          ? 'mx-1.5 rounded-xl bg-white text-[var(--black)] font-semibold shadow-[0_2px_8px_rgba(255,255,255,0.1)]'
                           : cn(
-                              'bg-white/80 backdrop-blur-xl saturate-[180%] text-zinc-800 font-medium border-y border-white/30 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)]',
+                              'bg-[var(--black)]/80 backdrop-blur-xl text-white/70 font-medium border-y border-white/10 hover:bg-[var(--black)] hover:text-white',
                               (prevActive || isFirst) && 'rounded-l-xl border-l',
                               (nextActive || isLast) && 'rounded-r-xl border-r',
                               !prevActive && !isFirst && 'border-l-0',
@@ -243,14 +244,14 @@ export function Header() {
                   <div className="space-y-3">
                     <Link
                       href="/dashboard"
-                      className="flex items-center gap-3 py-3 px-4 bg-black text-white font-medium rounded-xl"
+                      className="flex items-center gap-3 py-3 px-4 bg-white text-[var(--black)] font-medium rounded-xl"
                     >
                       <LayoutDashboard className="w-5 h-5" />
                       Dashboard
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-3 py-3 px-4 text-red-600 font-medium rounded-2xl hover:bg-red-50/50 transition-colors"
+                      className="w-full flex items-center gap-3 py-3 px-4 text-[var(--accent)] font-medium rounded-2xl hover:bg-white/5 transition-colors"
                     >
                       <LogOut className="w-5 h-5" />
                       Sign Out
@@ -259,7 +260,7 @@ export function Header() {
                 ) : (
                   <button
                     onClick={handleLogin}
-                    className="w-full py-3.5 px-4 bg-black text-white font-medium rounded-xl"
+                    className="w-full py-3.5 px-4 bg-white text-[var(--black)] font-medium rounded-xl"
                   >
                     Login
                   </button>

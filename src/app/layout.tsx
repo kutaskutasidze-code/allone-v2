@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Outfit, Inter } from 'next/font/google';
+import { Outfit, Inter, Roboto_Mono } from 'next/font/google';
 import { OrganizationSchema, WebsiteSchema } from '@/components/seo';
 import './globals.css';
 
@@ -16,6 +16,13 @@ const inter = Inter({
   display: 'swap',
   variable: '--font-sans',
   weight: ['300', '400', '500', '600'],
+});
+
+const robotoMono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono',
+  weight: ['400', '500', '600'],
 });
 
 export const metadata: Metadata = {
@@ -91,7 +98,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${inter.variable} ${robotoMono.variable}`}>
       <body className="antialiased">
         <OrganizationSchema />
         <WebsiteSchema />

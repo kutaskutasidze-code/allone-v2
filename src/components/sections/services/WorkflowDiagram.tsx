@@ -93,11 +93,21 @@ export function WorkflowDiagram() {
 
   const isActive = (id: string) => activeNode === id || activeNodes.includes(id);
 
+  // Colors for dark palette
+  const lineColor = 'rgba(255,255,255,0.15)';
+  const nodeFill = 'rgba(255,255,255,0.06)';
+  const nodeStroke = 'rgba(255,255,255,0.15)';
+  const activeFill = '#FFFFFF';
+  const activeStroke = '#FFFFFF';
+  const contentColor = 'rgba(255,255,255,0.3)';
+  const activeContentColor = '#0B0B0B';
+  const accentDot = '#FFFFFF';
+
   return (
     <div className="relative w-full h-full min-h-[220px]">
       <svg ref={svgRef} className="absolute inset-0 w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <filter id="glow-white" x="-50%" y="-50%" width="200%" height="200%">
+          <filter id="glow-accent" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
             <feMerge>
               <feMergeNode in="coloredBlur"/>
@@ -107,25 +117,25 @@ export function WorkflowDiagram() {
         </defs>
 
         {/* Connection lines */}
-        <path data-path="trigger-main" d={workflowPathData['trigger-main']} stroke="#3f3f46" strokeWidth="1.5" fill="none" />
-        <path data-path="main-decision" d={workflowPathData['main-decision']} stroke="#3f3f46" strokeWidth="1.5" fill="none" />
-        <path data-path="decision-output1" d={workflowPathData['decision-output1']} stroke="#3f3f46" strokeWidth="1.5" fill="none" />
-        <path data-path="decision-output2" d={workflowPathData['decision-output2']} stroke="#3f3f46" strokeWidth="1.5" fill="none" />
-        <path data-path="main-tool1" d={workflowPathData['main-tool1']} stroke="#3f3f46" strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
-        <path data-path="main-tool2" d={workflowPathData['main-tool2']} stroke="#3f3f46" strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
+        <path data-path="trigger-main" d={workflowPathData['trigger-main']} stroke={lineColor} strokeWidth="1.5" fill="none" />
+        <path data-path="main-decision" d={workflowPathData['main-decision']} stroke={lineColor} strokeWidth="1.5" fill="none" />
+        <path data-path="decision-output1" d={workflowPathData['decision-output1']} stroke={lineColor} strokeWidth="1.5" fill="none" />
+        <path data-path="decision-output2" d={workflowPathData['decision-output2']} stroke={lineColor} strokeWidth="1.5" fill="none" />
+        <path data-path="main-tool1" d={workflowPathData['main-tool1']} stroke={lineColor} strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
+        <path data-path="main-tool2" d={workflowPathData['main-tool2']} stroke={lineColor} strokeWidth="1.5" strokeDasharray="4 4" fill="none" />
 
         {/* Trigger Node */}
         <g>
           <circle
             cx="40" cy="80" r="14"
-            fill={isActive('trigger') ? '#ffffff' : '#0a0a0a'}
-            stroke={isActive('trigger') ? '#ffffff' : '#3f3f46'}
+            fill={isActive('trigger') ? activeFill : nodeFill}
+            stroke={isActive('trigger') ? activeStroke : nodeStroke}
             strokeWidth="1.5"
-            style={{ filter: isActive('trigger') ? 'url(#glow-white)' : 'none', transition: 'all 0.3s ease' }}
+            style={{ filter: isActive('trigger') ? 'url(#glow-accent)' : 'none', transition: 'all 0.3s ease' }}
           />
           <polygon
             points="36,74 36,86 46,80"
-            fill={isActive('trigger') ? '#0a0a0a' : '#ffffff'}
+            fill={isActive('trigger') ? '#0B0B0B' : 'rgba(255,255,255,0.5)'}
             style={{ transition: 'all 0.3s ease' }}
           />
         </g>
@@ -134,83 +144,83 @@ export function WorkflowDiagram() {
         <g>
           <rect
             x="95" y="60" width="70" height="40" rx="8"
-            fill={isActive('main') ? '#ffffff' : '#18181b'}
-            stroke={isActive('main') ? '#ffffff' : '#3f3f46'}
+            fill={isActive('main') ? activeFill : nodeFill}
+            stroke={isActive('main') ? activeStroke : nodeStroke}
             strokeWidth="1.5"
-            style={{ filter: isActive('main') ? 'url(#glow-white)' : 'none', transition: 'all 0.3s ease' }}
+            style={{ filter: isActive('main') ? 'url(#glow-accent)' : 'none', transition: 'all 0.3s ease' }}
           />
-          <line x1="110" y1="75" x2="150" y2="75" stroke={isActive('main') ? '#18181b' : '#52525b'} strokeWidth="2.5" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
-          <line x1="110" y1="85" x2="140" y2="85" stroke={isActive('main') ? '#18181b' : '#52525b'} strokeWidth="2.5" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="110" y1="75" x2="150" y2="75" stroke={isActive('main') ? activeContentColor : contentColor} strokeWidth="2.5" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="110" y1="85" x2="140" y2="85" stroke={isActive('main') ? activeContentColor : contentColor} strokeWidth="2.5" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
         </g>
 
         {/* Decision Node */}
         <g>
           <rect
             x="200" y="60" width="46" height="40" rx="6"
-            fill={isActive('decision') ? '#ffffff' : '#18181b'}
-            stroke={isActive('decision') ? '#ffffff' : '#3f3f46'}
+            fill={isActive('decision') ? activeFill : nodeFill}
+            stroke={isActive('decision') ? activeStroke : nodeStroke}
             strokeWidth="1.5"
-            style={{ filter: isActive('decision') ? 'url(#glow-white)' : 'none', transition: 'all 0.3s ease' }}
+            style={{ filter: isActive('decision') ? 'url(#glow-accent)' : 'none', transition: 'all 0.3s ease' }}
           />
-          <line x1="212" y1="75" x2="234" y2="75" stroke={isActive('decision') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
-          <line x1="212" y1="85" x2="228" y2="85" stroke={isActive('decision') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="212" y1="75" x2="234" y2="75" stroke={isActive('decision') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="212" y1="85" x2="228" y2="85" stroke={isActive('decision') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
         </g>
 
         {/* Output1 Node */}
         <g>
           <rect
             x="320" y="32" width="55" height="36" rx="6"
-            fill={isActive('output1') ? '#ffffff' : '#18181b'}
-            stroke={isActive('output1') ? '#ffffff' : '#3f3f46'}
+            fill={isActive('output1') ? activeFill : nodeFill}
+            stroke={isActive('output1') ? activeStroke : nodeStroke}
             strokeWidth="1.5"
-            style={{ filter: isActive('output1') ? 'url(#glow-white)' : 'none', transition: 'all 0.3s ease' }}
+            style={{ filter: isActive('output1') ? 'url(#glow-accent)' : 'none', transition: 'all 0.3s ease' }}
           />
-          <line x1="330" y1="45" x2="365" y2="45" stroke={isActive('output1') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
-          <line x1="330" y1="55" x2="355" y2="55" stroke={isActive('output1') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="330" y1="45" x2="365" y2="45" stroke={isActive('output1') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="330" y1="55" x2="355" y2="55" stroke={isActive('output1') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
         </g>
 
         {/* Output2 Node */}
         <g>
           <rect
             x="320" y="92" width="55" height="36" rx="6"
-            fill={isActive('output2') ? '#ffffff' : '#18181b'}
-            stroke={isActive('output2') ? '#ffffff' : '#3f3f46'}
+            fill={isActive('output2') ? activeFill : nodeFill}
+            stroke={isActive('output2') ? activeStroke : nodeStroke}
             strokeWidth="1.5"
-            style={{ filter: isActive('output2') ? 'url(#glow-white)' : 'none', transition: 'all 0.3s ease' }}
+            style={{ filter: isActive('output2') ? 'url(#glow-accent)' : 'none', transition: 'all 0.3s ease' }}
           />
-          <line x1="330" y1="105" x2="365" y2="105" stroke={isActive('output2') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
-          <line x1="330" y1="115" x2="355" y2="115" stroke={isActive('output2') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="330" y1="105" x2="365" y2="105" stroke={isActive('output2') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="330" y1="115" x2="355" y2="115" stroke={isActive('output2') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
         </g>
 
         {/* Tool1 Node */}
         <g>
           <circle
             cx="80" cy="170" r="18"
-            fill={isActive('tool1') ? '#ffffff' : '#0a0a0a'}
-            stroke={isActive('tool1') ? '#ffffff' : '#3f3f46'}
+            fill={isActive('tool1') ? activeFill : nodeFill}
+            stroke={isActive('tool1') ? activeStroke : nodeStroke}
             strokeWidth="1.5"
-            style={{ filter: isActive('tool1') ? 'url(#glow-white)' : 'none', transition: 'all 0.3s ease' }}
+            style={{ filter: isActive('tool1') ? 'url(#glow-accent)' : 'none', transition: 'all 0.3s ease' }}
           />
-          <line x1="68" y1="166" x2="92" y2="166" stroke={isActive('tool1') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
-          <line x1="68" y1="174" x2="85" y2="174" stroke={isActive('tool1') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="68" y1="166" x2="92" y2="166" stroke={isActive('tool1') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="68" y1="174" x2="85" y2="174" stroke={isActive('tool1') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
         </g>
 
         {/* Tool2 Node */}
         <g>
           <circle
             cx="175" cy="180" r="18"
-            fill={isActive('tool2') ? '#ffffff' : '#0a0a0a'}
-            stroke={isActive('tool2') ? '#ffffff' : '#3f3f46'}
+            fill={isActive('tool2') ? activeFill : nodeFill}
+            stroke={isActive('tool2') ? activeStroke : nodeStroke}
             strokeWidth="1.5"
-            style={{ filter: isActive('tool2') ? 'url(#glow-white)' : 'none', transition: 'all 0.3s ease' }}
+            style={{ filter: isActive('tool2') ? 'url(#glow-accent)' : 'none', transition: 'all 0.3s ease' }}
           />
-          <line x1="163" y1="176" x2="187" y2="176" stroke={isActive('tool2') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
-          <line x1="163" y1="184" x2="180" y2="184" stroke={isActive('tool2') ? '#18181b' : '#52525b'} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="163" y1="176" x2="187" y2="176" stroke={isActive('tool2') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
+          <line x1="163" y1="184" x2="180" y2="184" stroke={isActive('tool2') ? activeContentColor : contentColor} strokeWidth="2" strokeLinecap="round" style={{ transition: 'all 0.3s ease' }} />
         </g>
 
-        {/* Animated dots - WHITE */}
+        {/* Animated dots - Accent color */}
         {dots.map((dot) => (
-          <circle key={dot.id} cx={dot.x} cy={dot.y} r="3" fill="#ffffff" filter="url(#glow-white)" />
+          <circle key={dot.id} cx={dot.x} cy={dot.y} r="3" fill={accentDot} filter="url(#glow-accent)" />
         ))}
       </svg>
     </div>

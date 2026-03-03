@@ -3,203 +3,20 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Container } from '@/components/layout';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { GlassButton } from '@/components/ui/GlassButton';
-import { ArrowRight, Send } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { Send } from 'lucide-react';
 import { PulsingBorder } from '@paper-design/shaders-react';
 
-interface Node {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  pulseOffset: number;
-  color: { rgb: string; opacity: number };
-}
+const IntroAnimation = dynamic(
+  () => import('@/components/intro').then((m) => m.IntroAnimation),
+  { ssr: false }
+);
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   displayedContent?: string;
-}
-
-const colors = [
-  { rgb: '80, 80, 80', opacity: 0.85 },
-  { rgb: '100, 100, 100', opacity: 0.75 },
-  { rgb: '120, 120, 120', opacity: 0.65 },
-  { rgb: '90, 90, 90', opacity: 0.8 },
-  { rgb: '110, 110, 110', opacity: 0.7 },
-];
-
-function ConnectedNodes() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let nodes: Node[] = [];
-    let isPaused = false;
-    const connectionDistance = 160;
-    const nodeCount = 60;
-
-    const getCanvasDimensions = () => {
-      const parent = canvas.parentElement;
-      if (!parent) return { width: window.innerWidth, height: window.innerHeight };
-      return { width: parent.offsetWidth, height: parent.offsetHeight };
-    };
-
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      const { width, height } = getCanvasDimensions();
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.scale(dpr, dpr);
-    };
-
-    const initNodes = () => {
-      nodes = [];
-      const { width, height } = getCanvasDimensions();
-      const isMobile = width < 768;
-      const count = isMobile ? 25 : nodeCount;
-      const speed = isMobile ? 0.1 : 0.12;
-      const padding = 30;
-
-      for (let i = 0; i < count; i++) {
-        // Random size with more variation (some tiny, some large)
-        const sizeRand = Math.random();
-        let radius;
-        if (sizeRand < 0.3) {
-          radius = isMobile ? 1.5 : 2; // Small dots
-        } else if (sizeRand < 0.7) {
-          radius = isMobile ? 2.5 : 3.5; // Medium dots
-        } else {
-          radius = isMobile ? 3.5 : 5; // Large dots
-        }
-
-        nodes.push({
-          x: padding + Math.random() * (width - padding * 2),
-          y: padding + Math.random() * (height - padding * 2),
-          vx: (Math.random() - 0.5) * speed,
-          vy: (Math.random() - 0.5) * speed,
-          radius,
-          pulseOffset: Math.random() * Math.PI * 2,
-          color: colors[Math.floor(Math.random() * colors.length)],
-        });
-      }
-    };
-
-    const animate = (time: number) => {
-      if (isPaused) {
-        animationFrameId = requestAnimationFrame(animate);
-        return;
-      }
-
-      const { width, height } = getCanvasDimensions();
-      ctx.clearRect(0, 0, width, height);
-
-      const padding = 20;
-      const maxVel = 0.25;
-
-      for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i];
-        node.x += node.vx;
-        node.y += node.vy;
-
-        if (node.x < padding) { node.x = padding; node.vx *= -1; }
-        else if (node.x > width - padding) { node.x = width - padding; node.vx *= -1; }
-        if (node.y < padding) { node.y = padding; node.vy *= -1; }
-        else if (node.y > height - padding) { node.y = height - padding; node.vy *= -1; }
-
-        node.vx = Math.max(-maxVel, Math.min(maxVel, node.vx));
-        node.vy = Math.max(-maxVel, Math.min(maxVel, node.vy));
-      }
-
-      ctx.lineWidth = 1;
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const distSq = dx * dx + dy * dy;
-
-          if (distSq < connectionDistance * connectionDistance) {
-            const opacity = (1 - Math.sqrt(distSq) / connectionDistance) * 0.35;
-            ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 1.5})`;
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i];
-        const radius = node.radius;
-
-        // Draw outer lighter ring first
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, radius * 2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${node.color.rgb}, 0.10)`;
-        ctx.fill();
-
-        // Draw inner solid circle
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${node.color.rgb}, ${node.color.opacity})`;
-        ctx.fill();
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    resize();
-    initNodes();
-
-    let lastWidth = window.innerWidth;
-    let resizeTimeout: ReturnType<typeof setTimeout>;
-
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        const newWidth = window.innerWidth;
-        resize();
-        if (Math.abs(newWidth - lastWidth) > 50) {
-          initNodes();
-          lastWidth = newWidth;
-        }
-      }, 150);
-    };
-
-    window.addEventListener('resize', handleResize);
-    animationFrameId = requestAnimationFrame(animate);
-
-    const handleVisibilityChange = () => {
-      isPaused = document.hidden;
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      cancelAnimationFrame(animationFrameId);
-      clearTimeout(resizeTimeout);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 pointer-events-none"
-    />
-  );
 }
 
 // Typewriter component for streaming effect
@@ -238,8 +55,29 @@ export function Hero() {
   const [isLoading, setIsLoading] = useState(false);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const [shaderReady, setShaderReady] = useState(false);
+  const [introComplete, setIntroComplete] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  // Determine whether to show intro animation
+  useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const alreadyPlayed = sessionStorage.getItem('allone-intro-played') === 'true';
+
+    if (prefersReduced || alreadyPlayed) {
+      setIntroComplete(true);
+      setShowIntro(false);
+    } else {
+      setShowIntro(true);
+    }
+  }, []);
+
+  const handleIntroComplete = useCallback(() => {
+    sessionStorage.setItem('allone-intro-played', 'true');
+    setShowIntro(false);
+    setIntroComplete(true);
+  }, []);
 
   // Wait for shader to initialize before showing button
   useEffect(() => {
@@ -345,15 +183,19 @@ export function Hero() {
   };
 
   return (
-    <section className="min-h-[100svh] relative overflow-hidden">
-      <ConnectedNodes />
-
+    <section className="min-h-[100svh] relative overflow-hidden bg-[var(--black)]">
+      {/* Intro animation overlay */}
+      {showIntro && (
+        <div className="fixed inset-0 z-[60] bg-[#0B0B0B]">
+          <IntroAnimation onComplete={handleIntroComplete} />
+        </div>
+      )}
       <Container>
         {/* Fixed height container - button position never changes */}
         <div className="min-h-[100svh] flex flex-col items-center justify-center relative z-10 py-20">
 
           {/* Upper content area - fixed height so button stays in place */}
-          <div className="h-[260px] flex flex-col items-center justify-end mb-4 relative">
+          <div className="h-[300px] flex flex-col items-center justify-end mb-4 relative">
             {/* Hero content - fades out */}
             <div
               className={`
@@ -362,20 +204,31 @@ export function Hero() {
                 ${isChatActive ? 'opacity-0 pointer-events-none' : 'opacity-100'}
               `}
             >
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-[clamp(2.5rem,6vw,4rem)] font-light leading-[1.1] tracking-[-0.02em] text-[var(--black)] mb-6"
+              {/* Monospace subtitle */}
+              <motion.p
+                initial={{ opacity: 0, filter: 'blur(12px)' }}
+                animate={introComplete ? { opacity: 1, filter: 'blur(0px)' } : { opacity: 0, filter: 'blur(12px)' }}
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.76, 0, 0.24, 1] }}
+                className="mono-label mb-6"
               >
-                The Future Runs Itself
+                Automate the Mundane — Unleash the Remarkable
+              </motion.p>
+
+              {/* Display heading */}
+              <motion.h1
+                initial={{ opacity: 0, filter: 'blur(12px)', y: 8 }}
+                animate={introComplete ? { opacity: 1, filter: 'blur(0px)', y: 0 } : { opacity: 0, filter: 'blur(12px)', y: 8 }}
+                transition={{ duration: 0.9, delay: 0.25, ease: [0.76, 0, 0.24, 1] }}
+                className="text-[clamp(3rem,6vw,5rem)] font-light leading-[0.95] tracking-[-0.03em] text-white mb-6"
+              >
+                The Future<br />Runs Itself
               </motion.h1>
 
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 }}
-                className="text-base lg:text-lg text-[var(--gray-500)] max-w-md leading-relaxed"
+                initial={{ opacity: 0, filter: 'blur(12px)', y: 8 }}
+                animate={introComplete ? { opacity: 1, filter: 'blur(0px)', y: 0 } : { opacity: 0, filter: 'blur(12px)', y: 8 }}
+                transition={{ duration: 0.8, delay: 0.45, ease: [0.76, 0, 0.24, 1] }}
+                className="text-base lg:text-lg text-white/60 max-w-md leading-relaxed"
               >
                 We design and build intelligent automation systems that transform how businesses operate, scale, and compete.
               </motion.p>
@@ -401,17 +254,17 @@ export function Hero() {
 
                 {/* Fade gradient at top */}
                 {messages.length > 0 && (
-                  <div className="sticky top-0 h-6 bg-gradient-to-b from-white to-transparent pointer-events-none" />
+                  <div className="sticky top-0 h-6 bg-gradient-to-b from-[var(--black)] to-transparent pointer-events-none" />
                 )}
 
                 {/* Messages */}
                 <div className="space-y-4 pb-4">
                   {messages.map((message) => (
-                    <div key={message.id} className="animate-fade-in">
+                    <div key={message.id} className="animate-blur-reveal">
                       {message.role === 'user' ? (
-                        <p className="text-sm text-black text-left">{message.content}</p>
+                        <p className="text-sm text-white/70 text-left">{message.content}</p>
                       ) : (
-                        <p className="text-[15px] text-black leading-relaxed text-left">
+                        <p className="text-[15px] text-white leading-relaxed text-left">
                           {streamingMessageId === message.id ? (
                             <TypewriterText
                               text={message.content}
@@ -429,9 +282,9 @@ export function Hero() {
                   {/* Loading indicator */}
                   {isLoading && (
                     <div className="flex items-center gap-1.5 py-2">
-                      <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
-                      <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse [animation-delay:150ms]" />
-                      <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse [animation-delay:300ms]" />
+                      <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                      <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse [animation-delay:150ms]" />
+                      <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse [animation-delay:300ms]" />
                     </div>
                   )}
                 </div>
@@ -441,9 +294,9 @@ export function Hero() {
 
           {/* Ask AI - Button that expands into input */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={shaderReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.8, delay: shaderReady ? 0.9 : 0 }}
+            initial={{ opacity: 0, filter: 'blur(12px)', y: 8 }}
+            animate={shaderReady && introComplete ? { opacity: 1, filter: 'blur(0px)', y: 0 } : { opacity: 0, filter: 'blur(12px)', y: 8 }}
+            transition={{ duration: 0.8, delay: shaderReady && introComplete ? 0.7 : 0, ease: [0.76, 0, 0.24, 1] }}
             className="relative flex justify-center items-center"
           >
             {/* PulsingBorder container - entire area is clickable */}
@@ -489,32 +342,18 @@ export function Hero() {
                     ${!isChatActive ? 'w-[140px] sm:w-[160px]' : 'w-[calc(100vw-64px)] sm:w-[400px] md:w-[460px]'}
                   `}
                 >
-                  {/* LiquidMetal sparkle + "Ask AI" text */}
+                  {/* "Ask AI" text */}
                   <div
                     className={`
-                      flex items-center gap-2 -ml-2 sm:-ml-3
+                      flex items-center gap-2
                       transition-all duration-300
                       ${isChatActive ? 'opacity-0 scale-90 absolute' : 'opacity-100 scale-100'}
                     `}
                   >
-                    <LiquidMetal
-                      speed={0.68}
-                      softness={0.1}
-                      repetition={2}
-                      shiftRed={0.3}
-                      shiftBlue={0.3}
-                      distortion={0.07}
-                      contour={0.4}
-                      scale={0.6}
-                      rotation={0}
-                      shape="circle"
-                      angle={70}
-                      image="https://workers.paper.design/file-assets/01KF3FJDBVRQRC2Z21M10KBDQ5/01KF3JVMCGH3M6TG0XEQ9ZA6S3.svg"
-                      colorBack="#00000000"
-                      colorTint="#FFFFFF"
-                      className="w-[36px] h-[36px] sm:w-[42px] sm:h-[42px] rounded-full flex-shrink-0"
-                    />
-                    <span className="text-sm sm:text-base font-medium tracking-wide text-[var(--black)] pr-2 sm:pr-4">
+                    <span
+                      className="text-sm sm:text-base font-medium tracking-wide text-white pr-2 sm:pr-4"
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
                       Ask AI
                     </span>
                   </div>
@@ -531,9 +370,9 @@ export function Hero() {
                     className={`
                       w-full h-full px-4 sm:px-6 pr-10 sm:pr-12
                       text-sm font-medium tracking-wide
-                      bg-transparent text-black rounded-full
-                      outline-none text-left caret-black
-                      placeholder:text-black/50 placeholder:font-normal
+                      bg-transparent text-white rounded-full
+                      outline-none text-left caret-white
+                      placeholder:text-[var(--muted-warm)] placeholder:font-normal
                       transition-all duration-300
                       ${isChatActive ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}
                     `}
@@ -548,7 +387,7 @@ export function Hero() {
                     <button
                       onClick={(e) => { e.stopPropagation(); sendMessage(); }}
                       disabled={isLoading || !input.trim()}
-                      className="p-1.5 text-black hover:text-black/70 disabled:opacity-30 transition-all duration-200"
+                      className="p-1.5 text-white hover:text-[var(--muted-warm)] disabled:opacity-30 transition-all duration-200"
                     >
                       <Send className="w-3.5 h-3.5" />
                     </button>
@@ -563,7 +402,7 @@ export function Hero() {
               className={`
                 absolute z-20
                 p-2 rounded-full
-                text-black hover:text-black/70 hover:bg-black/5
+                text-white hover:text-[var(--muted-warm)] hover:bg-white/5
                 transition-all duration-300
                 top-full mt-3 left-1/2 -translate-x-1/2 sm:mt-0 sm:top-1/2 sm:-translate-y-1/2 sm:translate-x-0 sm:left-full sm:ml-2
                 ${isChatActive ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}

@@ -109,20 +109,21 @@ const ScrollDashboardColumn = ({ children }: { children: React.ReactNode }) => {
 
 export function DashboardShowcase() {
   return (
-    <section className="relative w-full bg-black overflow-hidden py-12 sm:py-16 lg:py-32">
+    <section className="relative w-full bg-[var(--black)] overflow-hidden py-12 sm:py-16 lg:py-32">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Desktop: side by side layout with scroll animations */}
         <div className="hidden lg:grid lg:grid-cols-12 gap-12 items-start">
           {/* Text Column - slides from LEFT */}
           <ScrollTextColumn>
+            <p className="mono-label mb-2">Dashboard</p>
             <h2 className="text-5xl font-light text-white leading-[1.1] tracking-[-0.02em]">
               See your business
               <br />
               run itself
             </h2>
 
-            <p className="text-lg text-zinc-400 leading-relaxed">
+            <p className="text-lg text-white/60 leading-relaxed">
               We turn chaotic workflows into streamlined systems you can monitor, optimize, and scale from a single view.
             </p>
 
@@ -130,12 +131,12 @@ export function DashboardShowcase() {
               {features.map((feature, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] group hover:bg-white/[0.04] transition-colors"
+                  className="flex items-center gap-4 p-4 rounded-[var(--radius-sm)] bg-white/[0.04] border border-white/10 group hover:border-white/20 transition-colors"
                 >
-                  <div className="flex-shrink-0 p-2.5 rounded-lg bg-white/[0.05]">
-                    <feature.icon className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
+                  <div className="flex-shrink-0 p-2.5 rounded-[var(--radius-sm)] bg-white/[0.06]">
+                    <feature.icon className="w-5 h-5 text-white/60 group-hover:text-[var(--accent)] transition-colors" />
                   </div>
-                  <span className="text-zinc-300 text-sm">{feature.text}</span>
+                  <span className="text-white text-sm">{feature.text}</span>
                 </div>
               ))}
             </div>
@@ -144,32 +145,11 @@ export function DashboardShowcase() {
           {/* Dashboard Column - slides from RIGHT */}
           <ScrollDashboardColumn>
             <div className="relative">
-              {/* Simplified glow - no blur filter */}
-              <div
-                className="absolute -inset-4 rounded-2xl opacity-50"
-                style={{
-                  background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.12) 0%, transparent 60%)',
-                }}
-              />
-
-              {/* Inner edge glow - crisp highlight */}
-              <div
-                className="absolute -inset-[1px] rounded-2xl"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.08) 100%)',
-                }}
-              />
-
               {/* Dashboard container */}
               <div
-                className="relative rounded-2xl overflow-hidden pointer-events-none"
+                className="relative rounded-[var(--radius-lg)] overflow-hidden pointer-events-none border border-white/10"
                 style={{
-                  boxShadow: `
-                    inset 0 1px 0 0 rgba(255,255,255,0.1),
-                    0 4px 8px rgba(0,0,0,0.2),
-                    0 12px 24px rgba(0,0,0,0.3),
-                    0 24px 48px rgba(0,0,0,0.4)
-                  `,
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
                 }}
@@ -192,6 +172,7 @@ export function DashboardShowcase() {
             viewport={{ once: true, margin: '-80px' }}
             variants={containerVariants}
           >
+            <motion.p variants={itemVariants} className="mono-label">Dashboard</motion.p>
             <motion.h2
               variants={itemVariants}
               className="text-3xl font-light text-white leading-[1.1] tracking-[-0.02em]"
@@ -203,7 +184,7 @@ export function DashboardShowcase() {
 
             <motion.p
               variants={itemVariants}
-              className="text-sm text-zinc-400 leading-relaxed"
+              className="text-sm text-white/60 leading-relaxed"
             >
               Streamlined systems you can monitor and scale.
             </motion.p>
@@ -221,12 +202,12 @@ export function DashboardShowcase() {
               <motion.div
                 key={i}
                 variants={itemVariants}
-                className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+                className="flex items-center gap-2.5 p-2.5 rounded-[var(--radius-sm)] bg-white/[0.04] border border-white/10"
               >
-                <div className="flex-shrink-0 p-1.5 rounded-lg bg-white/[0.05]">
-                  <feature.icon className="w-3.5 h-3.5 text-zinc-400" />
+                <div className="flex-shrink-0 p-1.5 rounded-[var(--radius-sm)] bg-white/[0.06]">
+                  <feature.icon className="w-3.5 h-3.5 text-white/60" />
                 </div>
-                <span className="text-zinc-300 text-xs">{feature.text}</span>
+                <span className="text-white text-xs">{feature.text}</span>
               </motion.div>
             ))}
           </motion.div>
@@ -243,16 +224,8 @@ export function DashboardShowcase() {
               className="relative overflow-visible"
               style={{ height: '220px' }}
             >
-              {/* Ambient glow for mobile - no blur filter */}
               <div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] opacity-40"
-                style={{
-                  background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 60%)',
-                }}
-              />
-
-              <div
-                className="rounded-xl overflow-hidden"
+                className="rounded-[var(--radius-lg)] overflow-hidden border border-white/10"
                 style={{
                   position: 'absolute',
                   top: 0,
@@ -261,11 +234,7 @@ export function DashboardShowcase() {
                   transform: 'translateX(-50%) scale(0.36)',
                   transformOrigin: 'top center',
                   pointerEvents: 'none',
-                  boxShadow: `
-                    inset 0 1px 0 0 rgba(255,255,255,0.08),
-                    0 4px 12px rgba(0,0,0,0.3),
-                    0 12px 32px rgba(0,0,0,0.4)
-                  `,
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
                 }}
               >
                 <EmbeddableDashboard />
