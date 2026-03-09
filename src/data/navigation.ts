@@ -2,26 +2,27 @@ import type { NavItem } from '@/types';
 
 export const navigation: NavItem[] = [
   { label: 'Home', href: '/', key: 'home' },
-  { label: 'AI Studio', href: '/products', key: 'products' },
-  { label: 'Contact', href: '/contact', key: 'contact' },
+  { label: 'Services', href: '/services', key: 'services' },
+  { label: 'Work', href: '/work', key: 'work' },
+  { label: 'About', href: '/about', key: 'about' },
 ];
 
 export const footerLinks = {
   company: [
-    { label: 'About Us', href: '/about' },
-    { label: 'Products', href: '/products' },
+    { label: 'About', href: '/about' },
+    { label: 'Work', href: '/work' },
     { label: 'Contact', href: '/contact' },
   ],
   services: [
-    { label: 'AI Chatbots', href: '/#services' },
-    { label: 'Workflow Automation', href: '/#services' },
-    { label: 'Custom AI Solutions', href: '/#services' },
-    { label: 'AI Consulting', href: '/#services' },
+    { label: 'AI Chatbots', href: '/services#chatbots' },
+    { label: 'Workflow Automation', href: '/services#automation' },
+    { label: 'Custom AI', href: '/services#custom-ai' },
+    { label: 'Web Development', href: '/services#web-dev' },
+    { label: 'Consulting', href: '/services#consulting' },
   ],
   resources: [
-    { label: 'Templates', href: '/products?category=template' },
-    { label: 'Courses', href: '/products?category=course' },
-    { label: 'Login', href: '/login' },
+    { label: 'AI Studio', href: '/products' },
     { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Login', href: '/login' },
   ],
 };

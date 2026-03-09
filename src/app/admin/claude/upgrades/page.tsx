@@ -166,7 +166,7 @@ export default function UpgradesPage() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.02 }}
-                className="p-4 hover:bg-[var(--gray-50)] transition-colors"
+                className="p-4 hover:bg-white transition-colors"
               >
                 <div className="flex items-start gap-4">
                   <div

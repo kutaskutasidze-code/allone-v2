@@ -158,11 +158,14 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
                 )}
               >
                 {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt="Avatar"
-                    className="w-6 h-6 rounded-full bg-white"
-                  />
+                  <div className="relative w-6 h-6">
+                    <Image
+                      src={avatarUrl}
+                      alt="Avatar"
+                      fill
+                      className="rounded-full bg-white object-cover"
+                    />
+                  </div>
                 ) : (
                   <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
                     <User className="w-3.5 h-3.5 text-white" />
@@ -323,11 +326,14 @@ export default function DashboardLayoutContent({ children, user }: DashboardLayo
               >
                 <div className="flex items-center gap-3 px-4 py-3 mb-3">
                   {avatarUrl ? (
-                    <img
-                      src={avatarUrl}
-                      alt="Avatar"
-                      className="w-10 h-10 rounded-full bg-white"
-                    />
+                    <div className="relative w-10 h-10">
+                      <Image
+                        src={avatarUrl}
+                        alt="Avatar"
+                        fill
+                        className="rounded-full bg-white object-cover"
+                      />
+                    </div>
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center">
                       <User className="w-5 h-5 text-white" />

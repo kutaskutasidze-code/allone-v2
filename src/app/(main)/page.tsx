@@ -1,26 +1,21 @@
 import dynamic from 'next/dynamic';
 import { Hero } from '@/components/sections';
-import { getCachedServices } from '@/lib/cache';
+import { PortfolioParallax } from '@/components/sections/PortfolioParallax';
+import { getCachedClients } from '@/lib/cache';
 
-// Dynamic imports for below-the-fold sections to reduce initial bundle
-const ServicesNew = dynamic(() => import('@/components/sections/ServicesNew'), {
-  loading: () => <div className="min-h-[400px] animate-pulse bg-[var(--black)]" />,
-});
-
-const DashboardShowcase = dynamic(
-  () => import('@/components/sections/DashboardShowcase').then((mod) => ({ default: mod.DashboardShowcase })),
-  { loading: () => <div className="min-h-[600px] animate-pulse bg-[var(--black)]" /> }
+const Clients = dynamic(
+  () => import('@/components/sections/Clients').then(m => ({ default: m.Clients })),
+  { loading: () => <div className="min-h-[100px]" /> }
 );
 
-
 export default async function HomePage() {
-  const services = await getCachedServices();
+  const clients = await getCachedClients();
 
   return (
     <>
       <Hero />
-      <ServicesNew services={services} />
-      <DashboardShowcase />
+      <PortfolioParallax />
+      <Clients clients={clients} />
     </>
   );
 }

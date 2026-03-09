@@ -81,13 +81,13 @@ function StatCard({
   subValue,
   color = 'gray',
 }: {
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string | number;
   subValue?: string;
   color?: 'gray' | 'green' | 'blue' | 'purple';
 }) {
-  const colorClasses = {
+  const colorClasses: Record<string, string> = {
     gray: 'bg-[var(--gray-100)] text-[var(--gray-600)]',
     green: 'bg-green-100 text-green-600',
     blue: 'bg-blue-100 text-blue-600',

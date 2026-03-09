@@ -18,7 +18,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-medium uppercase tracking-wider text-[var(--gray-600)] mb-3"
+            className="block font-mono text-[11px] font-medium uppercase tracking-widest text-muted mb-3"
           >
             {label}
           </label>
@@ -27,25 +27,25 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={cn(
-            'w-full px-0 py-3',
-            'bg-transparent',
-            'border-0 border-b border-[var(--gray-300)]',
-            'text-black text-base',
-            'placeholder:text-[var(--gray-400)]',
-            'transition-all duration-300',
-            'focus:outline-none focus:border-black',
-            'hover:border-[var(--gray-500)]',
+            'w-full px-4 py-3',
+            'bg-surface',
+            'border border-white/[0.08] rounded-xl',
+            'text-white text-sm',
+            'placeholder:text-white/30',
+            'transition-colors duration-200',
+            'focus:outline-none focus:border-accent',
+            'hover:border-white/[0.15]',
             'disabled:opacity-50 disabled:cursor-not-allowed',
-            error && 'border-black',
+            error && 'border-error',
             className
           )}
           {...props}
         />
         {hint && !error && (
-          <p className="mt-2 text-xs text-[var(--gray-500)]">{hint}</p>
+          <p className="mt-2 text-xs text-muted">{hint}</p>
         )}
         {error && (
-          <p className="mt-2 text-xs text-black">{error}</p>
+          <p className="mt-2 text-xs text-error">{error}</p>
         )}
       </div>
     );

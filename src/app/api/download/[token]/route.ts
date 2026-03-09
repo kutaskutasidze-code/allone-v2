@@ -59,7 +59,17 @@ export async function GET(request: NextRequest, { params }: Props) {
       return NextResponse.redirect(signedUrl.signedUrl);
     }
 
-    // External URL - redirect directly
+    // External URL - validate host before redirect
+    const allowedHosts = ['cywmdjldapzrnabsoosd.supabase.co', 'allone.ge', 'www.allone.ge'];
+    try {
+      const fileUrl = new URL(product.file_url);
+      if (!allowedHosts.includes(fileUrl.hostname)) {
+        return NextResponse.json({ error: 'Invalid download URL' }, { status: 400 });
+      }
+    } catch {
+      return NextResponse.json({ error: 'Invalid download URL' }, { status: 400 });
+    }
+
     return NextResponse.redirect(product.file_url);
 
   } catch (error) {

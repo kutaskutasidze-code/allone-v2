@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+async function requireAuth() {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user) return null;
+  return { supabase, user };
+}
+
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const { data } = await supabase
+    const auth = await requireAuth();
+    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { data } = await auth.supabase
       .from('bridge_config')
       .select('key, value')
       .in('key', ['bot_token', 'user_id']);
@@ -22,7 +31,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const auth = await requireAuth();
+    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { bot_token, user_id } = await request.json();
 
     if (!bot_token) {
@@ -37,7 +48,7 @@ export async function POST(request: NextRequest) {
       updates.push({ key: 'user_id', value: user_id, updated_at: new Date().toISOString() });
     }
 
-    const { error } = await supabase
+    const { error } = await auth.supabase
       .from('bridge_config')
       .upsert(updates);
 

@@ -20,7 +20,12 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ to: targetNumber }),
     });
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      return NextResponse.json({ error: 'Voice server returned invalid response' }, { status: 502 });
+    }
 
     if (!res.ok) {
       console.error('Voice server call error:', data);

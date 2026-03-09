@@ -149,7 +149,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
                           isCollapsed ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2',
                           active
                             ? 'bg-[var(--gray-100)] text-[var(--black)]'
-                            : 'text-[var(--gray-600)] hover:bg-[var(--gray-50)] hover:text-[var(--black)]'
+                            : 'text-[var(--gray-600)] hover:bg-white hover:text-[var(--black)]'
                         )}
                       >
                         <Icon className={cn(
@@ -193,7 +193,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             href="/"
             target="_blank"
             className={cn(
-              "flex items-center rounded-lg text-[13px] font-medium text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-[var(--black)] transition-all duration-200",
+              "flex items-center rounded-lg text-[13px] font-medium text-[var(--gray-500)] hover:bg-white hover:text-[var(--black)] transition-all duration-200",
               isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
             )}
           >
@@ -224,7 +224,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
           <button
             onClick={handleLogout}
             className={cn(
-              "flex w-full items-center rounded-lg text-[13px] font-medium text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-[var(--black)] transition-all duration-200",
+              "flex w-full items-center rounded-lg text-[13px] font-medium text-[var(--gray-500)] hover:bg-white hover:text-[var(--black)] transition-all duration-200",
               isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
             )}
           >
@@ -254,7 +254,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       {/* Collapse Toggle Button */}
       <button
         onClick={onToggle}
-        className="absolute -right-3 top-20 w-6 h-6 bg-white border border-[var(--gray-200)] rounded-full flex items-center justify-center text-[var(--gray-400)] hover:text-[var(--black)] hover:border-[var(--gray-300)] hover:bg-[var(--gray-50)] transition-all duration-200 shadow-sm z-50"
+        className="absolute -right-3 top-20 w-6 h-6 bg-white border border-[var(--gray-200)] rounded-full flex items-center justify-center text-[var(--gray-400)] hover:text-[var(--black)] hover:border-[var(--gray-300)] hover:bg-white transition-all duration-200 shadow-sm z-50"
       >
         <ChevronLeft className={cn("h-4 w-4 transition-transform duration-200", isCollapsed && "rotate-180")} />
       </button>
@@ -315,7 +315,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
                         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors',
                         active
                           ? 'bg-[var(--gray-100)] text-[var(--black)]'
-                          : 'text-[var(--gray-600)] hover:bg-[var(--gray-50)] hover:text-[var(--black)]'
+                          : 'text-[var(--gray-600)] hover:bg-white hover:text-[var(--black)]'
                       )}
                     >
                       <Icon className={cn(
@@ -338,14 +338,14 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
           href="/"
           target="_blank"
           onClick={handleNavClick}
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-[var(--black)] transition-colors"
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[var(--gray-500)] hover:bg-white hover:text-[var(--black)] transition-colors"
         >
           <ExternalLink className="h-[18px] w-[18px]" />
           <span>View Website</span>
         </Link>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[var(--gray-500)] hover:bg-[var(--gray-50)] hover:text-[var(--black)] transition-colors"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[var(--gray-500)] hover:bg-white hover:text-[var(--black)] transition-colors"
         >
           <LogOut className="h-[18px] w-[18px]" />
           <span>Sign Out</span>

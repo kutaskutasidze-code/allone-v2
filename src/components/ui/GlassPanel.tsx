@@ -31,62 +31,33 @@ const roundedClasses: Record<NonNullable<GlassPanelProps['rounded']>, string> = 
 };
 
 export const GlassPanel = forwardRef<HTMLDivElement, GlassPanelProps>(
-  (
-    {
-      className,
-      children,
-      padding = 'md',
-      hover = false,
-      rounded = '2xl',
-      as = 'div',
-      ...props
-    },
-    forwardedRef
-  ) => {
+  ({ className, children, padding = 'md', hover = false, rounded = '2xl', as = 'div', ...props }, forwardedRef) => {
     const MotionComponent = motion[as] as typeof motion.div;
 
     return (
-      <div className={cn('relative group', roundedClasses[rounded])}>
-        {/* Static gradient border */}
-        <div
-          className={cn(
-            'absolute -inset-[1px] transition-all duration-300 pointer-events-none',
-            'bg-gradient-to-b from-[var(--gray-200)] via-[var(--gray-300)] to-[var(--gray-400)]',
-            'group-hover:from-[var(--gray-300)] group-hover:via-[var(--gray-400)] group-hover:to-[var(--gray-500)]',
-            roundedClasses[rounded]
-          )}
-        />
-
-        <MotionComponent
-          ref={forwardedRef}
-          className={cn(
-            'relative',
-            'bg-white',
-            paddingClasses[padding],
-            roundedClasses[rounded],
-            'transition-all duration-300',
-            hover && 'group-hover:-translate-y-0.5',
-            'shadow-sm group-hover:shadow-lg',
-            className
-          )}
-          {...props}
-        >
-          {children}
-        </MotionComponent>
-      </div>
+      <MotionComponent
+        ref={forwardedRef}
+        className={cn(
+          'relative bg-surface border border-white/[0.06]',
+          paddingClasses[padding],
+          roundedClasses[rounded],
+          'transition-all duration-300',
+          hover && 'hover:border-white/[0.12] hover:-translate-y-0.5',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </MotionComponent>
     );
   }
 );
 
 GlassPanel.displayName = 'GlassPanel';
 
-// Simple compound components
-export const GlassPanelHeader = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('mb-4', className)} {...props} />
-));
+export const GlassPanelHeader = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => <div ref={ref} className={cn('mb-4', className)} {...props} />
+);
 GlassPanelHeader.displayName = 'GlassPanelHeader';
 
 export const GlassPanelTitle = forwardRef<
@@ -95,27 +66,20 @@ export const GlassPanelTitle = forwardRef<
 >(({ className, as: Tag = 'h3', ...props }, ref) => (
   <Tag
     ref={ref}
-    className={cn(
-      'font-[var(--font-display)] font-semibold text-[var(--black)] tracking-tight',
-      className
-    )}
+    className={cn('font-[family-name:var(--font-display)] font-semibold text-white tracking-tight', className)}
     {...props}
   />
 ));
 GlassPanelTitle.displayName = 'GlassPanelTitle';
 
-export const GlassPanelContent = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('text-[var(--gray-600)]', className)} {...props} />
-));
+export const GlassPanelContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => <div ref={ref} className={cn('text-muted', className)} {...props} />
+);
 GlassPanelContent.displayName = 'GlassPanelContent';
 
-export const GlassPanelFooter = forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('mt-6 pt-4 border-t border-[var(--gray-200)]/50', className)} {...props} />
-));
+export const GlassPanelFooter = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn('mt-6 pt-4 border-t border-white/[0.06]', className)} {...props} />
+  )
+);
 GlassPanelFooter.displayName = 'GlassPanelFooter';

@@ -69,12 +69,12 @@ export function NewsletterForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-white border border-zinc-200 rounded-xl text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all"
+                className="flex-1 px-4 py-3 bg-transparent border border-[var(--gray-300)] rounded-xl text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-black transition-all backdrop-blur-sm"
               />
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-3 bg-zinc-900 text-white font-medium rounded-xl hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-3 bg-transparent text-[var(--black)] font-medium rounded-xl border border-[var(--gray-300)] hover:border-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all backdrop-blur-sm"
               >
                 {isSubmitting ? (
                   <Loader2 className="w-5 h-5 animate-spin" />

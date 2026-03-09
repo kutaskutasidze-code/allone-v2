@@ -1,89 +1,86 @@
 import type { Metadata, Viewport } from 'next';
-import { Outfit, Inter, Roboto_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import { OrganizationSchema, WebsiteSchema } from '@/components/seo';
 import './globals.css';
 
-// Optimize font loading with next/font
-const outfit = Outfit({
-  subsets: ['latin'],
-  display: 'swap',
+const generalSans = localFont({
+  src: [
+    { path: '../../public/fonts/general-sans/GeneralSans-Regular.woff2', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/general-sans/GeneralSans-Medium.woff2', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/general-sans/GeneralSans-Semibold.woff2', weight: '600', style: 'normal' },
+    { path: '../../public/fonts/general-sans/GeneralSans-Bold.woff2', weight: '700', style: 'normal' },
+  ],
   variable: '--font-display',
-  weight: ['300', '400', '500', '600', '700', '800'],
+  display: 'swap',
 });
 
-const inter = Inter({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-sans',
-  weight: ['300', '400', '500', '600'],
+  variable: '--font-body',
+  weight: ['400', '500', '600'],
 });
 
-const robotoMono = Roboto_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-mono',
-  weight: ['400', '500', '600'],
+  weight: ['400', '500'],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://allone.ge'),
   title: {
-    default: 'ALLONE | AI Automation Solutions',
+    default: 'ALLONE — All Systems. One Intelligence.',
     template: '%s | ALLONE',
   },
   alternates: {
     canonical: '/',
-    languages: {
-      'en': '/',
-      'ka': '/',
-      'x-default': '/',
-    },
+    languages: { 'en': '/', 'ka': '/', 'x-default': '/' },
   },
   description:
-    'Transform your business with intelligent AI automation. We design and build custom AI solutions that automate complex workflows, enhance decision-making, and unlock unprecedented efficiency.',
+    'AI automation agency that converges all your systems into one intelligent layer. Custom AI solutions, workflow automation, and intelligent chatbots for modern businesses.',
   keywords: [
     'AI automation',
-    'artificial intelligence',
-    'chatbots',
+    'AI agency',
     'workflow automation',
+    'AI chatbots',
     'custom AI solutions',
-    'machine learning',
     'business automation',
+    'Georgia',
+    'Belgium',
   ],
   authors: [{ name: 'ALLONE' }],
   creator: 'ALLONE',
   icons: {
-    icon: '/images/allone-logo.png',
-    apple: '/images/allone-logo.png',
+    icon: '/favicon.svg',
+    apple: '/apple-touch-icon.png',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://allone.ge',
     siteName: 'ALLONE',
-    title: 'ALLONE | AI Automation Solutions',
+    title: 'ALLONE — All Systems. One Intelligence.',
     description:
-      'Transform your business with intelligent AI automation. Custom AI solutions for modern enterprises.',
+      'AI automation agency that converges all your systems into one intelligent layer.',
     images: [
       {
-        url: '/images/allone-logo.png',
-        width: 500,
-        height: 500,
-        alt: 'ALLONE - AI Automation Solutions',
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'ALLONE — All Systems. One Intelligence.',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ALLONE | AI Automation Solutions',
-    description:
-      'Transform your business with intelligent AI automation.',
+    title: 'ALLONE — All Systems. One Intelligence.',
+    description: 'AI automation agency. All systems converge into one.',
     creator: '@allone_ai',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
@@ -94,11 +91,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${inter.variable} ${robotoMono.variable}`}>
+    <html lang="en" className={`${generalSans.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
       <body className="antialiased">
         <OrganizationSchema />
         <WebsiteSchema />

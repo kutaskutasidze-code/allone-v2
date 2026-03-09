@@ -239,7 +239,7 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads }: SalesDa
                 {recentLeads.map((lead, index) => (
                   <tr
                     key={lead.id}
-                    className={`hover:bg-[var(--gray-50)] transition-colors ${
+                    className={`hover:bg-white transition-colors ${
                       index !== recentLeads.length - 1 ? 'border-b border-[var(--gray-100)]' : ''
                     }`}
                   >

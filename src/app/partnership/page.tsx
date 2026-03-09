@@ -418,7 +418,7 @@ export default function PartnershipPage() {
       {/* Language Toggle */}
       <button
         onClick={() => setLang(lang === 'en' ? 'ka' : 'en')}
-        className="fixed top-4 left-4 md:top-8 md:left-8 z-50 flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm border border-gray-200 hover:bg-gray-50 transition-all"
+        className="fixed top-4 left-4 md:top-8 md:left-8 z-50 flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm border border-gray-200 hover:bg-white transition-all"
       >
         <Globe className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-500" />
         <span className="text-xs md:text-sm font-medium">{content[lang].langSwitch}</span>
@@ -501,7 +501,7 @@ export default function PartnershipPage() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={stagger(i)}
-                      className="flex items-start gap-3 md:gap-4 bg-gray-50 rounded-xl md:rounded-2xl p-4 md:p-6"
+                      className="flex items-start gap-3 md:gap-4 bg-white rounded-xl md:rounded-2xl p-4 md:p-6"
                     >
                       <div className="w-1.5 h-1.5 rounded-full bg-[#111] mt-2 flex-shrink-0" />
                       <span className="text-sm md:text-base lg:text-lg text-[#111]">{point}</span>
@@ -533,7 +533,7 @@ export default function PartnershipPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={stagger(i, 0.08)}
-                      className="bg-gray-50 rounded-xl md:rounded-2xl p-4 md:p-5 text-center"
+                      className="bg-white rounded-xl md:rounded-2xl p-4 md:p-5 text-center"
                     >
                       <div className="text-2xl md:text-3xl font-extralight text-gray-300 mb-2">{item.step}</div>
                       <h3 className="text-sm md:text-base font-medium mb-1">{item.title}</h3>
@@ -592,7 +592,7 @@ export default function PartnershipPage() {
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={stagger(i, 0.08)}
-                      className="bg-gray-50 rounded-xl md:rounded-2xl p-4 md:p-6"
+                      className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6"
                     >
                       <div className="text-[#111] mb-2 md:mb-3">{iconMap[service.icon]}</div>
                       <h3 className="text-sm md:text-base font-medium mb-1">{service.name}</h3>
@@ -622,7 +622,7 @@ export default function PartnershipPage() {
                       initial={{ opacity: 0, x: -15 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={stagger(i, 0.08)}
-                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gray-50 rounded-xl md:rounded-2xl p-4 md:p-5 gap-2 sm:gap-4"
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white rounded-xl md:rounded-2xl p-4 md:p-5 gap-2 sm:gap-4"
                     >
                       <span className="text-sm md:text-base text-gray-600 italic">"{item.hear}"</span>
                       <span className="text-sm md:text-base text-[#111] font-medium flex items-center gap-2">
@@ -653,7 +653,7 @@ export default function PartnershipPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={stagger(i, 0.15)}
-                      className="bg-gray-50 rounded-2xl md:rounded-3xl p-5 md:p-8"
+                      className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-8"
                     >
                       <div className="text-[#111] mb-3 md:mb-4">{iconMap[benefit.icon]}</div>
                       <h3 className="text-base md:text-lg font-medium mb-3 md:mb-4">{benefit.category}</h3>
@@ -693,7 +693,7 @@ export default function PartnershipPage() {
                       className={`rounded-2xl md:rounded-3xl p-5 md:p-8 text-center transition-all ${
                         option.highlight
                           ? 'bg-[#111] text-white shadow-xl scale-[1.02]'
-                          : 'bg-gray-50 border border-gray-100'
+                          : 'bg-white border border-gray-100'
                       }`}
                     >
                       <h3 className="text-lg md:text-xl font-medium mb-2 md:mb-3">{option.name}</h3>
@@ -725,7 +725,7 @@ export default function PartnershipPage() {
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={stagger(i, 0.1)}
-                      className="bg-gray-50 rounded-xl md:rounded-2xl p-4 md:p-5 text-left"
+                      className="bg-white rounded-xl md:rounded-2xl p-4 md:p-5 text-left"
                     >
                       <span className="text-2xl md:text-3xl font-extralight text-gray-300">{step.num}</span>
                       <h3 className="text-sm md:text-base font-medium mt-2">{step.title}</h3>

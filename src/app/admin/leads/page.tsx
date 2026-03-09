@@ -122,7 +122,7 @@ function AdminLeadsPageContent() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search leads..."
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
           />
           {search && (
             <button
@@ -201,7 +201,7 @@ function AdminLeadsPageContent() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.02 }}
-                  className={`hover:bg-[var(--gray-50)] transition-colors ${
+                  className={`hover:bg-white transition-colors ${
                     index !== leads.length - 1 ? 'border-b border-[var(--gray-100)]' : ''
                   }`}
                 >

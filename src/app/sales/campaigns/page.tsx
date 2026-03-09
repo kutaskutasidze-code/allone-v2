@@ -116,7 +116,7 @@ function CampaignsPageContent() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search campaigns..."
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
           />
           {search && (
             <button

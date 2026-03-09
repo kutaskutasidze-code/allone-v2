@@ -18,7 +18,7 @@ export function Container({ className, children, size = 'xl' }: ContainerProps) 
   return (
     <div
       className={cn(
-        'w-full mx-auto px-4 sm:px-6 lg:px-8',
+        'w-full mx-auto px-[clamp(1rem,5vw,2rem)]',
         sizeStyles[size],
         className
       )}

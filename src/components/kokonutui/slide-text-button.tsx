@@ -10,7 +10,7 @@
  * @github: https://github.com/kokonut-labs/kokonutui
  */
 
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -34,8 +34,8 @@ export default function SlideTextButton({
   const slideText = hoverText ?? text;
   const variantStyles =
     variant === "ghost"
-      ? "border border-black/10 text-black hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
-      : "bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90";
+      ? "border border-black/10 text-black hover:bg-black/5 backdrop-blur-sm dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+      : "bg-transparent border border-black/20 text-black hover:border-black/40 backdrop-blur-sm dark:border-white/20 dark:text-white dark:hover:border-white/40";
 
   return (
     <motion.div

@@ -301,7 +301,7 @@ export default function BillingContent({ subscription, purchases, userEmail }: B
               Get access to Voice AI agents, RAG chatbots, and automation workflows.
             </p>
 
-            <div className="bg-[var(--gray-50)] rounded-lg p-4 mb-6">
+            <div className="bg-white rounded-lg p-4 mb-6">
               <div className="flex items-baseline justify-between mb-4">
                 <span className="text-sm font-medium text-[var(--black)]">Platform Plan</span>
                 <div className="flex items-baseline gap-1">

@@ -111,9 +111,9 @@ export default function ProductDetailContent({ product }: ProductDetailContentPr
   };
 
   return (
-    <div className="min-h-screen bg-[var(--gray-50)]">
+    <div className="min-h-screen bg-white">
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-[var(--gray-200)] pt-20">
+      <div className="bg-transparent border-b border-[var(--gray-200)] pt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             href="/products"
@@ -161,7 +161,7 @@ export default function ProductDetailContent({ product }: ProductDetailContentPr
               )}
 
               {/* Features */}
-              <div className="bg-white rounded-2xl border border-[var(--gray-200)] p-6 mb-8">
+              <div className="bg-transparent backdrop-blur-sm rounded-2xl border border-[var(--gray-200)] p-6 mb-8">
                 <h2 className="text-lg font-semibold text-[var(--black)] mb-4">What&apos;s Included</h2>
                 <ul className="grid sm:grid-cols-2 gap-3">
                   {features.map((feature: string, i: number) => (
@@ -201,7 +201,7 @@ export default function ProductDetailContent({ product }: ProductDetailContentPr
               transition={{ delay: 0.1 }}
               className="sticky top-8"
             >
-              <div className="bg-white rounded-2xl border border-[var(--gray-200)] shadow-xl p-6">
+              <div className="bg-transparent backdrop-blur-sm rounded-2xl border border-[var(--gray-200)] p-6">
                 {/* Price */}
                 <div className="text-center mb-6">
                   <div className="text-4xl font-bold text-[var(--black)]">
@@ -228,7 +228,7 @@ export default function ProductDetailContent({ product }: ProductDetailContentPr
                       value={guestEmail}
                       onChange={(e) => setGuestEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="w-full px-4 py-3 rounded-xl border border-[var(--gray-200)] text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/10"
+                      className="w-full px-4 py-3 rounded-xl bg-transparent border border-[var(--gray-300)] text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none focus:border-black transition-colors backdrop-blur-sm"
                     />
                     <p className="text-xs text-[var(--gray-500)] mt-1.5">
                       We&apos;ll send your download link here
@@ -237,7 +237,7 @@ export default function ProductDetailContent({ product }: ProductDetailContentPr
                 )}
 
                 {user && (
-                  <div className="mb-4 p-3 bg-[var(--gray-50)] rounded-lg">
+                  <div className="mb-4 p-3 bg-transparent border border-[var(--gray-300)] rounded-lg backdrop-blur-sm">
                     <p className="text-sm text-[var(--gray-600)]">
                       Signed in as <span className="font-medium text-[var(--black)]">{user.email}</span>
                     </p>
@@ -248,7 +248,7 @@ export default function ProductDetailContent({ product }: ProductDetailContentPr
                 <button
                   onClick={handleCheckout}
                   disabled={isLoading || (!user && !guestEmail)}
-                  className="w-full py-4 px-6 bg-[#0070BA] text-white font-semibold rounded-xl hover:bg-[#005ea6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-3"
+                  className="w-full py-4 px-6 bg-transparent text-[var(--black)] font-semibold rounded-xl border border-[var(--gray-300)] hover:border-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-3 backdrop-blur-sm"
                 >
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />

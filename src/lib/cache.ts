@@ -1,4 +1,4 @@
-import { createClient as createBrowserClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 import { revalidateTag } from 'next/cache';
 
 /**

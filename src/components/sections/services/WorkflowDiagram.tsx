@@ -93,15 +93,15 @@ export function WorkflowDiagram() {
 
   const isActive = (id: string) => activeNode === id || activeNodes.includes(id);
 
-  // Colors for dark palette
-  const lineColor = 'rgba(255,255,255,0.15)';
-  const nodeFill = 'rgba(255,255,255,0.06)';
-  const nodeStroke = 'rgba(255,255,255,0.15)';
-  const activeFill = '#FFFFFF';
-  const activeStroke = '#FFFFFF';
-  const contentColor = 'rgba(255,255,255,0.3)';
-  const activeContentColor = '#0B0B0B';
-  const accentDot = '#FFFFFF';
+  // Colors for light palette
+  const lineColor = 'rgba(7,29,47,0.12)';
+  const nodeFill = 'rgba(248,250,254,1)';
+  const nodeStroke = 'rgba(220,233,246,1)';
+  const activeFill = '#0A68F5';
+  const activeStroke = '#0A68F5';
+  const contentColor = 'rgba(7,29,47,0.25)';
+  const activeContentColor = '#FFFFFF';
+  const accentDot = '#0A68F5';
 
   return (
     <div className="relative w-full h-full min-h-[220px]">
@@ -135,7 +135,7 @@ export function WorkflowDiagram() {
           />
           <polygon
             points="36,74 36,86 46,80"
-            fill={isActive('trigger') ? '#0B0B0B' : 'rgba(255,255,255,0.5)'}
+            fill={isActive('trigger') ? '#FFFFFF' : 'rgba(7,29,47,0.25)'}
             style={{ transition: 'all 0.3s ease' }}
           />
         </g>

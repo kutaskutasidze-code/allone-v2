@@ -1,11 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { AuthError } from '@/lib/auth';
 import type { SalesUser } from '@/types/database';
-import type { SupabaseClient, Session } from '@supabase/supabase-js';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
 
 export interface SalesAuthResult {
   supabase: SupabaseClient;
-  session: Session;
+  user: User;
   salesUser: SalesUser;
 }
 
@@ -15,9 +15,9 @@ export interface SalesAuthResult {
  */
 export async function requireSalesAuth(): Promise<SalesAuthResult> {
   const supabase = await createClient();
-  const { data: { session }, error } = await supabase.auth.getSession();
+  const { data: { user }, error } = await supabase.auth.getUser();
 
-  if (error || !session) {
+  if (error || !user) {
     throw new AuthError('Unauthorized');
   }
 
@@ -25,14 +25,14 @@ export async function requireSalesAuth(): Promise<SalesAuthResult> {
   const { data: salesUser, error: salesError } = await supabase
     .from('sales_users')
     .select('*')
-    .eq('email', session.user.email)
+    .eq('email', user.email)
     .single();
 
   if (salesError || !salesUser) {
     throw new AuthError('Not authorized as sales user');
   }
 
-  return { supabase, session, salesUser };
+  return { supabase, user, salesUser };
 }
 
 /**

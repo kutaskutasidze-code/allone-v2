@@ -494,7 +494,7 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
                   {leadsData.recentLeads.map((lead, index) => (
                     <tr
                       key={lead.id}
-                      className={`hover:bg-[var(--gray-50)] transition-colors ${
+                      className={`hover:bg-white transition-colors ${
                         index !== leadsData.recentLeads.length - 1 ? 'border-b border-[var(--gray-100)]' : ''
                       }`}
                     >

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from "next/image";
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -294,15 +295,16 @@ export default function SettingsPage() {
 
         <div className="border border-[var(--gray-200)] rounded-xl overflow-hidden">
           {/* Current Avatar Preview */}
-          <div className="p-6 bg-[var(--gray-50)] flex items-center gap-6">
-            <div className="relative">
-              <img
+          <div className="p-6 bg-white flex items-center gap-6">
+            <div className="relative w-24 h-24">
+              <Image
                 src={currentAvatarUrl}
                 alt="Avatar preview"
-                className="w-24 h-24 rounded-2xl bg-white shadow-sm"
+                fill
+                className="rounded-2xl bg-white shadow-sm object-cover"
               />
               {isUploading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-2xl">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-2xl z-10">
                   <Loader2 className="w-6 h-6 animate-spin text-white" />
                 </div>
               )}
@@ -367,15 +369,18 @@ export default function SettingsPage() {
                     className={cn(
                       'relative p-2 rounded-xl border-2 transition-all',
                       avatarStyle === style.id
-                        ? 'border-[var(--black)] bg-[var(--gray-50)]'
+                        ? 'border-[var(--black)] bg-white'
                         : 'border-transparent hover:border-[var(--gray-200)]'
                     )}
                   >
-                    <img
-                      src={getDiceBearUrl(style.id, avatarSeed)}
-                      alt={style.name}
-                      className="w-full aspect-square rounded-lg bg-white"
-                    />
+                    <div className="relative w-full aspect-square">
+                      <Image
+                        src={getDiceBearUrl(style.id, avatarSeed)}
+                        alt={style.name}
+                        fill
+                        className="rounded-lg bg-white object-contain"
+                      />
+                    </div>
                     <p className="text-[10px] font-medium text-[var(--black)] mt-1.5 truncate">
                       {style.name}
                     </p>
@@ -405,7 +410,7 @@ export default function SettingsPage() {
 
         <div className="border border-[var(--gray-200)] rounded-xl overflow-hidden">
           {/* Email */}
-          <div className="p-6 border-b border-[var(--gray-200)] bg-[var(--gray-50)]">
+          <div className="p-6 border-b border-[var(--gray-200)] bg-white">
             <div className="flex items-center gap-4">
               <Sparkles className="w-5 h-5 text-[var(--gray-400)]" />
               <div>
@@ -549,7 +554,7 @@ export default function SettingsPage() {
 
         <button
           onClick={handleSignOut}
-          className="w-full py-3 border border-[var(--gray-200)] text-[var(--gray-600)] text-sm font-medium rounded-lg hover:bg-[var(--gray-50)] hover:text-red-600 hover:border-red-200 transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 border border-[var(--gray-200)] text-[var(--gray-600)] text-sm font-medium rounded-lg hover:bg-white hover:text-red-600 hover:border-red-200 transition-colors flex items-center justify-center gap-2"
         >
           <LogOut className="w-4 h-4" />
           Sign Out

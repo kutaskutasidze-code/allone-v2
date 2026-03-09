@@ -11,9 +11,9 @@ interface CardProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
 }
 
 const variantStyles = {
-  default: 'bg-white',
-  bordered: 'bg-white border border-[var(--gray-200)]',
-  filled: 'bg-[var(--gray-50)]',
+  default: 'bg-surface',
+  bordered: 'bg-surface border border-white/[0.06]',
+  filled: 'bg-white',
 };
 
 const paddingStyles = {
@@ -24,27 +24,17 @@ const paddingStyles = {
 };
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  (
-    {
-      className,
-      variant = 'default',
-      hover = false,
-      padding = 'md',
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, variant = 'bordered', hover = false, padding = 'md', children, ...props }, ref) => {
     return (
       <motion.div
         ref={ref}
         whileHover={hover ? { y: -4 } : undefined}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
-          'transition-all duration-300',
+          'rounded-2xl transition-all duration-300',
           variantStyles[variant],
           paddingStyles[padding],
-          hover && 'cursor-pointer',
+          hover && 'cursor-pointer hover:border-white/[0.12]',
           className
         )}
         {...props}
@@ -57,68 +47,26 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
 
 Card.displayName = 'Card';
 
-interface CardHeaderProps {
-  className?: string;
-  children: React.ReactNode;
-}
-
-export function CardHeader({ className, children }: CardHeaderProps) {
+export function CardHeader({ className, children }: { className?: string; children: React.ReactNode }) {
   return <div className={cn('mb-4', className)}>{children}</div>;
 }
 
-interface CardTitleProps {
-  className?: string;
-  children: React.ReactNode;
-  as?: 'h2' | 'h3' | 'h4';
-}
-
-export function CardTitle({ className, children, as: Tag = 'h3' }: CardTitleProps) {
+export function CardTitle({ className, children, as: Tag = 'h3' }: { className?: string; children: React.ReactNode; as?: 'h2' | 'h3' | 'h4' }) {
   return (
-    <Tag
-      className={cn(
-        'font-[var(--font-serif)] font-medium text-black',
-        Tag === 'h2' && 'text-3xl',
-        Tag === 'h3' && 'text-2xl',
-        Tag === 'h4' && 'text-xl',
-        className
-      )}
-    >
+    <Tag className={cn('font-[family-name:var(--font-display)] font-semibold text-white tracking-tight', Tag === 'h2' && 'text-3xl', Tag === 'h3' && 'text-2xl', Tag === 'h4' && 'text-xl', className)}>
       {children}
     </Tag>
   );
 }
 
-interface CardDescriptionProps {
-  className?: string;
-  children: React.ReactNode;
+export function CardDescription({ className, children }: { className?: string; children: React.ReactNode }) {
+  return <p className={cn('text-muted leading-relaxed text-sm', className)}>{children}</p>;
 }
 
-export function CardDescription({ className, children }: CardDescriptionProps) {
-  return (
-    <p className={cn('text-[var(--gray-600)] leading-relaxed', className)}>
-      {children}
-    </p>
-  );
-}
-
-interface CardContentProps {
-  className?: string;
-  children: React.ReactNode;
-}
-
-export function CardContent({ className, children }: CardContentProps) {
+export function CardContent({ className, children }: { className?: string; children: React.ReactNode }) {
   return <div className={cn('', className)}>{children}</div>;
 }
 
-interface CardFooterProps {
-  className?: string;
-  children: React.ReactNode;
-}
-
-export function CardFooter({ className, children }: CardFooterProps) {
-  return (
-    <div className={cn('mt-6 pt-6 border-t border-[var(--gray-100)]', className)}>
-      {children}
-    </div>
-  );
+export function CardFooter({ className, children }: { className?: string; children: React.ReactNode }) {
+  return <div className={cn('mt-6 pt-6 border-t border-white/[0.06]', className)}>{children}</div>;
 }

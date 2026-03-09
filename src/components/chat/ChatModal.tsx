@@ -2,13 +2,24 @@
 
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Bot, User, Loader2, Mic, MicOff } from 'lucide-react';
+import { X, Send, Bot, User, Loader2, Mic, MicOff, ArrowRight } from 'lucide-react';
+
+interface ServiceData {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  card_type: string | null;
+  features: string[];
+  cta_url: string | null;
+}
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  isTyping?: boolean;
+  services?: ServiceData[];
+  isStreaming?: boolean;
 }
 
 interface ChatModalProps {
@@ -16,58 +27,39 @@ interface ChatModalProps {
   onClose: () => void;
 }
 
-// Typewriter component - uses ref for callback to prevent restarts
-const TypewriterText = memo(function TypewriterText({
-  text,
-  messageId,
-  onComplete
-}: {
-  text: string;
-  messageId: string;
-  onComplete: (id: string) => void;
-}) {
-  const [displayedText, setDisplayedText] = useState('');
-  const indexRef = useRef(0);
-  const completedRef = useRef(false);
-  const onCompleteRef = useRef(onComplete);
-
-  // Keep callback ref updated without triggering effect
-  useEffect(() => {
-    onCompleteRef.current = onComplete;
-  });
-
-  useEffect(() => {
-    // Only reset if text actually changes
-    indexRef.current = 0;
-    completedRef.current = false;
-    setDisplayedText('');
-
-    const interval = setInterval(() => {
-      if (indexRef.current < text.length) {
-        const charsToAdd = Math.min(3, text.length - indexRef.current);
-        indexRef.current += charsToAdd;
-        setDisplayedText(text.slice(0, indexRef.current));
-      } else if (!completedRef.current) {
-        completedRef.current = true;
-        clearInterval(interval);
-        onCompleteRef.current(messageId);
-      }
-    }, 20);
-
-    return () => clearInterval(interval);
-  }, [text, messageId]); // Removed onComplete from deps - using ref instead
-
-  return <>{displayedText}</>;
+// Service card with fade-in animation
+const ServiceCard = memo(function ServiceCard({ service, index }: { service: ServiceData; index: number }) {
+  return (
+    <motion.a
+      href={service.cta_url || `/services/${service.card_type?.replace(/_/g, '-') || ''}`}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.15 }}
+      className="block border border-black/10 rounded-xl p-3 hover:border-black/25 transition-colors cursor-pointer"
+    >
+      <div className="flex items-start gap-2">
+        <span className="text-lg">{service.icon || '🤖'}</span>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-xs font-semibold text-black truncate">{service.title}</h4>
+          <p className="text-[11px] text-black/60 line-clamp-2 mt-0.5">{service.description}</p>
+          {service.features.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {service.features.map((f, i) => (
+                <span key={i} className="text-[10px] bg-black/5 text-black/70 px-1.5 py-0.5 rounded">
+                  {f}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <ArrowRight className="w-3.5 h-3.5 text-black/30 flex-shrink-0 mt-0.5" />
+      </div>
+    </motion.a>
+  );
 });
 
 // Memoized message component
-const ChatMessage = memo(function ChatMessage({
-  message,
-  onTypingComplete
-}: {
-  message: Message;
-  onTypingComplete: (id: string) => void;
-}) {
+const ChatMessage = memo(function ChatMessage({ message }: { message: Message }) {
   return (
     <div className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
       <div
@@ -81,24 +73,29 @@ const ChatMessage = memo(function ChatMessage({
           <Bot className="w-4 h-4 text-white" />
         )}
       </div>
-      <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-          message.role === 'user'
-            ? 'bg-black text-white rounded-tr-sm'
-            : 'bg-black/5 text-black rounded-tl-sm'
-        }`}
-      >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-          {message.isTyping ? (
-            <TypewriterText
-              text={message.content}
-              messageId={message.id}
-              onComplete={onTypingComplete}
-            />
-          ) : (
-            message.content
-          )}
-        </p>
+      <div className={`max-w-[80%] space-y-2 ${message.role === 'user' ? 'items-end' : 'items-start'} flex flex-col`}>
+        <div
+          className={`rounded-2xl px-4 py-3 ${
+            message.role === 'user'
+              ? 'bg-black text-white rounded-tr-sm'
+              : 'bg-black/5 text-black rounded-tl-sm'
+          }`}
+        >
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            {message.content}
+            {message.isStreaming && (
+              <span className="inline-block w-1.5 h-4 bg-black/60 ml-0.5 animate-pulse align-middle" />
+            )}
+          </p>
+        </div>
+        {/* Service cards appear after text */}
+        {message.services && message.services.length > 0 && (
+          <div className="w-full space-y-1.5">
+            {message.services.map((service, i) => (
+              <ServiceCard key={service.id} service={service} index={i} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -107,24 +104,22 @@ const ChatMessage = memo(function ChatMessage({
 // Isolated input component - typing here won't re-render messages
 const ChatInput = memo(function ChatInput({
   onSend,
-  isLoading,
+  isDisabled,
   isRecording,
   isTranscribing,
-  isAiTyping,
+  isStreaming,
   onToggleRecording,
   inputRef,
 }: {
   onSend: (text: string) => void;
-  isLoading: boolean;
+  isDisabled: boolean;
   isRecording: boolean;
   isTranscribing: boolean;
-  isAiTyping: boolean;
+  isStreaming: boolean;
   onToggleRecording: () => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
 }) {
   const [inputValue, setInputValue] = useState('');
-
-  const isDisabled = isLoading || isTranscribing || isAiTyping;
 
   const handleSend = () => {
     if (inputValue.trim() && !isDisabled) {
@@ -159,7 +154,7 @@ const ChatInput = memo(function ChatInput({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={isTranscribing ? "Transcribing..." : isRecording ? "Listening..." : isAiTyping ? "AI is responding..." : "Type or speak your message..."}
+          placeholder={isTranscribing ? "Transcribing..." : isRecording ? "Listening..." : isStreaming ? "AI is responding..." : "Type or speak your message..."}
           className="flex-1 px-4 py-3 bg-black/5 rounded-full text-sm text-black placeholder:text-black/50 focus:outline-none focus:ring-2 focus:ring-black/20"
           disabled={isDisabled}
         />
@@ -202,16 +197,14 @@ const ChatInput = memo(function ChatInput({
 // Messages list component - isolated from input state
 const MessagesList = memo(function MessagesList({
   messages,
-  isLoading,
-  onTypingComplete,
+  isWaiting,
   messagesContainerRef,
   messagesEndRef,
   onScroll,
   onTouchMove,
 }: {
   messages: Message[];
-  isLoading: boolean;
-  onTypingComplete: (id: string) => void;
+  isWaiting: boolean;
   messagesContainerRef: React.RefObject<HTMLDivElement | null>;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   onScroll: () => void;
@@ -230,14 +223,10 @@ const MessagesList = memo(function MessagesList({
       }}
     >
       {messages.map((message) => (
-        <ChatMessage
-          key={message.id}
-          message={message}
-          onTypingComplete={onTypingComplete}
-        />
+        <ChatMessage key={message.id} message={message} />
       ))}
 
-      {isLoading && (
+      {isWaiting && (
         <div className="flex gap-3">
           <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
             <Bot className="w-4 h-4 text-white" />
@@ -262,16 +251,13 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
       id: 'welcome',
       role: 'assistant',
       content: "Hi! I'm the ALLONE AI Assistant. I can help you learn about our AI automation services, answer questions about how we work, or help you get started. What would you like to know?",
-      isTyping: false,
     },
   ]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-
-  // Check if any message is currently typing
-  const isAiTyping = messages.some(m => m.isTyping);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -280,14 +266,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const chunksRef = useRef<Blob[]>([]);
   const lastScrollTopRef = useRef(0);
 
-  // Stable callback for typing completion
-  const handleTypingComplete = useCallback((messageId: string) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === messageId ? { ...msg, isTyping: false } : msg
-      )
-    );
-  }, []);
+  const isInputDisabled = isWaiting || isStreaming || isTranscribing;
 
   const scrollToBottom = useCallback(() => {
     if (shouldAutoScroll && messagesContainerRef.current) {
@@ -325,7 +304,6 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
       e.preventDefault();
     };
 
-    // Add with { passive: false } to allow preventDefault
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
   }, []);
@@ -361,18 +339,19 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
   }, [isOpen, onClose]);
 
   const sendMessage = useCallback(async (text: string) => {
-    if (!text || isLoading) return;
+    if (!text || isWaiting || isStreaming) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: text,
-      isTyping: false,
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
+    setIsWaiting(true);
     setShouldAutoScroll(true);
+
+    const assistantId = (Date.now() + 1).toString();
 
     try {
       const response = await fetch('/api/chat', {
@@ -385,32 +364,118 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
         }),
       });
 
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: data.reply,
-        isTyping: true,
-      };
+      const body = response.body;
+      if (!body) {
+        throw new Error('No response body');
+      }
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      // Switch from waiting to streaming — add empty assistant message
+      setIsWaiting(false);
+      setIsStreaming(true);
+      setMessages((prev) => [...prev, {
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+        services: [],
+        isStreaming: true,
+      }]);
+
+      // Read the NDJSON stream
+      const reader = body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || ''; // Keep incomplete last line
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+
+          try {
+            const parsed = JSON.parse(line);
+
+            if (parsed.type === 'text') {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantId
+                    ? { ...msg, content: msg.content + parsed.content }
+                    : msg
+                )
+              );
+              scrollToBottom();
+            } else if (parsed.type === 'service') {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantId
+                    ? { ...msg, services: [...(msg.services || []), parsed.data] }
+                    : msg
+                )
+              );
+              scrollToBottom();
+            } else if (parsed.type === 'error') {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantId
+                    ? { ...msg, content: msg.content || parsed.content }
+                    : msg
+                )
+              );
+            } else if (parsed.type === 'done') {
+              // Stream complete — remove streaming cursor
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantId
+                    ? { ...msg, isStreaming: false }
+                    : msg
+                )
+              );
+            }
+          } catch {
+            // Skip malformed JSON lines
+          }
+        }
+      }
+
+      // Ensure streaming state is cleaned up even if no "done" message
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantId
+            ? { ...msg, isStreaming: false }
+            : msg
+        )
+      );
     } catch (error) {
       console.error('Chat error:', error);
-      setMessages((prev) => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly at info@allone.ge",
-        isTyping: false,
-      }]);
+      setIsWaiting(false);
+      setMessages((prev) => {
+        // If assistant message was already added, update it; otherwise add error message
+        const hasAssistant = prev.some(m => m.id === assistantId);
+        if (hasAssistant) {
+          return prev.map(msg =>
+            msg.id === assistantId
+              ? { ...msg, content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly at info@allone.ge", isStreaming: false, services: [] }
+              : msg
+          );
+        }
+        return [...prev, {
+          id: assistantId,
+          role: 'assistant' as const,
+          content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly at info@allone.ge",
+        }];
+      });
     } finally {
-      setIsLoading(false);
+      setIsStreaming(false);
     }
-  }, [messages, isLoading]);
+  }, [messages, isWaiting, isStreaming, scrollToBottom]);
 
   const startRecording = useCallback(async () => {
     try {
@@ -503,8 +568,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
             <MessagesList
               messages={messages}
-              isLoading={isLoading}
-              onTypingComplete={handleTypingComplete}
+              isWaiting={isWaiting}
               messagesContainerRef={messagesContainerRef}
               messagesEndRef={messagesEndRef}
               onScroll={handleScroll}
@@ -513,10 +577,10 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
             <ChatInput
               onSend={sendMessage}
-              isLoading={isLoading}
+              isDisabled={isInputDisabled}
               isRecording={isRecording}
               isTranscribing={isTranscribing}
-              isAiTyping={isAiTyping}
+              isStreaming={isStreaming}
               onToggleRecording={toggleRecording}
               inputRef={inputRef}
             />

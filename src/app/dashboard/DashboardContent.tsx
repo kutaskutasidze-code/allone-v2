@@ -164,7 +164,7 @@ export default function DashboardContent({ data }: DashboardContentProps) {
             <Link
               key={action.label}
               href={action.href}
-              className="bg-white p-6 hover:bg-[var(--gray-50)] transition-colors group"
+              className="bg-white p-6 hover:bg-white transition-colors group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="w-10 h-10 rounded-lg border border-[var(--gray-200)] flex items-center justify-center group-hover:border-[var(--black)] transition-colors">

@@ -156,7 +156,7 @@ export default function ProductsPage({
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center justify-center gap-2 mb-8"
           >
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--gray-200)] bg-[var(--gray-50)]">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--gray-200)] bg-white">
               <Circle className="w-2 h-2 fill-green-500 text-green-500" />
               <span className="text-xs font-medium text-[var(--gray-600)] uppercase tracking-wider">Lab Online</span>
             </div>
@@ -896,7 +896,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
                       <Check className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1 border border-[var(--gray-200)] rounded-xl overflow-hidden">
-                      <div className="p-4 bg-[var(--gray-50)] border-b border-[var(--gray-200)]">
+                      <div className="p-4 bg-white border-b border-[var(--gray-200)]">
                         <p className="text-sm font-medium text-[var(--black)]">Deployment Complete</p>
                       </div>
                       <div className="p-4 space-y-4">
@@ -912,7 +912,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
                                 {copiedField === 'embed' ? 'Copied' : 'Copy'}
                               </button>
                             </div>
-                            <pre className="text-xs bg-[var(--gray-50)] border border-[var(--gray-200)] rounded-lg p-3 overflow-x-auto font-mono">
+                            <pre className="text-xs bg-white border border-[var(--gray-200)] rounded-lg p-3 overflow-x-auto font-mono">
                               {createdProject.embed_code}
                             </pre>
                           </div>
@@ -930,7 +930,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
                                 {copiedField === 'iframe' ? 'Copied' : 'Copy'}
                               </button>
                             </div>
-                            <pre className="text-xs bg-[var(--gray-50)] border border-[var(--gray-200)] rounded-lg p-3 overflow-x-auto font-mono">
+                            <pre className="text-xs bg-white border border-[var(--gray-200)] rounded-lg p-3 overflow-x-auto font-mono">
                               {createdProject.iframe_embed}
                             </pre>
                           </div>
@@ -948,7 +948,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
                                 {copiedField === 'webhook' ? 'Copied' : 'Copy'}
                               </button>
                             </div>
-                            <code className="text-xs bg-[var(--gray-50)] border border-[var(--gray-200)] rounded-lg p-3 block overflow-x-auto font-mono">
+                            <code className="text-xs bg-white border border-[var(--gray-200)] rounded-lg p-3 block overflow-x-auto font-mono">
                               {createdProject.webhook_url}
                             </code>
                           </div>
@@ -992,7 +992,7 @@ function AIStudio({ subscription, projects }: { subscription: Subscription; proj
         {/* Input Area */}
         <div className="border-t border-[var(--gray-200)] p-4 flex-shrink-0 bg-white">
           <div className="max-w-3xl mr-auto ml-8">
-            <div className={`relative rounded-xl border transition-all duration-200 ${inputFocused ? 'border-[var(--black)] bg-white shadow-sm' : 'border-[var(--gray-200)] bg-[var(--gray-50)]'}`}>
+            <div className={`relative rounded-xl border transition-all duration-200 ${inputFocused ? 'border-[var(--black)] bg-white shadow-sm' : 'border-[var(--gray-200)] bg-white'}`}>
               <textarea
                 ref={inputRef}
                 value={input}

@@ -168,7 +168,7 @@ export default function CategoriesPage() {
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder="Category name..."
-              className="flex-1 px-3 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+              className="flex-1 px-3 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             />

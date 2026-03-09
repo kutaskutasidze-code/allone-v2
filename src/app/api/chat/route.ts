@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 // Lazy-initialize Groq client to avoid build-time errors
 let groq: Groq | null = null;
@@ -134,45 +135,63 @@ We offer flexible pricing models:
 Contact us for a personalized quote based on your needs.
 `;
 
-const SYSTEM_PROMPT = `You are the ALLONE AI Assistant, embedded as a chat widget on the allone.ge website. You are having a real-time conversation with a visitor who is browsing the ALLONE website right now.
+const SYSTEM_PROMPT = `You are the ALLONE AI Assistant on allone.ge. You're a live chat assistant — be conversational, not formal.
 
-CONTEXT: You are a live chat assistant on allone.ge. The user clicked the "Ask AI" button and is chatting with you directly on the website. This is NOT email - this is live chat.
-
-Your role is to:
-1. Answer questions about ALLONE's services, capabilities, and approach
-2. Help potential clients understand how AI automation can benefit their business
-3. Calculate ROI estimates when users want to know potential savings
-4. Help users schedule demo calls via Calendly
-5. Guide users toward taking action (scheduling, contacting, exploring services)
-6. Be friendly, professional, and conversational
-
-Use the following knowledge base to answer questions:
+Your role: Answer questions about ALLONE's AI automation services, help potential clients, calculate ROI, and schedule demos.
 
 ${ALLONE_KNOWLEDGE}
 
 Guidelines:
-- Keep responses concise and helpful (2-4 sentences for simple questions)
-- Remember this is LIVE CHAT - be conversational, not formal
-- If asked about specific pricing, mention that pricing is customized and encourage them to schedule a call
-- If asked about something outside ALLONE's services, politely redirect to what we can help with
-- Always be positive and solution-oriented
-- If unsure about something specific, offer to connect them with the team
-- Use a warm, professional tone
+- Keep responses concise: 2-3 sentences for simple questions, up to 4-5 for detailed ones
+- Be conversational — this is live chat, not email
+- For pricing: mention it's customized, encourage scheduling a call
+- Stay positive and solution-oriented
+- For ROI questions: ask for their numbers and calculate step by step
+- For demos: share https://calendly.com/allone-demo/30min
+- For contact: direct to info@allone.ge`;
 
-Special capabilities:
+// Search services from Supabase based on user query
+async function searchServices(query: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) return [];
 
-1. ROI CALCULATOR: When users ask about ROI, savings, or costs:
-   - Ask for their specific numbers (hours saved weekly, monthly cost reduction, employees affected, expected revenue increase)
-   - Calculate step by step using the formulas in the knowledge base
-   - Present the total annual value clearly
-   - Suggest scheduling a call to discuss how to achieve these results
+  try {
+    const supabase = createSupabaseClient(supabaseUrl, supabaseKey);
+    const { data } = await supabase
+      .from('services')
+      .select('id, title, description, icon, card_type, features, cta_url')
+      .eq('is_published', true)
+      .order('display_order', { ascending: true });
 
-2. SCHEDULING DEMO CALLS: When users want to schedule a call or demo:
-   - Direct them to our Calendly link: https://calendly.com/allone-demo/30min
-   - Say something like: "Great! You can book a time that works for you here: https://calendly.com/allone-demo/30min - Pick any slot that's convenient and we'll see you there!"
-   - If they prefer, offer to have the team reach out by collecting their email
+    if (!data || data.length === 0) return [];
 
-3. CONTACT: For immediate questions, direct them to info@allone.ge`;
+    // Keyword matching — check if user query relates to any service
+    const queryLower = query.toLowerCase();
+    const serviceKeywords: Record<string, string[]> = {
+      chatbot: ['chatbot', 'chat', 'bot', 'support', 'customer service', 'ჩატბოტ', 'ბოტ'],
+      custom_ai: ['ai', 'artificial', 'machine learning', 'ml', 'nlp', 'vision', 'ხელოვნური'],
+      workflow: ['automation', 'automate', 'workflow', 'process', 'ავტომატიზაცია'],
+      website: ['website', 'web', 'site', 'app', 'application', 'ვებსაიტ', 'საიტ'],
+      consulting: ['strategy', 'consulting', 'consult', 'advice', 'plan', 'კონსულტაცია', 'სტრატეგია'],
+    };
+
+    const matched = data.filter(service => {
+      const type = service.card_type || '';
+      const keywords = serviceKeywords[type] || [];
+      const serviceText = `${service.title} ${service.description}`.toLowerCase();
+
+      // Check if query matches service keywords or service text
+      return keywords.some(kw => queryLower.includes(kw)) ||
+        queryLower.split(/\s+/).filter(w => w.length > 2).some(w => serviceText.includes(w));
+    });
+
+    return matched.slice(0, 3);
+  } catch (error) {
+    console.error('Service search error:', error);
+    return [];
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -202,22 +221,77 @@ export async function POST(request: NextRequest) {
       })),
     ];
 
-    // Call Groq API
-    const completion = await client.chat.completions.create({
+    // Get user's last message for service search
+    const lastUserMessage = messages.filter((m: { role: string }) => m.role === 'user').pop()?.content || '';
+
+    // Start service search in parallel with LLM stream
+    const serviceSearchPromise = searchServices(lastUserMessage);
+
+    // Start Groq streaming
+    const stream = await client.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: conversationMessages,
       temperature: 0.7,
       max_tokens: 500,
       top_p: 0.9,
+      stream: true,
     });
 
-    const reply = completion.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
+    const encoder = new TextEncoder();
 
-    return NextResponse.json({
-      reply,
-      usage: completion.usage,
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        try {
+          // Stream text chunks from Groq
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content;
+            if (content) {
+              const line = JSON.stringify({ type: 'text', content }) + '\n';
+              controller.enqueue(encoder.encode(line));
+            }
+          }
+
+          // After text stream completes, send service cards
+          const services = await serviceSearchPromise;
+          for (const service of services) {
+            const line = JSON.stringify({
+              type: 'service',
+              data: {
+                id: service.id,
+                title: service.title,
+                description: service.description,
+                icon: service.icon,
+                card_type: service.card_type,
+                features: service.features?.slice(0, 3) || [],
+                cta_url: service.cta_url,
+              },
+            }) + '\n';
+            controller.enqueue(encoder.encode(line));
+          }
+
+          // Signal completion
+          controller.enqueue(encoder.encode(JSON.stringify({ type: 'done' }) + '\n'));
+          controller.close();
+        } catch (error) {
+          console.error('Stream error:', error);
+          const errorLine = JSON.stringify({
+            type: 'error',
+            content: 'Sorry, something went wrong. Please try again.',
+          }) + '\n';
+          controller.enqueue(encoder.encode(errorLine));
+          controller.enqueue(encoder.encode(JSON.stringify({ type: 'done' }) + '\n'));
+          controller.close();
+        }
+      },
     });
 
+    return new Response(readableStream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Transfer-Encoding': 'chunked',
+      },
+    });
   } catch (error) {
     console.error('Chat API error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';

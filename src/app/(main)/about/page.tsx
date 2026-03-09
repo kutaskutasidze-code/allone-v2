@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { CTA } from '@/components/sections';
 import { AboutContent } from './AboutContent';
 import {
   getCachedStats,
@@ -9,45 +8,21 @@ import {
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Learn about ALLONE - a team of AI automation experts transforming businesses with intelligent solutions and custom workflows.',
-  alternates: {
-    canonical: '/about',
-    languages: {
-      'en': '/about',
-      'ka': '/about',
-      'x-default': '/about',
-    },
-  },
+  description: 'Learn about ALLONE — an AI automation agency with offices in Georgia and Belgium, building intelligent systems for modern businesses.',
+  alternates: { canonical: '/about' },
   openGraph: {
     title: 'About ALLONE',
-    description: 'Learn about ALLONE - a team of AI automation experts transforming businesses with intelligent solutions.',
+    description: 'AI automation agency. Georgia + Belgium.',
     url: '/about',
-    images: [{ url: '/images/allone-logo.png', width: 500, height: 500, alt: 'ALLONE' }],
-  },
-  twitter: {
-    card: 'summary',
-    title: 'About ALLONE',
-    description: 'Learn about ALLONE - AI automation experts transforming businesses.',
   },
 };
 
-async function getAboutData() {
+export default async function AboutPage() {
   const [stats, values, about] = await Promise.all([
     getCachedStats(),
     getCachedValues(),
     getCachedAboutContent(),
   ]);
 
-  return { stats, values, about };
-}
-
-export default async function AboutPage() {
-  const { stats, values, about } = await getAboutData();
-
-  return (
-    <>
-      <AboutContent stats={stats} values={values} about={about} />
-      <CTA />
-    </>
-  );
+  return <AboutContent stats={stats} values={values} about={about} />;
 }

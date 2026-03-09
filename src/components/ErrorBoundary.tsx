@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Default fallback UI
       return (
-        <div className="flex items-center justify-center p-8 bg-[var(--gray-50)] rounded-lg border border-[var(--gray-200)]">
+        <div className="flex items-center justify-center p-8 bg-white rounded-lg border border-[var(--gray-200)]">
           <div className="text-center">
             <h3 className="text-lg font-medium text-[var(--gray-900)] mb-2">
               Something went wrong

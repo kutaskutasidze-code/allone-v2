@@ -131,7 +131,7 @@ export default function StatsPage() {
           )}
           <button
             onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-white border border-[var(--gray-200)] rounded-lg hover:bg-[var(--gray-50)]"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-white border border-[var(--gray-200)] rounded-lg hover:bg-white"
           >
             Add Stat
           </button>

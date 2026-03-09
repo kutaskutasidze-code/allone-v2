@@ -169,7 +169,7 @@ export default function ProjectsPage() {
               className={`px-3 py-2 text-sm font-medium transition-colors ${
                 statusFilter === status
                   ? 'bg-[var(--gray-900)] text-white'
-                  : 'text-[var(--gray-600)] hover:bg-[var(--gray-50)]'
+                  : 'text-[var(--gray-600)] hover:bg-white'
               }`}
             >
               {status === 'all' ? 'All' : status === 'published' ? 'Live' : 'Draft'}

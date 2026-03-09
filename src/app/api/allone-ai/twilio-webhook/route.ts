@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 
 export const maxDuration = 30;
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 
 const KNOWLEDGE = `ALLONE — AI გადაწყვეტილებები ბიზნესისთვის, თბილისი.
 4-ეტაპიანი სერვისი: კონსულტაცია, დაგეგმვა, განხორციელება, მხარდაჭერა.
@@ -58,7 +60,7 @@ async function getAIResponse(messages: ChatMessage[]): Promise<string> {
           if (text) return text;
         }
         if (res.status === 429 && i === 0) { await new Promise(r => setTimeout(r, 2000)); continue; }
-      } catch {}
+      } catch (e) { console.error('Gemini API error:', e); }
       break;
     }
   }
@@ -73,7 +75,7 @@ async function getAIResponse(messages: ChatMessage[]): Promise<string> {
         const data = await res.json();
         return data.choices?.[0]?.message?.content || '';
       }
-    } catch {}
+    } catch (e) { console.error('Groq API error:', e); }
   }
   return 'ბოდიშით, ტექნიკური ხარვეზია.';
 }
@@ -86,17 +88,45 @@ function twiml(xml: string): NextResponse {
   return new NextResponse(xml, { headers: { 'Content-Type': 'text/xml' } });
 }
 
+function validateTwilioSignature(request: NextRequest, params: URLSearchParams): boolean {
+  if (!TWILIO_AUTH_TOKEN) return false; // Fail closed if token not configured
+
+  const signature = request.headers.get('x-twilio-signature');
+  if (!signature) return false;
+
+  const fullUrl = request.url;
+  // Sort params and append to URL for signature computation
+  const sortedParams = Array.from(params.entries()).sort(([a], [b]) => a.localeCompare(b));
+  const data = sortedParams.reduce((acc, [key, val]) => acc + key + val, fullUrl);
+
+  const expected = crypto
+    .createHmac('sha1', TWILIO_AUTH_TOKEN)
+    .update(data)
+    .digest('base64');
+
+  return signature === expected;
+}
+
 export async function POST(request: NextRequest) {
   const url = new URL(request.url);
   if (url.searchParams.get('status')) return twiml('<Response/>');
 
   const formData = await request.formData();
+
+  // Validate Twilio request signature
+  const formParams = new URLSearchParams();
+  formData.forEach((value, key) => formParams.set(key, value.toString()));
+  if (!validateTwilioSignature(request, formParams)) {
+    console.error('Invalid Twilio signature');
+    return new NextResponse('Forbidden', { status: 403 });
+  }
+
   const speechResult = formData.get('SpeechResult') as string | null;
   const callSid = formData.get('CallSid') as string || 'unknown';
 
   let history: ChatMessage[] = [];
   const hp = url.searchParams.get('h');
-  if (hp) { try { history = JSON.parse(Buffer.from(hp, 'base64url').toString()); } catch {} }
+  if (hp) { try { history = JSON.parse(Buffer.from(hp, 'base64url').toString()); } catch (e) { console.error('History parse error:', e); } }
 
   const host = request.headers.get('host') || 'www.allone.ge';
   const protocol = host.includes('localhost') ? 'http' : 'https';

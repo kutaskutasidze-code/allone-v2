@@ -45,10 +45,10 @@ export function ProjectsGrid({
     : filteredProjects;
 
   return (
-    <section className="py-16 lg:py-24 relative">
+    <section className="py-[clamp(4rem,8vw,8rem)] relative">
       <Container>
         {showHeader && (
-          <div className="mb-12">
+          <div className="mb-[clamp(3rem,6vw,5rem)]">
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -79,7 +79,7 @@ export function ProjectsGrid({
             transition={{ duration: 0.5 }}
             className="mb-10"
           >
-            <div className="inline-flex flex-wrap gap-2 bg-white rounded-2xl p-2 shadow-sm">
+            <div className="inline-flex flex-wrap gap-2 bg-transparent backdrop-blur-sm rounded-2xl p-2 border border-[var(--gray-300)]">
               {categories.map((category, index) => (
                 <motion.button
                   key={category}

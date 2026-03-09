@@ -19,6 +19,10 @@ async function getPayPalAccessToken() {
     body: 'grant_type=client_credentials',
   });
 
+  if (!response.ok) {
+    throw new Error(`PayPal auth failed: ${response.status}`);
+  }
+
   const data = await response.json();
   return data.access_token;
 }
@@ -26,10 +30,10 @@ async function getPayPalAccessToken() {
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const token = searchParams.get('token'); // PayPal order ID
-  const origin = request.headers.get('origin') || 'https://allone.ge';
+  const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'https://allone.ge';
 
   if (!token) {
-    return NextResponse.redirect(`${origin}/products?error=missing_token`);
+    return NextResponse.redirect(`${siteOrigin}/products?error=missing_token`);
   }
 
   try {
@@ -47,11 +51,17 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    if (!captureResponse.ok) {
+      const errorData = await captureResponse.text();
+      console.error('PayPal capture failed:', errorData);
+      return NextResponse.redirect(`${siteOrigin}/products?error=payment_failed`);
+    }
+
     const captureData = await captureResponse.json();
 
-    if (!captureResponse.ok || captureData.status !== 'COMPLETED') {
-      console.error('PayPal capture failed:', captureData);
-      return NextResponse.redirect(`${origin}/products?error=payment_failed`);
+    if (captureData.status !== 'COMPLETED') {
+      console.error('PayPal capture not completed:', captureData.status);
+      return NextResponse.redirect(`${siteOrigin}/products?error=payment_failed`);
     }
 
     // Get capture ID
@@ -71,22 +81,27 @@ export async function GET(request: NextRequest) {
 
     if (updateError) {
       console.error('Failed to update purchase:', updateError);
+      return NextResponse.json({ error: 'Purchase update failed' }, { status: 500 });
     }
 
-    // Link to user if logged in
+    // Link to user if logged in — direct query instead of listUsers()
     const customId = captureData.purchase_units?.[0]?.custom_id;
     if (customId) {
       try {
         const { email } = JSON.parse(customId);
-        // Check if user exists
-        const { data: userData } = await supabase.auth.admin.listUsers();
-        const user = userData?.users?.find(u => u.email === email);
+        if (email) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', email)
+            .single();
 
-        if (user) {
-          await supabase
-            .from('purchases')
-            .update({ user_id: user.id })
-            .eq('paypal_order_id', token);
+          if (profile) {
+            await supabase
+              .from('purchases')
+              .update({ user_id: profile.id })
+              .eq('paypal_order_id', token);
+          }
         }
       } catch (e) {
         console.error('Failed to link user:', e);
@@ -95,10 +110,10 @@ export async function GET(request: NextRequest) {
 
     // Redirect to success page
     const downloadToken = purchase?.download_token;
-    return NextResponse.redirect(`${origin}/dashboard/purchases?success=true&token=${downloadToken}`);
+    return NextResponse.redirect(`${siteOrigin}/dashboard/purchases?success=true&token=${downloadToken}`);
 
   } catch (error) {
     console.error('Capture error:', error);
-    return NextResponse.redirect(`${origin}/products?error=capture_failed`);
+    return NextResponse.redirect(`${siteOrigin}/products?error=capture_failed`);
   }
 }

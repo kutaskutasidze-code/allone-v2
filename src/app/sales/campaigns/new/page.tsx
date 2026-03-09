@@ -135,7 +135,7 @@ export default function NewCampaignPage() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
                 placeholder="e.g., Q1 AI Chatbot Outreach"
                 required
               />
@@ -147,7 +147,7 @@ export default function NewCampaignPage() {
               </label>
               <select
                 onChange={(e) => handleTemplateSelect(e.target.value)}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
               >
                 <option value="">Select a template...</option>
                 {templates.map((template) => (
@@ -167,7 +167,7 @@ export default function NewCampaignPage() {
               type="text"
               value={formData.subject}
               onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
-              className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+              className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
               placeholder="e.g., Automate {{company}} Customer Support with AI"
               required
             />
@@ -183,7 +183,7 @@ export default function NewCampaignPage() {
             <textarea
               value={formData.body_template}
               onChange={(e) => setFormData((prev) => ({ ...prev, body_template: e.target.value }))}
-              className="w-full px-4 py-3 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none font-mono"
+              className="w-full px-4 py-3 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none font-mono"
               rows={12}
               placeholder="Hi,&#10;&#10;I noticed {{company}} handles..."
               required
@@ -205,7 +205,7 @@ export default function NewCampaignPage() {
               <select
                 value={formData.target_service}
                 onChange={(e) => setFormData((prev) => ({ ...prev, target_service: e.target.value }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
               >
                 {SERVICES.map((service) => (
                   <option key={service.value} value={service.value}>
@@ -223,7 +223,7 @@ export default function NewCampaignPage() {
                 type="number"
                 value={formData.min_relevance_score}
                 onChange={(e) => setFormData((prev) => ({ ...prev, min_relevance_score: parseInt(e.target.value) || 0 }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
                 min={0}
                 max={100}
               />
@@ -268,7 +268,7 @@ export default function NewCampaignPage() {
                 type="number"
                 value={formData.daily_limit}
                 onChange={(e) => setFormData((prev) => ({ ...prev, daily_limit: parseInt(e.target.value) || 50 }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--gray-50)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
                 min={1}
                 max={100}
               />

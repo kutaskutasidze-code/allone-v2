@@ -89,7 +89,7 @@ export default function TemplatesPage() {
             >
               <button
                 onClick={() => setExpandedId(expandedId === template.id ? null : template.id)}
-                className="w-full p-4 flex items-start justify-between gap-4 text-left hover:bg-[var(--gray-50)] transition-colors"
+                className="w-full p-4 flex items-start justify-between gap-4 text-left hover:bg-white transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
@@ -142,7 +142,7 @@ export default function TemplatesPage() {
                       <label className="block text-xs font-medium text-[var(--gray-500)] mb-1">
                         Subject
                       </label>
-                      <p className="text-sm text-[var(--black)] bg-[var(--gray-50)] p-3 rounded-lg">
+                      <p className="text-sm text-[var(--black)] bg-white p-3 rounded-lg">
                         {template.subject}
                       </p>
                     </div>
@@ -150,7 +150,7 @@ export default function TemplatesPage() {
                       <label className="block text-xs font-medium text-[var(--gray-500)] mb-1">
                         Body
                       </label>
-                      <pre className="text-sm text-[var(--black)] bg-[var(--gray-50)] p-3 rounded-lg whitespace-pre-wrap font-sans">
+                      <pre className="text-sm text-[var(--black)] bg-white p-3 rounded-lg whitespace-pre-wrap font-sans">
                         {template.body}
                       </pre>
                     </div>

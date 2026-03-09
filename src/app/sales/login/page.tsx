@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
@@ -93,9 +94,7 @@ export default function SalesLoginPage() {
           {/* Logo */}
           <div className="mb-10 text-center">
             <div className="inline-flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[var(--black)] flex items-center justify-center">
-                <span className="text-white font-bold text-xl">A</span>
-              </div>
+              <Image src="/images/allone-logo.png" alt="Allone" width={48} height={48} className="object-contain" priority />
             </div>
             <h1 className="text-2xl font-semibold text-[var(--black)] tracking-tight">Sales Portal</h1>
             <p className="text-sm text-[var(--gray-500)] mt-1">Sign in to manage your leads</p>
@@ -130,7 +129,7 @@ export default function SalesLoginPage() {
                   placeholder="sales@allone.ai"
                   required
                   autoComplete="email"
-                  className={`w-full pl-12 pr-4 py-4 rounded-xl bg-[var(--gray-50)] border-2 transition-all duration-300 text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none ${
+                  className={`w-full pl-12 pr-4 py-4 rounded-xl bg-white border-2 transition-all duration-300 text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none ${
                     isFocused === 'email'
                       ? 'border-[var(--black)] bg-white shadow-lg shadow-black/5'
                       : 'border-transparent hover:border-[var(--gray-200)]'
@@ -166,7 +165,7 @@ export default function SalesLoginPage() {
                   placeholder="Enter your password"
                   required
                   autoComplete="current-password"
-                  className={`w-full pl-12 pr-4 py-4 rounded-xl bg-[var(--gray-50)] border-2 transition-all duration-300 text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none ${
+                  className={`w-full pl-12 pr-4 py-4 rounded-xl bg-white border-2 transition-all duration-300 text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none ${
                     isFocused === 'password'
                       ? 'border-[var(--black)] bg-white shadow-lg shadow-black/5'
                       : 'border-transparent hover:border-[var(--gray-200)]'

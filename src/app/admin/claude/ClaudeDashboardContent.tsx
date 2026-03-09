@@ -165,7 +165,7 @@ export function ClaudeDashboardContent({
         </div>
         <Link
           href="/admin/claude/capabilities"
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-white border border-[var(--gray-200)] rounded-lg hover:bg-[var(--gray-50)] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-white border border-[var(--gray-200)] rounded-lg hover:bg-white transition-colors"
         >
           View All
           <ArrowRight className="h-4 w-4" />
@@ -357,7 +357,7 @@ export function ClaudeDashboardContent({
               return (
                 <div
                   key={upgrade.id}
-                  className="flex items-center gap-4 p-4 hover:bg-[var(--gray-50)] transition-colors"
+                  className="flex items-center gap-4 p-4 hover:bg-white transition-colors"
                 >
                   <div
                     className={`w-8 h-8 flex items-center justify-center rounded-lg ${

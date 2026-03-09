@@ -5,7 +5,27 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: '**.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'allone.ge',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.allone.ge',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'motion-primitives.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com',
       },
     ],
     // Enable modern image formats
@@ -20,9 +40,8 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Enable experimental optimizations
   experimental: {
-    optimizeCss: true,
+    inlineCss: true,
   },
 };
 

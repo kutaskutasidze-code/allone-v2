@@ -19,6 +19,10 @@ async function getPayPalAccessToken() {
     body: 'grant_type=client_credentials',
   });
 
+  if (!response.ok) {
+    throw new Error(`PayPal auth failed: ${response.status}`);
+  }
+
   const data = await response.json();
   return data.access_token;
 }
@@ -46,6 +50,8 @@ export async function POST(request: NextRequest) {
     // Get PayPal access token
     const accessToken = await getPayPalAccessToken();
 
+    const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'https://allone.ge';
+
     // Create PayPal order
     const orderPayload = {
       intent: 'CAPTURE',
@@ -64,8 +70,8 @@ export async function POST(request: NextRequest) {
         brand_name: 'ALLONE',
         landing_page: 'LOGIN',
         user_action: 'PAY_NOW',
-        return_url: `${request.headers.get('origin')}/api/checkout/paypal/capture`,
-        cancel_url: `${request.headers.get('origin')}/products/${product.slug}?cancelled=true`,
+        return_url: `${siteOrigin}/api/checkout/paypal/capture`,
+        cancel_url: `${siteOrigin}/products/${product.slug}?cancelled=true`,
       },
     };
 
@@ -78,12 +84,13 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(orderPayload),
     });
 
-    const orderData = await orderResponse.json();
-
     if (!orderResponse.ok) {
-      console.error('PayPal order creation failed:', orderData);
+      const errorData = await orderResponse.text();
+      console.error('PayPal order creation failed:', errorData);
       return NextResponse.json({ error: 'Failed to create PayPal order' }, { status: 500 });
     }
+
+    const orderData = await orderResponse.json();
 
     // Find approval URL
     const approvalUrl = orderData.links?.find(

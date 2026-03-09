@@ -71,7 +71,7 @@ export async function POST(
     return NextResponse.json({
       response: result.response,
       sources: result.sources.map(s => ({
-        content: s.content.substring(0, 200) + '...',
+        content: (s.content || '').substring(0, 200) + '...',
         document: s.document_name,
         similarity: Math.round(s.similarity * 100) / 100,
       })),

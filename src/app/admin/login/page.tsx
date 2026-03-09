@@ -242,7 +242,7 @@ export default function AdminLoginPage() {
                   placeholder="admin@allone.ai"
                   required
                   autoComplete="email"
-                  className={`w-full pl-12 pr-4 py-4 rounded-xl bg-[var(--gray-50)] border-2 transition-all duration-300 text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none ${
+                  className={`w-full pl-12 pr-4 py-4 rounded-xl bg-white border-2 transition-all duration-300 text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none ${
                     isFocused === 'email'
                       ? 'border-[var(--accent)] bg-white shadow-lg shadow-[var(--accent)]/5'
                       : 'border-transparent hover:border-[var(--gray-200)]'
@@ -284,7 +284,7 @@ export default function AdminLoginPage() {
                   placeholder="Enter your password"
                   required
                   autoComplete="current-password"
-                  className={`w-full pl-12 pr-4 py-4 rounded-xl bg-[var(--gray-50)] border-2 transition-all duration-300 text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none ${
+                  className={`w-full pl-12 pr-4 py-4 rounded-xl bg-white border-2 transition-all duration-300 text-[var(--black)] placeholder:text-[var(--gray-400)] focus:outline-none ${
                     isFocused === 'password'
                       ? 'border-[var(--accent)] bg-white shadow-lg shadow-[var(--accent)]/5'
                       : 'border-transparent hover:border-[var(--gray-200)]'

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -17,9 +18,9 @@ const sizeStyles = {
 };
 
 const iconSizes = {
-  sm: 'w-6 h-6',
-  md: 'w-8 h-8',
-  lg: 'w-10 h-10',
+  sm: { className: 'w-6 h-6', px: 24 },
+  md: { className: 'w-8 h-8', px: 32 },
+  lg: { className: 'w-10 h-10', px: 40 },
 };
 
 export function Logo({ className, size = 'md', showIcon = true }: LogoProps) {
@@ -31,42 +32,17 @@ export function Logo({ className, size = 'md', showIcon = true }: LogoProps) {
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           className={cn(
             'relative flex items-center justify-center',
-            'bg-[var(--slate-950)] rounded-lg',
-            iconSizes[size]
+            iconSizes[size].className
           )}
         >
-          {/* Abstract AI pattern */}
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            className="w-4/5 h-4/5"
-            aria-hidden="true"
-          >
-            <path
-              d="M12 2L2 7L12 12L22 7L12 2Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-[var(--cyan-400)]"
-            />
-            <path
-              d="M2 17L12 22L22 17"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-white"
-            />
-            <path
-              d="M2 12L12 17L22 12"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-[var(--cyan-300)]"
-            />
-          </svg>
+          <Image
+            src="/images/allone-logo.png"
+            alt="Allone"
+            width={iconSizes[size].px}
+            height={iconSizes[size].px}
+            className="object-contain"
+            priority
+          />
         </motion.div>
       )}
       <span
