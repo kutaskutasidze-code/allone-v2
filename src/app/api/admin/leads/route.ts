@@ -6,7 +6,6 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Check authentication
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -14,38 +13,45 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
-    const search = searchParams.get('search');
+    const search = searchParams.get('search')?.slice(0, 100) || '';
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50')));
+    const offset = (page - 1) * limit;
 
     let query = supabase
       .from('leads')
       .select(`
-        *,
+        id, name, email, phone, company, status, value, source, notes, created_at, updated_at,
         sales_user:sales_users(id, name, email)
-      `)
-      .order('created_at', { ascending: false });
+      `, { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (status && status !== 'all') {
-      query = query.eq('status', status);
+      const validStatuses = ['new', 'contacted', 'qualified', 'won', 'lost'];
+      if (validStatuses.includes(status)) {
+        query = query.eq('status', status);
+      }
     }
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,company.ilike.%${search}%`);
+      const sanitized = search.replace(/[%_]/g, '');
+      if (sanitized.length > 0) {
+        query = query.or(`name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company.ilike.%${sanitized}%`);
+      }
     }
 
-    const { data: leads, error } = await query;
+    const { data: leads, error, count } = await query;
 
     if (error) {
       logger.error('Failed to fetch leads', { error: error.message });
       return NextResponse.json({ error: 'Failed to fetch leads' }, { status: 500 });
     }
 
-    logger.debug('DB SELECT on leads (admin)', {
-      action: 'database',
-      resource: 'leads',
-      count: leads?.length
+    return NextResponse.json({
+      data: leads,
+      meta: { total: count || 0, page, limit },
     });
-
-    return NextResponse.json({ data: leads });
   } catch (error) {
     logger.error('Leads API error', { error: String(error) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

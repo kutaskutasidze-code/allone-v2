@@ -45,13 +45,14 @@ export async function POST(request: NextRequest) {
     logger.info('Contact form email sent', { email: validated.email });
 
     // Save lead to database
+    let leadSaved = false;
     try {
       const supabase = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
       );
 
-      await supabase.from('leads').insert({
+      const { error: dbError } = await supabase.from('leads').insert({
         name: validated.name,
         email: validated.email,
         company: validated.company || null,
@@ -60,13 +61,17 @@ export async function POST(request: NextRequest) {
         status: 'new',
       });
 
-      logger.info('Lead saved to database', { email: validated.email });
+      if (dbError) {
+        logger.error('Failed to save lead', { error: dbError.message, email: validated.email });
+      } else {
+        leadSaved = true;
+        logger.info('Lead saved to database', { email: validated.email });
+      }
     } catch (dbErr) {
-      // Log but don't fail - email was already sent
       logger.error('Failed to save lead', { error: String(dbErr), email: validated.email });
     }
 
-    return success({ message: 'Message sent successfully!' });
+    return success({ message: 'Message sent successfully!', leadSaved });
   } catch (err) {
     logger.error('Contact form error', { error: String(err), ip });
     return error('Failed to send message. Please try again later.');

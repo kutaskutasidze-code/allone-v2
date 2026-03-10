@@ -6,13 +6,38 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Vercel cron secret verification
 function verifyCron(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
-  if (authHeader === `Bearer ${process.env.CRON_SECRET}`) return true;
-  // Allow manual trigger with API key
-  if (request.headers.get('x-claude-api-key') === process.env.CLAUDE_REPORT_API_KEY) return true;
+  if (process.env.CRON_SECRET && authHeader === `Bearer ${process.env.CRON_SECRET}`) return true;
+  const apiKey = request.headers.get('x-claude-api-key');
+  if (process.env.CLAUDE_REPORT_API_KEY && apiKey === process.env.CLAUDE_REPORT_API_KEY) return true;
   return false;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function sendResendEmail(to: string, subject: string, html: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return false;
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      from: process.env.SMTP_FROM || 'ALLONE Website <onboarding@resend.dev>',
+      to: [to],
+      subject,
+      html,
+    }),
+  });
+
+  return res.ok;
 }
 
 // 1. EMAIL DIGEST — new leads from last hour
@@ -21,23 +46,21 @@ async function sendDigest() {
 
   const { data: newLeads, error } = await supabase
     .from('leads')
-    .select('id, name, email, company, source, status, notes, created_at')
+    .select('id, name, email, company, source, status, created_at')
     .gte('created_at', oneHourAgo)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(100);
 
   if (error) throw new Error(`Digest query failed: ${error.message}`);
-  if (!newLeads || newLeads.length === 0) return { digest: 'No new leads in last hour' };
-
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return { digest: `${newLeads.length} new leads but no RESEND_API_KEY` };
+  if (!newLeads || newLeads.length === 0) return { sent: false, reason: 'No new leads in last hour' };
 
   const leadsHtml = newLeads.map(lead => `
     <tr>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${lead.name}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${lead.email || '-'}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${lead.company || '-'}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${lead.source || '-'}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${lead.status}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.name || '')}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.email || '-')}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.company || '-')}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.source || '-')}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.status || '')}</td>
     </tr>
   `).join('');
 
@@ -64,55 +87,38 @@ async function sendDigest() {
     </div>
   `;
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      from: process.env.SMTP_FROM || 'ALLONE Website <onboarding@resend.dev>',
-      to: [process.env.CONTACT_EMAIL || 'kutaskutasidze@gmail.com'],
-      subject: `[Allone] ${newLeads.length} new lead${newLeads.length > 1 ? 's' : ''} — Hourly Report`,
-      html,
-    }),
-  });
+  const contactEmail = process.env.CONTACT_EMAIL || 'kutaskutasidze@gmail.com';
+  const sent = await sendResendEmail(
+    contactEmail,
+    `[Allone] ${newLeads.length} new lead${newLeads.length > 1 ? 's' : ''} — Hourly Report`,
+    html,
+  );
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Digest email failed: ${res.status} ${err}`);
-  }
-
-  return { digest: `Sent digest with ${newLeads.length} leads` };
+  return { sent, leads: newLeads.length };
 }
 
 // 2. STALE LEADS CHECK — flag leads untouched for 48+ hours
 async function checkStaleLeads() {
   const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
-  // Count stale leads (status=new, created > 48h ago, no sales user)
-  const { data: staleLeads, error } = await supabase
+  const { count, error } = await supabase
     .from('leads')
-    .select('id, name, email, created_at')
+    .select('id', { count: 'exact', head: true })
     .eq('status', 'new')
     .is('sales_user_id', null)
     .lte('created_at', twoDaysAgo);
 
   if (error) throw new Error(`Stale check failed: ${error.message}`);
 
-  const staleCount = staleLeads?.length || 0;
+  const staleCount = count || 0;
 
-  // If there are stale leads, send alert
-  if (staleCount > 0 && process.env.RESEND_API_KEY) {
-    const staleNames = staleLeads!.slice(0, 10).map(l => `${l.name} (${l.email || 'no email'})`).join(', ');
-
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
-      body: JSON.stringify({
-        from: process.env.SMTP_FROM || 'ALLONE Website <onboarding@resend.dev>',
-        to: [process.env.CONTACT_EMAIL || 'kutaskutasidze@gmail.com'],
-        subject: `[Allone] ${staleCount} stale leads need attention`,
-        html: `<p><strong>${staleCount} leads</strong> have been sitting as "new" for 48+ hours with no sales rep assigned.</p><p>Top: ${staleNames}</p><p><a href="https://www.allone.ge/admin/leads">View in Admin</a></p>`,
-      }),
-    });
+  if (staleCount > 0) {
+    const contactEmail = process.env.CONTACT_EMAIL || 'kutaskutasidze@gmail.com';
+    await sendResendEmail(
+      contactEmail,
+      `[Allone] ${staleCount} stale leads need attention`,
+      `<p><strong>${staleCount} leads</strong> have been sitting as "new" for 48+ hours with no sales rep assigned.</p><p><a href="https://www.allone.ge/admin/leads">View in Admin</a></p>`,
+    );
   }
 
   return { staleLeads: staleCount };
@@ -120,7 +126,6 @@ async function checkStaleLeads() {
 
 // 3. LEAD SCRAPING — scrape active sources for new leads
 async function scrapeLeads() {
-  // Get active sources
   const { data: sources, error } = await supabase
     .from('lead_sources')
     .select('*')
@@ -131,10 +136,10 @@ async function scrapeLeads() {
   if (!sources || sources.length === 0) return { scraped: 0, message: 'No active sources' };
 
   let totalScraped = 0;
+  const errors: string[] = [];
 
   for (const source of sources) {
     try {
-      // Create scrape job record
       const { data: job } = await supabase
         .from('scrape_jobs')
         .insert({
@@ -148,7 +153,6 @@ async function scrapeLeads() {
       let leadsFound = 0;
       let leadsNew = 0;
 
-      // Scrape based on source type
       if (source.source_type === 'maps' && source.base_url.includes('2gis')) {
         const result = await scrape2GIS(source);
         leadsFound = result.found;
@@ -157,7 +161,6 @@ async function scrapeLeads() {
 
       totalScraped += leadsNew;
 
-      // Update job status
       if (job) {
         await supabase
           .from('scrape_jobs')
@@ -170,39 +173,35 @@ async function scrapeLeads() {
           .eq('id', job.id);
       }
 
-      // Update source stats
       await supabase
         .from('lead_sources')
-        .update({
-          last_scraped_at: new Date().toISOString(),
-          leads_count: (source.leads_count || 0) + leadsNew,
-        })
+        .update({ last_scraped_at: new Date().toISOString() })
         .eq('id', source.id);
 
     } catch (err) {
-      console.error(`Scrape failed for ${source.name}:`, err);
+      errors.push(`${source.name}: ${String(err)}`);
     }
   }
 
-  return { scraped: totalScraped, sources: sources.length };
+  return { scraped: totalScraped, sources: sources.length, errors: errors.length > 0 ? errors : undefined };
 }
 
-// 2GIS API scraper
-async function scrape2GIS(source: { base_url: string; scrape_config: { cities?: string[] } }) {
+// 2GIS scraper — uses env key, batch duplicate check, proper source_id
+async function scrape2GIS(source: { id: string; base_url: string; scrape_config: { cities?: string[] }; countries?: string[] }) {
+  const apiKey = process.env.TWOGIS_API_KEY || 'rurbbn3446';
   const config = source.scrape_config || {};
   const cities = config.cities || [];
   let found = 0;
   let newLeads = 0;
 
-  // 2GIS has a public search API
   const categories = ['IT companies', 'Marketing agencies', 'Hotels', 'Restaurants', 'Medical clinics'];
+  const country = source.countries?.[0] || (source.base_url.includes('.kz') ? 'KZ' : source.base_url.includes('.uz') ? 'UZ' : null);
 
-  for (const city of cities.slice(0, 2)) { // Limit to 2 cities per run (Vercel timeout)
+  for (const city of cities.slice(0, 2)) {
     const category = categories[Math.floor(Math.random() * categories.length)];
 
     try {
-      const searchUrl = `https://catalog.api.2gis.com/3.0/items?q=${encodeURIComponent(category)}&city=${encodeURIComponent(city)}&page_size=10&key=rurbbn3446`;
-
+      const searchUrl = `https://catalog.api.2gis.com/3.0/items?q=${encodeURIComponent(category)}&city=${encodeURIComponent(city)}&page_size=10&key=${apiKey}`;
       const res = await fetch(searchUrl, { signal: AbortSignal.timeout(5000) });
       if (!res.ok) continue;
 
@@ -210,52 +209,68 @@ async function scrape2GIS(source: { base_url: string; scrape_config: { cities?: 
       const items = data?.result?.items || [];
       found += items.length;
 
+      if (items.length === 0) continue;
+
+      // Batch duplicate check — single query instead of N+1
+      const sourceUrls = items
+        .filter((item: { id?: string }) => item.id)
+        .map((item: { id: string }) => `https://2gis.kz/firm/${item.id}`);
+
+      const { data: existingLeads } = await supabase
+        .from('leads')
+        .select('source_url')
+        .in('source_url', sourceUrls);
+
+      const existingUrls = new Set((existingLeads || []).map(l => l.source_url));
+
+      // Batch insert new leads
+      const newLeadRecords = [];
       for (const item of items) {
-        if (!item.name) continue;
+        if (!item.name || !item.id) continue;
 
-        // Check for duplicate by source_url
         const sourceUrl = `https://2gis.kz/firm/${item.id}`;
-        const { data: existing } = await supabase
-          .from('leads')
-          .select('id')
-          .eq('source_url', sourceUrl)
-          .maybeSingle();
+        if (existingUrls.has(sourceUrl)) continue;
 
-        if (existing) continue;
-
-        // Extract contact info
         const phone = item.contact_groups?.[0]?.contacts?.[0]?.value || null;
         const email = item.contact_groups?.flatMap((g: { contacts?: { type?: string; value?: string }[] }) =>
           (g.contacts || []).filter((c: { type?: string }) => c.type === 'email')
         )?.[0]?.value || null;
 
-        // Determine matched service based on category
         let matchedService = null;
-        if (item.rubrics?.some((r: { name?: string }) => r.name?.toLowerCase().includes('it') || r.name?.toLowerCase().includes('software'))) {
+        const rubricNames = (item.rubrics || []).map((r: { name?: string }) => (r.name || '').toLowerCase()).join(' ');
+        if (rubricNames.includes('it') || rubricNames.includes('software')) {
           matchedService = 'custom_ai';
-        } else if (item.rubrics?.some((r: { name?: string }) => r.name?.toLowerCase().includes('hotel') || r.name?.toLowerCase().includes('restaurant'))) {
+        } else if (rubricNames.includes('hotel') || rubricNames.includes('restaurant')) {
           matchedService = 'website';
-        } else if (item.rubrics?.some((r: { name?: string }) => r.name?.toLowerCase().includes('medical') || r.name?.toLowerCase().includes('clinic'))) {
+        } else if (rubricNames.includes('medical') || rubricNames.includes('clinic')) {
           matchedService = 'chatbots';
         }
 
-        await supabase.from('leads').insert({
+        const rating = item.reviews?.rating || 0;
+        const relevanceScore = Math.min(Math.round(rating * 2), 10);
+
+        newLeadRecords.push({
           name: item.name,
           email,
           phone,
           company: item.name,
-          source_id: source.base_url.includes('2gis.kz') ? undefined : undefined,
+          source_id: source.id,
           source_url: sourceUrl,
           address: item.address_name || null,
           city,
-          country: source.base_url.includes('.kz') ? 'KZ' : source.base_url.includes('.uz') ? 'UZ' : null,
+          country,
           matched_service: matchedService,
-          relevance_score: item.reviews?.rating ? Math.round(item.reviews.rating * 2) : 0,
+          relevance_score: relevanceScore,
           is_scraped: true,
-          status: 'new',
+          status: 'new' as const,
         });
+      }
 
-        newLeads++;
+      if (newLeadRecords.length > 0) {
+        const { error: insertError } = await supabase.from('leads').insert(newLeadRecords);
+        if (!insertError) {
+          newLeads += newLeadRecords.length;
+        }
       }
     } catch {
       // Timeout or network error — skip this city
@@ -271,25 +286,38 @@ export async function GET(request: NextRequest) {
   }
 
   const results: Record<string, unknown> = { timestamp: new Date().toISOString() };
+  let hasErrors = false;
 
-  // Run all 3 tasks
-  try {
-    results.scraping = await scrapeLeads();
-  } catch (err) {
-    results.scraping = { error: String(err) };
+  // Run all 3 tasks in parallel
+  const [scrapingResult, digestResult, staleResult] = await Promise.allSettled([
+    scrapeLeads(),
+    sendDigest(),
+    checkStaleLeads(),
+  ]);
+
+  if (scrapingResult.status === 'fulfilled') {
+    results.scraping = scrapingResult.value;
+  } else {
+    results.scraping = { error: scrapingResult.reason?.message || String(scrapingResult.reason) };
+    hasErrors = true;
   }
 
-  try {
-    results.digest = await sendDigest();
-  } catch (err) {
-    results.digest = { error: String(err) };
+  if (digestResult.status === 'fulfilled') {
+    results.digest = digestResult.value;
+  } else {
+    results.digest = { error: digestResult.reason?.message || String(digestResult.reason) };
+    hasErrors = true;
   }
 
-  try {
-    results.staleCheck = await checkStaleLeads();
-  } catch (err) {
-    results.staleCheck = { error: String(err) };
+  if (staleResult.status === 'fulfilled') {
+    results.staleCheck = staleResult.value;
+  } else {
+    results.staleCheck = { error: staleResult.reason?.message || String(staleResult.reason) };
+    hasErrors = true;
   }
 
-  return Response.json({ success: true, results });
+  return Response.json(
+    { success: !hasErrors, results },
+    { status: hasErrors ? 207 : 200 }
+  );
 }
