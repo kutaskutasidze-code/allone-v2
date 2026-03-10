@@ -1,0 +1,17 @@
+name: Lead Automation (Hourly)
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Every hour
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  run-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger lead automation
+        run: |
+          curl -s -X GET \
+            -H "x-claude-api-key: ${{ secrets.CLAUDE_REPORT_API_KEY }}" \
+            "https://www.allone.ge/api/cron/leads" \
+            | jq .
