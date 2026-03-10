@@ -62,6 +62,13 @@ const navigationSections = [
       { name: 'Claude', href: '/admin/claude', icon: Bot },
     ],
   },
+  {
+    label: 'Sales',
+    items: [
+      { name: 'Sales Dashboard', href: '/sales', icon: Briefcase },
+      { name: 'Pitch Deck', href: '/pitch', icon: FileText },
+    ],
+  },
 ];
 
 interface AdminSidebarProps {

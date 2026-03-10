@@ -1,5 +1,3 @@
-import nodemailer from 'nodemailer';
-
 interface EmailData {
   name: string;
   email: string;
@@ -8,30 +6,23 @@ interface EmailData {
   message: string;
 }
 
-// Create a transporter
-// For production, use real SMTP credentials via environment variables
-const createTransporter = () => {
-  // Check if we have SMTP configuration
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-    return nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+export async function sendEmail(data: EmailData): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    console.log('\n========== NEW CONTACT FORM SUBMISSION ==========');
+    console.log('Name:', data.name);
+    console.log('Email:', data.email);
+    if (data.company) console.log('Company:', data.company);
+    console.log('Service:', getServiceLabel(data.service));
+    console.log('Message:', data.message);
+    console.log('=================================================\n');
+    return;
   }
 
-  // For development, use console logging instead
-  return null;
-};
-
-export async function sendEmail(data: EmailData): Promise<void> {
-  const transporter = createTransporter();
-
   const serviceLabel = getServiceLabel(data.service);
+  const fromAddress = process.env.SMTP_FROM || 'ALLONE Website <onboarding@resend.dev>';
+  const toAddress = process.env.CONTACT_EMAIL || 'info@allone.ge';
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -115,39 +106,24 @@ export async function sendEmail(data: EmailData): Promise<void> {
     </html>
   `;
 
-  const textContent = `
-New Contact Form Submission
-
-Name: ${data.name}
-Email: ${data.email}
-${data.company ? `Company: ${data.company}\n` : ''}Service Interest: ${serviceLabel}
-
-Message:
-${data.message}
-
----
-This email was sent from the ALLONE website contact form.
-  `;
-
-  if (transporter) {
-    // Send actual email in production
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || '"ALLONE Website" <noreply@allone.ai>',
-      to: process.env.CONTACT_EMAIL || 'info@allone.ge',
-      replyTo: data.email,
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      from: fromAddress,
+      to: [toAddress],
+      reply_to: data.email,
       subject: `New Contact: ${data.name} - ${serviceLabel}`,
-      text: textContent,
       html: htmlContent,
-    });
-  } else {
-    // Log to console in development
-    console.log('\n========== NEW CONTACT FORM SUBMISSION ==========');
-    console.log('Name:', data.name);
-    console.log('Email:', data.email);
-    if (data.company) console.log('Company:', data.company);
-    console.log('Service:', serviceLabel);
-    console.log('Message:', data.message);
-    console.log('=================================================\n');
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Resend API error: ${res.status} ${err}`);
   }
 }
 
