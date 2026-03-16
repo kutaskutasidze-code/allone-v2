@@ -142,6 +142,21 @@ const translations: Record<Lang, Record<string, string>> = {
     'services.title2': 'to grow with AI',
     'services.viewAll': 'View all services',
     'services.bookCall': 'Book a free call',
+    // Service cards
+    'svc.chatbot.title': 'AI Chatbots & Assistants',
+    'svc.chatbot.desc': 'Context-aware, helpful, human. Our AI learns your business and resolves issues 24/7.',
+    'svc.custom.title': 'Custom AI Solutions',
+    'svc.custom.desc': 'Tailored models trained on your data. From document analysis to predictive insights.',
+    'svc.custom.desc2': 'We build AI systems that understand your specific domain, integrate with your existing tools, and deliver actionable results.',
+    'svc.workflow.title': 'Workflow Automation',
+    'svc.workflow.desc': 'We connect your existing tools into seamless automated pipelines. No more manual data entry or missed handoffs.',
+    'svc.workflow.footer': 'Connect your tools. Data flows automatically.',
+    'svc.website.title': 'Website Development',
+    'svc.website.desc': 'Beautiful, responsive interfaces that load instantly and convert visitors into customers.',
+    'svc.website.desc2': 'We craft pixel-perfect designs with modern frameworks. SEO-optimized, accessible, and built for performance.',
+    'svc.consulting.title': 'Strategy & Consulting',
+    'svc.consulting.desc': "Not sure what you need? We'll map out your AI journey—from first idea to full deployment.",
+    'svc.consulting.cta': 'Book a free call →',
 
     // Work page
     'work.label': 'Portfolio',
@@ -296,6 +311,21 @@ const translations: Record<Lang, Record<string, string>> = {
     'services.title2': 'AI-თ ზრდისთვის',
     'services.viewAll': 'ყველა სერვისი',
     'services.bookCall': 'უფასო კონსულტაცია',
+    // Service cards
+    'svc.chatbot.title': 'AI ჩატბოტები და ასისტენტები',
+    'svc.chatbot.desc': 'კონტექსტის მცოდნე, დამხმარე, ადამიანური. ჩვენი AI სწავლობს თქვენს ბიზნესს და აგვარებს პრობლემებს 24/7.',
+    'svc.custom.title': 'ინდივიდუალური AI გადაწყვეტილებები',
+    'svc.custom.desc': 'თქვენს მონაცემებზე გაწვრთნილი მოდელები. დოკუმენტების ანალიზიდან პროგნოზირებამდე.',
+    'svc.custom.desc2': 'ჩვენ ვქმნით AI სისტემებს, რომლებიც ესმით თქვენს სპეციფიკურ დარგს, ინტეგრირდება არსებულ ინსტრუმენტებთან და აწვდის პრაქტიკულ შედეგებს.',
+    'svc.workflow.title': 'სამუშაო პროცესის ავტომატიზაცია',
+    'svc.workflow.desc': 'ჩვენ ვაკავშირებთ თქვენს არსებულ ინსტრუმენტებს ავტომატიზირებულ პაიპლაინებში. აღარ არის ხელით მონაცემების შეყვანა.',
+    'svc.workflow.footer': 'დააკავშირეთ ინსტრუმენტები. მონაცემები ავტომატურად მოძრაობს.',
+    'svc.website.title': 'ვებსაიტების დეველოპმენტი',
+    'svc.website.desc': 'ლამაზი, რესპონსიული ინტერფეისები, რომლებიც მყისიერად იტვირთება და ვიზიტორებს მომხმარებლებად აქცევს.',
+    'svc.website.desc2': 'ჩვენ ვქმნით პიქსელ-სრულყოფილ დიზაინს თანამედროვე ფრეიმვორკებით. SEO-ოპტიმიზირებული, ხელმისაწვდომი და შესრულებაზე ორიენტირებული.',
+    'svc.consulting.title': 'სტრატეგია და კონსალტინგი',
+    'svc.consulting.desc': 'არ იცით რა გჭირდებათ? ჩვენ დაგეხმარებით AI-ს გზის დაგეგმვაში — იდეიდან სრულ განხორციელებამდე.',
+    'svc.consulting.cta': 'დაჯავშნე უფასო ზარი →',
 
     // Work page
     'work.label': 'პორტფოლიო',
