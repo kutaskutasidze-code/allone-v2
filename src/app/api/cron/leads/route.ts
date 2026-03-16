@@ -40,10 +40,28 @@ async function sendResendEmail(to: string, subject: string, html: string) {
   return res.ok;
 }
 
-// Georgian cities for scraping
-const GEORGIAN_CITIES = ['Tbilisi', 'Batumi', 'Kutaisi', 'Rustavi', 'Zugdidi'];
+// ========== CITY CONFIG ==========
+// Tbilisi split into geographic quadrants for pagination, smaller cities as single zones
+const SCRAPE_SCHEDULE: { city: string; bbox: string; label: string }[] = [
+  // Tbilisi — 6 geographic slices (covers ~5,700 businesses)
+  { city: 'Tbilisi', bbox: '41.68,44.70,41.72,44.80', label: 'Tbilisi SW' },
+  { city: 'Tbilisi', bbox: '41.72,44.70,41.76,44.80', label: 'Tbilisi W' },
+  { city: 'Tbilisi', bbox: '41.68,44.80,41.72,44.90', label: 'Tbilisi SE' },
+  { city: 'Tbilisi', bbox: '41.72,44.80,41.76,44.90', label: 'Tbilisi E' },
+  { city: 'Tbilisi', bbox: '41.76,44.70,41.82,44.80', label: 'Tbilisi NW' },
+  { city: 'Tbilisi', bbox: '41.76,44.80,41.82,44.90', label: 'Tbilisi NE' },
+  // Batumi — 2 slices (covers ~1,170 businesses)
+  { city: 'Batumi', bbox: '41.62,41.60,41.66,41.68', label: 'Batumi S' },
+  { city: 'Batumi', bbox: '41.66,41.60,41.70,41.68', label: 'Batumi N' },
+  // Kutaisi — 1 slice (covers ~577 businesses)
+  { city: 'Kutaisi', bbox: '42.22,42.65,42.30,42.75', label: 'Kutaisi' },
+  // Rustavi — 1 slice (covers ~150 businesses)
+  { city: 'Rustavi', bbox: '41.52,44.95,41.58,45.05', label: 'Rustavi' },
+  // Zugdidi — 1 slice (covers ~200 businesses)
+  { city: 'Zugdidi', bbox: '42.49,41.84,42.53,41.90', label: 'Zugdidi' },
+];
 
-// 1. EMAIL DIGEST — Georgian leads from last 24 hours (sent once daily at 11 AM)
+// ========== 1. EMAIL DIGEST ==========
 async function sendDigest() {
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
@@ -106,7 +124,7 @@ async function sendDigest() {
   return { sent, leads: newLeads.length, withContact: leadsWithContact.length };
 }
 
-// 2. STALE LEADS CHECK — flag Georgian leads untouched for 48+ hours
+// ========== 2. STALE LEADS CHECK ==========
 async function checkStaleLeads() {
   const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
@@ -134,33 +152,21 @@ async function checkStaleLeads() {
   return { staleLeads: staleCount };
 }
 
-// Business type filters for OSM Overpass queries — rotated each hour for variety
-const OSM_BUSINESS_FILTERS = [
-  // Group 1: Tech & Services
-  { filter: '["office"~"it|company|consulting|insurance|financial|lawyer|estate_agent"]', service: 'custom_ai' },
-  // Group 2: Hospitality
-  { filter: '["tourism"~"hotel|hostel|guest_house|apartment"]', service: 'website' },
-  // Group 3: Food & Drink
-  { filter: '["amenity"~"restaurant|cafe|bar|fast_food"]', service: 'website' },
-  // Group 4: Health
-  { filter: '["amenity"~"clinic|hospital|dentist|pharmacy|doctors"]', service: 'chatbots' },
-  // Group 5: Retail & Commerce
-  { filter: '["shop"~"supermarket|clothes|beauty|car|furniture|electronics|hardware"]', service: 'automation' },
-  // Group 6: Education & Finance
-  { filter: '["amenity"~"bank|school|university|kindergarten|college"]', service: 'consulting' },
-  // Group 7: Auto & Logistics
-  { filter: '["shop"~"car_repair|car_parts|tyres"]["amenity"~"car_rental|fuel"]', service: 'automation' },
-];
-
-// 3. LEAD SCRAPING — scrape Georgian businesses via OpenStreetMap Overpass API (free, no key needed)
+// ========== 3. MAIN SCRAPER — OSM + WIKIDATA ==========
 async function scrapeLeads() {
+  // Determine which zone to scrape based on current hour (rotates through all zones)
+  const currentHour = new Date().getUTCHours();
+  const zoneIndex = currentHour % SCRAPE_SCHEDULE.length;
+  const zone = SCRAPE_SCHEDULE[zoneIndex];
+
   const { data: job } = await supabase
     .from('scrape_jobs')
     .insert({
       source_id: null,
       status: 'running',
-      search_query: 'OpenStreetMap Overpass — Georgian businesses',
+      search_query: `OSM+Wikidata: ${zone.label}`,
       country: 'GE',
+      city: zone.city,
       started_at: new Date().toISOString(),
     })
     .select()
@@ -169,25 +175,20 @@ async function scrapeLeads() {
   const jobId = job?.id;
 
   try {
-    // Pick 2 random city + business type combos per run for variety
-    const cityPicks = GEORGIAN_CITIES.sort(() => Math.random() - 0.5).slice(0, 2);
-    const filterPicks = OSM_BUSINESS_FILTERS.sort(() => Math.random() - 0.5).slice(0, 2);
+    // Run OSM scraper and Wikidata scraper in parallel
+    const [osmResult, wikiResult] = await Promise.allSettled([
+      scrapeOSMZone(zone),
+      scrapeWikidata(),
+    ]);
 
-    let totalFound = 0;
-    let totalNew = 0;
+    const osmData = osmResult.status === 'fulfilled' ? osmResult.value : { found: 0, new: 0 };
+    const wikiData = wikiResult.status === 'fulfilled' ? wikiResult.value : { found: 0, new: 0 };
     const errors: string[] = [];
+    if (osmResult.status === 'rejected') errors.push(`OSM: ${osmResult.reason}`);
+    if (wikiResult.status === 'rejected') errors.push(`Wikidata: ${wikiResult.reason}`);
 
-    for (const city of cityPicks) {
-      for (const { filter, service } of filterPicks) {
-        try {
-          const result = await scrapeOSM(city, filter, service);
-          totalFound += result.found;
-          totalNew += result.new;
-        } catch (err) {
-          errors.push(`${city}/${service}: ${String(err)}`);
-        }
-      }
-    }
+    const totalFound = osmData.found + wikiData.found;
+    const totalNew = osmData.new + wikiData.new;
 
     if (jobId) {
       await supabase
@@ -201,7 +202,15 @@ async function scrapeLeads() {
         .eq('id', jobId);
     }
 
-    return { scraped: totalNew, found: totalFound, country: 'GE', cities: cityPicks, errors: errors.length > 0 ? errors : undefined };
+    return {
+      scraped: totalNew,
+      found: totalFound,
+      country: 'GE',
+      zone: zone.label,
+      osm: osmData,
+      wikidata: wikiData,
+      errors: errors.length > 0 ? errors : undefined,
+    };
   } catch (err) {
     if (jobId) {
       await supabase
@@ -213,55 +222,54 @@ async function scrapeLeads() {
   }
 }
 
-// OpenStreetMap Overpass scraper — queries businesses with contact info in a Georgian city
-async function scrapeOSM(city: string, osmFilter: string, defaultService: string) {
-  // Build Overpass query: find nodes and ways with contact info in the given city
-  // We query for businesses that have phone OR email
-  const query = `[out:json][timeout:30];
-area["name:en"="${city}"]->.searchArea;
+// ========== OSM OVERPASS — ALL businesses with contact info in a bbox zone ==========
+async function scrapeOSMZone(zone: { city: string; bbox: string; label: string }) {
+  const [s, w, n, e] = zone.bbox.split(',');
+
+  // Query ALL nodes and ways with phone or email in this bounding box — no category filter
+  const query = `[out:json][timeout:45];
 (
-  node${osmFilter}(area.searchArea);
-  way${osmFilter}(area.searchArea);
+  node["contact:phone"](${s},${w},${n},${e});
+  node["phone"](${s},${w},${n},${e});
+  node["contact:email"](${s},${w},${n},${e});
+  node["email"](${s},${w},${n},${e});
+  way["contact:phone"](${s},${w},${n},${e});
+  way["phone"](${s},${w},${n},${e});
+  way["contact:email"](${s},${w},${n},${e});
+  way["email"](${s},${w},${n},${e});
 );
-out body 50;`;
+out body 300;`;
 
   const res = await fetch('https://overpass-api.de/api/interpreter', {
     method: 'POST',
     body: `data=${encodeURIComponent(query)}`,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    signal: AbortSignal.timeout(35000),
+    signal: AbortSignal.timeout(50000),
   });
 
-  if (!res.ok) throw new Error(`Overpass API returned ${res.status}`);
+  if (!res.ok) throw new Error(`Overpass returned ${res.status}`);
 
   const data = await res.json();
-  const elements = data?.elements || [];
+  const elements: OSMElement[] = data?.elements || [];
 
-  // Filter to only elements with phone or email
-  interface OSMElement {
-    type: string;
-    id: number;
-    tags?: Record<string, string>;
+  if (elements.length === 0) return { found: 0, new: 0 };
+
+  // Batch duplicate check
+  const sourceUrls = elements.map(el => `https://www.openstreetmap.org/${el.type}/${el.id}`);
+
+  // Check in batches of 100 (Supabase .in() limit)
+  const existingUrls = new Set<string>();
+  for (let i = 0; i < sourceUrls.length; i += 100) {
+    const batch = sourceUrls.slice(i, i + 100);
+    const { data: existing } = await supabase
+      .from('leads')
+      .select('source_url')
+      .in('source_url', batch);
+    for (const l of existing || []) existingUrls.add(l.source_url);
   }
-  const withContact = elements.filter((el: OSMElement) => {
-    const t = el.tags || {};
-    return t['contact:phone'] || t['phone'] || t['contact:email'] || t['email'];
-  });
-
-  if (withContact.length === 0) return { found: elements.length, new: 0 };
-
-  // Batch duplicate check using OSM source URLs
-  const sourceUrls = withContact.map((el: OSMElement) => `https://www.openstreetmap.org/${el.type}/${el.id}`);
-
-  const { data: existingLeads } = await supabase
-    .from('leads')
-    .select('source_url')
-    .in('source_url', sourceUrls);
-
-  const existingUrls = new Set((existingLeads || []).map(l => l.source_url));
 
   const newLeadRecords = [];
-  for (const el of withContact as OSMElement[]) {
+  for (const el of elements) {
     const t = el.tags || {};
     const sourceUrl = `https://www.openstreetmap.org/${el.type}/${el.id}`;
     if (existingUrls.has(sourceUrl)) continue;
@@ -271,19 +279,21 @@ out body 50;`;
 
     const phone = t['contact:phone'] || t['phone'] || null;
     const email = t['contact:email'] || t['email'] || null;
+    if (!phone && !email) continue;
+
     const website = t['contact:website'] || t['website'] || null;
 
     // Categorize based on OSM tags
-    let matchedService = defaultService;
     const allTags = Object.entries(t).map(([k, v]) => `${k}=${v}`.toLowerCase()).join(' ');
-    if (allTags.includes('office=it') || allTags.includes('software')) {
+    let matchedService = 'website'; // default
+    if (allTags.includes('office=it') || allTags.includes('software') || allTags.includes('computer')) {
       matchedService = 'custom_ai';
-    } else if (allTags.includes('hotel') || allTags.includes('restaurant') || allTags.includes('cafe')) {
-      matchedService = 'website';
-    } else if (allTags.includes('clinic') || allTags.includes('hospital') || allTags.includes('dentist') || allTags.includes('pharmacy')) {
+    } else if (allTags.includes('clinic') || allTags.includes('hospital') || allTags.includes('dentist') || allTags.includes('pharmacy') || allTags.includes('doctor')) {
       matchedService = 'chatbots';
-    } else if (allTags.includes('bank') || allTags.includes('insurance') || allTags.includes('lawyer')) {
+    } else if (allTags.includes('bank') || allTags.includes('insurance') || allTags.includes('lawyer') || allTags.includes('financial') || allTags.includes('university')) {
       matchedService = 'consulting';
+    } else if (allTags.includes('logistics') || allTags.includes('warehouse') || allTags.includes('factory') || allTags.includes('supermarket') || allTags.includes('fuel')) {
+      matchedService = 'automation';
     }
 
     newLeadRecords.push({
@@ -291,10 +301,10 @@ out body 50;`;
       email,
       phone,
       company: name,
-      website: website,
+      website,
       source_url: sourceUrl,
       address: t['addr:street'] ? `${t['addr:street']} ${t['addr:housenumber'] || ''}`.trim() : null,
-      city,
+      city: zone.city,
       country: 'GE',
       matched_service: matchedService,
       relevance_score: 5,
@@ -307,26 +317,133 @@ out body 50;`;
   }
 
   let newLeads = 0;
-  if (newLeadRecords.length > 0) {
-    const { error: insertError } = await supabase.from('leads').insert(newLeadRecords);
-    if (!insertError) {
-      newLeads = newLeadRecords.length;
-    }
+  // Insert in batches of 50
+  for (let i = 0; i < newLeadRecords.length; i += 50) {
+    const batch = newLeadRecords.slice(i, i + 50);
+    const { error: insertError } = await supabase.from('leads').insert(batch);
+    if (!insertError) newLeads += batch.length;
   }
 
-  return { found: withContact.length, new: newLeads };
+  return { found: elements.length, new: newLeads };
 }
 
-// 4. CLEANUP — remove non-Georgian scraped leads
+// ========== WIKIDATA — Georgian companies with phone/email (150 total, paginated) ==========
+async function scrapeWikidata() {
+  // Paginate through Wikidata: 50 per hour, offset based on hour
+  const currentHour = new Date().getUTCHours();
+  const offset = (currentHour % 3) * 50; // 0, 50, 100 — covers all 150 in 3 hours
+
+  const sparql = `SELECT ?item ?itemLabel ?phone ?email ?website ?description WHERE {
+  ?item wdt:P17 wd:Q230 .
+  ?item wdt:P31/wdt:P279* wd:Q4830453 .
+  OPTIONAL { ?item wdt:P1329 ?phone . }
+  OPTIONAL { ?item wdt:P968 ?email . }
+  OPTIONAL { ?item wdt:P856 ?website . }
+  OPTIONAL { ?item schema:description ?description . FILTER(LANG(?description) = "en") }
+  FILTER(BOUND(?phone) || BOUND(?email))
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en,ka" . }
+} LIMIT 50 OFFSET ${offset}`;
+
+  const res = await fetch('https://query.wikidata.org/sparql', {
+    method: 'POST',
+    body: `query=${encodeURIComponent(sparql)}`,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
+      'User-Agent': 'AlloneLeadScraper/1.0 (https://allone.ge)',
+    },
+    signal: AbortSignal.timeout(15000),
+  });
+
+  if (!res.ok) throw new Error(`Wikidata returned ${res.status}`);
+
+  const data = await res.json();
+  interface WikidataBinding {
+    item?: { value?: string };
+    itemLabel?: { value?: string };
+    phone?: { value?: string };
+    email?: { value?: string };
+    website?: { value?: string };
+    description?: { value?: string };
+  }
+  const results: WikidataBinding[] = data?.results?.bindings || [];
+
+  if (results.length === 0) return { found: 0, new: 0 };
+
+  // Build source URLs for dedup
+  const sourceUrls = results
+    .filter(r => r.item?.value)
+    .map(r => r.item!.value!);
+
+  const { data: existing } = await supabase
+    .from('leads')
+    .select('source_url')
+    .in('source_url', sourceUrls);
+
+  const existingUrls = new Set((existing || []).map(l => l.source_url));
+
+  const newLeadRecords = [];
+  for (const r of results) {
+    const sourceUrl = r.item?.value;
+    if (!sourceUrl || existingUrls.has(sourceUrl)) continue;
+
+    const name = r.itemLabel?.value;
+    if (!name || name.startsWith('Q')) continue; // Skip unresolved Wikidata IDs
+
+    const phone = r.phone?.value || null;
+    const emailRaw = r.email?.value || null;
+    const email = emailRaw?.replace('mailto:', '') || null;
+    const website = r.website?.value || null;
+    if (!phone && !email) continue;
+
+    // Categorize from description
+    const desc = (r.description?.value || '').toLowerCase();
+    let matchedService = 'consulting'; // default for Wikidata (established companies)
+    if (desc.includes('bank') || desc.includes('insurance') || desc.includes('financial')) {
+      matchedService = 'consulting';
+    } else if (desc.includes('hospital') || desc.includes('clinic') || desc.includes('pharma')) {
+      matchedService = 'chatbots';
+    } else if (desc.includes('hotel') || desc.includes('restaurant') || desc.includes('tourism')) {
+      matchedService = 'website';
+    } else if (desc.includes('software') || desc.includes('technology') || desc.includes('it ')) {
+      matchedService = 'custom_ai';
+    } else if (desc.includes('logist') || desc.includes('transport') || desc.includes('manufactur')) {
+      matchedService = 'automation';
+    }
+
+    newLeadRecords.push({
+      name,
+      email,
+      phone,
+      company: name,
+      website,
+      source_url: sourceUrl,
+      city: 'Tbilisi', // Most Wikidata Georgian companies are Tbilisi-based
+      country: 'GE',
+      matched_service: matchedService,
+      relevance_score: 8, // Higher score — established companies
+      is_scraped: true,
+      status: 'new' as const,
+    });
+  }
+
+  let newLeads = 0;
+  if (newLeadRecords.length > 0) {
+    const { error: insertError } = await supabase.from('leads').insert(newLeadRecords);
+    if (!insertError) newLeads = newLeadRecords.length;
+  }
+
+  return { found: results.length, new: newLeads };
+}
+
+// ========== 4. CLEANUP ==========
 async function cleanupNonGeorgianLeads() {
-  // First count how many will be deleted
   const { count } = await supabase
     .from('leads')
     .select('id', { count: 'exact', head: true })
     .eq('is_scraped', true)
     .neq('country', 'GE');
 
-  // Then delete them
   const { error } = await supabase
     .from('leads')
     .delete()
@@ -337,19 +454,26 @@ async function cleanupNonGeorgianLeads() {
   return { deleted: count || 0 };
 }
 
+// ========== TYPES ==========
+interface OSMElement {
+  type: string;
+  id: number;
+  tags?: Record<string, string>;
+}
+
+// ========== HANDLER ==========
 export async function GET(request: NextRequest) {
   if (!verifyCron(request)) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const url = new URL(request.url);
-  const task = url.searchParams.get('task'); // 'scrape' | 'digest' | 'cleanup' | null (all)
+  const task = url.searchParams.get('task');
 
   const results: Record<string, unknown> = { timestamp: new Date().toISOString(), task: task || 'scrape' };
   let hasErrors = false;
 
   if (task === 'digest') {
-    // Daily 11 AM — send digest + stale check only
     const [digestResult, staleResult] = await Promise.allSettled([
       sendDigest(),
       checkStaleLeads(),
@@ -369,7 +493,6 @@ export async function GET(request: NextRequest) {
       hasErrors = true;
     }
   } else if (task === 'cleanup') {
-    // One-time cleanup of non-Georgian leads
     try {
       results.cleanup = await cleanupNonGeorgianLeads();
     } catch (err) {
@@ -377,7 +500,6 @@ export async function GET(request: NextRequest) {
       hasErrors = true;
     }
   } else {
-    // Default (hourly) — scrape only, no email
     try {
       results.scraping = await scrapeLeads();
     } catch (err) {

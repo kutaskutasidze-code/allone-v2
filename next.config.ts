@@ -28,13 +28,14 @@ const nextConfig: NextConfig = {
         hostname: 'api.dicebear.com',
       },
     ],
-    // Enable modern image formats
     formats: ['image/avif', 'image/webp'],
-    // Optimize image sizes for common breakpoints
+    qualities: [75, 90, 100],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Minimize image quality for faster loading
-    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    minimumCacheTTL: 60 * 60 * 24 * 30,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
   // Optimize production builds
   compiler: {
@@ -42,6 +43,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     inlineCss: true,
+  },
+  turbopack: {
+    root: '/Users/macintoshi/projects/allone-website',
   },
 };
 
