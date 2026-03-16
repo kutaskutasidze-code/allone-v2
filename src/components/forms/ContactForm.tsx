@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Loader2, CheckCircle2 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 interface FormData {
   name: string;
@@ -12,19 +13,20 @@ interface FormData {
   message: string;
 }
 
-const services = [
-  { value: 'chatbot', label: 'AI Chatbot' },
-  { value: 'automation', label: 'Workflow Automation' },
-  { value: 'custom_ai', label: 'Custom AI Solution' },
-  { value: 'website', label: 'Web Development' },
-  { value: 'consulting', label: 'Consulting' },
-  { value: 'other', label: 'Other' },
+const serviceKeys = [
+  { value: 'chatbot', labelKey: 'form.service.chatbot' },
+  { value: 'automation', labelKey: 'form.service.automation' },
+  { value: 'custom_ai', labelKey: 'form.service.custom' },
+  { value: 'website', labelKey: 'form.service.website' },
+  { value: 'consulting', labelKey: 'form.service.consulting' },
+  { value: 'other', labelKey: 'form.service.other' },
 ];
 
 const inputClass =
   'w-full px-4 py-3 bg-surface border border-border rounded-xl text-[var(--black)] placeholder-[var(--gray-400)] focus:outline-none focus:border-accent transition-colors text-sm';
 
 export function ContactForm() {
+  const { t } = useI18n();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -70,15 +72,15 @@ export function ContactForm() {
         <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 className="w-8 h-8 text-accent" />
         </div>
-        <h3 className="text-xl font-semibold text-[var(--black)] mb-2">Message Sent</h3>
+        <h3 className="text-xl font-semibold text-[var(--black)] mb-2">{t('form.sent')}</h3>
         <p className="text-muted mb-6 text-sm">
-          Thank you for reaching out. We&apos;ll get back to you within 24 hours.
+          {t('form.thanks')}
         </p>
         <button
           onClick={() => setIsSuccess(false)}
           className="text-accent font-medium hover:text-accent-hover transition-colors text-sm"
         >
-          Send another message
+          {t('form.another')}
         </button>
       </motion.div>
     );
@@ -103,7 +105,7 @@ export function ContactForm() {
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           className={inputClass}
-          placeholder="Name"
+          placeholder={t('form.name')}
         />
         <input
           type="email"
@@ -111,7 +113,7 @@ export function ContactForm() {
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           className={inputClass}
-          placeholder="Email"
+          placeholder={t('form.email')}
         />
       </div>
 
@@ -121,16 +123,16 @@ export function ContactForm() {
           value={formData.company}
           onChange={(e) => setFormData({ ...formData, company: e.target.value })}
           className={inputClass}
-          placeholder="Company (optional)"
+          placeholder={t('form.company')}
         />
         <select
           value={formData.service}
           onChange={(e) => setFormData({ ...formData, service: e.target.value })}
           className={`${inputClass} appearance-none cursor-pointer`}
         >
-          {services.map((s) => (
+          {serviceKeys.map((s) => (
             <option key={s.value} value={s.value} className="bg-surface text-[var(--black)]">
-              {s.label}
+              {t(s.labelKey)}
             </option>
           ))}
         </select>
@@ -142,7 +144,7 @@ export function ContactForm() {
         value={formData.message}
         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
         className={`${inputClass} resize-none`}
-        placeholder="Tell us about your project..."
+        placeholder={t('form.message')}
       />
 
       <button
@@ -155,7 +157,7 @@ export function ContactForm() {
         ) : (
           <>
             <Send className="w-4 h-4" />
-            Send Message
+            {t('form.send')}
           </>
         )}
       </button>

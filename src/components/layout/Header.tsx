@@ -1,14 +1,14 @@
 'use client';
 
-import { Home, Briefcase, FileText, User, Zap } from 'lucide-react';
+import { Home, Briefcase, Zap, Atom } from 'lucide-react';
 import { NavBar } from "@/components/ui/tubelight-navbar";
 
 export function Header() {
   const navItems = [
-    { name: 'Home', url: '/', icon: Home },
-    { name: 'Services', url: '/services', icon: Zap },
-    { name: 'Work', url: '/work', icon: Briefcase },
-    { name: 'About', url: '/about', icon: User }
+    { name: 'Home', i18nKey: 'nav.home', url: '/', icon: Home },
+    { name: 'Services', i18nKey: 'nav.services', url: '/services', icon: Zap },
+    { name: 'Work', i18nKey: 'nav.work', url: '/work', icon: Briefcase },
+    { name: 'Lab', i18nKey: 'nav.lab', url: '/lab', icon: Atom },
   ];
 
   return (

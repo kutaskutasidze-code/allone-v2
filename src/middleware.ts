@@ -34,7 +34,6 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Validate session with Supabase server (not just cookies)
   const {
     data: { user },
     error,
@@ -49,8 +48,7 @@ export async function middleware(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/api/')
   ) {
     if (!isAuthenticated) {
-      const redirectUrl = new URL('/admin/login', request.url);
-      return NextResponse.redirect(redirectUrl);
+      return NextResponse.redirect(new URL('/admin/login', request.url));
     }
   }
 
@@ -61,54 +59,21 @@ export async function middleware(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/api/')
   ) {
     if (!isAuthenticated) {
-      const redirectUrl = new URL('/sales/login', request.url);
-      return NextResponse.redirect(redirectUrl);
+      return NextResponse.redirect(new URL('/sales/login', request.url));
     }
   }
 
-  // Protect dashboard routes
-  if (
-    request.nextUrl.pathname.startsWith('/dashboard') &&
-    !request.nextUrl.pathname.startsWith('/api/')
-  ) {
-    if (!isAuthenticated) {
-      const redirectUrl = new URL('/login', request.url);
-      redirectUrl.searchParams.set('redirect', request.nextUrl.pathname);
-      return NextResponse.redirect(redirectUrl);
-    }
-  }
-
-  // API routes - don't redirect, just refresh session
-  // The API routes handle their own auth responses
-
-  // Redirect logged-in users away from admin login page
+  // Redirect logged-in users away from admin/sales login pages
   if (request.nextUrl.pathname === '/admin/login' && isAuthenticated) {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
-
-  // Redirect logged-in users away from sales login page
   if (request.nextUrl.pathname === '/sales/login' && isAuthenticated) {
     return NextResponse.redirect(new URL('/sales', request.url));
-  }
-
-  // Redirect logged-in users from home page to dashboard
-  if (request.nextUrl.pathname === '/' && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  // Redirect logged-in users from login/signup pages to dashboard
-  if ((request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup') && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  // Redirect logged-in users from contact page to dashboard
-  if (request.nextUrl.pathname === '/contact' && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ['/', '/login', '/signup', '/contact', '/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*', '/dashboard', '/dashboard/:path*'],
+  matcher: ['/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*'],
 };

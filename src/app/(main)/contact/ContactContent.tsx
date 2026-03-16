@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { ContactForm } from '@/components/forms';
+import { useI18n } from '@/lib/i18n';
 
 interface ContactInfo {
   email: string;
@@ -15,6 +16,8 @@ interface ContactContentProps {
 }
 
 export function ContactContent({ contactInfo }: ContactContentProps) {
+  const { t } = useI18n();
+
   return (
     <section className="min-h-screen bg-white pt-28 pb-20 lg:pt-36 lg:pb-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,12 +28,12 @@ export function ContactContent({ contactInfo }: ContactContentProps) {
           transition={{ duration: 0.6 }}
           className="max-w-3xl mb-12"
         >
-          <p className="mono-label mb-4">Get in touch</p>
+          <p className="mono-label mb-4">{t('contact.label')}</p>
           <h1 className="text-4xl lg:text-5xl font-semibold text-[var(--black)] tracking-[-0.03em] mb-4">
-            Contact
+            {t('contact.title')}
           </h1>
           <p className="text-lg text-muted">
-            Ready to automate? Let&apos;s talk about your project.
+            {t('contact.desc')}
           </p>
         </motion.div>
 
@@ -78,12 +81,12 @@ export function ContactContent({ contactInfo }: ContactContentProps) {
             {/* Office cards */}
             <div className="pt-4 space-y-3">
               <div className="rounded-xl bg-surface border border-border p-5">
-                <p className="font-mono text-[11px] text-accent uppercase tracking-widest mb-1">Tbilisi</p>
-                <p className="text-[var(--black)] text-sm">Georgia HQ</p>
+                <p className="font-mono text-[11px] text-accent uppercase tracking-widest mb-1">{t('contact.tbilisi')}</p>
+                <p className="text-[var(--black)] text-sm">{t('contact.tbilisi.sub')}</p>
               </div>
               <div className="rounded-xl bg-surface border border-border p-5">
-                <p className="font-mono text-[11px] text-accent uppercase tracking-widest mb-1">Brussels</p>
-                <p className="text-[var(--black)] text-sm">European Office</p>
+                <p className="font-mono text-[11px] text-accent uppercase tracking-widest mb-1">{t('contact.brussels')}</p>
+                <p className="text-[var(--black)] text-sm">{t('contact.brussels.sub')}</p>
               </div>
             </div>
           </motion.div>

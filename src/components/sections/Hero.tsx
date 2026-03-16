@@ -2,6 +2,7 @@
 
 import { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/lib/i18n';
 
 const Spline = lazy(() => import('@splinetool/react-spline'));
 
@@ -14,6 +15,8 @@ function SplineLoadingFallback() {
 }
 
 export function Hero() {
+  const { t } = useI18n();
+
   return (
     <section className="relative h-[100svh] flex flex-col items-center overflow-hidden bg-white">
       {/* Subtle background gradient */}
@@ -26,7 +29,7 @@ export function Hero() {
         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         className="relative z-10 mono-label mt-[clamp(6rem,15vh,8rem)] mb-[clamp(1rem,2vh,1.5rem)]"
       >
-        AI Automation Agency
+        {t('hero.label')}
       </motion.p>
 
       {/* Headline */}
@@ -36,9 +39,9 @@ export function Hero() {
         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         className="relative z-10 text-center text-[clamp(2.5rem,6vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.04em] text-[#071D2F] px-4"
       >
-        All Systems.
+        {t('hero.title1')}
         <br />
-        <span className="text-accent">One Intelligence.</span>
+        <span className="text-accent">{t('hero.title2')}</span>
       </motion.h1>
 
       {/* 3D Robot — optimized container */}

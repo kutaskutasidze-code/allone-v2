@@ -6,6 +6,7 @@ import { ArrowUpRight, Bot, Workflow, Brain, Globe, Compass } from 'lucide-react
 import type { Service } from '@/types/database';
 import { ChatPlayback, WorkflowDiagram, LayeredScreens, defaultContent } from './services';
 import { ShineBorder } from '@/components/ui/ShineBorder';
+import { useI18n } from '@/lib/i18n';
 
 function getServiceByType(services: Service[], cardType: string): Service | undefined {
   return services.find(s => s.card_type === cardType);
@@ -25,6 +26,7 @@ interface ServicesNewProps {
 }
 
 export default function ServicesNew({ services = [], showViewAll = true }: ServicesNewProps) {
+  const { t } = useI18n();
   const chatbot = getServiceByType(services, 'chatbot');
   const customAi = getServiceByType(services, 'custom_ai');
   const workflow = getServiceByType(services, 'workflow');
@@ -96,11 +98,11 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
           className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-10 lg:mb-12"
         >
           <div>
-            <p className="mono-label mb-4">Services</p>
+            <p className="mono-label mb-4">{t('services.label')}</p>
             <h2 className="text-4xl lg:text-5xl font-semibold text-heading leading-[1.05] tracking-[-0.03em]">
-              Everything you need
+              {t('services.title1')}
               <br className="hidden lg:block" />
-              {' '}to grow with AI
+              {' '}{t('services.title2')}
             </h2>
           </div>
           {showViewAll && (
@@ -108,7 +110,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               href="/services"
               className="text-sm text-accent hover:text-accent-hover transition-colors flex items-center gap-1.5 font-medium"
             >
-              View all services <ArrowUpRight className="w-3.5 h-3.5" />
+              {t('services.viewAll')} <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           )}
         </motion.div>
@@ -287,7 +289,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
                   href="/contact"
                   className="btn-primary whitespace-nowrap"
                 >
-                  Book a free call
+                  {t('services.bookCall')}
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
               </div>

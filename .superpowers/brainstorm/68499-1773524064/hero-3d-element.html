@@ -1,0 +1,89 @@
+<h2>Hero 3D Element — How to Handle It?</h2>
+<p class="subtitle">Sutera uses pre-rendered 3D blob animations (animated WebP). For allone, we have options:</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>CSS/SVG Animated Orb</h3>
+      <p>Pure CSS or SVG animated sphere/blob with gradients and rotation. Zero external dependencies, lightweight, looks premium. Can use allone's blue accent as the orb color. Smooth rotation via CSS keyframes.</p>
+      <p style="color:#888;font-size:0.85em;margin-top:6px">Lightest option. Works everywhere. Easy to iterate on.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Three.js Sphere/Blob</h3>
+      <p>Real-time 3D rotating sphere with custom shader — glass, noise distortion, or metallic material. Interactive (reacts to mouse). More impressive but heavier (~50-100KB JS).</p>
+      <p style="color:#888;font-size:0.85em;margin-top:6px">Most impressive. Adds interactivity. Heavier bundle.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Spline 3D Scene (like current allone)</h3>
+      <p>Use Spline to design a custom 3D object (sphere, abstract shape) and embed it. Easy to design, interactive, but depends on Spline's CDN and has longer load times.</p>
+      <p style="color:#888;font-size:0.85em;margin-top:6px">Easiest to design custom shapes. External dependency. Slower load.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="d" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>Pre-rendered Animation (like Sutera)</h3>
+      <p>Create a 3D blob animation in Blender/After Effects, export as animated WebP or short looping video. Looks 3D but loads like an image. Best performance.</p>
+      <p style="color:#888;font-size:0.85em;margin-top:6px">Best perf. Requires external tool to create the asset. Not interactive.</p>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin-top:2rem">Where does the 3D element sit?</h3>
+<p class="subtitle">In the hero layout</p>
+
+<div class="cards" style="grid-template-columns: repeat(2, 1fr)">
+  <div class="card" data-choice="centered" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#fafafa;padding:1.5rem;min-height:160px;position:relative;overflow:hidden">
+      <div style="text-align:center">
+        <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#0A68F5,#59E7CA);margin:0 auto 1rem;opacity:0.8"></div>
+        <div style="font-size:1.2rem;font-weight:700;letter-spacing:-0.04em;line-height:0.9;color:#000">All Systems.<br>One Intelligence.</div>
+        <div style="font-size:0.65rem;color:#999;margin-top:0.5rem">AI Automation · Software · Workflow</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Centered Above Text</h3>
+      <p>Orb floats above the headline. Vertical stack. Clean and balanced.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="side" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#fafafa;padding:1.5rem;min-height:160px;position:relative;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:1.5rem">
+        <div style="flex:1">
+          <div style="font-size:1.1rem;font-weight:700;letter-spacing:-0.04em;line-height:0.9;color:#000">All Systems.<br>One Intelligence.</div>
+          <div style="font-size:0.6rem;color:#999;margin-top:0.5rem">AI Automation · Software · Workflow</div>
+        </div>
+        <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#0A68F5,#59E7CA);opacity:0.8;flex-shrink:0"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Side by Side</h3>
+      <p>Text left, orb right. More dynamic, asymmetric tension.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="background" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#fafafa;padding:1.5rem;min-height:160px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:50%;left:55%;transform:translate(-50%,-50%);width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#0A68F5,#59E7CA);opacity:0.15"></div>
+      <div style="position:relative;z-index:1;text-align:center;padding-top:2rem">
+        <div style="font-size:1.2rem;font-weight:700;letter-spacing:-0.04em;line-height:0.9;color:#000">All Systems.<br>One Intelligence.</div>
+        <div style="font-size:0.65rem;color:#999;margin-top:0.5rem">AI Automation · Software · Workflow</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Background / Behind Text</h3>
+      <p>Large blurred orb behind the text. Atmospheric, subtle. Text dominates.</p>
+    </div>
+  </div>
+</div>

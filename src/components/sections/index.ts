@@ -6,3 +6,7 @@ export { Stats } from './Stats';
 export { Testimonials } from './Testimonials';
 export { ProjectsGrid } from './ProjectsGrid';
 export { CTA } from './CTA';
+export { LabHero } from './LabHero';
+export { LabResearches } from './LabResearches';
+export { LabExperiments } from './LabExperiments';
+export { LabProducts } from './LabProducts';

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>allone.ge — Hero Mockup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #000;
+    --white: #fff;
+    --grey: #9e9e9e;
+    --dark-grey: #cbcbcb;
+    --accent: #0A68F5;
+    --navy: #071D2F;
+    --grid-margin: 24px;
+    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--white);
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* === HEADER (Sutera-style) === */
+  .header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--grid-margin);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: max(10px, 1.15svw);
+    letter-spacing: -0.02em;
+  }
+  .header-left { flex: 1; font-weight: 700; font-size: max(12px, 1.15svw); }
+  .header-center { flex: 1; display: flex; justify-content: center; }
+  .header-center span {
+    border: 1px solid var(--black);
+    border-radius: 2px;
+    padding: 0.25em 0.5em;
+    font-size: max(10px, 0.92svw);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .header-center span:hover { background: var(--black); color: var(--white); }
+  .header-right { flex: 1; text-align: right; line-height: 1.2; }
+  .header-right .label { color: var(--grey); font-size: max(9px, 0.75svw); }
+
+  /* === HERO === */
+  .hero {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--grid-margin);
+    padding-top: calc(var(--grid-margin) * 3);
+    position: relative;
+  }
+
+  /* Globe placeholder */
+  .globe-icon {
+    width: 3.6em;
+    margin: 0 auto 1em;
+    opacity: 0.4;
+  }
+  .globe-icon svg { width: 100%; height: auto; }
+
+  /* Main headline */
+  .hero-title {
+    font-size: 4.62svw;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+    margin-top: 0.5em;
+  }
+
+  /* 3D area */
+  .hero-3d-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 50vh;
+  }
+
+  /* Robot placeholder */
+  .robot-placeholder {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(10,104,245,0.12), rgba(10,104,245,0.03) 60%, transparent 80%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .robot-placeholder::after {
+    content: '🤖 Spline Robot';
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--grey);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Technical frame (sutera-style) */
+  .tech-frame {
+    position: absolute;
+    right: 8%;
+    top: 20%;
+    width: 25%;
+    border: 1px solid var(--dark-grey);
+    font-size: max(9px, 0.69svw);
+    z-index: 2;
+  }
+  .tech-frame-header {
+    background: var(--dark-grey);
+    padding: 0.4em 0.6em;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+    color: var(--white);
+    font-weight: 500;
+  }
+  .tech-frame-body {
+    padding: 0.8em;
+    font-family: var(--font-mono);
+    color: var(--grey);
+    line-height: 1.4;
+  }
+
+  /* Bottom bar */
+  .hero-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: var(--grid-margin);
+    gap: 2rem;
+  }
+
+  .core-threads { flex: 1; }
+  .core-threads-label {
+    font-family: var(--font-mono);
+    font-size: max(9px, 0.69svw);
+    text-transform: uppercase;
+    color: var(--grey);
+    margin-bottom: 1em;
+    letter-spacing: 0.03em;
+  }
+  .thread-list { list-style: none; }
+  .thread-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6em;
+    padding: 0.3em 0;
+    font-size: max(11px, 0.81svw);
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+  .thread-num {
+    font-family: var(--font-mono);
+    font-size: max(9px, 0.69svw);
+    color: var(--grey);
+  }
+
+  .social-links {
+    display: flex;
+    gap: 0.5em;
+  }
+  .social-links a {
+    border: 1px solid var(--dark-grey);
+    border-radius: 10px;
+    padding: 0.35em 0.8em;
+    font-size: max(9px, 0.69svw);
+    text-decoration: none;
+    color: var(--black);
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+    transition: all 0.3s;
+  }
+  .social-links a:hover {
+    background: var(--black);
+    color: var(--white);
+    border-color: var(--black);
+  }
+
+  /* === COMPARISON BAR === */
+  .comparison {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #111;
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    font-size: 13px;
+  }
+  .comparison .tag {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .comparison-note { color: #999; font-size: 12px; }
+
+  /* === ANNOTATIONS === */
+  .annotation {
+    position: absolute;
+    background: var(--accent);
+    color: white;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 60;
+    white-space: nowrap;
+  }
+  .annotation::before {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 20px;
+    background: var(--accent);
+  }
+  .ann-header { top: 60px; left: 50%; transform: translateX(-50%); }
+  .ann-globe { top: 105px; right: 35%; }
+  .ann-title { top: 180px; left: 5%; }
+  .ann-robot { top: 40%; right: 30%; }
+  .ann-frame { top: 15%; right: 1%; }
+  .ann-threads { bottom: 80px; left: 5%; }
+  .ann-social { bottom: 80px; right: 5%; }
+
+  @media (max-width: 768px) {
+    .hero-title { font-size: 11svw; }
+    .tech-frame { display: none; }
+    .annotation { display: none; }
+    .header-right { display: none; }
+    .hero-bottom { flex-direction: column; gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Annotations -->
+<div class="annotation ann-header">← Sutera-style 3-col nav (visual only)</div>
+<div class="annotation ann-globe">↓ Wireframe globe icon</div>
+<div class="annotation ann-title">← Viewport-scaled headline, -0.04em tracking</div>
+<div class="annotation ann-robot">← allone's Spline robot here</div>
+<div class="annotation ann-frame">← Technical frame (allone branding) →</div>
+<div class="annotation ann-threads">← Core service threads</div>
+<div class="annotation ann-social">Social links →</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-left">allone</div>
+  <div class="header-center"><span>Explore Services</span></div>
+  <div class="header-right">
+    <div class="label">Location</div>
+    <div>TBS · Tbilisi</div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <!-- Globe -->
+  <div class="globe-icon">
+    <svg viewBox="0 0 60 60" fill="none" stroke="#cbcbcb" stroke-width="1">
+      <circle cx="30" cy="30" r="28"/>
+      <ellipse cx="30" cy="30" rx="14" ry="28"/>
+      <line x1="2" y1="30" x2="58" y2="30"/>
+      <line x1="30" y1="2" x2="30" y2="58"/>
+    </svg>
+  </div>
+
+  <!-- Headline -->
+  <h1 class="hero-title">All Systems,<br>One Intelligence</h1>
+
+  <!-- 3D Area -->
+  <div class="hero-3d-area">
+    <div class="robot-placeholder"></div>
+
+    <!-- Technical frame -->
+    <div class="tech-frame">
+      <div class="tech-frame-header">allone /25</div>
+      <div class="tech-frame-body">
+        all (everything) + one (unified)<br>
+        → everything as one system
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="hero-bottom">
+    <div class="core-threads">
+      <div class="core-threads-label">[ Core threads of our work ]</div>
+      <ul class="thread-list">
+        <li><span class="thread-num">01.</span> AI Automation</li>
+        <li><span class="thread-num">02.</span> Custom Software</li>
+        <li><span class="thread-num">03.</span> Workflow Design</li>
+        <li><span class="thread-num">04.</span> Consulting</li>
+      </ul>
+    </div>
+    <div class="social-links">
+      <a href="#">LinkedIn</a>
+      <a href="#">Instagram</a>
+      <a href="#">GitHub</a>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison bar -->
+<div class="comparison">
+  <div style="display:flex;gap:12px;align-items:center">
+    <span class="tag">Mockup</span>
+    <span>Hero structure: Sutera layout × allone identity</span>
+  </div>
+  <div class="comparison-note">Blue annotations show element mapping from sutera.ch</div>
+</div>
+
+</body>
+</html>

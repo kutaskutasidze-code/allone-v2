@@ -3,22 +3,24 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { ShineBorder } from '@/components/ui/ShineBorder';
+import { useI18n } from '@/lib/i18n';
 
 interface StatItem {
   value: string;
-  label: string;
+  labelKey: string;
 }
 
 const stats: StatItem[] = [
-  { value: '94%', label: 'Resolution Rate' },
-  { value: '<2s', label: 'Response Time' },
-  { value: '10x', label: 'Faster Processing' },
-  { value: '24/7', label: 'Availability' },
+  { value: '94%', labelKey: 'stats.resolution' },
+  { value: '<2s', labelKey: 'stats.response' },
+  { value: '10x', labelKey: 'stats.processing' },
+  { value: '24/7', labelKey: 'stats.availability' },
 ];
 
 function AnimatedStat({ stat, delay }: { stat: StatItem; delay: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const { t } = useI18n();
 
   return (
     <motion.div
@@ -32,7 +34,7 @@ function AnimatedStat({ stat, delay }: { stat: StatItem; delay: number }) {
         {stat.value}
       </p>
       <p className="font-mono text-[11px] text-muted uppercase tracking-widest">
-        {stat.label}
+        {t(stat.labelKey)}
       </p>
     </motion.div>
   );
@@ -46,7 +48,7 @@ export function Stats() {
           <div className="w-full bg-white px-8 py-12 lg:px-12 lg:py-16">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
               {stats.map((stat, i) => (
-                <AnimatedStat key={stat.label} stat={stat} delay={i * 0.1} />
+                <AnimatedStat key={stat.labelKey} stat={stat} delay={i * 0.1} />
               ))}
             </div>
           </div>

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import type { Client } from '@/types/database';
+import { useI18n } from '@/lib/i18n';
 
 interface ClientsProps {
   clients?: Client[];
@@ -10,12 +11,13 @@ interface ClientsProps {
 function ClientsContent({ clients }: { clients: Client[] }) {
   // Double the array for infinite scroll
   const doubled = [...clients, ...clients];
+  const { t } = useI18n();
 
   return (
     <section className="py-16 lg:py-20 bg-white border-y border-border overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
         <p className="font-mono text-[11px] text-muted/50 tracking-widest uppercase text-center">
-          Trusted by forward-thinking companies
+          {t('clients.title')}
         </p>
       </div>
 

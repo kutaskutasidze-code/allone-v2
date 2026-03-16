@@ -4,12 +4,10 @@ export const navigation: NavItem[] = [
   { label: 'Home', href: '/', key: 'home' },
   { label: 'Services', href: '/services', key: 'services' },
   { label: 'Work', href: '/work', key: 'work' },
-  { label: 'About', href: '/about', key: 'about' },
 ];
 
 export const footerLinks = {
   company: [
-    { label: 'About', href: '/about' },
     { label: 'Work', href: '/work' },
     { label: 'Contact', href: '/contact' },
   ],
@@ -21,8 +19,6 @@ export const footerLinks = {
     { label: 'Consulting', href: '/services#consulting' },
   ],
   resources: [
-    { label: 'AI Studio', href: '/products' },
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Login', href: '/login' },
+    { label: 'Contact', href: '/contact' },
   ],
 };

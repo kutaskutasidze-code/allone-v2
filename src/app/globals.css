@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Lenis smooth scroll */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto; }
+
+/* Hide scrollbar but keep scroll */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
 /* =============================================
    ALLONE — COLD CLARITY DESIGN SYSTEM (Light)
    ============================================= */
@@ -362,6 +370,77 @@ h1, h2, h3, h4, h5, h6 {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+
+/* =============================================
+   CPU ARCHITECTURE ANIMATION
+   ============================================= */
+
+/* Orbs — staggered durations & delays for organic feel */
+.cpu-line-1 {
+  offset-path: path("M 80 45 h -40 q -5 0 -5 -5 v -15 q 0 -5 -5 -5 h -25");
+  animation: cpu-travel 1.8s 0s ease-in-out infinite;
+}
+.cpu-line-2 {
+  offset-path: path("M 60 10 v 25 q 0 5 5 5 h 40 q 5 0 5 5 v 30 q 0 5 5 5 h 30");
+  animation: cpu-travel 2.4s 0.5s ease-in-out infinite;
+}
+.cpu-line-3 {
+  offset-path: path("M 140 55 h 30 q 5 0 5 5 v 20 q 0 5 5 5 h 20");
+  animation: cpu-travel 1.5s 0.2s ease-in-out infinite;
+}
+.cpu-line-4 {
+  offset-path: path("M 170 80 v -30 q 0 -5 -5 -5 h -35 q -5 0 -5 -5 v -25 q 0 -5 5 -5 h 10");
+  animation: cpu-travel 2.8s 0.9s ease-in-out infinite;
+}
+.cpu-line-5 {
+  offset-path: path("M 30 70 h 25 q 5 0 5 5 v 25");
+  animation: cpu-travel 1.4s 0.3s ease-in-out infinite;
+}
+.cpu-line-6 {
+  offset-path: path("M 120 95 v -20 q 0 -5 5 -5 h 30 q 5 0 5 -5 v -30 q 0 -5 5 -5 h 15");
+  animation: cpu-travel 2.2s 1.4s ease-in-out infinite;
+}
+.cpu-line-7 {
+  offset-path: path("M 160 15 h -50 q -5 0 -5 5 v 15 q 0 5 -5 5 h -60 q -5 0 -5 5 v 10");
+  animation: cpu-travel 2.6s 0.7s ease-in-out infinite;
+}
+.cpu-line-8 {
+  offset-path: path("M 95 85 v -25 q 0 -5 -5 -5 h -30 q -5 0 -5 -5 v -25 q 0 -5 -5 -5 h -20 v -20");
+  animation: cpu-travel 3.0s 0.1s ease-in-out infinite;
+}
+.cpu-line-9 {
+  offset-path: path("M 15 40 h 30 q 5 0 5 5 v 35 q 0 5 5 5 h 45");
+  animation: cpu-travel 2.3s 1.1s ease-in-out infinite;
+}
+.cpu-line-10 {
+  offset-path: path("M 190 50 h -35 q -5 0 -5 -5 v -20 q 0 -5 -5 -5 h -40 q -5 0 -5 5 v 15");
+  animation: cpu-travel 1.9s 1.7s ease-in-out infinite;
+}
+.cpu-line-11 {
+  offset-path: path("M 75 0 v 20 q 0 5 -5 5 h -25 q -5 0 -5 5 v 10 q 0 5 -5 5 h -35");
+  animation: cpu-travel 2.8s 0.4s ease-in-out infinite;
+}
+.cpu-line-12 {
+  offset-path: path("M 50 95 v -15 q 0 -5 -5 -5 h -20 q -5 0 -5 -5 v -30");
+  animation: cpu-travel 1.6s 1.6s ease-in-out infinite;
+}
+.cpu-line-13 {
+  offset-path: path("M 130 5 v 30 q 0 5 5 5 h 20 q 5 0 5 5 v 20 q 0 5 -5 5 h -25");
+  animation: cpu-travel 2.1s 0.4s ease-in-out infinite;
+}
+.cpu-line-14 {
+  offset-path: path("M 185 75 h -40 q -5 0 -5 -5 v -15 q 0 -5 -5 -5 h -15 v -20 q 0 -5 -5 -5 h -10");
+  animation: cpu-travel 2.5s 1.0s ease-in-out infinite;
+}
+
+@keyframes cpu-travel {
+  0% { offset-distance: 0%; opacity: 0; }
+  8% { opacity: 0.9; }
+  70% { opacity: 0.85; }
+  88% { opacity: 0.3; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
 
 /* =============================================
    REDUCED MOTION

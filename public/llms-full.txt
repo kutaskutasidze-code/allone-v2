@@ -1,0 +1,108 @@
+# ALLONE — All Systems. One Intelligence.
+> Comprehensive information about ALLONE, an AI automation agency.
+
+## Company Overview
+ALLONE is an AI automation agency headquartered in Tbilisi, Georgia with a European office in Brussels, Belgium. Founded in late 2025, ALLONE specializes in delivering AI-powered solutions that transform how businesses operate.
+
+### Mission
+To converge all business systems into one intelligent layer, making enterprise-grade AI accessible to companies of all sizes.
+
+### Competitive Advantage
+Our AI-powered delivery stack drops implementation costs by approximately 90% compared to traditional agencies. We combine cutting-edge AI models with human expertise to deliver solutions at unprecedented speed and quality.
+
+## Detailed Service Offerings
+
+### 1. AI Chatbots
+Build intelligent conversational interfaces that understand context, handle complex queries, and integrate seamlessly with existing business tools.
+- Natural language understanding with multi-turn conversations
+- Multi-language support (English, Georgian, and more)
+- Integration with CRM, helpdesk, and e-commerce platforms
+- Analytics dashboard for conversation insights
+- 24/7 automated customer support
+- Custom training on business-specific knowledge bases
+
+### 2. Custom AI Solutions
+Purpose-built AI systems designed for specific business challenges.
+- Machine learning model development and deployment
+- Computer vision for quality control, document processing, OCR
+- Natural language processing pipelines
+- AI agents for autonomous task execution
+- Predictive analytics and forecasting
+- Recommendation engines
+
+### 3. Workflow Automation
+End-to-end process automation that eliminates manual work and reduces errors.
+- Document processing and data extraction
+- Automated decision-making workflows
+- Integration with existing CRMs, ERPs, and internal tools
+- Email and communication automation
+- Invoice processing and financial workflows
+- Custom API integrations
+
+### 4. Website Development
+Modern, high-performance websites built with the latest technology stack.
+- Next.js and React-based architecture
+- AI-powered features (chatbots, search, personalization)
+- SEO optimization and Core Web Vitals performance
+- E-commerce capabilities
+- Multi-language support
+- Analytics and conversion tracking
+
+### 5. Strategy & Consulting
+Expert guidance for businesses at any stage of AI adoption.
+- AI readiness assessment
+- Implementation roadmaps
+- Technology stack evaluation
+- ROI analysis and business case development
+- Ongoing optimization and support
+- Team training and knowledge transfer
+
+## Technology Stack
+- **Frontend**: Next.js, React, TypeScript, Tailwind CSS
+- **AI/ML**: Custom models, LLM integration, RAG systems
+- **Backend**: Node.js, Python, Supabase, PostgreSQL
+- **Cloud**: Vercel, Cloudflare, AWS
+- **Automation**: n8n, custom workflow engines
+
+## Portfolio Projects
+
+### Equivalenza Georgia
+E-commerce platform for the international perfume brand's Georgian market. Full digital storefront with inventory management, payment processing, and customer analytics.
+
+### DataRooms
+AI-powered virtual data rooms for investors and M&A transactions. Secure document management with intelligent search, automated NDA tracking, and access analytics.
+
+### FIFTY
+Digital platform for a community-owned innovation space. Member management, event booking, and community engagement tools.
+
+### HostWise
+Property management SaaS platform with intelligent automation. Automated guest communication, dynamic pricing, and operations management for short-term rentals.
+
+### KaoTenders
+B2B industrial tender platform with AI-powered matching. Connects suppliers with procurement opportunities using intelligent categorization and matching algorithms.
+
+### Chaos Concept
+Fashion and art concept store digital platform. E-commerce, editorial content, and brand storytelling combined in a premium digital experience.
+
+### INNRBURIAL
+Publishing and art platform for contemporary Georgian literature and visual art. Digital publishing, e-commerce, and community features.
+
+## Contact Information
+- **Website**: https://allone.ge
+- **Email**: hello@allone.ge
+- **Primary Office**: Tbilisi, Georgia
+- **European Office**: Brussels, Belgium
+
+## Frequently Asked Questions
+
+**Q: What industries does ALLONE serve?**
+A: We work across industries including e-commerce, real estate, finance, manufacturing, fashion, publishing, and hospitality. Our AI solutions are adaptable to any business domain.
+
+**Q: How long does a typical project take?**
+A: Simple chatbot implementations can be live in 1-2 weeks. Custom AI solutions typically take 4-8 weeks. Full platform builds range from 6-12 weeks depending on complexity.
+
+**Q: Do you work with international clients?**
+A: Yes. While based in Georgia and Belgium, we serve clients globally. Our team operates in English, Georgian, and can support other languages.
+
+**Q: What makes ALLONE different from other AI agencies?**
+A: Our AI-native delivery approach means we use AI throughout our own workflow, reducing costs by ~90% while maintaining quality. This efficiency is passed on to clients through competitive pricing and faster delivery.

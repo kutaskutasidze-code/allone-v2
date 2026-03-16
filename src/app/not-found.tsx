@@ -30,9 +30,6 @@ export default function NotFound() {
             <Link href="/projects" className="hover:text-black transition-colors">
               Projects
             </Link>
-            <Link href="/about" className="hover:text-black transition-colors">
-              About
-            </Link>
             <Link href="/contact" className="hover:text-black transition-colors">
               Contact
             </Link>

@@ -1,36 +1,17 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useI18n } from '@/lib/i18n';
 
-interface Testimonial {
-  quote: string;
-  author: string;
-  role: string;
-  company: string;
-}
-
-const testimonials: Testimonial[] = [
-  {
-    quote: "ALLONE transformed our customer support with their AI chatbot. Response times dropped 80% and customer satisfaction is at an all-time high.",
-    author: "Giorgi Kvaratskhelia",
-    role: "CEO",
-    company: "TechStart Georgia",
-  },
-  {
-    quote: "The workflow automation they built saved us 20+ hours per week. Our team can now focus on what matters most — growing the business.",
-    author: "Nino Basilaia",
-    role: "Operations Director",
-    company: "Borjomi Group",
-  },
-  {
-    quote: "Their custom AI solution for lead scoring increased our conversion rate by 35%. The ROI was visible within the first month.",
-    author: "David Maisuradze",
-    role: "Head of Sales",
-    company: "Georgian Airways",
-  },
+const testimonialKeys = [
+  { quoteKey: 'testimonials.q1', authorKey: 'testimonials.a1', roleKey: 'testimonials.r1' },
+  { quoteKey: 'testimonials.q2', authorKey: 'testimonials.a2', roleKey: 'testimonials.r2' },
+  { quoteKey: 'testimonials.q3', authorKey: 'testimonials.a3', roleKey: 'testimonials.r3' },
 ];
 
 export function Testimonials() {
+  const { t } = useI18n();
+
   return (
     <section className="py-[clamp(4rem,8vw,8rem)] bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,15 +23,15 @@ export function Testimonials() {
           transition={{ duration: 0.6 }}
           className="max-w-2xl mb-[clamp(3rem,6vw,5rem)]"
         >
-          <p className="mono-label mb-4">Testimonials</p>
+          <p className="mono-label mb-4">{t('testimonials.label')}</p>
           <h2 className="text-3xl lg:text-4xl font-semibold text-heading leading-[1.1] tracking-[-0.03em]">
-            What our clients say
+            {t('testimonials.title')}
           </h2>
         </motion.div>
 
         {/* Grid */}
         <div className="grid md:grid-cols-3 gap-4">
-          {testimonials.map((t, i) => (
+          {testimonialKeys.map((tk, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
@@ -65,13 +46,13 @@ export function Testimonials() {
               </svg>
 
               <p className="text-foreground/80 leading-relaxed text-sm flex-1 mb-6">
-                &ldquo;{t.quote}&rdquo;
+                &ldquo;{t(tk.quoteKey)}&rdquo;
               </p>
 
               <div className="pt-4 border-t border-border">
-                <p className="text-heading font-medium text-sm">{t.author}</p>
+                <p className="text-heading font-medium text-sm">{t(tk.authorKey)}</p>
                 <p className="text-muted text-xs mt-0.5">
-                  {t.role}, {t.company}
+                  {t(tk.roleKey)}
                 </p>
               </div>
             </motion.div>
