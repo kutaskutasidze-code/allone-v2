@@ -312,14 +312,18 @@ out body 300;`;
   }
 
   let newLeads = 0;
-  // Insert in batches of 50
-  for (let i = 0; i < newLeadRecords.length; i += 50) {
-    const batch = newLeadRecords.slice(i, i + 50);
-    const { error: insertError } = await supabase.from('leads').insert(batch);
-    if (!insertError) newLeads += batch.length;
+  let insertErr: string | undefined;
+  // Insert one by one to handle unique constraints gracefully
+  for (const record of newLeadRecords) {
+    const { error: insertError } = await supabase.from('leads').insert(record);
+    if (!insertError) {
+      newLeads++;
+    } else if (!insertErr) {
+      insertErr = insertError.message;
+    }
   }
 
-  return { found: elements.length, new: newLeads };
+  return { found: elements.length, new: newLeads, prepared: newLeadRecords.length, error: insertErr };
 }
 
 // ========== WIKIDATA — Georgian companies with phone/email (150 total, paginated) ==========
@@ -377,13 +381,16 @@ async function scrapeWikidata() {
 
   const existingUrls = new Set((existing || []).map(l => l.source_url));
 
+  // Deduplicate within batch (SPARQL returns multiple rows per company for multiple phones)
+  const seenUrls = new Set<string>();
   const newLeadRecords = [];
   for (const r of results) {
     const sourceUrl = r.item?.value;
-    if (!sourceUrl || existingUrls.has(sourceUrl)) continue;
+    if (!sourceUrl || existingUrls.has(sourceUrl) || seenUrls.has(sourceUrl)) continue;
+    seenUrls.add(sourceUrl);
 
     const name = r.itemLabel?.value;
-    if (!name || name.startsWith('Q')) continue; // Skip unresolved Wikidata IDs
+    if (!name || name.startsWith('Q')) continue;
 
     const phone = r.phone?.value || null;
     const emailRaw = r.email?.value || null;
@@ -391,9 +398,8 @@ async function scrapeWikidata() {
     const website = r.website?.value || null;
     if (!phone && !email) continue;
 
-    // Categorize from description
     const desc = (r.description?.value || '').toLowerCase();
-    let matchedService = 'consulting'; // default for Wikidata (established companies)
+    let matchedService = 'consulting';
     if (desc.includes('bank') || desc.includes('insurance') || desc.includes('financial')) {
       matchedService = 'consulting';
     } else if (desc.includes('hospital') || desc.includes('clinic') || desc.includes('pharma')) {
@@ -413,21 +419,27 @@ async function scrapeWikidata() {
       company: name,
       website,
       source_url: sourceUrl,
-      city: 'Tbilisi', // Most Wikidata Georgian companies are Tbilisi-based
+      city: 'Tbilisi',
       country: 'GE',
       matched_service: matchedService,
-      relevance_score: 8, // Higher score — established companies
+      relevance_score: 8,
       status: 'new' as const,
     });
   }
 
   let newLeads = 0;
-  if (newLeadRecords.length > 0) {
-    const { error: insertError } = await supabase.from('leads').insert(newLeadRecords);
-    if (!insertError) newLeads = newLeadRecords.length;
+  let insertErr: string | undefined;
+  // Insert one by one to handle unique constraint violations gracefully
+  for (const record of newLeadRecords) {
+    const { error: insertError } = await supabase.from('leads').insert(record);
+    if (!insertError) {
+      newLeads++;
+    } else if (!insertErr) {
+      insertErr = insertError.message;
+    }
   }
 
-  return { found: results.length, new: newLeads };
+  return { found: results.length, new: newLeads, prepared: newLeadRecords.length, error: insertErr };
 }
 
 // ========== 4. CLEANUP ==========
