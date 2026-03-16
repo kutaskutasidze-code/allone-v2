@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('leads')
       .select(`
-        id, name, email, phone, company, status, value, source, notes, created_at, updated_at,
+        id, name, email, phone, company, city, country, website, matched_service, status, value, source, source_url, notes, created_at, updated_at,
         sales_user:sales_users(id, name, email)
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     if (search) {
       const sanitized = search.replace(/[%_]/g, '');
       if (sanitized.length > 0) {
-        query = query.or(`name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company.ilike.%${sanitized}%`);
+        query = query.or(`name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company.ilike.%${sanitized}%,phone.ilike.%${sanitized}%,city.ilike.%${sanitized}%`);
       }
     }
 

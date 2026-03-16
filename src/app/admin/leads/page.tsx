@@ -171,23 +171,23 @@ function AdminLeadsPageContent() {
         />
       ) : (
         <div className="bg-white border border-[var(--gray-200)] rounded-xl overflow-x-auto">
-          <table className="w-full min-w-[700px]">
+          <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-[var(--gray-100)]">
                 <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-3">
                   Lead
                 </th>
                 <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-3">
-                  Sales Rep
+                  Phone
+                </th>
+                <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-3">
+                  City
                 </th>
                 <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-3">
                   Status
                 </th>
                 <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-3">
-                  Source
-                </th>
-                <th className="text-right text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-3">
-                  Value
+                  Service
                 </th>
                 <th className="text-right text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-3">
                   Created
@@ -208,13 +208,21 @@ function AdminLeadsPageContent() {
                   <td className="px-4 py-3">
                     <div className="font-medium text-sm text-[var(--black)]">{lead.name}</div>
                     <div className="text-xs text-[var(--gray-500)]">
-                      {lead.company && <span>{lead.company}</span>}
-                      {lead.company && lead.email && <span> · </span>}
+                      {lead.company && lead.company !== lead.name && <span>{lead.company} · </span>}
                       {lead.email && <span>{lead.email}</span>}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-[var(--gray-600)]">
-                    {lead.sales_user?.name || '-'}
+                    {lead.phone ? (
+                      <a href={`tel:${lead.phone}`} className="text-[var(--accent)] hover:underline">
+                        {lead.phone}
+                      </a>
+                    ) : (
+                      <span className="text-[var(--gray-400)]">-</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-[var(--gray-600)]">
+                    {lead.city || '-'}
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -223,11 +231,8 @@ function AdminLeadsPageContent() {
                       {LEAD_STATUSES.find(s => s.value === lead.status)?.label}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[var(--gray-600)]">
-                    {lead.source || '-'}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-[var(--black)] font-medium text-right">
-                    {formatCurrency(lead.value)}
+                  <td className="px-4 py-3 text-xs text-[var(--gray-500)]">
+                    {lead.matched_service || '-'}
                   </td>
                   <td className="px-4 py-3 text-xs text-[var(--gray-500)] text-right">
                     {formatDate(lead.created_at)}
