@@ -71,14 +71,9 @@ export const SEARCH_QUERIES = {
   ],
 } as const;
 
-// Target countries and cities
+// Target countries and cities — Georgia only
 export const COUNTRIES = {
-  KZ: { name: 'Kazakhstan', cities: ['Almaty', 'Astana', 'Shymkent', 'Aktobe'] },
-  UZ: { name: 'Uzbekistan', cities: ['Tashkent', 'Samarkand', 'Bukhara', 'Namangan'] },
-  GE: { name: 'Georgia', cities: ['Tbilisi', 'Batumi', 'Kutaisi'] },
-  TR: { name: 'Turkey', cities: ['Istanbul', 'Ankara', 'Izmir', 'Antalya', 'Bursa'] },
-  AM: { name: 'Armenia', cities: ['Yerevan', 'Gyumri'] },
-  AZ: { name: 'Azerbaijan', cities: ['Baku', 'Ganja', 'Sumqayit'] },
+  GE: { name: 'Georgia', cities: ['Tbilisi', 'Batumi', 'Kutaisi', 'Rustavi', 'Zugdidi'] },
 } as const;
 
 export type CountryCode = keyof typeof COUNTRIES;
