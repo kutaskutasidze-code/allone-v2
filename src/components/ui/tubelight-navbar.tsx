@@ -103,15 +103,15 @@ export function NavBar({ items, className }: NavBarProps) {
     <div
       ref={navRef}
       className={cn(
-        "fixed bottom-0 sm:bottom-auto sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:mb-0 sm:pt-6 transition-colors duration-300",
+        "fixed bottom-0 left-1/2 -translate-x-1/2 z-50 mb-6 transition-colors duration-300",
         className,
       )}
     >
       <div className="flex items-center gap-2">
         {/* Main nav island */}
         <div className={cn(
-          "flex items-center gap-3 border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg transition-colors duration-300",
-          onDark ? "bg-black/20 border-white/20" : "bg-white/5 border-border",
+          "flex items-center gap-3 backdrop-blur-lg py-1 px-1 rounded-full shadow-lg transition-colors duration-300",
+          onDark ? "bg-black/20" : "bg-white/80",
         )}>
           {items.map((item) => {
             const Icon = item.icon
@@ -160,10 +160,10 @@ export function NavBar({ items, className }: NavBarProps) {
         <button
           onClick={() => setLang(lang === 'en' ? 'ka' : 'en')}
           className={cn(
-            "flex items-center justify-center w-9 h-9 rounded-full border backdrop-blur-lg shadow-lg transition-colors duration-300 cursor-pointer",
+            "flex items-center justify-center w-9 h-9 rounded-full backdrop-blur-lg shadow-lg transition-colors duration-300 cursor-pointer",
             onDark
-              ? "bg-black/20 border-white/20 text-white/70 hover:text-white"
-              : "bg-white/5 border-border text-foreground/50 hover:text-foreground",
+              ? "bg-black/20 text-white/70 hover:text-white"
+              : "bg-white/80 text-foreground/50 hover:text-foreground",
           )}
           title={lang === 'en' ? 'ქართულად' : 'Switch to English'}
         >

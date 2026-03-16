@@ -33,7 +33,7 @@ function AccordionPanel({
       className={`
         relative rounded-2xl overflow-hidden cursor-pointer
         transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)]
-        ${isActive ? 'flex-[4]' : 'flex-[0.5] md:flex-[0.6]'}
+        ${isActive ? 'flex-[6] md:flex-[4]' : 'flex-[0.3] md:flex-[0.6]'}
       `}
       onMouseEnter={onMouseEnter}
       onTouchStart={onTouchStart}
@@ -44,7 +44,7 @@ function AccordionPanel({
         fill
         quality={90}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        className="object-cover object-top"
+        className="object-cover object-left-top"
         priority={index <= 1}
       />
 
@@ -93,7 +93,7 @@ export function InteractiveImageAccordion({
   const [activeIndex, setActiveIndex] = useState(defaultActive);
 
   return (
-    <div className="flex gap-2 md:gap-3 w-full h-[280px] md:h-[380px] lg:h-[450px]">
+    <div className="flex gap-1 md:gap-3 w-full h-[200px] md:h-[380px] lg:h-[450px]">
       {items.map((item, index) => (
         <AccordionPanel
           key={index}

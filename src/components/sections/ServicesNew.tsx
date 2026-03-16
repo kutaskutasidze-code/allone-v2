@@ -87,7 +87,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
   ];
 
   return (
-    <section id="services" className="pt-8 lg:pt-12 pb-4 lg:pb-6 bg-white">
+    <section id="services" className="pt-8 lg:pt-12 pb-4 lg:pb-6 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -127,7 +127,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               transition={{ duration: 0.6 }}
               className="flex"
             >
-              <ShineBorder borderRadius={20} className="border border-border hover:border-accent/20 transition-colors p-0">
+              <div className="bg-white rounded-3xl w-full">
                 <div className="p-6 lg:p-8 w-full h-full">
                   <div className="grid lg:grid-cols-2 gap-6 items-start">
                     <div>
@@ -154,9 +154,9 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
                         </div>
                       )}
                       {allServices[0].features && (
-                        <div className="flex flex-wrap gap-1.5 pt-3 border-t border-border">
+                        <div className="flex flex-wrap gap-1.5 pt-3 border-t border-border-light/50">
                           {allServices[0].features.map((tag) => (
-                            <span key={tag} className="px-2.5 py-1 text-[11px] text-muted border border-border rounded-md bg-white">
+                            <span key={tag} className="px-2.5 py-1 text-[11px] text-muted rounded-lg bg-background">
                               {tag}
                             </span>
                           ))}
@@ -165,7 +165,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
                     </div>
                   </div>
                 </div>
-              </ShineBorder>
+              </div>
             </motion.div>
 
             {/* Custom AI card */}
@@ -176,7 +176,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               transition={{ duration: 0.6, delay: 0.1 }}
               className="flex"
             >
-              <ShineBorder borderRadius={20} className="border border-border hover:border-accent/20 transition-colors p-0">
+              <div className="bg-white rounded-3xl w-full">
                 <div className="p-6 lg:p-8 flex flex-col h-full w-full text-left">
                   <div>
                     <span className="mono-label">{allServices[1].num}</span>
@@ -188,7 +188,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
                     {allServices[1].description}
                   </p>
                   {allServices[1].stats && (
-                    <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
+                    <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-border-light/50">
                       {allServices[1].stats.map((stat, i) => (
                         <div key={i}>
                           <p className="text-lg font-semibold text-heading">{stat.value}</p>
@@ -198,7 +198,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
                     </div>
                   )}
                 </div>
-              </ShineBorder>
+              </div>
             </motion.div>
           </div>
 
@@ -212,7 +212,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               transition={{ duration: 0.6 }}
               className="flex"
             >
-              <ShineBorder borderRadius={20} className="border border-border hover:border-accent/20 transition-colors p-0">
+              <div className="bg-white rounded-3xl w-full">
                 <div className="p-6 lg:p-8 flex flex-col min-h-[380px] w-full text-left">
                   <div>
                     <span className="mono-label">{allServices[2].num}</span>
@@ -227,7 +227,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
                     <WorkflowDiagram />
                   </div>
                 </div>
-              </ShineBorder>
+              </div>
             </motion.div>
 
             {/* Website */}
@@ -238,7 +238,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               transition={{ duration: 0.6, delay: 0.1 }}
               className="flex"
             >
-              <ShineBorder borderRadius={20} className="border border-border hover:border-accent/20 transition-colors p-0">
+              <div className="bg-white rounded-3xl w-full">
                 <div className="p-6 lg:p-8 flex flex-col min-h-[380px] w-full text-left">
                   <div>
                     <span className="mono-label">{allServices[3].num}</span>
@@ -253,16 +253,16 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
                     <LayeredScreens />
                   </div>
                   {allServices[3].features && (
-                    <div className="flex gap-2 pt-4 border-t border-border mt-4">
+                    <div className="flex gap-2 pt-4 border-t border-border-light/50 mt-4">
                       {allServices[3].features.map((tech) => (
-                        <span key={tech} className="px-3 py-1.5 text-xs text-muted border border-border rounded-md bg-white">
+                        <span key={tech} className="px-3 py-1.5 text-xs text-muted rounded-lg bg-background">
                           {tech}
                         </span>
                       ))}
                     </div>
                   )}
                 </div>
-              </ShineBorder>
+              </div>
             </motion.div>
           </div>
 
@@ -274,7 +274,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
             transition={{ duration: 0.6 }}
             className="flex"
           >
-            <ShineBorder borderRadius={20} className="border border-border hover:border-accent/20 transition-colors p-0">
+            <div className="bg-white rounded-3xl w-full">
               <div className="p-6 lg:p-8 flex flex-col lg:flex-row justify-between items-center gap-6 w-full">
                 <div className="text-center lg:text-left">
                   <span className="mono-label">{allServices[4].num}</span>
@@ -293,7 +293,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
               </div>
-            </ShineBorder>
+            </div>
           </motion.div>
         </div>
       </div>

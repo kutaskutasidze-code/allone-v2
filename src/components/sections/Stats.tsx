@@ -44,15 +44,15 @@ export function Stats() {
   return (
     <section className="py-20 lg:py-24 bg-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ShineBorder borderRadius={40} borderWidth={2} duration={10} className="border border-border p-0">
-          <div className="w-full bg-white px-8 py-12 lg:px-12 lg:py-16">
+        <div className="bg-white rounded-3xl">
+          <div className="w-full px-8 py-12 lg:px-12 lg:py-16">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
               {stats.map((stat, i) => (
                 <AnimatedStat key={stat.labelKey} stat={stat} delay={i * 0.1} />
               ))}
             </div>
           </div>
-        </ShineBorder>
+        </div>
       </div>
     </section>
   );

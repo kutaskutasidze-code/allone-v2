@@ -25,7 +25,7 @@ export function DashboardShowcase() {
   );
 
   return (
-    <section className="pt-8 lg:pt-12 pb-24 lg:pb-32 bg-white overflow-hidden">
+    <section className="pt-8 lg:pt-12 pb-24 lg:pb-32 bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -51,7 +51,7 @@ export function DashboardShowcase() {
           style={{ y: smoothY, opacity: smoothOpacity }}
           className="relative"
         >
-          <ShineBorder borderRadius={20} className="p-0 border border-border overflow-hidden">
+          <div className="bg-white rounded-3xl overflow-hidden">
             <div
               className="relative w-full pointer-events-none"
               style={{
@@ -59,9 +59,16 @@ export function DashboardShowcase() {
                 transform: 'perspective(2000px) rotateX(2deg)',
               }}
             >
-              <EmbeddableDashboard />
+              <div className="hidden md:block">
+                <EmbeddableDashboard />
+              </div>
+              <div className="md:hidden overflow-hidden" style={{ height: '240px' }}>
+                <div style={{ width: '1100px', transform: 'scale(0.35)', transformOrigin: 'top left' }}>
+                  <EmbeddableDashboard />
+                </div>
+              </div>
             </div>
-          </ShineBorder>
+          </div>
 
           {/* Bottom fade */}
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />

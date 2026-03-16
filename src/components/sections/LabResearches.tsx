@@ -54,9 +54,9 @@ export function LabResearches() {
         >
           <Link
             href={`/lab/research/${featured.slug}`}
-            className="group grid grid-cols-1 lg:grid-cols-2 gap-6 rounded-lg p-3 transition-colors duration-75 hover:bg-accent/[0.03] active:bg-accent/[0.06]"
+            className="group grid grid-cols-1 lg:grid-cols-2 gap-6 rounded-3xl p-3 transition-colors duration-75 hover:bg-accent/[0.03] active:bg-accent/[0.06]"
           >
-            <div className="relative aspect-[16/10] overflow-hidden rounded-lg bg-surface-2">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-surface-2">
               <Image
                 src={featured.image}
                 alt={isKa ? featured.titleKa : featured.title}
@@ -105,9 +105,9 @@ export function LabResearches() {
             >
               <Link
                 href={`/lab/research/${paper.slug}`}
-                className="group flex flex-col gap-2 rounded-lg p-2 transition-colors duration-75 hover:bg-accent/[0.03] active:bg-accent/[0.06]"
+                className="group flex flex-col gap-2 rounded-3xl p-2 transition-colors duration-75 hover:bg-accent/[0.03] active:bg-accent/[0.06]"
               >
-                <div className="relative aspect-video overflow-hidden rounded-lg bg-surface-2">
+                <div className="relative aspect-video overflow-hidden rounded-2xl bg-surface-2">
                   <Image
                     src={paper.image}
                     alt={isKa ? paper.titleKa : paper.title}

@@ -12,7 +12,7 @@ interface CardProps extends Omit<HTMLMotionProps<'div'>, 'ref'> {
 
 const variantStyles = {
   default: 'bg-surface',
-  bordered: 'bg-surface border border-border',
+  bordered: 'bg-surface',
   filled: 'bg-surface-2',
   glass: 'glass',
 };
@@ -33,7 +33,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         whileHover={hover ? { y: -4, borderColor: 'var(--accent)' } : undefined}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
-          'rounded-2xl transition-all duration-300',
+          'rounded-3xl transition-all duration-300',
           variantStyles[variant],
           paddingStyles[padding],
           hover && 'cursor-pointer shadow-sm hover:shadow-md',
@@ -70,5 +70,5 @@ export function CardContent({ className, children }: { className?: string; child
 }
 
 export function CardFooter({ className, children }: { className?: string; children: React.ReactNode }) {
-  return <div className={cn('mt-6 pt-6 border-t border-border', className)}>{children}</div>;
+  return <div className={cn('mt-6 pt-6', className)}>{children}</div>;
 }

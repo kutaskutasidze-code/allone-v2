@@ -27,7 +27,7 @@ const products = [
 
 export function LabProducts() {
   return (
-    <section className="py-24 lg:py-32 bg-white border-t border-border-light">
+    <section className="py-24 lg:py-32 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -54,12 +54,12 @@ export function LabProducts() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Card className="p-10 border-border-light bg-surface-2 h-full flex flex-col relative overflow-hidden group">
+              <Card className="p-10 bg-white h-full flex flex-col relative overflow-hidden group">
                 {/* Background Glow */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/5 rounded-full blur-3xl transition-all group-hover:bg-accent/10" />
                 
                 <div className="flex justify-between items-start mb-8">
-                  <div className="w-14 h-14 rounded-2xl bg-white border border-border-light flex items-center justify-center shadow-sm">
+                  <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center">
                     {product.icon}
                   </div>
                   <Badge className="bg-accent/10 text-accent border-accent/20">

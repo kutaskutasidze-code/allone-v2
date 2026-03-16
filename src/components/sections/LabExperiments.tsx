@@ -37,7 +37,7 @@ export function LabExperiments() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Card className="p-8 border-border-light bg-white overflow-hidden">
+            <Card className="p-8 bg-white overflow-hidden">
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-2 rounded-lg bg-accent-light text-accent">
                   <Layers className="w-5 h-5" />
@@ -48,7 +48,7 @@ export function LabExperiments() {
                 </div>
               </div>
 
-              <div className="aspect-square w-full bg-surface rounded-2xl mb-8 border border-border-light relative overflow-hidden">
+              <div className="aspect-square w-full bg-surface rounded-2xl mb-8 relative overflow-hidden">
                 <BlochSphere theta={theta} phi={phi} />
               </div>
 
@@ -85,7 +85,7 @@ export function LabExperiments() {
                 </div>
               </div>
 
-              <div className="mt-8 p-4 rounded-xl bg-accent-light/50 border border-accent/10">
+              <div className="mt-8 p-4 rounded-xl bg-accent-light/50 ">
                 <p className="text-sm text-accent leading-relaxed italic">
                   "A qubit is not 0 and 1 at the same time—it's a wave function with a magnitude and a phase. Superposition is the interference of these phases."
                 </p>
@@ -102,7 +102,7 @@ export function LabExperiments() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Card className="p-8 border-border-light bg-white">
+              <Card className="p-8 bg-white">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 rounded-lg bg-accent-light text-accent">
                     <Zap className="w-5 h-5" />
@@ -113,7 +113,7 @@ export function LabExperiments() {
                   </div>
                 </div>
 
-                <div className="h-48 w-full bg-surface rounded-2xl mb-6 flex items-center justify-center border border-border-light relative">
+                <div className="h-48 w-full bg-surface rounded-2xl mb-6 flex items-center justify-center relative">
                   <svg className="w-full h-full p-8" viewBox="0 0 400 200">
                     <motion.circle
                       cx="80" cy="100" r="15"
@@ -161,7 +161,7 @@ export function LabExperiments() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Card className="p-8 border-border-light bg-white">
+              <Card className="p-8 bg-white">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 rounded-lg bg-accent-light text-accent">
                     <Activity className="w-5 h-5" />

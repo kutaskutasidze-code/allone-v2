@@ -26,7 +26,7 @@ export default async function ServicesPage() {
   const services = await getCachedServices();
 
   return (
-    <div className="bg-white pt-12 lg:pt-16">
+    <div className="bg-background pt-12 lg:pt-16">
       <ServicesNew services={services} showViewAll={false} />
       <DashboardShowcase />
     </div>

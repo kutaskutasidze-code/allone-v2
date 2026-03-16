@@ -38,7 +38,7 @@ export function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="rounded-2xl p-8 bg-white border border-border hover:border-accent/20 transition-colors flex flex-col"
+              className="rounded-3xl p-8 bg-white transition-colors flex flex-col"
             >
               {/* Quote mark */}
               <svg className="w-8 h-8 text-accent/30 mb-6" viewBox="0 0 24 24" fill="currentColor">
@@ -49,7 +49,7 @@ export function Testimonials() {
                 &ldquo;{t(tk.quoteKey)}&rdquo;
               </p>
 
-              <div className="pt-4 border-t border-border">
+              <div className="pt-4">
                 <p className="text-heading font-medium text-sm">{t(tk.authorKey)}</p>
                 <p className="text-muted text-xs mt-0.5">
                   {t(tk.roleKey)}

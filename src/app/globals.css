@@ -15,7 +15,7 @@ html.lenis, html.lenis body { height: auto; }
 :root {
   /* Core — Light Theme */
   --black: #000000;
-  --background: #FFFFFF;
+  --background: #F4F7FB;
   --surface: #FFFFFF;
   --surface-2: #FFFFFF;
   --surface-3: #FFFFFF;

@@ -16,14 +16,14 @@ export function LabHero() {
         transition={{ duration: 1.5, delay: 0.3 }}
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
       >
-        <CpuArchitecture className="w-[300vw] opacity-80" />
+        <CpuArchitecture className="h-[200vh] w-auto md:h-auto md:w-[300vw] opacity-80" />
       </motion.div>
 
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 text-[clamp(2rem,5vw,4rem)] font-display font-bold tracking-tight leading-none text-heading"
+        className="relative z-10 text-[3.5rem] md:text-[clamp(2rem,5vw,4rem)] font-display font-bold tracking-tight leading-[1.1] text-heading text-center [word-spacing:100vw] md:[word-spacing:normal]"
       >
         {t('lab.hero')}
       </motion.h1>
