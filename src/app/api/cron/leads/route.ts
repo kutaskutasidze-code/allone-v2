@@ -175,20 +175,16 @@ async function scrapeLeads() {
   const jobId = job?.id;
 
   try {
-    // Run OSM scraper and Wikidata scraper in parallel
-    const [osmResult, wikiResult] = await Promise.allSettled([
-      scrapeOSMZone(zone),
-      scrapeWikidata(),
-    ]);
+    // Run OSM scraper only — Wikidata has only large corporations (useless for B2B sales)
+    const osmResult = await scrapeOSMZone(zone).catch(err => ({ found: 0, new: 0, prepared: 0, skippedChains: 0, error: String(err) }));
 
-    const osmData = osmResult.status === 'fulfilled' ? osmResult.value : { found: 0, new: 0 };
-    const wikiData = wikiResult.status === 'fulfilled' ? wikiResult.value : { found: 0, new: 0 };
     const errors: string[] = [];
-    if (osmResult.status === 'rejected') errors.push(`OSM: ${osmResult.reason}`);
-    if (wikiResult.status === 'rejected') errors.push(`Wikidata: ${wikiResult.reason}`);
+    if ('error' in osmResult && osmResult.error && typeof osmResult.error === 'string' && osmResult.error.startsWith('Error')) {
+      errors.push(`OSM: ${osmResult.error}`);
+    }
 
-    const totalFound = osmData.found + wikiData.found;
-    const totalNew = osmData.new + wikiData.new;
+    const totalFound = osmResult.found;
+    const totalNew = osmResult.new;
 
     if (jobId) {
       await supabase
@@ -207,8 +203,7 @@ async function scrapeLeads() {
       found: totalFound,
       country: 'GE',
       zone: zone.label,
-      osm: osmData,
-      wikidata: wikiData,
+      osm: osmResult,
       errors: errors.length > 0 ? errors : undefined,
     };
   } catch (err) {
@@ -264,14 +259,42 @@ out body 300;`;
     for (const l of existing || []) existingUrls.add(l.source_url);
   }
 
+  // Known chains/corporations to skip — their numbers are call centers, not directors
+  const CHAIN_BRANDS = new Set([
+    'mcdonalds', 'mcdonald', 'kfc', 'burger king', 'subway', 'dominos', 'papa johns',
+    'carrefour', 'spar', 'nikora', 'goodwill', 'smart', 'magniti', 'ori nabiji',
+    'wissol', 'socar', 'gulf', 'lukoil', 'rompetrol',
+    'tbc', 'bank of georgia', 'liberty bank', 'basisbank', 'credo bank', 'procredit',
+    'magti', 'geocell', 'beeline', 'silknet',
+    'aversi', 'psp', 'gpc',
+    'tegeta', 'autopapa',
+    'dunkin', 'starbucks', 'costa coffee',
+    'glovo', 'wolt', 'bolt',
+  ]);
+
+  let skippedChains = 0;
   const newLeadRecords = [];
   for (const el of elements) {
     const t = el.tags || {};
     const sourceUrl = `https://www.openstreetmap.org/${el.type}/${el.id}`;
     if (existingUrls.has(sourceUrl)) continue;
 
+    // SKIP chains and franchises — they have brand tags or are known chains
+    // These have call center numbers, not director contacts
+    if (t['brand'] || t['brand:wikidata'] || t['brand:wikipedia']) {
+      skippedChains++;
+      continue;
+    }
+
     const name = t['name:en'] || t['name'] || null;
     if (!name) continue;
+
+    // Also skip known chain names
+    const nameLower = name.toLowerCase();
+    if (CHAIN_BRANDS.has(nameLower) || [...CHAIN_BRANDS].some(b => nameLower.includes(b))) {
+      skippedChains++;
+      continue;
+    }
 
     const phone = t['contact:phone'] || t['phone'] || null;
     const email = t['contact:email'] || t['email'] || null;
@@ -292,6 +315,9 @@ out body 300;`;
       matchedService = 'automation';
     }
 
+    // Higher relevance for businesses with both phone + email (likely owner-operated)
+    const relevanceScore = (phone && email) ? 8 : (phone ? 6 : 4);
+
     newLeadRecords.push({
       name,
       email,
@@ -303,7 +329,7 @@ out body 300;`;
       city: zone.city,
       country: 'GE',
       matched_service: matchedService,
-      relevance_score: 5,
+      relevance_score: relevanceScore,
       linkedin_url: t['contact:linkedin'] || null,
       facebook_url: t['contact:facebook'] || null,
       instagram_url: t['contact:instagram'] || null,
@@ -323,7 +349,7 @@ out body 300;`;
     }
   }
 
-  return { found: elements.length, new: newLeads, prepared: newLeadRecords.length, error: insertErr };
+  return { found: elements.length, new: newLeads, prepared: newLeadRecords.length, skippedChains, error: insertErr };
 }
 
 // ========== WIKIDATA — Georgian companies with phone/email (150 total, paginated) ==========
