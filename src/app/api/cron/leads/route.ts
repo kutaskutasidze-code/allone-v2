@@ -319,12 +319,19 @@ async function scrape2GIS(source: { id: string; base_url: string; scrape_config:
 
 // 4. CLEANUP — remove non-Georgian scraped leads
 async function cleanupNonGeorgianLeads() {
-  const { count, error } = await supabase
+  // First count how many will be deleted
+  const { count } = await supabase
+    .from('leads')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_scraped', true)
+    .neq('country', 'GE');
+
+  // Then delete them
+  const { error } = await supabase
     .from('leads')
     .delete()
     .eq('is_scraped', true)
-    .neq('country', 'GE')
-    .select('id', { count: 'exact', head: true });
+    .neq('country', 'GE');
 
   if (error) throw new Error(`Cleanup failed: ${error.message}`);
   return { deleted: count || 0 };
