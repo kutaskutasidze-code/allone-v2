@@ -134,187 +134,187 @@ async function checkStaleLeads() {
   return { staleLeads: staleCount };
 }
 
-// 3. LEAD SCRAPING — scrape Georgian locations only via 2GIS API
+// Business type filters for OSM Overpass queries — rotated each hour for variety
+const OSM_BUSINESS_FILTERS = [
+  // Group 1: Tech & Services
+  { filter: '["office"~"it|company|consulting|insurance|financial|lawyer|estate_agent"]', service: 'custom_ai' },
+  // Group 2: Hospitality
+  { filter: '["tourism"~"hotel|hostel|guest_house|apartment"]', service: 'website' },
+  // Group 3: Food & Drink
+  { filter: '["amenity"~"restaurant|cafe|bar|fast_food"]', service: 'website' },
+  // Group 4: Health
+  { filter: '["amenity"~"clinic|hospital|dentist|pharmacy|doctors"]', service: 'chatbots' },
+  // Group 5: Retail & Commerce
+  { filter: '["shop"~"supermarket|clothes|beauty|car|furniture|electronics|hardware"]', service: 'automation' },
+  // Group 6: Education & Finance
+  { filter: '["amenity"~"bank|school|university|kindergarten|college"]', service: 'consulting' },
+  // Group 7: Auto & Logistics
+  { filter: '["shop"~"car_repair|car_parts|tyres"]["amenity"~"car_rental|fuel"]', service: 'automation' },
+];
+
+// 3. LEAD SCRAPING — scrape Georgian businesses via OpenStreetMap Overpass API (free, no key needed)
 async function scrapeLeads() {
-  const { data: sources, error } = await supabase
-    .from('lead_sources')
-    .select('*')
-    .eq('is_active', true)
-    .neq('source_type', 'manual');
+  const { data: job } = await supabase
+    .from('scrape_jobs')
+    .insert({
+      source_id: null,
+      status: 'running',
+      search_query: 'OpenStreetMap Overpass — Georgian businesses',
+      country: 'GE',
+      started_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
 
-  if (error) throw new Error(`Sources query failed: ${error.message}`);
-  if (!sources || sources.length === 0) return { scraped: 0, message: 'No active sources' };
+  const jobId = job?.id;
 
-  let totalScraped = 0;
-  const errors: string[] = [];
+  try {
+    // Pick 2 random city + business type combos per run for variety
+    const cityPicks = GEORGIAN_CITIES.sort(() => Math.random() - 0.5).slice(0, 2);
+    const filterPicks = OSM_BUSINESS_FILTERS.sort(() => Math.random() - 0.5).slice(0, 2);
 
-  for (const source of sources) {
-    try {
-      const { data: job } = await supabase
-        .from('scrape_jobs')
-        .insert({
-          source_id: source.id,
-          status: 'running',
-          country: 'GE',
-          started_at: new Date().toISOString(),
-        })
-        .select()
-        .single();
+    let totalFound = 0;
+    let totalNew = 0;
+    const errors: string[] = [];
 
-      let leadsFound = 0;
-      let leadsNew = 0;
-
-      if (source.source_type === 'maps' && source.base_url.includes('2gis')) {
-        const result = await scrape2GIS(source);
-        leadsFound = result.found;
-        leadsNew = result.new;
+    for (const city of cityPicks) {
+      for (const { filter, service } of filterPicks) {
+        try {
+          const result = await scrapeOSM(city, filter, service);
+          totalFound += result.found;
+          totalNew += result.new;
+        } catch (err) {
+          errors.push(`${city}/${service}: ${String(err)}`);
+        }
       }
-
-      totalScraped += leadsNew;
-
-      if (job) {
-        await supabase
-          .from('scrape_jobs')
-          .update({
-            status: 'completed',
-            leads_found: leadsFound,
-            leads_new: leadsNew,
-            completed_at: new Date().toISOString(),
-          })
-          .eq('id', job.id);
-      }
-
-      await supabase
-        .from('lead_sources')
-        .update({ last_scraped_at: new Date().toISOString() })
-        .eq('id', source.id);
-
-    } catch (err) {
-      errors.push(`${source.name}: ${String(err)}`);
     }
-  }
 
-  return { scraped: totalScraped, sources: sources.length, country: 'GE', errors: errors.length > 0 ? errors : undefined };
+    if (jobId) {
+      await supabase
+        .from('scrape_jobs')
+        .update({
+          status: 'completed',
+          leads_found: totalFound,
+          leads_new: totalNew,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', jobId);
+    }
+
+    return { scraped: totalNew, found: totalFound, country: 'GE', cities: cityPicks, errors: errors.length > 0 ? errors : undefined };
+  } catch (err) {
+    if (jobId) {
+      await supabase
+        .from('scrape_jobs')
+        .update({ status: 'failed', error_message: String(err), completed_at: new Date().toISOString() })
+        .eq('id', jobId);
+    }
+    throw err;
+  }
 }
 
-// 2GIS scraper — Georgia only, extracts phones + emails
-async function scrape2GIS(source: { id: string; base_url: string; scrape_config: { cities?: string[] }; countries?: string[] }) {
-  const apiKey = process.env.TWOGIS_API_KEY || 'rurbbn3446';
-  // Always use Georgian cities regardless of source config
-  const cities = GEORGIAN_CITIES;
-  let found = 0;
+// OpenStreetMap Overpass scraper — queries businesses with contact info in a Georgian city
+async function scrapeOSM(city: string, osmFilter: string, defaultService: string) {
+  // Build Overpass query: find nodes and ways with contact info in the given city
+  // We query for businesses that have phone OR email
+  const query = `[out:json][timeout:30];
+area["name:en"="${city}"]->.searchArea;
+(
+  node${osmFilter}(area.searchArea);
+  way${osmFilter}(area.searchArea);
+);
+out body 50;`;
+
+  const res = await fetch('https://overpass-api.de/api/interpreter', {
+    method: 'POST',
+    body: `data=${encodeURIComponent(query)}`,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    signal: AbortSignal.timeout(35000),
+  });
+
+  if (!res.ok) throw new Error(`Overpass API returned ${res.status}`);
+
+  const data = await res.json();
+  const elements = data?.elements || [];
+
+  // Filter to only elements with phone or email
+  interface OSMElement {
+    type: string;
+    id: number;
+    tags?: Record<string, string>;
+  }
+  const withContact = elements.filter((el: OSMElement) => {
+    const t = el.tags || {};
+    return t['contact:phone'] || t['phone'] || t['contact:email'] || t['email'];
+  });
+
+  if (withContact.length === 0) return { found: elements.length, new: 0 };
+
+  // Batch duplicate check using OSM source URLs
+  const sourceUrls = withContact.map((el: OSMElement) => `https://www.openstreetmap.org/${el.type}/${el.id}`);
+
+  const { data: existingLeads } = await supabase
+    .from('leads')
+    .select('source_url')
+    .in('source_url', sourceUrls);
+
+  const existingUrls = new Set((existingLeads || []).map(l => l.source_url));
+
+  const newLeadRecords = [];
+  for (const el of withContact as OSMElement[]) {
+    const t = el.tags || {};
+    const sourceUrl = `https://www.openstreetmap.org/${el.type}/${el.id}`;
+    if (existingUrls.has(sourceUrl)) continue;
+
+    const name = t['name:en'] || t['name'] || null;
+    if (!name) continue;
+
+    const phone = t['contact:phone'] || t['phone'] || null;
+    const email = t['contact:email'] || t['email'] || null;
+    const website = t['contact:website'] || t['website'] || null;
+
+    // Categorize based on OSM tags
+    let matchedService = defaultService;
+    const allTags = Object.entries(t).map(([k, v]) => `${k}=${v}`.toLowerCase()).join(' ');
+    if (allTags.includes('office=it') || allTags.includes('software')) {
+      matchedService = 'custom_ai';
+    } else if (allTags.includes('hotel') || allTags.includes('restaurant') || allTags.includes('cafe')) {
+      matchedService = 'website';
+    } else if (allTags.includes('clinic') || allTags.includes('hospital') || allTags.includes('dentist') || allTags.includes('pharmacy')) {
+      matchedService = 'chatbots';
+    } else if (allTags.includes('bank') || allTags.includes('insurance') || allTags.includes('lawyer')) {
+      matchedService = 'consulting';
+    }
+
+    newLeadRecords.push({
+      name,
+      email,
+      phone,
+      company: name,
+      website: website,
+      source_url: sourceUrl,
+      address: t['addr:street'] ? `${t['addr:street']} ${t['addr:housenumber'] || ''}`.trim() : null,
+      city,
+      country: 'GE',
+      matched_service: matchedService,
+      relevance_score: 5,
+      linkedin_url: t['contact:linkedin'] || null,
+      facebook_url: t['contact:facebook'] || null,
+      instagram_url: t['contact:instagram'] || null,
+      is_scraped: true,
+      status: 'new' as const,
+    });
+  }
+
   let newLeads = 0;
-
-  const categories = [
-    'IT companies', 'Marketing agencies', 'Hotels', 'Restaurants',
-    'Medical clinics', 'Law firms', 'Real estate', 'Dental clinics',
-    'Travel agencies', 'Insurance companies', 'Banks', 'Startups',
-    'E-commerce', 'Logistics companies', 'Construction companies',
-  ];
-
-  for (const city of cities) {
-    // Pick 2 random categories per city per run for variety
-    const shuffled = categories.sort(() => Math.random() - 0.5);
-    const selectedCategories = shuffled.slice(0, 2);
-
-    for (const category of selectedCategories) {
-      try {
-        const searchUrl = `https://catalog.api.2gis.com/3.0/items?q=${encodeURIComponent(category)}&city=${encodeURIComponent(city)}&page_size=20&key=${apiKey}`;
-        const res = await fetch(searchUrl, { signal: AbortSignal.timeout(8000) });
-        if (!res.ok) continue;
-
-        const data = await res.json();
-        const items = data?.result?.items || [];
-        found += items.length;
-
-        if (items.length === 0) continue;
-
-        // Batch duplicate check
-        const sourceUrls = items
-          .filter((item: { id?: string }) => item.id)
-          .map((item: { id: string }) => `https://2gis.ge/firm/${item.id}`);
-
-        const { data: existingLeads } = await supabase
-          .from('leads')
-          .select('source_url')
-          .in('source_url', sourceUrls);
-
-        const existingUrls = new Set((existingLeads || []).map(l => l.source_url));
-
-        // Batch insert new leads — only those with phone or email
-        const newLeadRecords = [];
-        for (const item of items) {
-          if (!item.name || !item.id) continue;
-
-          const sourceUrl = `https://2gis.ge/firm/${item.id}`;
-          if (existingUrls.has(sourceUrl)) continue;
-
-          // Extract all phones from contact groups
-          const phones: string[] = [];
-          const emails: string[] = [];
-          for (const group of item.contact_groups || []) {
-            for (const contact of group.contacts || []) {
-              if (contact.type === 'phone' && contact.value) {
-                phones.push(contact.value);
-              } else if (contact.type === 'email' && contact.value) {
-                emails.push(contact.value);
-              }
-            }
-          }
-
-          const phone = phones[0] || null;
-          const email = emails[0] || null;
-
-          // Skip leads with no contact info at all
-          if (!phone && !email) continue;
-
-          let matchedService = null;
-          const rubricNames = (item.rubrics || []).map((r: { name?: string }) => (r.name || '').toLowerCase()).join(' ');
-          if (rubricNames.includes('it') || rubricNames.includes('software')) {
-            matchedService = 'custom_ai';
-          } else if (rubricNames.includes('hotel') || rubricNames.includes('restaurant')) {
-            matchedService = 'website';
-          } else if (rubricNames.includes('medical') || rubricNames.includes('clinic') || rubricNames.includes('dental')) {
-            matchedService = 'chatbots';
-          } else if (rubricNames.includes('logist') || rubricNames.includes('warehouse') || rubricNames.includes('construction')) {
-            matchedService = 'automation';
-          } else if (rubricNames.includes('law') || rubricNames.includes('insurance') || rubricNames.includes('bank')) {
-            matchedService = 'consulting';
-          }
-
-          const rating = item.reviews?.rating || 0;
-          const relevanceScore = Math.min(Math.round(rating * 2), 10);
-
-          newLeadRecords.push({
-            name: item.name,
-            email,
-            phone,
-            company: item.name,
-            source_id: source.id,
-            source_url: sourceUrl,
-            address: item.address_name || null,
-            city,
-            country: 'GE',
-            matched_service: matchedService,
-            relevance_score: relevanceScore,
-            is_scraped: true,
-            status: 'new' as const,
-          });
-        }
-
-        if (newLeadRecords.length > 0) {
-          const { error: insertError } = await supabase.from('leads').insert(newLeadRecords);
-          if (!insertError) {
-            newLeads += newLeadRecords.length;
-          }
-        }
-      } catch {
-        // Timeout or network error — skip this city/category
-      }
+  if (newLeadRecords.length > 0) {
+    const { error: insertError } = await supabase.from('leads').insert(newLeadRecords);
+    if (!insertError) {
+      newLeads = newLeadRecords.length;
     }
   }
 
-  return { found, new: newLeads };
+  return { found: withContact.length, new: newLeads };
 }
 
 // 4. CLEANUP — remove non-Georgian scraped leads
