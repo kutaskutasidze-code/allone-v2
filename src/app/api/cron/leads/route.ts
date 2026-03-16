@@ -226,17 +226,13 @@ async function scrapeLeads() {
 async function scrapeOSMZone(zone: { city: string; bbox: string; label: string }) {
   const [s, w, n, e] = zone.bbox.split(',');
 
-  // Query ALL nodes and ways with phone or email in this bounding box — no category filter
-  const query = `[out:json][timeout:45];
+  // Query ALL nodes/ways/relations with phone or email in this bbox — simplified for speed
+  const query = `[out:json][timeout:25];
 (
-  node["contact:phone"](${s},${w},${n},${e});
-  node["phone"](${s},${w},${n},${e});
-  node["contact:email"](${s},${w},${n},${e});
-  node["email"](${s},${w},${n},${e});
-  way["contact:phone"](${s},${w},${n},${e});
-  way["phone"](${s},${w},${n},${e});
-  way["contact:email"](${s},${w},${n},${e});
-  way["email"](${s},${w},${n},${e});
+  nwr["contact:phone"](${s},${w},${n},${e});
+  nwr["phone"](${s},${w},${n},${e});
+  nwr["contact:email"](${s},${w},${n},${e});
+  nwr["email"](${s},${w},${n},${e});
 );
 out body 300;`;
 
@@ -244,7 +240,7 @@ out body 300;`;
     method: 'POST',
     body: `data=${encodeURIComponent(query)}`,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    signal: AbortSignal.timeout(50000),
+    signal: AbortSignal.timeout(30000),
   });
 
   if (!res.ok) throw new Error(`Overpass returned ${res.status}`);
@@ -311,7 +307,6 @@ out body 300;`;
       linkedin_url: t['contact:linkedin'] || null,
       facebook_url: t['contact:facebook'] || null,
       instagram_url: t['contact:instagram'] || null,
-      is_scraped: true,
       status: 'new' as const,
     });
   }
@@ -422,7 +417,6 @@ async function scrapeWikidata() {
       country: 'GE',
       matched_service: matchedService,
       relevance_score: 8, // Higher score — established companies
-      is_scraped: true,
       status: 'new' as const,
     });
   }
@@ -441,14 +435,14 @@ async function cleanupNonGeorgianLeads() {
   const { count } = await supabase
     .from('leads')
     .select('id', { count: 'exact', head: true })
-    .eq('is_scraped', true)
-    .neq('country', 'GE');
+    .not('country', 'eq', 'GE')
+    .not('source_url', 'is', null);
 
   const { error } = await supabase
     .from('leads')
     .delete()
-    .eq('is_scraped', true)
-    .neq('country', 'GE');
+    .not('country', 'eq', 'GE')
+    .not('source_url', 'is', null);
 
   if (error) throw new Error(`Cleanup failed: ${error.message}`);
   return { deleted: count || 0 };
