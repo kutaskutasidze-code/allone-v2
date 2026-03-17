@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useRef } from "react"
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion"
+import { motion, useMotionValue, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LucideIcon, X, Send, Globe } from "lucide-react"
@@ -30,7 +30,6 @@ interface ChatMessage {
 function DockIcon({
   item,
   isActive,
-  mouseX,
   t,
 }: {
   item: NavItem
@@ -38,32 +37,16 @@ function DockIcon({
   mouseX: ReturnType<typeof useMotionValue<number>>
   t: (key: string) => string
 }) {
-  const ref = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState(false)
   const Icon = item.icon
 
-  const distance = useTransform(mouseX, (val: number) => {
-    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 }
-    return val - bounds.x - bounds.width / 2
-  })
-
-  const size = useSpring(useTransform(distance, [-120, 0, 120], [40, 56, 40]), {
-    mass: 0.1, stiffness: 150, damping: 12,
-  })
-
-  const iconScale = useSpring(useTransform(distance, [-120, 0, 120], [1, 1.2, 1]), {
-    mass: 0.1, stiffness: 150, damping: 12,
-  })
-
   return (
     <Link href={item.url}>
-      <motion.div
-        ref={ref}
-        style={{ width: size, height: size }}
+      <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={cn(
-          "relative flex items-center justify-center rounded-full cursor-pointer transition-colors",
+          "relative w-11 h-11 flex items-center justify-center rounded-full cursor-pointer transition-colors",
           isActive ? "bg-accent/10 text-accent" : "text-foreground/60 hover:text-foreground",
         )}
       >
@@ -81,13 +64,11 @@ function DockIcon({
             </motion.div>
           )}
         </AnimatePresence>
-        <motion.div style={{ scale: iconScale }}>
-          <Icon size={20} strokeWidth={2} />
-        </motion.div>
+        <Icon size={22} strokeWidth={2} />
         {isActive && (
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent" />
+          <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent" />
         )}
-      </motion.div>
+      </div>
     </Link>
   )
 }
@@ -278,11 +259,8 @@ export function NavBar({ items, className }: NavBarProps) {
       </AnimatePresence>
 
       {/* Dock pill */}
-      <motion.div
-        layout
-        className="backdrop-blur-xl bg-white/80 rounded-full shadow-lg px-1.5 py-1.5"
-        onMouseMove={(e) => mouseX.set(e.pageX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
+      <div
+        className="backdrop-blur-xl bg-white/80 rounded-full shadow-lg px-2 py-2"
       >
         <AnimatePresence mode="wait">
           {chatMode === 'closed' ? (
@@ -306,7 +284,7 @@ export function NavBar({ items, className }: NavBarProps) {
               {/* Language toggle */}
               <button
                 onClick={() => setLang(lang === 'en' ? 'ka' : 'en')}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-foreground/40 hover:text-foreground transition-colors cursor-pointer"
+                className="w-11 h-11 flex items-center justify-center rounded-full text-foreground/40 hover:text-foreground transition-colors cursor-pointer"
                 title={isKa ? 'Switch to English' : 'ქართულად'}
               >
                 <Globe size={18} strokeWidth={2} />
@@ -350,7 +328,7 @@ export function NavBar({ items, className }: NavBarProps) {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={isKa ? 'იკითხეთ რაიმე...' : 'Ask anything...'}
-                className="flex-1 bg-transparent text-sm text-heading placeholder:text-foreground/30 outline-none py-2"
+                className="flex-1 bg-transparent text-sm text-heading placeholder:text-foreground/30 outline-none py-2 border-none ring-0 focus:ring-0 focus:outline-none appearance-none"
                 disabled={isStreaming}
               />
               <button
@@ -363,7 +341,7 @@ export function NavBar({ items, className }: NavBarProps) {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   )
 }
