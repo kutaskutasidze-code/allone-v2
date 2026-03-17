@@ -104,7 +104,7 @@ export function NavBar({ items, className }: NavBarProps) {
   }, [messages])
 
   const openChat = () => {
-    setChatMode('input')
+    setChatMode(messages.length > 0 ? 'expanded' : 'input')
     setHasUnread(false)
   }
 
@@ -112,6 +112,7 @@ export function NavBar({ items, className }: NavBarProps) {
     setChatMode('closed')
     setMessages([])
     setInputValue('')
+    setHasUnread(false)
   }
 
   const minimizeChat = () => {
@@ -134,58 +135,28 @@ export function NavBar({ items, className }: NavBarProps) {
     setIsStreaming(true)
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMsg]
-            .map(m => ({ role: m.role, content: m.content })),
-        }),
-      })
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const body = res.body
-      if (!body) throw new Error('No body')
+      const history = messages.map(m => ({ role: m.role, content: m.content }))
 
       setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: '', isStreaming: true }])
 
-      const reader = body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
+      const res = await fetch('/api/allone-ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, history }),
+      })
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          if (!line.trim()) continue
-          try {
-            const parsed = JSON.parse(line)
-            if (parsed.type === 'text') {
-              setMessages(prev => prev.map(m =>
-                m.id === assistantId ? { ...m, content: m.content + parsed.content } : m
-              ))
-            } else if (parsed.type === 'done') {
-              setMessages(prev => prev.map(m =>
-                m.id === assistantId ? { ...m, isStreaming: false } : m
-              ))
-            }
-          } catch { /* skip */ }
-        }
-      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
 
       setMessages(prev => prev.map(m =>
-        m.id === assistantId ? { ...m, isStreaming: false } : m
+        m.id === assistantId ? { ...m, content: data.response || 'No response.', isStreaming: false } : m
       ))
     } catch {
-      setMessages(prev => [...prev, {
-        id: assistantId,
-        role: 'assistant',
-        content: "Sorry, something went wrong. Try again.",
-      }])
+      setMessages(prev => prev.map(m =>
+        m.id === assistantId
+          ? { ...m, content: "Sorry, something went wrong. Try again.", isStreaming: false }
+          : m
+      ))
     } finally {
       setIsStreaming(false)
     }
