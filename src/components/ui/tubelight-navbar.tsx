@@ -46,8 +46,9 @@ function DockIcon({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={cn(
-          "relative w-11 h-11 flex items-center justify-center rounded-full cursor-pointer transition-colors",
+          "relative w-11 h-11 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200",
           isActive ? "bg-accent/10 text-accent" : "text-foreground/60 hover:text-foreground",
+          hovered && "scale-125",
         )}
       >
         <AnimatePresence>
@@ -56,7 +57,7 @@ function DockIcon({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
-              className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg
+              className="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg
                 bg-heading text-white text-[11px] font-display font-semibold whitespace-nowrap
                 shadow-lg pointer-events-none"
             >
@@ -260,7 +261,7 @@ export function NavBar({ items, className }: NavBarProps) {
 
       {/* Dock pill */}
       <div
-        className="backdrop-blur-xl bg-white/80 rounded-full shadow-lg px-2 py-2"
+        className="backdrop-blur-xl bg-white/80 rounded-full shadow-lg px-4 py-1.5"
       >
         <AnimatePresence mode="wait">
           {chatMode === 'closed' ? (
@@ -269,7 +270,7 @@ export function NavBar({ items, className }: NavBarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              className="flex items-center gap-1"
+              className="flex items-center gap-2"
             >
               {items.map((item) => (
                 <DockIcon
