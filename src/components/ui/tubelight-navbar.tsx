@@ -243,7 +243,7 @@ export function NavBar({ items, className }: NavBarProps) {
 
       {/* Dock pill */}
       <div
-        className="backdrop-blur-xl bg-white/60 rounded-full shadow-lg px-6 py-1"
+        className="backdrop-blur-xl bg-white/60 rounded-full shadow-lg px-6 py-1 w-[420px] max-w-[calc(100vw-32px)]"
       >
         <AnimatePresence mode="wait">
           {chatMode === 'closed' ? (
@@ -252,7 +252,7 @@ export function NavBar({ items, className }: NavBarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              className="flex items-center gap-3"
+              className="flex items-center justify-between"
             >
               {items.map((item) => (
                 <DockIcon
@@ -295,8 +295,7 @@ export function NavBar({ items, className }: NavBarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              className="flex items-center gap-2 px-2"
-              style={{ minWidth: '320px' }}
+              className="flex items-center gap-2 w-full"
             >
               <button
                 onClick={minimizeChat}
