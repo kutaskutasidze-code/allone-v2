@@ -46,7 +46,7 @@ function DockIcon({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={cn(
-          "relative w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200",
+          "relative w-9 h-9 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200",
           isActive ? "bg-accent/10 text-accent" : "text-foreground/60 hover:text-foreground",
           hovered && "scale-125",
         )}
@@ -65,7 +65,7 @@ function DockIcon({
             </motion.div>
           )}
         </AnimatePresence>
-        <Icon size={22} strokeWidth={2} />
+        <Icon size={20} strokeWidth={2} />
         {isActive && (
           <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent" />
         )}
@@ -285,10 +285,10 @@ export function NavBar({ items, className }: NavBarProps) {
               {/* Language toggle */}
               <button
                 onClick={() => setLang(lang === 'en' ? 'ka' : 'en')}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-foreground/40 hover:text-foreground transition-colors cursor-pointer"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-foreground/40 hover:text-foreground transition-colors cursor-pointer"
                 title={isKa ? 'Switch to English' : 'ქართულად'}
               >
-                <Globe size={18} strokeWidth={2} />
+                <Globe size={20} strokeWidth={2} />
               </button>
 
               {/* Divider */}
