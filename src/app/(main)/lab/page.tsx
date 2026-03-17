@@ -1,6 +1,5 @@
 import { LabHero, LabResearches } from '@/components/sections';
 import { Metadata } from 'next';
-import { LabChatPopup } from './lab-chat-popup';
 
 export const metadata: Metadata = {
   title: 'Quantum AI Lab | ALLONE',
@@ -12,7 +11,6 @@ export default function LabPage() {
     <main className="min-h-screen bg-white">
       <LabHero />
       <LabResearches />
-      <LabChatPopup />
     </main>
   );
 }

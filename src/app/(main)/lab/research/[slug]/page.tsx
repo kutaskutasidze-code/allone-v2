@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { LAB_RESEARCH } from '@/data/lab-research';
 import { ResearchPaperView } from './research-paper-view';
-import { LabChatPopup } from '../../lab-chat-popup';
 
 export function generateStaticParams() {
   return LAB_RESEARCH.map((paper) => ({
@@ -48,16 +47,13 @@ export default async function ResearchPaperPage({ params }: { params: { slug: st
   }
 
   return (
-    <>
-      <ResearchPaperView
-        paper={{
-          ...paper,
-          image: paper.image,
-        }}
-        related={related.slice(0, 3)}
-        totalPapers={LAB_RESEARCH.length}
-      />
-      <LabChatPopup />
-    </>
+    <ResearchPaperView
+      paper={{
+        ...paper,
+        image: paper.image,
+      }}
+      related={related.slice(0, 3)}
+      totalPapers={LAB_RESEARCH.length}
+    />
   );
 }
