@@ -46,7 +46,7 @@ function DockIcon({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={cn(
-          "relative w-11 h-11 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200",
+          "relative w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200",
           isActive ? "bg-accent/10 text-accent" : "text-foreground/60 hover:text-foreground",
           hovered && "scale-125",
         )}
@@ -261,7 +261,7 @@ export function NavBar({ items, className }: NavBarProps) {
 
       {/* Dock pill */}
       <div
-        className="backdrop-blur-xl bg-white/80 rounded-full shadow-lg px-4 py-1.5"
+        className="backdrop-blur-xl bg-white/80 rounded-full shadow-lg px-6 py-1"
       >
         <AnimatePresence mode="wait">
           {chatMode === 'closed' ? (
@@ -270,7 +270,7 @@ export function NavBar({ items, className }: NavBarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-3"
             >
               {items.map((item) => (
                 <DockIcon
@@ -285,7 +285,7 @@ export function NavBar({ items, className }: NavBarProps) {
               {/* Language toggle */}
               <button
                 onClick={() => setLang(lang === 'en' ? 'ka' : 'en')}
-                className="w-11 h-11 flex items-center justify-center rounded-full text-foreground/40 hover:text-foreground transition-colors cursor-pointer"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-foreground/40 hover:text-foreground transition-colors cursor-pointer"
                 title={isKa ? 'Switch to English' : 'ქართულად'}
               >
                 <Globe size={18} strokeWidth={2} />
