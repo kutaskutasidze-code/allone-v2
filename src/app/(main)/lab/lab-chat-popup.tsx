@@ -179,7 +179,7 @@ export function LabChatPopup() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-40
+            className="fixed top-20 sm:top-auto sm:bottom-6 left-1/2 -translate-x-1/2 z-40
               flex flex-col items-center gap-1.5"
           >
             <motion.button
@@ -210,7 +210,7 @@ export function LabChatPopup() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-40
+            className="fixed top-20 sm:top-auto sm:bottom-6 left-1/2 -translate-x-1/2 z-40
               w-[420px] max-w-[calc(100vw-48px)]
               flex flex-col items-stretch"
           >

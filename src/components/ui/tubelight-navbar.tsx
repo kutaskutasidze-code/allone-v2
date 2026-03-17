@@ -103,7 +103,7 @@ export function NavBar({ items, className }: NavBarProps) {
     <div
       ref={navRef}
       className={cn(
-        "fixed bottom-0 left-1/2 -translate-x-1/2 z-50 mb-6 transition-colors duration-300",
+        "fixed bottom-0 sm:bottom-auto sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:mb-0 sm:pt-6 transition-colors duration-300",
         className,
       )}
     >
