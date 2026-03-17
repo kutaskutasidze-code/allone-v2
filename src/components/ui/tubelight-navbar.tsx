@@ -213,7 +213,7 @@ export function NavBar({ items, className }: NavBarProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="mb-2 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
+            className="mb-2 bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
             style={{ width: '380px', maxWidth: 'calc(100vw - 48px)' }}
           >
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-border-light/30">
@@ -258,7 +258,7 @@ export function NavBar({ items, className }: NavBarProps) {
 
       {/* Dock pill */}
       <div
-        className="backdrop-blur-xl bg-white/80 rounded-full shadow-lg px-6 py-1"
+        className="backdrop-blur-xl bg-white/60 rounded-full shadow-lg px-6 py-1"
       >
         <AnimatePresence mode="wait">
           {chatMode === 'closed' ? (
