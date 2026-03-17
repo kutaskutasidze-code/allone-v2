@@ -326,7 +326,8 @@ export function NavBar({ items, className }: NavBarProps) {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={isKa ? 'იკითხეთ რაიმე...' : 'Ask anything...'}
-                className="flex-1 bg-transparent text-sm text-heading placeholder:text-foreground/30 outline-none py-2 border-none ring-0 focus:ring-0 focus:outline-none appearance-none"
+                className="flex-1 bg-transparent text-sm text-heading placeholder:text-foreground/30 py-2 [border:none] [outline:none] [box-shadow:none] focus:[border:none] focus:[outline:none] focus:[box-shadow:none]"
+                style={{ border: 'none', outline: 'none', boxShadow: 'none' }}
                 disabled={isStreaming}
               />
               <button
