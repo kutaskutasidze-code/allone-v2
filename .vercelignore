@@ -1,0 +1,8 @@
+# Exclude separate projects from Vercel build
+linkedin-bot/
+scraper/
+
+# Other ignores
+.git/
+node_modules/
+*.log

@@ -1,0 +1,12 @@
+export { Hero } from './Hero';
+export { DashboardShowcase } from './DashboardShowcase';
+export { default as ServicesNew } from './ServicesNew';
+export { Clients } from './Clients';
+export { Stats } from './Stats';
+export { Testimonials } from './Testimonials';
+export { ProjectsGrid } from './ProjectsGrid';
+export { CTA } from './CTA';
+export { LabHero } from './LabHero';
+export { LabResearches } from './LabResearches';
+export { LabExperiments } from './LabExperiments';
+export { LabProducts } from './LabProducts';

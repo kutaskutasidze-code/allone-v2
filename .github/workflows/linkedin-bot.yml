@@ -1,0 +1,59 @@
+name: LinkedIn Bot
+
+on:
+  schedule:
+    # Run twice daily at 9 AM and 3 PM UTC
+    - cron: '0 9 * * *'
+    - cron: '0 15 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  engage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        working-directory: ./linkedin-bot
+        run: pnpm install
+
+      - name: Install Puppeteer browser
+        working-directory: ./linkedin-bot
+        run: npx puppeteer browsers install chrome
+
+      - name: Build
+        working-directory: ./linkedin-bot
+        run: pnpm build
+
+      - name: Restore LinkedIn session
+        working-directory: ./linkedin-bot
+        run: |
+          mkdir -p session
+          echo '${{ secrets.LINKEDIN_COOKIES }}' | base64 -d > session/cookies.json
+          echo '{}' > session/localStorage.json
+
+      - name: Run LinkedIn engagement
+        working-directory: ./linkedin-bot
+        env:
+          LINKEDIN_EMAIL: ${{ secrets.LINKEDIN_EMAIL }}
+          LINKEDIN_PASSWORD: ${{ secrets.LINKEDIN_PASSWORD }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          COMPANY_PAGE_URL: ${{ secrets.LINKEDIN_COMPANY_PAGE }}
+          HEADLESS: 'true'
+          LIKES_PER_DAY: '20'
+          COMMENTS_PER_DAY: '10'
+          POSTS_PER_DAY: '1'
+        run: node dist/index.js auto --no-invite
+        timeout-minutes: 30

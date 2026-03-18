@@ -1,0 +1,39 @@
+name: Lead Automation
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # Every hour — scrape Georgian leads
+    - cron: '0 7 * * *'   # 11 AM Tbilisi (UTC+4) — send daily digest email
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task to run'
+        required: false
+        default: 'scrape'
+        type: choice
+        options:
+          - scrape
+          - digest
+          - cleanup
+
+jobs:
+  run-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine task
+        id: task
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "task=${{ inputs.task }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.schedule }}" = "0 7 * * *" ]; then
+            echo "task=digest" >> $GITHUB_OUTPUT
+          else
+            echo "task=scrape" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run lead automation
+        run: |
+          curl -s -X GET \
+            -H "x-claude-api-key: ${{ secrets.CLAUDE_REPORT_API_KEY }}" \
+            "https://www.allone.ge/api/cron/leads?task=${{ steps.task.outputs.task }}" \
+            | jq .

@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/macintoshi/projects/allone-website/logs/.ea891ced7a0b8640c003e59a148287bd4fccaafe-audit.json",
+    "files": [
+        {
+            "date": 1768786716489,
+            "name": "/Users/macintoshi/projects/allone-website/logs/mcp-puppeteer-2026-01-19.log",
+            "hash": "48b9b08fec0776942e49e3e152466f6a4eda46f4e2903170872fbcc904931693"
+        }
+    ],
+    "hashType": "sha256"
+}

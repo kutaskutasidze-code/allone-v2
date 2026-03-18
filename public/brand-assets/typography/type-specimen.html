@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALLONE — Typography Specimen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'General Sans';
+    src: local('General Sans Medium'), local('GeneralSans-Medium');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'General Sans';
+    src: local('General Sans Semibold'), local('GeneralSans-Semibold');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'General Sans';
+    src: local('General Sans Bold'), local('GeneralSans-Bold');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+  :root {
+    --navy: #071D2F;
+    --accent: #0A68F5;
+    --accent-light: rgba(10,104,245,0.08);
+    --accent-glow: rgba(10,104,245,0.15);
+    --white: #FFFFFF;
+    --surface: #F8FAFE;
+    --surface-2: #F1F6FB;
+    --surface-3: #E0EEFB;
+    --muted: #6B7F8E;
+    --muted-light: #9AACBB;
+    --border: #E2E8F0;
+    --border-light: rgba(226,232,240,0.5);
+    --font-display: 'General Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--white);
+    color: var(--navy);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLL PROGRESS BAR ─── */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), #3B8DF8);
+    z-index: 9999;
+    transition: width 0.05s linear;
+    will-change: width;
+  }
+
+  /* ─── CONTAINER ─── */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    background: rgba(255,255,255,0.72);
+    border-bottom: 1px solid var(--border-light);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  nav.scrolled {
+    padding: 14px 48px;
+    background: rgba(255,255,255,0.88);
+    box-shadow: 0 1px 24px rgba(7,29,47,0.06);
+  }
+  nav .logo { height: 28px; opacity: 0.9; transition: opacity 0.3s; }
+  nav .logo:hover { opacity: 1; }
+  nav .nav-links { display: flex; gap: 32px; }
+  nav .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.25s;
+    position: relative;
+  }
+  nav .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  nav .nav-links a:hover { color: var(--accent); }
+  nav .nav-links a:hover::after { width: 100%; }
+
+  /* ─── FOCUS STATES ─── */
+  *:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* ─── SECTIONS ─── */
+  section {
+    padding: 140px 0;
+    position: relative;
+  }
+  section:first-of-type {
+    padding-top: 200px;
+  }
+
+  /* ─── SECTION DIVIDERS — Animated ─── */
+  .section-divider {
+    height: 1px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .section-divider::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .section-divider.in-view::after {
+    width: 64px;
+  }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(20px);
+    will-change: transform, opacity, filter;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.in-view {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+  .reveal-scale {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(0.95);
+    will-change: transform, opacity, filter;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-scale.in-view {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+  .reveal-left {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateX(-40px);
+    will-change: transform, opacity, filter;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal-left.in-view {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateX(0);
+  }
+
+  /* ─── MONO LABEL ─── */
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: inline-block;
+  }
+
+  /* ─── GLASS CARD ─── */
+  .glass-card {
+    background: rgba(248,250,254,0.6);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(226,232,240,0.6);
+    border-radius: 20px;
+    padding: 36px 40px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.4s;
+  }
+  .glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(7,29,47,0.08);
+    border-color: rgba(10,104,245,0.15);
+  }
+  .glass-card h4 {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .glass-card .spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    transition: background 0.2s;
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 6px;
+  }
+  .glass-card .spec-row:hover {
+    background: var(--accent-light);
+  }
+  .glass-card .spec-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .glass-card .spec-value {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--navy);
+  }
+
+  /* ─── HERO ─── */
+  .hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-display);
+    font-size: clamp(120px, 18vw, 280px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--navy);
+    opacity: 0.025;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    will-change: transform;
+  }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 6.5vw, 80px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-title .gradient-text {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+  }
+  .scroll-indicator {
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+  }
+  .scroll-indicator:hover { opacity: 0.7; }
+  .scroll-indicator span {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .scroll-line {
+    width: 1px;
+    height: 32px;
+    background: var(--muted);
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-line::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background: var(--accent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0% { top: -100%; }
+    50% { top: 100%; }
+    100% { top: 100%; }
+  }
+
+  /* ─── DISPLAY SECTION ─── */
+  .display-giant {
+    font-family: var(--font-display);
+    font-size: clamp(80px, 10vw, 140px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    color: var(--navy);
+    margin-bottom: 80px;
+  }
+
+  /* ─── ALPHABET LETTERS ─── */
+  .alphabet-row {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 3.5vw, 40px);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    color: var(--navy);
+    margin-bottom: 16px;
+    word-break: break-all;
+  }
+  .alphabet-row .letter {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(8px);
+    will-change: transform, opacity, filter;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                color 0.3s;
+  }
+  .alphabet-row .letter.in-view {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+  .alphabet-row .letter:hover { color: var(--accent); }
+  .alphabet-secondary {
+    font-size: clamp(18px, 2.5vw, 32px);
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── HEADING HIERARCHY ─── */
+  .heading-samples { margin-top: 80px; }
+  .heading-sample {
+    display: flex;
+    align-items: baseline;
+    gap: 32px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+    transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    cursor: pointer;
+  }
+  .heading-sample::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .heading-sample.in-view::before {
+    width: 3px;
+    height: 60%;
+  }
+  .heading-sample:hover { padding-left: 20px; }
+  .heading-sample .size-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted-light);
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+  .heading-sample .sample-text {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--navy);
+  }
+  /* Tooltip for heading specs */
+  .heading-sample .css-tooltip {
+    position: absolute;
+    top: -8px;
+    right: 0;
+    background: var(--navy);
+    color: #E2E8F0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.25s, transform 0.25s;
+    white-space: nowrap;
+    z-index: 10;
+  }
+  .heading-sample:hover .css-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── BODY SECTION ─── */
+  .body-giant {
+    font-family: var(--font-body);
+    font-size: clamp(56px, 7vw, 96px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    color: var(--navy);
+    margin-bottom: 80px;
+  }
+
+  .body-paragraph {
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.8;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+
+  /* ─── WEIGHT DEMO ─── */
+  .weight-demo { margin-top: 64px; }
+  .weight-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .weight-btn {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .weight-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .weight-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--white);
+  }
+  .weight-row {
+    display: flex;
+    align-items: baseline;
+    gap: 32px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+    transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s;
+    position: relative;
+  }
+  .weight-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: var(--accent-light);
+    border-radius: 8px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .weight-row:hover::before { width: 100%; }
+  .weight-row:hover { padding-left: 16px; }
+  .weight-row .weight-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted-light);
+    min-width: 120px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .weight-row .weight-text {
+    font-family: var(--font-body);
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+    color: var(--navy);
+    position: relative;
+    z-index: 1;
+    transition: font-weight 0.3s ease;
+  }
+
+  /* ─── MONO SECTION ─── */
+  .mono-giant {
+    font-family: var(--font-mono);
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--navy);
+    margin-bottom: 80px;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: var(--navy);
+    border-radius: 20px;
+    padding: 48px;
+    margin-bottom: 64px;
+    overflow-x: auto;
+    position: relative;
+    box-shadow: 0 24px 64px rgba(7,29,47,0.2), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  }
+  .code-block .window-dots {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .code-block .window-dots span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .code-block .window-dots span:nth-child(1) { background: #FF5F57; }
+  .code-block .window-dots span:nth-child(2) { background: #FFBD2E; }
+  .code-block .window-dots span:nth-child(3) { background: #28C840; }
+  .code-block .copy-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    z-index: 5;
+  }
+  .code-block .copy-btn:hover {
+    color: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
+  .code-block .copy-btn.copied {
+    color: #28C840;
+    border-color: rgba(40,200,64,0.3);
+    background: rgba(40,200,64,0.1);
+  }
+  .code-block .line-numbers {
+    position: absolute;
+    left: 24px;
+    top: 72px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.12);
+    user-select: none;
+    text-align: right;
+    padding-right: 16px;
+    border-right: 1px solid rgba(255,255,255,0.05);
+  }
+  .code-block pre {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.8;
+    color: #E2E8F0;
+    padding-left: 48px;
+  }
+  .code-block .keyword { color: #7DD3FC; }
+  .code-block .function { color: #93C5FD; }
+  .code-block .string { color: #86EFAC; }
+  .code-block .property { color: #FDE68A; }
+  .code-block .bracket { color: #A5B4C4; }
+  .code-block .comment { color: #4A6375; font-style: italic; }
+  .code-block .cursor-blink {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--accent);
+    vertical-align: text-bottom;
+    animation: cursorBlink 1s step-end infinite;
+    margin-left: 1px;
+  }
+  @keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .code-block .typed-char {
+    opacity: 0;
+    display: inline;
+  }
+  .code-block .typed-char.visible {
+    opacity: 1;
+  }
+
+  .mono-label-showcase {
+    font-family: var(--font-mono);
+    font-size: clamp(14px, 2vw, 20px);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-top: 48px;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transition: letter-spacing 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mono-label-showcase:hover { letter-spacing: 0.24em; }
+
+  /* ─── TYPE SCALE SECTION ─── */
+  .scale-section { background: var(--surface); }
+
+  .scale-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 20px 16px;
+    border-bottom: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 3px solid transparent;
+  }
+  .scale-row:hover {
+    padding-left: 28px;
+    background: rgba(10,104,245,0.03);
+    border-left-color: var(--accent);
+  }
+  .scale-row:last-child { border-bottom: none; }
+  .scale-row .scale-detail {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.3s, margin 0.3s;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin-top: 0;
+  }
+  .scale-row.expanded .scale-detail {
+    max-height: 80px;
+    opacity: 1;
+    margin-top: 12px;
+  }
+  .scale-row.expanded {
+    background: rgba(10,104,245,0.03);
+    border-left-color: var(--accent);
+    padding: 24px 16px 24px 28px;
+  }
+
+  .scale-text {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--navy);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 75%;
+  }
+  .scale-text.body-font {
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .scale-text.mono-font {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .scale-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted-light);
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    padding: 12px 24px;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(7,29,47,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast svg { flex-shrink: 0; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--navy);
+    padding: 80px 48px;
+    text-align: center;
+    color: rgba(255,255,255,0.4);
+  }
+  footer .logo { height: 24px; opacity: 0.5; margin-bottom: 24px; filter: brightness(10); }
+  footer p {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── GRID LAYOUT ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 64px;
+    align-items: start;
+  }
+  .two-col-equal {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .two-col { grid-template-columns: 1fr 320px; gap: 40px; }
+  }
+  @media (max-width: 768px) {
+    .two-col, .two-col-equal { grid-template-columns: 1fr; }
+    nav { padding: 16px 24px; }
+    nav .nav-links { display: none; }
+    .container { padding: 0 24px; }
+    section { padding: 100px 0; }
+    section:first-of-type { padding-top: 140px; }
+    .code-block { padding: 32px 24px; }
+    .code-block pre { font-size: 13px; padding-left: 36px; }
+    .code-block .line-numbers { left: 12px; top: 56px; font-size: 11px; }
+    .heading-sample { flex-direction: column; gap: 8px; }
+    .scale-row { flex-direction: column; gap: 4px; }
+    .scale-text { max-width: 100%; }
+  }
+  @media (max-width: 480px) {
+    .container { padding: 0 16px; }
+    section { padding: 80px 0; }
+    .display-giant { font-size: clamp(48px, 14vw, 80px); }
+    .body-giant { font-size: clamp(36px, 10vw, 56px); }
+    .mono-giant { font-size: clamp(28px, 8vw, 40px); }
+    .glass-card { padding: 24px; border-radius: 16px; }
+    .weight-row { flex-direction: column; gap: 8px; }
+  }
+
+  /* ─── REDUCED MOTION ─── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .reveal, .reveal-scale, .reveal-left {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+    }
+    .alphabet-row .letter {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+    }
+    .scroll-progress { display: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ─── SELECTION ─── */
+  ::selection {
+    background: rgba(10,104,245,0.12);
+    color: var(--navy);
+  }
+</style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M2 7.5L5.5 11L12 3" stroke="#28C840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span id="toastText">Copied to clipboard</span>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <img src="data:image/png;base64,LOGO_PLACEHOLDER" alt="ALLONE" class="logo">
+  <div class="nav-links">
+    <a href="#display" tabindex="0">Display</a>
+    <a href="#body" tabindex="0">Body</a>
+    <a href="#mono" tabindex="0">Mono</a>
+    <a href="#scale" tabindex="0">Scale</a>
+  </div>
+</nav>
+
+<!-- ━━━ HERO ━━━ -->
+<section class="hero-section" id="hero">
+  <div class="hero-watermark" id="heroWatermark">Typography</div>
+  <div class="container" style="text-align:center;">
+    <span class="mono-label reveal" style="transition-delay:0.1s">TYPOGRAPHY SPECIMEN</span>
+    <h1 class="hero-title reveal" style="transition-delay:0.2s">
+      <span class="gradient-text">Three voices.</span><br>One system.
+    </h1>
+    <p class="hero-subtitle reveal" style="transition-delay:0.35s">A typographic system designed for clarity, precision, and presence. Three carefully selected families working in concert to communicate with purpose.</p>
+  </div>
+  <div class="scroll-indicator reveal" style="transition-delay:0.6s">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ━━━ SECTION 1: DISPLAY — GENERAL SANS ━━━ -->
+<section id="display">
+  <div class="container">
+    <span class="mono-label reveal">01 — Display</span>
+    <div class="display-giant reveal" style="transition-delay:0.1s">General<br>Sans</div>
+
+    <div class="two-col">
+      <div>
+        <div class="alphabet-row" id="alphaUpper1">ABCDEFGHIJKLM</div>
+        <div class="alphabet-row" id="alphaUpper2">NOPQRSTUVWXYZ</div>
+        <div class="alphabet-row alphabet-secondary" id="alphaLower" style="margin-top:32px;">abcdefghijklmnopqrstuvwxyz</div>
+        <div class="alphabet-row alphabet-secondary" id="alphaNum">0123456789 &amp; @</div>
+      </div>
+      <div class="glass-card reveal-scale" style="transition-delay:0.2s">
+        <h4>Specifications</h4>
+        <div class="spec-row">
+          <span class="spec-label">Family</span>
+          <span class="spec-value">General Sans</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Weights</span>
+          <span class="spec-value">500 · 600 · 700</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Line Height</span>
+          <span class="spec-value">1.05</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Tracking</span>
+          <span class="spec-value">-0.03em</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Role</span>
+          <span class="spec-value">Headings, hero text, feature titles</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Fallback</span>
+          <span class="spec-value">Inter, system-ui</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="heading-samples">
+      <span class="mono-label reveal" style="margin-bottom:32px;display:block;">Heading Hierarchy</span>
+
+      <div class="heading-sample reveal" style="transition-delay:0.05s" data-css="font: 600 48px/1.05 'General Sans'; letter-spacing: -0.03em;">
+        <span class="size-label">H1 · 48px</span>
+        <span class="sample-text" style="font-size:48px;">Intelligence at scale</span>
+        <span class="css-tooltip">font: 600 48px/1.05 General Sans; letter-spacing: -0.03em</span>
+      </div>
+      <div class="heading-sample reveal" style="transition-delay:0.1s" data-css="font: 600 36px/1.05 'General Sans'; letter-spacing: -0.03em;">
+        <span class="size-label">H2 · 36px</span>
+        <span class="sample-text" style="font-size:36px;">Enterprise-grade automation</span>
+        <span class="css-tooltip">font: 600 36px/1.05 General Sans; letter-spacing: -0.03em</span>
+      </div>
+      <div class="heading-sample reveal" style="transition-delay:0.15s" data-css="font: 600 24px/1.15 'General Sans'; letter-spacing: -0.02em;">
+        <span class="size-label">H3 · 24px</span>
+        <span class="sample-text" style="font-size:24px;">Converging AI with local expertise</span>
+        <span class="css-tooltip">font: 600 24px/1.15 General Sans; letter-spacing: -0.02em</span>
+      </div>
+      <div class="heading-sample reveal" style="transition-delay:0.2s" data-css="font: 600 20px/1.2 'General Sans'; letter-spacing: -0.02em;">
+        <span class="size-label">H4 · 20px</span>
+        <span class="sample-text" style="font-size:20px;">Delivering the future of work</span>
+        <span class="css-tooltip">font: 600 20px/1.2 General Sans; letter-spacing: -0.02em</span>
+      </div>
+      <div class="heading-sample reveal" style="transition-delay:0.25s" data-css="font: 600 18px/1.3 'General Sans'; letter-spacing: -0.01em;">
+        <span class="size-label">H5 · 18px</span>
+        <span class="sample-text" style="font-size:18px;">Precision-driven solutions</span>
+        <span class="css-tooltip">font: 600 18px/1.3 General Sans; letter-spacing: -0.01em</span>
+      </div>
+      <div class="heading-sample reveal" style="transition-delay:0.3s" data-css="font: 600 16px/1.4 'General Sans'; letter-spacing: -0.01em;">
+        <span class="size-label">H6 · 16px</span>
+        <span class="sample-text" style="font-size:16px;">Built for clarity</span>
+        <span class="css-tooltip">font: 600 16px/1.4 General Sans; letter-spacing: -0.01em</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ━━━ SECTION 2: BODY — PLUS JAKARTA SANS ━━━ -->
+<section id="body">
+  <div class="container">
+    <span class="mono-label reveal">02 — Body</span>
+    <div class="body-giant reveal" style="transition-delay:0.1s">Plus Jakarta<br>Sans</div>
+
+    <div class="two-col">
+      <div>
+        <p class="body-paragraph reveal" style="transition-delay:0.15s">We converge AI intelligence with local expertise to deliver enterprise-grade automation at 90% less cost. Every interaction should feel like the future, today.</p>
+        <p class="body-paragraph reveal" style="transition-delay:0.2s;color:var(--muted);">Typography is the voice of design. The right typeface doesn't just carry words — it carries intent, emotion, and trust. Plus Jakarta Sans speaks with warmth and clarity, making complex ideas feel approachable.</p>
+      </div>
+      <div class="glass-card reveal-scale" style="transition-delay:0.25s">
+        <h4>Specifications</h4>
+        <div class="spec-row">
+          <span class="spec-label">Family</span>
+          <span class="spec-value">Plus Jakarta Sans</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Weights</span>
+          <span class="spec-value">300 · 400 · 500 · 600 · 700</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Base Size</span>
+          <span class="spec-value">16px</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Line Height</span>
+          <span class="spec-value">1.7</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Tracking</span>
+          <span class="spec-value">-0.01em</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Role</span>
+          <span class="spec-value">Body text, descriptions, UI</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">Source</span>
+          <span class="spec-value">Google Fonts</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="weight-demo">
+      <span class="mono-label reveal" style="margin-bottom:16px;display:block;">Weight Variations</span>
+      <div class="weight-controls reveal" style="transition-delay:0.05s">
+        <button class="weight-btn active" data-weight="all" tabindex="0">All</button>
+        <button class="weight-btn" data-weight="300" tabindex="0">Light 300</button>
+        <button class="weight-btn" data-weight="400" tabindex="0">Regular 400</button>
+        <button class="weight-btn" data-weight="500" tabindex="0">Medium 500</button>
+        <button class="weight-btn" data-weight="600" tabindex="0">Semibold 600</button>
+        <button class="weight-btn" data-weight="700" tabindex="0">Bold 700</button>
+      </div>
+      <div id="weightRows">
+        <div class="weight-row reveal-left" style="transition-delay:0.1s" data-w="300">
+          <span class="weight-label">Light · 300</span>
+          <span class="weight-text" style="font-weight:300;">The quiet confidence of restraint — when less becomes infinitely more.</span>
+        </div>
+        <div class="weight-row reveal-left" style="transition-delay:0.15s" data-w="400">
+          <span class="weight-label">Regular · 400</span>
+          <span class="weight-text" style="font-weight:400;">We converge AI intelligence with local expertise to deliver enterprise-grade automation.</span>
+        </div>
+        <div class="weight-row reveal-left" style="transition-delay:0.2s" data-w="500">
+          <span class="weight-label">Medium · 500</span>
+          <span class="weight-text" style="font-weight:500;">Clarity and precision define every interaction, every decision, every outcome.</span>
+        </div>
+        <div class="weight-row reveal-left" style="transition-delay:0.25s" data-w="600">
+          <span class="weight-label">Semibold · 600</span>
+          <span class="weight-text" style="font-weight:600;">Purpose-built systems that transform how businesses operate at scale.</span>
+        </div>
+        <div class="weight-row reveal-left" style="transition-delay:0.3s" data-w="700">
+          <span class="weight-label">Bold · 700</span>
+          <span class="weight-text" style="font-weight:700;">The future is not an abstraction. It is an architecture we are building now.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ━━━ SECTION 3: MONO — JETBRAINS MONO ━━━ -->
+<section id="mono">
+  <div class="container">
+    <span class="mono-label reveal">03 — Mono</span>
+    <div class="mono-giant reveal" style="transition-delay:0.1s">JetBrains<br>Mono</div>
+
+    <div class="code-block reveal-scale" style="transition-delay:0.15s" id="codeBlock">
+      <button class="copy-btn" id="codeCopy" tabindex="0" aria-label="Copy code">Copy</button>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5</div>
+      <div class="window-dots"><span></span><span></span><span></span></div>
+      <pre id="codeContent"><span class="comment">// AI convergence — the allone way</span>
+<span class="keyword">const</span> <span class="function">future</span> <span class="bracket">=</span> <span class="keyword">await</span> allone.<span class="function">automate</span><span class="bracket">({</span>
+  <span class="property">services</span><span class="bracket">:</span> <span class="bracket">[</span><span class="string">'chatbot'</span><span class="bracket">,</span> <span class="string">'workflow'</span><span class="bracket">,</span> <span class="string">'custom-ai'</span><span class="bracket">]</span><span class="bracket">,</span>
+  <span class="property">market</span><span class="bracket">:</span> <span class="string">'georgia'</span><span class="bracket">,</span>
+  <span class="property">cost</span><span class="bracket">:</span> <span class="string">'enterprise * 0.10'</span>
+<span class="bracket">}</span><span class="bracket">)</span><span class="bracket">;</span></pre>
+    </div>
+
+    <div class="mono-label-showcase reveal" style="transition-delay:0.2s">AI CONVERGENCE AGENCY</div>
+
+    <div style="margin-top:64px;">
+      <div class="two-col-equal">
+        <div class="glass-card reveal-scale" style="transition-delay:0.25s">
+          <h4>Specifications</h4>
+          <div class="spec-row">
+            <span class="spec-label">Family</span>
+            <span class="spec-value">JetBrains Mono</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Weights</span>
+            <span class="spec-value">300 · 400 · 500 · 600</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Label Size</span>
+            <span class="spec-value">0.75rem (12px)</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Tracking</span>
+            <span class="spec-value">0.05em</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Transform</span>
+            <span class="spec-value">UPPERCASE</span>
+          </div>
+        </div>
+        <div class="glass-card reveal-scale" style="transition-delay:0.35s">
+          <h4>Usage</h4>
+          <div class="spec-row">
+            <span class="spec-label">Primary</span>
+            <span class="spec-value">Section labels, tags</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Secondary</span>
+            <span class="spec-value">Code blocks, data</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Tertiary</span>
+            <span class="spec-value">Navigation, metadata</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Source</span>
+            <span class="spec-value">Google Fonts</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Ligatures</span>
+            <span class="spec-value">Enabled</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Fallback</span>
+            <span class="spec-value">SF Mono, Fira Code</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ━━━ SECTION 4: TYPE SCALE ━━━ -->
+<section id="scale" class="scale-section">
+  <div class="container">
+    <span class="mono-label reveal">04 — Type Scale</span>
+    <h2 class="reveal" style="font-family:var(--font-display);font-size:clamp(36px,5vw,48px);font-weight:700;letter-spacing:-0.03em;line-height:1.05;margin-bottom:80px;color:var(--navy);transition-delay:0.1s">The complete<br>hierarchy.</h2>
+
+    <div class="scale-row reveal-left" style="transition-delay:0.05s" data-css="font: 700 72px/1.02 'General Sans'; letter-spacing: -0.035em" tabindex="0" role="button" aria-label="Hero type scale, click to copy CSS">
+      <div>
+        <span class="scale-text" style="font-size:clamp(36px,5vw,72px);">The future is here</span>
+        <div class="scale-detail">font-family: General Sans · weight: 700 · line-height: 1.02 · tracking: -0.035em</div>
+      </div>
+      <span class="scale-label">Hero · 72px<br>General Sans 700</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.1s" data-css="font: 600 48px/1.05 'General Sans'; letter-spacing: -0.03em" tabindex="0" role="button" aria-label="H1 type scale, click to copy CSS">
+      <div>
+        <span class="scale-text" style="font-size:clamp(28px,4vw,48px);">Intelligence at scale</span>
+        <div class="scale-detail">font-family: General Sans · weight: 600 · line-height: 1.05 · tracking: -0.03em</div>
+      </div>
+      <span class="scale-label">H1 · 48px<br>General Sans 600</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.15s" data-css="font: 600 36px/1.1 'General Sans'; letter-spacing: -0.03em" tabindex="0" role="button" aria-label="H2 type scale, click to copy CSS">
+      <div>
+        <span class="scale-text" style="font-size:clamp(24px,3.5vw,36px);">Enterprise automation</span>
+        <div class="scale-detail">font-family: General Sans · weight: 600 · line-height: 1.1 · tracking: -0.03em</div>
+      </div>
+      <span class="scale-label">H2 · 36px<br>General Sans 600</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.2s" data-css="font: 600 24px/1.15 'General Sans'; letter-spacing: -0.02em" tabindex="0" role="button" aria-label="H3 type scale, click to copy CSS">
+      <div>
+        <span class="scale-text" style="font-size:clamp(20px,2.5vw,24px);">Converging AI with expertise</span>
+        <div class="scale-detail">font-family: General Sans · weight: 600 · line-height: 1.15 · tracking: -0.02em</div>
+      </div>
+      <span class="scale-label">H3 · 24px<br>General Sans 600</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.25s" data-css="font: 600 20px/1.2 'General Sans'; letter-spacing: -0.02em" tabindex="0" role="button" aria-label="H4 type scale, click to copy CSS">
+      <div>
+        <span class="scale-text" style="font-size:clamp(18px,2vw,20px);">Local knowledge, global reach</span>
+        <div class="scale-detail">font-family: General Sans · weight: 600 · line-height: 1.2 · tracking: -0.02em</div>
+      </div>
+      <span class="scale-label">H4 · 20px<br>General Sans 600</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.3s" data-css="font: 500 18px/1.7 'Plus Jakarta Sans'; letter-spacing: -0.01em" tabindex="0" role="button" aria-label="Body Large type scale, click to copy CSS">
+      <div>
+        <span class="scale-text body-font" style="font-size:18px;">We deliver enterprise-grade automation with the precision of AI.</span>
+        <div class="scale-detail">font-family: Plus Jakarta Sans · weight: 500 · line-height: 1.7 · tracking: -0.01em</div>
+      </div>
+      <span class="scale-label">Body Large · 18px<br>Plus Jakarta Sans 500</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.35s" data-css="font: 400 16px/1.7 'Plus Jakarta Sans'; letter-spacing: -0.01em" tabindex="0" role="button" aria-label="Body type scale, click to copy CSS">
+      <div>
+        <span class="scale-text body-font" style="font-size:16px;">Every interaction should feel like the future, today.</span>
+        <div class="scale-detail">font-family: Plus Jakarta Sans · weight: 400 · line-height: 1.7 · tracking: -0.01em</div>
+      </div>
+      <span class="scale-label">Body · 16px<br>Plus Jakarta Sans 400</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.4s" data-css="font: 400 14px/1.6 'Plus Jakarta Sans'; letter-spacing: 0" tabindex="0" role="button" aria-label="Small type scale, click to copy CSS">
+      <div>
+        <span class="scale-text body-font" style="font-size:14px;">Intelligent automation for the modern enterprise landscape.</span>
+        <div class="scale-detail">font-family: Plus Jakarta Sans · weight: 400 · line-height: 1.6 · tracking: 0</div>
+      </div>
+      <span class="scale-label">Small · 14px<br>Plus Jakarta Sans 400</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.45s" data-css="font: 400 12px/1.5 'Plus Jakarta Sans'" tabindex="0" role="button" aria-label="Caption type scale, click to copy CSS">
+      <div>
+        <span class="scale-text body-font" style="font-size:12px;">Designed for clarity, built for purpose.</span>
+        <div class="scale-detail">font-family: Plus Jakarta Sans · weight: 400 · line-height: 1.5</div>
+      </div>
+      <span class="scale-label">Caption · 12px<br>Plus Jakarta Sans 400</span>
+    </div>
+    <div class="scale-row reveal-left" style="transition-delay:0.5s" data-css="font: 500 10px/1.4 'JetBrains Mono'; letter-spacing: 0.05em; text-transform: uppercase" tabindex="0" role="button" aria-label="Label type scale, click to copy CSS">
+      <div>
+        <span class="scale-text mono-font" style="font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);">AI CONVERGENCE AGENCY</span>
+        <div class="scale-detail">font-family: JetBrains Mono · weight: 500 · tracking: 0.05em · transform: uppercase</div>
+      </div>
+      <span class="scale-label">Label · 10px<br>JetBrains Mono 500</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <img src="data:image/png;base64,LOGO_PLACEHOLDER" alt="ALLONE" class="logo">
+  <p>ALLONE — Typography Specimen · 2026</p>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ─── SCROLL PROGRESS ───
+  const progressBar = document.getElementById('scrollProgress');
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  }
+
+  // ─── NAV SCROLL EFFECT ───
+  const nav = document.getElementById('mainNav');
+  function updateNav() {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }
+
+  // ─── PARALLAX WATERMARK ───
+  const watermark = document.getElementById('heroWatermark');
+  function updateParallax() {
+    if (watermark) {
+      const scroll = window.scrollY;
+      const rate = scroll * 0.15;
+      watermark.style.transform = 'translate(-50%, calc(-50% + ' + rate + 'px))';
+    }
+  }
+
+  // Throttled scroll handler
+  let ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        updateProgress();
+        updateNav();
+        updateParallax();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // ─── INTERSECTION OBSERVER — Reveal elements ───
+  const revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        // Don't unobserve — keep it visible once revealed
+      }
+    });
+  }, {
+    threshold: 0.2,
+    rootMargin: '-50px'
+  });
+
+  // Observe all reveal elements
+  document.querySelectorAll('.reveal, .reveal-scale, .reveal-left, .heading-sample, .section-divider').forEach(function(el) {
+    revealObserver.observe(el);
+  });
+
+  // ─── ALPHABET LETTER CASCADE ───
+  function wrapLetters(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const text = el.textContent;
+    el.innerHTML = '';
+    const letters = [];
+    for (let i = 0; i < text.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'letter';
+      span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+      el.appendChild(span);
+      letters.push(span);
+    }
+    return letters;
+  }
+
+  const alpha1 = wrapLetters('alphaUpper1');
+  const alpha2 = wrapLetters('alphaUpper2');
+  const alpha3 = wrapLetters('alphaLower');
+  const alpha4 = wrapLetters('alphaNum');
+  const allAlphaGroups = [
+    { letters: alpha1, el: document.getElementById('alphaUpper1') },
+    { letters: alpha2, el: document.getElementById('alphaUpper2') },
+    { letters: alpha3, el: document.getElementById('alphaLower') },
+    { letters: alpha4, el: document.getElementById('alphaNum') }
+  ];
+
+  allAlphaGroups.forEach(function(group, groupIndex) {
+    if (!group.el || !group.letters) return;
+    const alphaObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          group.letters.forEach(function(letter, i) {
+            // Accelerating delay: starts slow, gets faster
+            const baseDelay = groupIndex * 300;
+            const letterDelay = baseDelay + (i * (40 - i * 0.8));
+            setTimeout(function() {
+              letter.classList.add('in-view');
+            }, Math.max(0, letterDelay));
+          });
+          alphaObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2, rootMargin: '-50px' });
+    alphaObserver.observe(group.el);
+  });
+
+  // ─── COPY TO CLIPBOARD + TOAST ───
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toastText');
+  let toastTimer = null;
+
+  function showToast(message) {
+    toastText.textContent = message;
+    toast.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.classList.remove('visible');
+    }, 2000);
+  }
+
+  function copyToClipboard(text, message) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast(message || 'Copied to clipboard');
+    }).catch(function() {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;left:-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast(message || 'Copied to clipboard');
+    });
+  }
+
+  // ─── CODE BLOCK COPY ───
+  const codeCopy = document.getElementById('codeCopy');
+  const codeContent = document.getElementById('codeContent');
+  if (codeCopy && codeContent) {
+    codeCopy.addEventListener('click', function() {
+      const text = codeContent.textContent;
+      codeCopy.classList.add('copied');
+      codeCopy.textContent = 'Copied';
+      copyToClipboard(text, 'Code copied to clipboard');
+      setTimeout(function() {
+        codeCopy.classList.remove('copied');
+        codeCopy.textContent = 'Copy';
+      }, 2000);
+    });
+  }
+
+  // ─── CODE TYPING ANIMATION ───
+  (function initTypingAnimation() {
+    const codeBlock = document.getElementById('codeBlock');
+    if (!codeBlock) return;
+    let hasTyped = false;
+
+    const codeObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !hasTyped) {
+          hasTyped = true;
+          const pre = codeBlock.querySelector('pre');
+          if (!pre) return;
+
+          const originalHTML = pre.innerHTML;
+          const originalText = pre.textContent;
+
+          // Create a temporary hidden element to parse spans
+          pre.style.visibility = 'hidden';
+          pre.innerHTML = originalHTML;
+
+          // After a tiny delay, reveal with typing effect
+          setTimeout(function() {
+            pre.style.visibility = 'visible';
+            pre.innerHTML = '';
+
+            let charIndex = 0;
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor-blink';
+            cursor.innerHTML = '&nbsp;';
+
+            function typeChar() {
+              if (charIndex >= originalHTML.length) {
+                // Done typing — restore full HTML
+                pre.innerHTML = originalHTML;
+                return;
+              }
+
+              // Handle HTML tags — skip through instantly
+              if (originalHTML[charIndex] === '<') {
+                const closeIndex = originalHTML.indexOf('>', charIndex);
+                if (closeIndex !== -1) {
+                  charIndex = closeIndex + 1;
+                }
+              }
+
+              // Build up HTML char by char
+              const partial = originalHTML.substring(0, charIndex + 1);
+              // Count unclosed tags to add closing tags
+              pre.innerHTML = partial;
+              pre.appendChild(cursor);
+              charIndex++;
+
+              const speed = originalHTML[charIndex - 1] === '\n' ? 60 : 12;
+              setTimeout(typeChar, speed);
+            }
+
+            typeChar();
+          }, 300);
+
+          codeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    codeObserver.observe(codeBlock);
+  })();
+
+  // ─── TYPE SCALE — Click to expand + copy ───
+  document.querySelectorAll('.scale-row').forEach(function(row) {
+    row.addEventListener('click', function() {
+      const css = row.getAttribute('data-css');
+      // Toggle expanded
+      const wasExpanded = row.classList.contains('expanded');
+      // Close all others
+      document.querySelectorAll('.scale-row.expanded').forEach(function(r) {
+        r.classList.remove('expanded');
+      });
+      if (!wasExpanded) {
+        row.classList.add('expanded');
+      }
+      // Copy CSS
+      if (css) {
+        copyToClipboard(css, 'CSS declaration copied');
+      }
+    });
+    row.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        row.click();
+      }
+    });
+  });
+
+  // ─── HEADING SAMPLE — Click to copy CSS ───
+  document.querySelectorAll('.heading-sample').forEach(function(sample) {
+    sample.addEventListener('click', function() {
+      const css = sample.getAttribute('data-css');
+      if (css) copyToClipboard(css, 'CSS declaration copied');
+    });
+  });
+
+  // ─── WEIGHT FILTER BUTTONS ───
+  const weightBtns = document.querySelectorAll('.weight-btn');
+  const weightRows = document.querySelectorAll('#weightRows .weight-row');
+
+  weightBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      weightBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      const target = btn.getAttribute('data-weight');
+
+      weightRows.forEach(function(row) {
+        if (target === 'all' || row.getAttribute('data-w') === target) {
+          row.style.opacity = '1';
+          row.style.maxHeight = '120px';
+          row.style.padding = '24px 0';
+          row.style.borderBottomWidth = '1px';
+        } else {
+          row.style.opacity = '0';
+          row.style.maxHeight = '0';
+          row.style.padding = '0';
+          row.style.borderBottomWidth = '0';
+        }
+      });
+    });
+  });
+
+  // Add overflow hidden + transition for weight rows
+  weightRows.forEach(function(row) {
+    row.style.overflow = 'hidden';
+    row.style.transition = 'opacity 0.3s, max-height 0.4s cubic-bezier(0.16,1,0.3,1), padding 0.4s cubic-bezier(0.16,1,0.3,1), border-bottom-width 0.3s, padding-left 0.4s cubic-bezier(0.16,1,0.3,1)';
+    row.style.maxHeight = '120px';
+  });
+
+  // ─── SMOOTH SCROLL FOR NAV LINKS ───
+  document.querySelectorAll('nav .nav-links a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ─── INIT ───
+  updateProgress();
+  updateNav();
+})();
+</script>
+</body>
+</html>

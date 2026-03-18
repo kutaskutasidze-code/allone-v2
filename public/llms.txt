@@ -1,0 +1,33 @@
+# ALLONE — All Systems. One Intelligence.
+> AI automation agency based in Tbilisi, Georgia and Brussels, Belgium. We build custom AI solutions, intelligent chatbots, workflow automation, and modern websites for businesses worldwide.
+
+## About ALLONE
+ALLONE is an AI automation agency that converges all business systems into one intelligent layer. Founded in 2025, we deliver enterprise-grade AI solutions at startup speed. Our AI-powered delivery stack reduces implementation costs by up to 90% compared to traditional agencies.
+
+## Services
+- **AI Chatbots**: Custom conversational AI with natural language understanding, multi-language support, and seamless integration into existing platforms. 24/7 automated customer support.
+- **Custom AI Solutions**: Bespoke machine learning models, computer vision systems, NLP pipelines, and AI agents tailored to specific business needs.
+- **Workflow Automation**: End-to-end process automation using AI — from data extraction to decision-making. Integrate with CRMs, ERPs, and internal tools.
+- **Website Development**: High-performance Next.js websites with AI-powered features, optimized for speed, SEO, and conversion.
+- **Strategy & Consulting**: AI readiness assessment, implementation roadmaps, and ongoing optimization for businesses at any stage of AI adoption.
+
+## Portfolio
+- Equivalenza Georgia — E-Commerce platform
+- DataRooms — AI-powered investor data rooms
+- FIFTY — Community innovation space
+- HostWise — Property management SaaS
+- KaoTenders — B2B industrial tender platform
+- Chaos Concept — Fashion & art concept store
+- INNRBURIAL — Publishing & art platform
+
+## Contact
+- Website: https://allone.ge
+- Email: hello@allone.ge
+- Locations: Tbilisi, Georgia | Brussels, Belgium
+
+## Links
+- Homepage: https://allone.ge
+- Services: https://allone.ge/services
+- About: https://allone.ge/about
+- Contact: https://allone.ge/contact
+- Projects: https://allone.ge/projects
