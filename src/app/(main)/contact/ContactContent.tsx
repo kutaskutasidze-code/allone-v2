@@ -20,7 +20,7 @@ export function ContactContent({ contactInfo }: ContactContentProps) {
   const { t } = useI18n();
 
   return (
-    <section className="min-h-screen bg-white/95 pt-28 pb-20 lg:pt-36 lg:pb-28 relative overflow-hidden">
+    <section className="min-h-screen bg-white/95 pt-12 sm:pt-28 pb-20 lg:pt-36 lg:pb-28 relative overflow-hidden">
       {/* Gradient blobs in background */}
       <GradientBlobs variant="subtle" />
 

@@ -8,7 +8,7 @@ import { useI18n } from '@/lib/i18n';
 export function LabHero() {
   const { t } = useI18n();
   return (
-    <section className="relative flex items-center justify-center bg-white/90 pt-20 pb-32 lg:pt-24 lg:pb-40 overflow-hidden">
+    <section className="relative flex items-center justify-center bg-white/90 pt-10 sm:pt-20 pb-32 lg:pt-24 lg:pb-40 overflow-hidden">
       {/* Gradient blobs behind CPU architecture */}
       <GradientBlobs variant="hero" />
 

@@ -13,7 +13,7 @@ import { useI18n } from '@/lib/i18n';
 function Hero() {
   const { t } = useI18n();
   return (
-    <section className="relative grid grid-cols-1 max-w-[1080px] mx-auto px-4 pt-16 pb-24 overflow-hidden border-b border-[#EBEBEB]">
+    <section className="relative grid grid-cols-1 max-w-[1080px] mx-auto px-4 pt-8 sm:pt-16 pb-24 overflow-hidden border-b border-[#EBEBEB]">
       <div className="flex flex-col items-center text-center gap-8">
         <h1 className="font-display text-[clamp(32px,5vw,48px)] font-semibold leading-[1] tracking-[-0.047em] text-[#071D2F]">
           {t('landing.hero.h1a')}<br />
