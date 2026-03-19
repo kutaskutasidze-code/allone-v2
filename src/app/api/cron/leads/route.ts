@@ -40,6 +40,13 @@ async function sendResendEmail(to: string, subject: string, html: string) {
   return res.ok;
 }
 
+// ========== ADDITIONAL SOURCES (for future scraping) ==========
+// - BIA.ge — Georgian business directory (HTML scraping, needs separate worker)
+// - yell.ge — Georgian yellow pages (HTML scraping)
+// - procurement.gov.ge — Government procurement tenders (HTML scraping)
+// These require longer execution times than Vercel serverless allows.
+// Plan: Move to Railway worker or Cloudflare Worker for these sources.
+
 // ========== CITY CONFIG ==========
 // Tbilisi split into geographic quadrants for pagination, smaller cities as single zones
 const SCRAPE_SCHEDULE: { city: string; bbox: string; label: string }[] = [
