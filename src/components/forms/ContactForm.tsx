@@ -23,7 +23,7 @@ const serviceKeys = [
 ];
 
 const inputClass =
-  'w-full px-4 py-3 bg-surface border border-border rounded-xl text-[var(--black)] placeholder-[var(--gray-400)] focus:outline-none focus:border-accent transition-colors text-sm';
+  'w-full px-4 py-3 bg-white border border-[#EBEBEB] rounded-xl text-[#071D2F] text-sm placeholder:text-[#071D2F]/30 focus:outline-none focus:border-[#071D2F]/20 focus:shadow-[0_0_0_3px_rgba(7,29,47,0.04)] transition-all';
 
 export function ContactForm() {
   const { t } = useI18n();
@@ -67,18 +67,16 @@ export function ContactForm() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-surface border border-border rounded-2xl p-8 text-center"
+        className="bg-white border border-[#EBEBEB] rounded-2xl p-10 text-center"
       >
-        <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4">
-          <CheckCircle2 className="w-8 h-8 text-accent" />
+        <div className="w-14 h-14 rounded-full bg-[#071D2F]/[0.06] flex items-center justify-center mx-auto mb-4">
+          <CheckCircle2 className="w-7 h-7 text-[#071D2F]" />
         </div>
-        <h3 className="text-xl font-semibold text-[var(--black)] mb-2">{t('form.sent')}</h3>
-        <p className="text-muted mb-6 text-sm">
-          {t('form.thanks')}
-        </p>
+        <h3 className="font-display text-xl font-semibold text-[#071D2F] mb-2">{t('form.sent')}</h3>
+        <p className="text-sm text-[#4D4D4D] mb-6">{t('form.thanks')}</p>
         <button
           onClick={() => setIsSuccess(false)}
-          className="text-accent font-medium hover:text-accent-hover transition-colors text-sm"
+          className="text-sm font-medium text-[#071D2F] hover:text-[#071D2F]/70 transition-colors"
         >
           {t('form.another')}
         </button>
@@ -92,7 +90,7 @@ export function ContactForm() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-error/10 border border-error/20 rounded-xl text-error text-sm"
+          className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm"
         >
           {error}
         </motion.div>
@@ -106,6 +104,7 @@ export function ContactForm() {
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           className={inputClass}
           placeholder={t('form.name')}
+          style={{ fontSize: '16px' }}
         />
         <input
           type="email"
@@ -114,6 +113,7 @@ export function ContactForm() {
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           className={inputClass}
           placeholder={t('form.email')}
+          style={{ fontSize: '16px' }}
         />
       </div>
 
@@ -124,16 +124,16 @@ export function ContactForm() {
           onChange={(e) => setFormData({ ...formData, company: e.target.value })}
           className={inputClass}
           placeholder={t('form.company')}
+          style={{ fontSize: '16px' }}
         />
         <select
           value={formData.service}
           onChange={(e) => setFormData({ ...formData, service: e.target.value })}
           className={`${inputClass} appearance-none cursor-pointer`}
+          style={{ fontSize: '16px' }}
         >
           {serviceKeys.map((s) => (
-            <option key={s.value} value={s.value} className="bg-surface text-[var(--black)]">
-              {t(s.labelKey)}
-            </option>
+            <option key={s.value} value={s.value}>{t(s.labelKey)}</option>
           ))}
         </select>
       </div>
@@ -145,12 +145,13 @@ export function ContactForm() {
         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
         className={`${inputClass} resize-none`}
         placeholder={t('form.message')}
+        style={{ fontSize: '16px' }}
       />
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="btn-primary w-full sm:w-auto"
+        className="flex items-center justify-center gap-2 h-12 px-8 text-sm font-medium text-white bg-[#071D2F] rounded-full hover:bg-[#0a2a45] disabled:opacity-50 transition-all duration-150 w-full sm:w-auto cursor-pointer"
       >
         {isSubmitting ? (
           <Loader2 className="w-4 h-4 animate-spin" />

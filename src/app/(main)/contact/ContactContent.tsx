@@ -1,10 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, MapPin, Phone, ArrowUpRight } from 'lucide-react';
 import { ContactForm } from '@/components/forms';
 import { useI18n } from '@/lib/i18n';
-import { GradientBlobs } from '@/components/ui/GradientBlobs';
 
 interface ContactInfo {
   email: string;
@@ -20,86 +19,102 @@ export function ContactContent({ contactInfo }: ContactContentProps) {
   const { t } = useI18n();
 
   return (
-    <section className="min-h-screen bg-white/95 pt-12 sm:pt-28 pb-20 lg:pt-36 lg:pb-28 relative overflow-hidden">
-      {/* Gradient blobs in background */}
-      <GradientBlobs variant="subtle" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="min-h-screen bg-white pt-8 sm:pt-20 lg:pt-28 pb-20 lg:pb-28">
+      <div className="max-w-[1080px] mx-auto px-4">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="max-w-3xl mb-12"
+          className="mb-16 lg:mb-20"
         >
-          <p className="mono-label mb-4">{t('contact.label')}</p>
-          <h1 className="text-4xl lg:text-5xl font-semibold text-[var(--black)] tracking-[-0.03em] mb-4">
+          <p className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-3">
+            {t('contact.label')}
+          </p>
+          <h1 className="font-display text-[clamp(32px,5vw,48px)] font-semibold text-[#071D2F] leading-[1.1] tracking-[-0.047em] mb-4">
             {t('contact.title')}
           </h1>
-          <p className="text-lg text-muted">
+          <p className="text-base text-[#4D4D4D] max-w-md leading-relaxed">
             {t('contact.desc')}
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-[1fr_1.5fr] gap-12 lg:gap-16">
-          {/* Contact Info */}
+        <div className="grid lg:grid-cols-3 gap-12 lg:gap-16">
+          {/* Left: Contact Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="space-y-4"
+            className="space-y-3"
           >
+            {/* Email */}
             <a
               href={`mailto:${contactInfo.email}`}
-              className="group flex items-center gap-3 p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-[#EBEBEB] hover:border-accent/30 hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-200"
+              className="group flex items-center justify-between p-4 rounded-2xl bg-white border border-[#EBEBEB] hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 transition-all duration-200"
             >
-              <div className="p-2 rounded-lg bg-[#071D2F]/[0.04]">
-                <Mail className="w-5 h-5 text-accent" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#071D2F]/[0.05] flex items-center justify-center">
+                  <Mail className="w-4 h-4 text-[#071D2F]" />
+                </div>
+                <div>
+                  <p className="text-xs text-[#4D4D4D]">Email</p>
+                  <p className="text-sm font-medium text-[#071D2F]">{contactInfo.email}</p>
+                </div>
               </div>
-              <span className="text-[var(--black)] group-hover:text-accent transition-colors text-sm">
-                {contactInfo.email}
-              </span>
+              <ArrowUpRight className="w-4 h-4 text-[#071D2F]/30 group-hover:text-[#071D2F] transition-colors" />
             </a>
 
+            {/* Phone */}
             {contactInfo.phone && (
               <a
                 href={`tel:${contactInfo.phone}`}
-                className="group flex items-center gap-3 p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-[#EBEBEB] hover:border-accent/30 hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-200"
+                className="group flex items-center justify-between p-4 rounded-2xl bg-white border border-[#EBEBEB] hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 transition-all duration-200"
               >
-                <div className="p-2 rounded-lg bg-[#071D2F]/[0.04]">
-                  <Phone className="w-5 h-5 text-accent" />
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#071D2F]/[0.05] flex items-center justify-center">
+                    <Phone className="w-4 h-4 text-[#071D2F]" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-[#4D4D4D]">Phone</p>
+                    <p className="text-sm font-medium text-[#071D2F]">{contactInfo.phone}</p>
+                  </div>
                 </div>
-                <span className="text-[var(--black)] group-hover:text-accent transition-colors text-sm">
-                  {contactInfo.phone}
-                </span>
+                <ArrowUpRight className="w-4 h-4 text-[#071D2F]/30 group-hover:text-[#071D2F] transition-colors" />
               </a>
             )}
 
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/60 backdrop-blur-sm border border-[#EBEBEB]">
-              <div className="p-2 rounded-lg bg-[#071D2F]/[0.04]">
-                <MapPin className="w-5 h-5 text-accent" />
+            {/* Location */}
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-[#EBEBEB]">
+              <div className="w-9 h-9 rounded-xl bg-[#071D2F]/[0.05] flex items-center justify-center">
+                <MapPin className="w-4 h-4 text-[#071D2F]" />
               </div>
-              <span className="text-[var(--black)] text-sm">{contactInfo.location}</span>
+              <div>
+                <p className="text-xs text-[#4D4D4D]">Location</p>
+                <p className="text-sm font-medium text-[#071D2F]">{contactInfo.location}</p>
+              </div>
             </div>
 
             {/* Office cards */}
             <div className="pt-4 space-y-3">
-              <div className="rounded-xl bg-white/60 backdrop-blur-sm border border-[#EBEBEB] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-200">
-                <p className="font-mono text-[11px] text-accent uppercase tracking-widest mb-1">{t('contact.tbilisi')}</p>
-                <p className="text-[var(--black)] text-sm">{t('contact.tbilisi.sub')}</p>
-              </div>
-              <div className="rounded-xl bg-white/60 backdrop-blur-sm border border-[#EBEBEB] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-200">
-                <p className="font-mono text-[11px] text-accent uppercase tracking-widest mb-1">{t('contact.brussels')}</p>
-                <p className="text-[var(--black)] text-sm">{t('contact.brussels.sub')}</p>
-              </div>
+              {[
+                { label: t('contact.tbilisi'), desc: t('contact.tbilisi.sub'), num: '01' },
+                { label: t('contact.brussels'), desc: t('contact.brussels.sub'), num: '02' },
+              ].map((office) => (
+                <div key={office.num} className="flex flex-col gap-2 p-5 rounded-2xl bg-[#FAFAFA] border border-[#EBEBEB] hover:shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all duration-200">
+                  <span className="font-mono text-lg text-[#071D2F]/20">{office.num}</span>
+                  <h4 className="font-display text-sm font-semibold text-[#071D2F]">{office.label}</h4>
+                  <p className="text-xs text-[#4D4D4D]">{office.desc}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
 
-          {/* Contact Form */}
+          {/* Right: Contact Form */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-2"
           >
             <ContactForm />
           </motion.div>
