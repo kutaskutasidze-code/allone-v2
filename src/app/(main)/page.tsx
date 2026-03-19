@@ -50,6 +50,7 @@ function Hero() {
 function VideoShowcase() {
   const { t } = useI18n();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoMuted, setVideoMuted] = useState(true);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -67,8 +68,18 @@ function VideoShowcase() {
         </h3>
         <p className="mt-2 text-sm text-[#4D4D4D]">{t('landing.video.desc')}</p>
       </div>
-      <div className="bg-[#000] cursor-pointer" onClick={() => { const v = videoRef.current; if (v) v.paused ? v.play() : v.pause(); }}>
-        <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full aspect-video block" style={{ WebkitTransform: 'translate3d(0,0,0)' }} />
+      <div className="bg-[#000] relative group">
+        <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full aspect-video block cursor-pointer" style={{ WebkitTransform: 'translate3d(0,0,0)' }} onClick={() => { const v = videoRef.current; if (v) v.paused ? v.play() : v.pause(); }} />
+        <button
+          onClick={() => { const v = videoRef.current; if (v) { v.muted = !v.muted; setVideoMuted(v.muted); } }}
+          className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+        >
+          {videoMuted ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          )}
+        </button>
       </div>
     </section>
   );
