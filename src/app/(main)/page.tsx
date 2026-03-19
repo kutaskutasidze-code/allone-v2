@@ -54,11 +54,34 @@ function VideoShowcase() {
 
   useEffect(() => {
     const v = videoRef.current;
-    if (v) {
-      v.muted = true;
-      v.play().catch(() => {});
-    }
+    if (!v) return;
+
+    v.muted = true;
+    v.play().catch(() => {});
+
+    // Resume video when tab becomes visible again
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible' && v.paused) {
+        v.play().catch(() => {});
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, []);
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const v = videoRef.current;
+    if (v) {
+      v.muted = !v.muted;
+      setVideoMuted(v.muted);
+    }
+  };
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (v) v.paused ? v.play() : v.pause();
+  };
 
   return (
     <section className="max-w-[1080px] mx-auto px-4 py-12 sm:py-20 border-b border-[#EBEBEB]">
@@ -68,16 +91,16 @@ function VideoShowcase() {
         </h3>
         <p className="mt-2 text-sm text-[#4D4D4D]">{t('landing.video.desc')}</p>
       </div>
-      <div className="bg-[#000] relative group">
-        <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full aspect-video block cursor-pointer" style={{ WebkitTransform: 'translate3d(0,0,0)' }} onClick={() => { const v = videoRef.current; if (v) v.paused ? v.play() : v.pause(); }} />
+      <div className="bg-[#000] relative" onClick={togglePlay}>
+        <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full aspect-video block cursor-pointer" style={{ WebkitTransform: 'translate3d(0,0,0)' }} />
         <button
-          onClick={() => { const v = videoRef.current; if (v) { v.muted = !v.muted; setVideoMuted(v.muted); } }}
-          className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+          onClick={toggleMute}
+          className="absolute bottom-3 right-3 z-10 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 transition-colors cursor-pointer"
         >
           {videoMuted ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
           ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
           )}
         </button>
       </div>
