@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { logger } from '@/lib/logger';
+
+function getAdminClient() {
+  return createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 export async function GET(request: NextRequest) {
   try {
+    // Auth check
     const supabase = await createClient();
-
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -18,7 +26,9 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50')));
     const offset = (page - 1) * limit;
 
-    let query = supabase
+    // Use service role to bypass RLS
+    const admin = getAdminClient();
+    let query = admin
       .from('leads')
       .select(`
         id, name, email, phone, company, city, country, website, matched_service, status, value, source, source_url, notes, created_at, updated_at,
