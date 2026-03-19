@@ -56,17 +56,38 @@ function VideoShowcase() {
     const v = videoRef.current;
     if (!v) return;
 
-    v.muted = true;
-    v.play().catch(() => {});
+    let disposed = false;
 
-    // Resume video when tab becomes visible again
+    // Play when in viewport
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (disposed) return;
+        if (entry.isIntersecting) {
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(v);
+
+    // Resume when tab comes back
     const handleVisibility = () => {
-      if (document.visibilityState === 'visible' && v.paused) {
+      if (disposed || !videoRef.current) return;
+      if (document.visibilityState === 'visible') {
         v.play().catch(() => {});
+      } else {
+        v.pause();
       }
     };
     document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      disposed = true;
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   const toggleMute = (e: React.MouseEvent) => {
@@ -95,12 +116,12 @@ function VideoShowcase() {
         <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full aspect-video block cursor-pointer" style={{ WebkitTransform: 'translate3d(0,0,0)' }} />
         <button
           onClick={toggleMute}
-          className="absolute bottom-3 right-3 z-10 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 transition-colors cursor-pointer"
+          className="absolute bottom-2.5 right-2.5 z-10 w-7 h-7 rounded-full bg-[#071D2F]/80 flex items-center justify-center text-white hover:bg-[#071D2F] transition-colors cursor-pointer"
         >
           {videoMuted ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
           ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
           )}
         </button>
       </div>
