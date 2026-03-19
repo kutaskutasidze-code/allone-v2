@@ -35,24 +35,24 @@ const ServiceCard = memo(function ServiceCard({ service, index }: { service: Ser
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.15 }}
-      className="block border border-black/10 rounded-xl p-3 hover:border-black/25 transition-colors cursor-pointer"
+      className="block border border-[#071D2F]/[0.06] rounded-xl p-3 hover:border-[#071D2F]/15 transition-colors cursor-pointer"
     >
       <div className="flex items-start gap-2">
         <span className="text-lg">{service.icon || '🤖'}</span>
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold text-black truncate">{service.title}</h4>
-          <p className="text-[11px] text-black/60 line-clamp-2 mt-0.5">{service.description}</p>
+          <h4 className="text-xs font-semibold text-[#071D2F] truncate">{service.title}</h4>
+          <p className="text-[11px] text-[#071D2F]/60 line-clamp-2 mt-0.5">{service.description}</p>
           {service.features.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">
               {service.features.map((f, i) => (
-                <span key={i} className="text-[10px] bg-black/5 text-black/70 px-1.5 py-0.5 rounded">
+                <span key={i} className="text-[10px] bg-[#071D2F]/[0.04] text-[#071D2F]/70 px-1.5 py-0.5 rounded">
                   {f}
                 </span>
               ))}
             </div>
           )}
         </div>
-        <ArrowRight className="w-3.5 h-3.5 text-black/30 flex-shrink-0 mt-0.5" />
+        <ArrowRight className="w-3.5 h-3.5 text-[#071D2F]/30 flex-shrink-0 mt-0.5" />
       </div>
     </motion.a>
   );
@@ -64,11 +64,11 @@ const ChatMessage = memo(function ChatMessage({ message }: { message: Message })
     <div className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
       <div
         className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${
-          message.role === 'user' ? 'bg-black/10' : 'bg-black'
+          message.role === 'user' ? 'bg-[#071D2F]/[0.08]' : 'bg-[#071D2F]'
         }`}
       >
         {message.role === 'user' ? (
-          <User className="w-4 h-4 text-black" />
+          <User className="w-4 h-4 text-[#071D2F]" />
         ) : (
           <Bot className="w-4 h-4 text-white" />
         )}
@@ -77,16 +77,32 @@ const ChatMessage = memo(function ChatMessage({ message }: { message: Message })
         <div
           className={`rounded-2xl px-4 py-3 ${
             message.role === 'user'
-              ? 'bg-black text-white rounded-tr-sm'
-              : 'bg-black/5 text-black rounded-tl-sm'
+              ? 'bg-[#071D2F] text-white rounded-tr-sm'
+              : 'bg-[#F4F7FB] text-[#071D2F] border border-[#071D2F]/[0.04] rounded-tl-sm'
           }`}
         >
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+          <div className="text-sm leading-relaxed whitespace-pre-wrap">
             {message.content}
             {message.isStreaming && (
-              <span className="inline-block w-1.5 h-4 bg-black/60 ml-0.5 animate-pulse align-middle" />
+              <span className="inline-flex items-center gap-1 ml-1.5 align-middle">
+                <motion.span
+                  className="w-1.5 h-1.5 rounded-full bg-[#071D2F]/50"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                />
+                <motion.span
+                  className="w-1.5 h-1.5 rounded-full bg-[#071D2F]/50"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }}
+                />
+                <motion.span
+                  className="w-1.5 h-1.5 rounded-full bg-[#071D2F]/50"
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
+                />
+              </span>
             )}
-          </p>
+          </div>
         </div>
         {/* Service cards appear after text */}
         {message.services && message.services.length > 0 && (
@@ -146,7 +162,7 @@ const ChatInput = memo(function ChatInput({
   }, [inputRef]);
 
   return (
-    <div className="p-4 border-t border-black/10">
+    <div className="px-6 py-4 border-t border-[#071D2F]/[0.06] bg-[#F8FAFE]/70 backdrop-blur-xl">
       <div className="flex items-center gap-2">
         <input
           ref={inputRef}
@@ -155,39 +171,42 @@ const ChatInput = memo(function ChatInput({
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={isTranscribing ? "Transcribing..." : isRecording ? "Listening..." : isStreaming ? "AI is responding..." : "Type or speak your message..."}
-          className="flex-1 px-4 py-3 bg-black/5 rounded-full text-sm text-black placeholder:text-black/50 focus:outline-none focus:ring-2 focus:ring-black/20"
+          className="flex-1 px-4 py-3 bg-white border border-[#071D2F]/[0.06] rounded-xl text-base sm:text-sm text-[#071D2F] placeholder:text-[#071D2F]/40 focus:outline-none focus:ring-2 focus:ring-[#071D2F]/10 shadow-sm transition-all"
           disabled={isDisabled}
+          style={{ fontSize: '16px' }}
         />
-        <button
-          onClick={onToggleRecording}
-          disabled={isDisabled}
-          className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
-            isRecording
-              ? 'bg-red-500 text-white animate-pulse'
-              : isTranscribing
-                ? 'bg-black/10 text-black/50'
-                : 'bg-black/10 text-black hover:bg-black/20'
-          } disabled:cursor-not-allowed`}
-          aria-label={isRecording ? "Stop recording" : "Start recording"}
-        >
-          {isTranscribing ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : isRecording ? (
-            <MicOff className="w-4 h-4" />
-          ) : (
-            <Mic className="w-4 h-4" />
-          )}
-        </button>
-        <button
-          onClick={handleSend}
-          disabled={!inputValue.trim() || isDisabled}
-          className="w-11 h-11 rounded-full bg-black text-white flex items-center justify-center hover:bg-black/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          aria-label="Send message"
-        >
-          <Send className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={onToggleRecording}
+            disabled={isDisabled}
+            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all active:scale-95 ${
+              isRecording
+                ? 'bg-red-500 text-white shadow-lg shadow-red-200 animate-pulse'
+                : isTranscribing
+                  ? 'bg-[#071D2F]/[0.04] text-[#071D2F]/30'
+                  : 'bg-[#071D2F]/[0.04] text-[#071D2F] hover:bg-[#071D2F]/[0.08]'
+            } disabled:cursor-not-allowed`}
+            aria-label={isRecording ? "Stop recording" : "Start recording"}
+          >
+            {isTranscribing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : isRecording ? (
+              <MicOff className="w-4 h-4" />
+            ) : (
+              <Mic className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            onClick={handleSend}
+            disabled={!inputValue.trim() || isDisabled}
+            className="w-11 h-11 rounded-xl bg-[#071D2F] text-white flex items-center justify-center hover:bg-[#0a2a45] active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-lg shadow-[#071D2F]/10"
+            aria-label="Send message"
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
       </div>
-      <p className="text-[10px] text-black/60 text-center mt-2">
+      <p className="text-[10px] text-[#071D2F]/40 text-center mt-3 font-medium uppercase tracking-widest">
         Powered by ALLONE AI
       </p>
     </div>
@@ -197,25 +216,20 @@ const ChatInput = memo(function ChatInput({
 // Messages list component - isolated from input state
 const MessagesList = memo(function MessagesList({
   messages,
-  isWaiting,
   messagesContainerRef,
   messagesEndRef,
   onScroll,
-  onTouchMove,
 }: {
   messages: Message[];
-  isWaiting: boolean;
   messagesContainerRef: React.RefObject<HTMLDivElement | null>;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   onScroll: () => void;
-  onTouchMove: (e: React.TouchEvent) => void;
 }) {
   return (
     <div
       ref={messagesContainerRef}
       onScroll={onScroll}
-      onTouchMove={onTouchMove}
-      className="flex-1 min-h-0 overflow-y-scroll p-5 space-y-4"
+      className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-4 scroll-smooth"
       style={{
         overscrollBehavior: 'contain',
         WebkitOverflowScrolling: 'touch',
@@ -225,22 +239,7 @@ const MessagesList = memo(function MessagesList({
       {messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
       ))}
-
-      {isWaiting && (
-        <div className="flex gap-3">
-          <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-            <Bot className="w-4 h-4 text-white" />
-          </div>
-          <div className="bg-black/5 rounded-2xl rounded-tl-sm px-4 py-3">
-            <div className="flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-black" />
-              <span className="text-sm text-black">Thinking...</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div ref={messagesEndRef} />
+      <div ref={messagesEndRef} className="h-4 w-full" />
     </div>
   );
 });
@@ -253,7 +252,6 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
       content: "Hi! I'm the ALLONE AI Assistant. I can help you learn about our AI automation services, answer questions about how we work, or help you get started. What would you like to know?",
     },
   ]);
-  const [isWaiting, setIsWaiting] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -266,11 +264,11 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const chunksRef = useRef<Blob[]>([]);
   const lastScrollTopRef = useRef(0);
 
-  const isInputDisabled = isWaiting || isStreaming || isTranscribing;
+  const isInputDisabled = isStreaming || isTranscribing;
 
-  const scrollToBottom = useCallback(() => {
-    if (shouldAutoScroll && messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'auto') => {
+    if (shouldAutoScroll && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
     }
   }, [shouldAutoScroll]);
 
@@ -290,32 +288,12 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
     lastScrollTopRef.current = scrollTop;
   }, []);
 
-  // Use native event listener for wheel to ensure non-passive (Windows fix)
+  // Auto-scroll on new messages or content updates
   useEffect(() => {
-    const container = messagesContainerRef.current;
-    if (!container) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      e.stopPropagation();
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      const maxScroll = scrollHeight - clientHeight;
-      const newScrollTop = Math.max(0, Math.min(scrollTop + e.deltaY, maxScroll));
-      container.scrollTop = newScrollTop;
-      e.preventDefault();
-    };
-
-    container.addEventListener('wheel', handleWheel, { passive: false });
-    return () => container.removeEventListener('wheel', handleWheel);
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    e.stopPropagation();
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(scrollToBottom, 50);
-    return () => clearTimeout(timer);
-  }, [messages, scrollToBottom]);
+    if (shouldAutoScroll) {
+      scrollToBottom('smooth');
+    }
+  }, [messages, scrollToBottom, shouldAutoScroll]);
 
   useEffect(() => {
     if (isOpen) {
@@ -339,7 +317,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
   }, [isOpen, onClose]);
 
   const sendMessage = useCallback(async (text: string) => {
-    if (!text || isWaiting || isStreaming) return;
+    if (!text || isStreaming) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -347,135 +325,71 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
       content: text,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setIsWaiting(true);
+    const assistantId = (Date.now() + 1).toString();
+    const loadingMessage: Message = {
+      id: assistantId,
+      role: 'assistant',
+      content: '...',
+      isStreaming: true,
+    };
+
+    setMessages((prev) => [...prev, userMessage, loadingMessage]);
+    setIsStreaming(true);
     setShouldAutoScroll(true);
 
-    const assistantId = (Date.now() + 1).toString();
-
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/allone-ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMessage]
+          message: text,
+          history: messages
             .filter((m) => m.id !== 'welcome')
             .map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      const body = response.body;
-      if (!body) {
-        throw new Error('No response body');
-      }
+      const data = await response.json();
 
-      // Switch from waiting to streaming — add empty assistant message
-      setIsWaiting(false);
-      setIsStreaming(true);
-      setMessages((prev) => [...prev, {
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-        services: [],
-        isStreaming: true,
-      }]);
+      if (data.response) {
+        const fullContent = data.response;
+        let currentContent = '';
+        const words = fullContent.split(' ');
 
-      // Read the NDJSON stream
-      const reader = body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || ''; // Keep incomplete last line
-
-        for (const line of lines) {
-          if (!line.trim()) continue;
-
-          try {
-            const parsed = JSON.parse(line);
-
-            if (parsed.type === 'text') {
-              setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === assistantId
-                    ? { ...msg, content: msg.content + parsed.content }
-                    : msg
-                )
-              );
-              scrollToBottom();
-            } else if (parsed.type === 'service') {
-              setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === assistantId
-                    ? { ...msg, services: [...(msg.services || []), parsed.data] }
-                    : msg
-                )
-              );
-              scrollToBottom();
-            } else if (parsed.type === 'error') {
-              setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === assistantId
-                    ? { ...msg, content: msg.content || parsed.content }
-                    : msg
-                )
-              );
-            } else if (parsed.type === 'done') {
-              // Stream complete — remove streaming cursor
-              setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === assistantId
-                    ? { ...msg, isStreaming: false }
-                    : msg
-                )
-              );
-            }
-          } catch {
-            // Skip malformed JSON lines
-          }
+        for (let i = 0; i < words.length; i++) {
+          currentContent += (i === 0 ? '' : ' ') + words[i];
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantId ? { ...msg, content: currentContent } : msg
+            )
+          );
+          await new Promise(r => setTimeout(r, 15 + Math.random() * 20));
         }
       }
-
-      // Ensure streaming state is cleaned up even if no "done" message
+    } catch (error) {
+      console.error('Chat error:', error);
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === assistantId
-            ? { ...msg, isStreaming: false }
+            ? {
+                ...msg,
+                content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly at info@allone.ge",
+                isStreaming: false
+              }
             : msg
         )
       );
-    } catch (error) {
-      console.error('Chat error:', error);
-      setIsWaiting(false);
-      setMessages((prev) => {
-        // If assistant message was already added, update it; otherwise add error message
-        const hasAssistant = prev.some(m => m.id === assistantId);
-        if (hasAssistant) {
-          return prev.map(msg =>
-            msg.id === assistantId
-              ? { ...msg, content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly at info@allone.ge", isStreaming: false, services: [] }
-              : msg
-          );
-        }
-        return [...prev, {
-          id: assistantId,
-          role: 'assistant' as const,
-          content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly at info@allone.ge",
-        }];
-      });
     } finally {
       setIsStreaming(false);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantId ? { ...msg, isStreaming: false } : msg
+        )
+      );
     }
-  }, [messages, isWaiting, isStreaming, scrollToBottom]);
+  }, [messages, isStreaming]);
 
   const startRecording = useCallback(async () => {
     try {
@@ -496,12 +410,13 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
         try {
           const formData = new FormData();
           formData.append('audio', audioBlob, 'recording.webm');
-          const response = await fetch('/api/transcribe', { method: 'POST', body: formData });
+          const response = await fetch('/api/allone-ai/chat', {
+            method: 'POST',
+            body: formData
+          });
           const data = await response.json();
-          if (data.text && inputRef.current) {
-            const input = inputRef.current as HTMLInputElement & { setExternalValue?: (v: string) => void };
-            input.setExternalValue?.(data.text);
-            inputRef.current.focus();
+          if (data.transcript) {
+            sendMessage(data.transcript);
           }
         } catch (error) {
           console.error('Transcription error:', error);
@@ -515,7 +430,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
     } catch (error) {
       console.error('Error accessing microphone:', error);
     }
-  }, []);
+  }, [sendMessage]);
 
   const toggleRecording = useCallback(() => {
     if (isRecording && mediaRecorderRef.current) {
@@ -530,12 +445,13 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
     <AnimatePresence>
       {isOpen && (
         <>
+          {/* Backdrop — navy tint */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 z-50"
+            className="fixed inset-0 bg-[#071D2F]/20 z-50 backdrop-blur-[3px]"
             onClick={onClose}
           />
 
@@ -543,36 +459,37 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
             initial={{ x: '100%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white z-50 flex flex-col shadow-2xl"
+            transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+            className="fixed right-0 top-0 bottom-0 w-full sm:w-[460px] bg-white z-50 flex flex-col shadow-[-20px_0_50px_-20px_rgba(7,29,47,0.1)] border-l border-[#071D2F]/[0.06]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-black/10">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[#071D2F]/[0.06] bg-[#F8FAFE]/70 backdrop-blur-xl sticky top-0 z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center">
+                <div className="w-10 h-10 rounded-2xl bg-[#071D2F] flex items-center justify-center shadow-lg shadow-[#071D2F]/10">
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-black">ALLONE Assistant</h3>
-                  <p className="text-xs text-black">Ask me about AI automation</p>
+                  <h3 className="font-bold text-[#071D2F] text-base tracking-tight">ALLONE AI Assistant</h3>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
+                    <p className="text-[10px] font-bold text-[#071D2F]/40 uppercase tracking-widest">Live Response</p>
+                  </div>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-black/5 rounded-full transition-colors"
+                className="p-2.5 hover:bg-[#071D2F]/[0.04] rounded-xl transition-all active:scale-95 group"
                 aria-label="Close chat"
               >
-                <X className="w-5 h-5 text-black" />
+                <X className="w-5 h-5 text-[#071D2F]/40 group-hover:text-[#071D2F] transition-colors" />
               </button>
             </div>
 
             <MessagesList
               messages={messages}
-              isWaiting={isWaiting}
               messagesContainerRef={messagesContainerRef}
               messagesEndRef={messagesEndRef}
               onScroll={handleScroll}
-              onTouchMove={handleTouchMove}
             />
 
             <ChatInput

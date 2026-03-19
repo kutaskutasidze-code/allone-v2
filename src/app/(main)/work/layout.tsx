@@ -4,6 +4,6 @@ export default function WorkLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-screen overflow-hidden relative">{children}</div>
+    <div className="relative">{children}</div>
   );
 }

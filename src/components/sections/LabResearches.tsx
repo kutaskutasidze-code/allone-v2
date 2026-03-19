@@ -17,8 +17,8 @@ export function LabResearches() {
   const rest = papers.slice(0, -1).reverse(); // Rest in reverse chrono
 
   return (
-    <section className="relative bg-white overflow-hidden">
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+    <section className="relative bg-white/80 backdrop-blur-sm overflow-hidden">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

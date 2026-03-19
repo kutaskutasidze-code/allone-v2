@@ -1,19 +1,26 @@
 import { createClient as createServiceClient } from '@supabase/supabase-js';
+import { timingSafeEqual } from 'crypto';
 
 /**
  * Verify Claude API key for self-reporting
- * Uses service role client to bypass RLS
+ * Uses timing-safe comparison to prevent timing attacks
  */
 export function verifyClaudeApiKey(request: Request): boolean {
   const apiKey = request.headers.get('X-Claude-API-Key');
   const expectedKey = process.env.CLAUDE_REPORT_API_KEY;
 
-  if (!expectedKey) {
-    console.warn('CLAUDE_REPORT_API_KEY not set');
+  if (!expectedKey || !apiKey) {
     return false;
   }
 
-  return apiKey === expectedKey;
+  try {
+    const a = Buffer.from(apiKey);
+    const b = Buffer.from(expectedKey);
+    if (a.length !== b.length) return false;
+    return timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
 }
 
 /**

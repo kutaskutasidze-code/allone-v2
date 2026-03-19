@@ -6,6 +6,7 @@ import { ArrowUpRight, Bot, Workflow, Brain, Globe, Compass } from 'lucide-react
 import type { Service } from '@/types/database';
 import { ChatPlayback, WorkflowDiagram, LayeredScreens, defaultContent } from './services';
 import { ShineBorder } from '@/components/ui/ShineBorder';
+import { GradientBlobs } from '@/components/ui/GradientBlobs';
 import { useI18n } from '@/lib/i18n';
 
 function getServiceByType(services: Service[], cardType: string): Service | undefined {
@@ -87,8 +88,9 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
   ];
 
   return (
-    <section id="services" className="pt-8 lg:pt-12 pb-4 lg:pb-6 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="services" className="pt-8 lg:pt-12 pb-4 lg:pb-6 bg-background relative overflow-hidden">
+      <GradientBlobs variant="subtle" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -127,7 +129,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               transition={{ duration: 0.6 }}
               className="flex"
             >
-              <div className="bg-white rounded-3xl w-full">
+              <div className="bg-white rounded-3xl w-full border border-[#EBEBEB]/60 shadow-[0_1px_3px_rgba(0,0,0,0.02)] backdrop-blur-sm hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:border-[#071D2F]/8 transition-all duration-200">
                 <div className="p-6 lg:p-8 w-full h-full">
                   <div className="grid lg:grid-cols-2 gap-6 items-start">
                     <div>
@@ -176,7 +178,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               transition={{ duration: 0.6, delay: 0.1 }}
               className="flex"
             >
-              <div className="bg-white rounded-3xl w-full">
+              <div className="bg-white rounded-3xl w-full border border-[#EBEBEB]/60 shadow-[0_1px_3px_rgba(0,0,0,0.02)] backdrop-blur-sm hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:border-[#071D2F]/8 transition-all duration-200">
                 <div className="p-6 lg:p-8 flex flex-col h-full w-full text-left">
                   <div>
                     <span className="mono-label">{allServices[1].num}</span>
@@ -212,7 +214,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               transition={{ duration: 0.6 }}
               className="flex"
             >
-              <div className="bg-white rounded-3xl w-full">
+              <div className="bg-white rounded-3xl w-full border border-[#EBEBEB]/60 shadow-[0_1px_3px_rgba(0,0,0,0.02)] backdrop-blur-sm hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:border-[#071D2F]/8 transition-all duration-200">
                 <div className="p-6 lg:p-8 flex flex-col min-h-[380px] w-full text-left">
                   <div>
                     <span className="mono-label">{allServices[2].num}</span>
@@ -238,7 +240,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
               transition={{ duration: 0.6, delay: 0.1 }}
               className="flex"
             >
-              <div className="bg-white rounded-3xl w-full">
+              <div className="bg-white rounded-3xl w-full border border-[#EBEBEB]/60 shadow-[0_1px_3px_rgba(0,0,0,0.02)] backdrop-blur-sm hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:border-[#071D2F]/8 transition-all duration-200">
                 <div className="p-6 lg:p-8 flex flex-col min-h-[380px] w-full text-left">
                   <div>
                     <span className="mono-label">{allServices[3].num}</span>
@@ -274,7 +276,7 @@ export default function ServicesNew({ services = [], showViewAll = true }: Servi
             transition={{ duration: 0.6 }}
             className="flex"
           >
-            <div className="bg-white rounded-3xl w-full">
+            <div className="bg-white rounded-3xl w-full border border-[#EBEBEB]/60 shadow-[0_1px_3px_rgba(0,0,0,0.02)] backdrop-blur-sm hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:border-[#071D2F]/8 transition-all duration-200">
               <div className="p-6 lg:p-8 flex flex-col lg:flex-row justify-between items-center gap-6 w-full">
                 <div className="text-center lg:text-left">
                   <span className="mono-label">{allServices[4].num}</span>

@@ -2,33 +2,49 @@
 
 import { motion } from 'framer-motion';
 import { CpuArchitecture } from '@/components/ui/CpuArchitecture';
+import { GradientBlobs } from '@/components/ui/GradientBlobs';
 import { useI18n } from '@/lib/i18n';
 
 export function LabHero() {
   const { t } = useI18n();
   return (
-    <section className="relative h-svh flex items-center justify-center overflow-hidden bg-white">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(10,104,245,0.04)_0%,transparent_70%)] pointer-events-none" />
+    <section className="relative flex items-center justify-center bg-white/90 pt-20 pb-32 lg:pt-24 lg:pb-40 overflow-hidden">
+      {/* Gradient blobs behind CPU architecture */}
+      <GradientBlobs variant="hero" />
 
+      {/* Film grain noise overlay */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 opacity-[0.035]" xmlns="http://www.w3.org/2000/svg">
+        <filter id="lab-noise">
+          <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" stitchTiles="stitch" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#lab-noise)" />
+      </svg>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.5, delay: 0.3 }}
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
       >
-        <CpuArchitecture className="h-[200vh] w-auto md:h-auto md:w-[300vw] opacity-80" />
+        <CpuArchitecture className="h-[250vh] w-auto md:h-auto md:w-[350vw] opacity-90" />
       </motion.div>
 
-      <motion.h1
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 text-[3.5rem] md:text-[clamp(2rem,5vw,4rem)] font-display font-bold tracking-tight leading-[1.1] text-heading text-center [word-spacing:100vw] md:[word-spacing:normal]"
+        transition={{ duration: 0.6 }}
+        className="relative z-10 flex flex-col items-center text-center gap-4 max-w-3xl mx-auto px-4"
       >
-        {t('lab.hero')}
-      </motion.h1>
+        <p className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">Lab</p>
+        <h1 className="font-display text-[clamp(32px,5vw,48px)] font-semibold leading-[1.1] tracking-[-0.047em] text-[#071D2F]">
+          {t('lab.hero')}
+        </h1>
+        <p className="max-w-[540px] text-base text-[#4D4D4D] leading-relaxed">
+          Research, experiments, and open findings on AI agents, cost optimization, and automation.
+        </p>
+      </motion.div>
 
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent to-white z-20 pointer-events-none" />
+      {/* Bottom fade — blends hero into research section */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-20" />
     </section>
   );
 }
