@@ -112,8 +112,8 @@ function VideoShowcase() {
         </h3>
         <p className="mt-2 text-sm text-[#4D4D4D]">{t('landing.video.desc')}</p>
       </div>
-      <div className="bg-[#000] relative" onClick={togglePlay}>
-        <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full aspect-video block cursor-pointer" style={{ WebkitTransform: 'translate3d(0,0,0)' }} />
+      <div className="relative" onClick={togglePlay}>
+        <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full block cursor-pointer" />
         <button
           onClick={toggleMute}
           className="absolute bottom-2.5 right-2.5 z-10 w-7 h-7 rounded-full bg-[#071D2F]/80 flex items-center justify-center text-white hover:bg-[#071D2F] transition-colors cursor-pointer"
