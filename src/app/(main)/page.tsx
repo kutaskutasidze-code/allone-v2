@@ -34,11 +34,11 @@ function Hero() {
       </div>
 
       <div className="relative mt-10 sm:mt-16 h-[200px] sm:h-[300px] flex items-center justify-center">
-        <motion.div className="absolute w-[700px] h-[200px] rounded-[50%] blur-[80px]" style={{ backgroundColor: 'rgb(0,90,255)', opacity: 0.8 }} animate={{ x: [-120, -60, -140, -80, -120], y: [0, -20, 15, -10, 0], scaleX: [1, 1.2, 0.95, 1.1, 1], opacity: [0.8, 0.6, 0.85, 0.65, 0.8] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
-        <motion.div className="absolute w-[600px] h-[180px] rounded-[50%] blur-[70px]" style={{ backgroundColor: 'rgb(0,90,200)', opacity: 0.75 }} animate={{ x: [80, 30, 120, 60, 80], y: [-10, 20, -15, 10, -10], scaleX: [1.1, 0.9, 1.15, 1, 1.1], opacity: [0.75, 0.85, 0.6, 0.8, 0.75] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
-        <motion.div className="absolute w-[650px] h-[170px] rounded-[50%] blur-[75px]" style={{ backgroundColor: 'rgb(0,210,210)', opacity: 0.7 }} animate={{ x: [0, 70, -50, 30, 0], y: [30, 10, 40, 15, 30], scaleX: [1, 1.15, 1.05, 1.2, 1], opacity: [0.7, 0.55, 0.8, 0.6, 0.7] }} transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }} />
-        <motion.div className="absolute w-[550px] h-[160px] rounded-[50%] blur-[70px]" style={{ backgroundColor: 'rgb(16,185,129)', opacity: 0.7 }} animate={{ x: [-30, 50, -60, 20, -30], y: [-25, -40, -15, -35, -25], scaleX: [1.05, 0.95, 1.1, 1, 1.05], opacity: [0.7, 0.8, 0.55, 0.75, 0.7] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }} />
-        <motion.div className="absolute w-[180px] h-[100px] rounded-[50%] z-20 blur-[50px]" style={{ backgroundColor: 'rgb(0,120,255)', opacity: 0.35 }} animate={{ x: [160, -160, 150, -140, 160], y: [-100, 100, -90, 80, -100], backgroundColor: ['rgb(0,120,255)', 'rgb(0,90,200)', 'rgb(0,210,210)', 'rgb(0,120,255)'], opacity: [0.35, 0.45, 0.25, 0.4, 0.35] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
+        <motion.div className="absolute w-[700px] h-[200px] rounded-[50%]" style={{ backgroundColor: 'rgb(0,90,255)', opacity: 0.8, filter: 'blur(80px)', WebkitFilter: 'blur(80px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [-120, -60, -140, -80, -120], y: [0, -20, 15, -10, 0], scaleX: [1, 1.2, 0.95, 1.1, 1], opacity: [0.8, 0.6, 0.85, 0.65, 0.8] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
+        <motion.div className="absolute w-[600px] h-[180px] rounded-[50%]" style={{ backgroundColor: 'rgb(0,90,200)', opacity: 0.75, filter: 'blur(70px)', WebkitFilter: 'blur(70px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [80, 30, 120, 60, 80], y: [-10, 20, -15, 10, -10], scaleX: [1.1, 0.9, 1.15, 1, 1.1], opacity: [0.75, 0.85, 0.6, 0.8, 0.75] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
+        <motion.div className="absolute w-[650px] h-[170px] rounded-[50%]" style={{ backgroundColor: 'rgb(0,210,210)', opacity: 0.7, filter: 'blur(75px)', WebkitFilter: 'blur(75px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [0, 70, -50, 30, 0], y: [30, 10, 40, 15, 30], scaleX: [1, 1.15, 1.05, 1.2, 1], opacity: [0.7, 0.55, 0.8, 0.6, 0.7] }} transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }} />
+        <motion.div className="absolute w-[550px] h-[160px] rounded-[50%]" style={{ backgroundColor: 'rgb(16,185,129)', opacity: 0.7, filter: 'blur(70px)', WebkitFilter: 'blur(70px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [-30, 50, -60, 20, -30], y: [-25, -40, -15, -35, -25], scaleX: [1.05, 0.95, 1.1, 1, 1.05], opacity: [0.7, 0.8, 0.55, 0.75, 0.7] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }} />
+        <motion.div className="absolute w-[180px] h-[100px] rounded-[50%] z-20" style={{ backgroundColor: 'rgb(0,120,255)', opacity: 0.35, filter: 'blur(50px)', WebkitFilter: 'blur(50px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [160, -160, 150, -140, 160], y: [-100, 100, -90, 80, -100], backgroundColor: ['rgb(0,120,255)', 'rgb(0,90,200)', 'rgb(0,210,210)', 'rgb(0,120,255)'], opacity: [0.35, 0.45, 0.25, 0.4, 0.35] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
         <div className="relative z-10">
           <Image src="/images/allone-logo-rounded.png" alt="allone" width={240} height={240} className="brightness-0 invert drop-shadow-[0_0_40px_rgba(255,255,255,0.3)] w-[160px] h-[160px] sm:w-[240px] sm:h-[240px]" priority />
         </div>
@@ -67,8 +67,8 @@ function VideoShowcase() {
         </h3>
         <p className="mt-2 text-sm text-[#4D4D4D]">{t('landing.video.desc')}</p>
       </div>
-      <div className="overflow-hidden bg-[#000] cursor-pointer outline-none" style={{ transform: 'translateZ(0)' }} onClick={() => { const v = videoRef.current; if (v) v.paused ? v.play() : v.pause(); }}>
-        <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full aspect-video" />
+      <div className="bg-[#000] cursor-pointer" onClick={() => { const v = videoRef.current; if (v) v.paused ? v.play() : v.pause(); }}>
+        <video ref={videoRef} src="/videos/allone-ad.mp4" muted playsInline preload="auto" className="w-full aspect-video block" style={{ WebkitTransform: 'translate3d(0,0,0)' }} />
       </div>
     </section>
   );
