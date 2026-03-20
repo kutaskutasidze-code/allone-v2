@@ -15,7 +15,7 @@ export function MacBookFrame({ children }: MacBookFrameProps) {
         {/* Bezel */}
         <div className="bg-[#0a0a0a] px-[4px] pb-[4px] pt-[4px] sm:px-[8px] sm:pb-[8px] sm:pt-[8px]">
           {/* Screen + notch */}
-          <div className="relative rounded-[4px] overflow-hidden bg-black" style={{ aspectRatio: '16 / 10', containerType: 'inline-size' }}>
+          <div className="relative rounded-[4px] overflow-hidden bg-black" style={{ aspectRatio: '16 / 10' }}>
             {/* Notch */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 z-30">
               <div className="relative w-[40px] h-[10px] sm:w-[70px] sm:h-[16px] bg-[#0a0a0a] rounded-b-[6px] sm:rounded-b-[10px] flex items-center justify-center">
