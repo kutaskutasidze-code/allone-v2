@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import { getCachedServices } from '@/lib/cache';
-import { V2ShellServer } from '@/app/v2-shell';
+import { V2ShellServer } from '../shell';
 
 const ChatbotShowcase = dynamic(
   () => import('@/components/sections/services/ChatbotShowcase').then(m => ({ default: m.ChatbotShowcase })),
