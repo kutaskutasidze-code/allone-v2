@@ -432,11 +432,6 @@ export default function HomePage() {
         <DashboardShowcase />
         <ConsultationCTA />
       </div>
-      <SocialProof />
-      <ServicesGrid />
-      <TechShowcase />
-      <Enterprise />
-      <GlobalReach />
       <CTASection />
       <FinalCTA />
       <LandingFooter />
