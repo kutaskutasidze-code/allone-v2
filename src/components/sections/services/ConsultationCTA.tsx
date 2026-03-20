@@ -7,12 +7,13 @@ export function ConsultationCTA() {
     <section className="relative py-16 lg:py-24 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/30 to-transparent pointer-events-none" />
 
-      {/* Background glow */}
+      {/* Blue gradient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="relative w-[800px] h-[500px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-sky-300/30 via-violet-300/25 to-rose-200/20 rounded-full blur-[120px]" />
-          <div className="absolute top-10 -left-10 w-64 h-64 bg-violet-300/30 rounded-full blur-[80px]" />
-          <div className="absolute -bottom-6 right-10 w-72 h-72 bg-sky-200/25 rounded-full blur-[70px]" />
+        <div className="relative w-[700px] h-[500px]">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 via-sky-300/35 to-blue-500/25 rounded-full blur-[90px]" />
+          <div className="absolute top-10 -left-10 w-64 h-64 bg-blue-300/45 rounded-full blur-[70px]" />
+          <div className="absolute -bottom-6 right-10 w-72 h-72 bg-sky-400/35 rounded-full blur-[80px]" />
+          <div className="absolute top-1/4 right-1/4 w-52 h-52 bg-indigo-300/25 rounded-full blur-[60px]" />
         </div>
       </div>
 

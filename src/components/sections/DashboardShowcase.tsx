@@ -18,12 +18,13 @@ export function DashboardShowcase() {
     <section ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/30 pointer-events-none" />
 
-      {/* Background shadow */}
+      {/* Blue gradient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/4 -translate-y-1/2 pointer-events-none">
         <div className="relative w-[900px] h-[700px]">
-          <div className="absolute inset-0 bg-black/[0.12] rounded-full blur-[120px]" />
-          <div className="absolute -top-10 right-20 w-80 h-80 bg-black/[0.15] rounded-full blur-[80px]" />
-          <div className="absolute bottom-10 left-10 w-96 h-96 bg-black/[0.12] rounded-full blur-[100px]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 via-sky-300/35 to-blue-500/25 rounded-full blur-[100px]" />
+          <div className="absolute -top-10 right-20 w-72 h-72 bg-blue-300/45 rounded-full blur-[80px]" />
+          <div className="absolute bottom-10 left-10 w-80 h-80 bg-sky-400/40 rounded-full blur-[90px]" />
+          <div className="absolute top-1/3 left-1/3 w-64 h-64 bg-indigo-300/30 rounded-full blur-[70px]" />
         </div>
       </div>
 
