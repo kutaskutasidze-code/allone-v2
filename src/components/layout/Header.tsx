@@ -251,7 +251,7 @@ export function Header() {
                             </div>
                           </motion.div>
                         )}
-                        <Icon size={20} strokeWidth={2} className={isActive ? 'text-[#071D2F]' : 'text-[#071D2F]/40'} />
+                        <Icon size={20} strokeWidth={1.5} className={isActive ? 'text-[#071D2F]' : 'text-[#071D2F]/40'} />
                       </Link>
                     );
                   })}

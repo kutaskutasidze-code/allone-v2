@@ -429,7 +429,6 @@ export default function HomePage() {
         <ChatbotShowcase />
         <WebDevShowcase />
         <DashboardShowcase />
-        <VideoShowcase />
         <ConsultationCTA />
       </div>
       <LandingFooter />

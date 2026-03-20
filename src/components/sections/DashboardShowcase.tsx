@@ -3,8 +3,10 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { EmbeddableDashboard } from '@/components/showcase/DashboardShowcase';
+import { useI18n } from '@/lib/i18n';
 
 export function DashboardShowcase() {
+  const { t } = useI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -38,13 +40,13 @@ export function DashboardShowcase() {
             transition={{ duration: 0.5 }}
             className="lg:pt-4"
           >
-            <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">Workflow Automation</span>
+            <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">{t('services.automation.label')}</span>
             <h2 className="font-display text-3xl lg:text-[2.75rem] font-semibold text-[#071D2F] mt-3 mb-5 tracking-[-0.04em] leading-[1.1]">
-              Automate the work{' '}<br className="hidden lg:block" />
-              that slows you down
+              {t('services.automation.h2a')}{' '}<br className="hidden lg:block" />
+              {t('services.automation.h2b')}
             </h2>
             <p className="font-body text-[15px] text-[#4D4D4D] leading-[1.7] mb-6 max-w-sm">
-              From lead scoring to invoice processing, we build custom workflows that run 24/7 — so your team focuses on what matters.
+              {t('services.automation.desc')}
             </p>
 
             <div className="flex flex-wrap gap-2">
