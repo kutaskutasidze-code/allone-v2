@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 export function ConsultationCTA() {
   return (
-    <section className="relative py-24 lg:py-32 overflow-x-clip">
+    <section className="relative py-16 lg:py-24 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/30 to-transparent pointer-events-none" />
 
       {/* Background glow */}
@@ -23,13 +23,13 @@ export function ConsultationCTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12 lg:mb-16"
+          className="text-center mb-8 lg:mb-10"
         >
           <span className="inline-block font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-4">
             Not sure where to start?
           </span>
           <h2
-            className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#071D2F] tracking-[-0.04em] leading-[1.1]"
+            className="font-display text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#071D2F] tracking-[-0.04em] leading-[1.1]"
           >
             Let&apos;s figure it out{' '}<br className="hidden sm:block" />
             together
@@ -52,7 +52,7 @@ export function ConsultationCTA() {
           <form
             action="/contact"
             method="GET"
-            className="rounded-2xl bg-white/40 backdrop-blur-xl border border-white/50 shadow-[0_8px_60px_rgba(0,0,0,0.06),0_0_0_1px_rgba(255,255,255,0.6)_inset] p-8 lg:p-10"
+            className="rounded-2xl bg-white/40 backdrop-blur-xl border border-white/50 shadow-[0_8px_60px_rgba(0,0,0,0.06),0_0_0_1px_rgba(255,255,255,0.6)_inset] p-6 lg:p-8"
           >
             {/* Name + Email row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
