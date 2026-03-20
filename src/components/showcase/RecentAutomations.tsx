@@ -49,7 +49,7 @@ export function RecentAutomations({ compact = false }: RecentAutomationsProps) {
 
   if (compact) {
     return (
-      <div className="bg-white border border-[#e4e4e7] rounded-lg p-2.5">
+      <div className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-lg p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-[#0a0a0a] text-xs font-semibold font-display">Recent Automations</h3>
           <button className="text-[8px] text-[#3d5a80] font-medium hover:text-[#5a7a9e] transition-colors">
@@ -60,7 +60,7 @@ export function RecentAutomations({ compact = false }: RecentAutomationsProps) {
         <div className="overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#f4f4f5]">
+              <tr className="border-b border-white/40">
                 <th className="text-left text-[8px] font-medium text-[#a1a1aa] uppercase tracking-wider pb-1.5">Name</th>
                 <th className="text-left text-[8px] font-medium text-[#a1a1aa] uppercase tracking-wider pb-1.5">Status</th>
                 <th className="text-left text-[8px] font-medium text-[#a1a1aa] uppercase tracking-wider pb-1.5">Last Run</th>
@@ -71,7 +71,7 @@ export function RecentAutomations({ compact = false }: RecentAutomationsProps) {
               {displayAutomations.map((automation, index) => (
                 <tr
                   key={index}
-                  className="border-b border-[#f4f4f5] last:border-0"
+                  className="border-b border-white/40 last:border-0"
                 >
                   <td className="py-1.5">
                     <span className="text-[9px] font-medium text-[#0a0a0a] truncate block max-w-[120px]">{automation.name}</span>
@@ -106,7 +106,7 @@ export function RecentAutomations({ compact = false }: RecentAutomationsProps) {
       <div className="overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#f4f4f5]">
+            <tr className="border-b border-white/40">
               <th className="text-left text-[10px] font-medium text-[#a1a1aa] uppercase tracking-wider pb-2.5">Name</th>
               <th className="text-left text-[10px] font-medium text-[#a1a1aa] uppercase tracking-wider pb-2.5">Trigger</th>
               <th className="text-left text-[10px] font-medium text-[#a1a1aa] uppercase tracking-wider pb-2.5">Status</th>
@@ -118,7 +118,7 @@ export function RecentAutomations({ compact = false }: RecentAutomationsProps) {
             {automations.map((automation, index) => (
               <tr
                 key={index}
-                className="border-b border-[#f4f4f5] last:border-0 hover:bg-[#fafafa] transition-colors"
+                className="border-b border-white/40 last:border-0 hover:bg-[#fafafa] transition-colors"
               >
                 <td className="py-2.5">
                   <span className="text-xs font-medium text-[#0a0a0a]">{automation.name}</span>

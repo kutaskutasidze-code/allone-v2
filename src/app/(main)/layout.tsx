@@ -14,7 +14,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideFooter = pathname === '/services' || pathname === '/';
+  const hideFooter = pathname === '/services';
   const hideCta = pathname.startsWith('/lab') || pathname === '/work';
 
   return (
