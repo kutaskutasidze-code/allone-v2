@@ -44,7 +44,6 @@ const nextConfig: NextConfig = {
   experimental: {
     inlineCss: true,
   },
-  turbopack: {},
   async headers() {
     return [
       {
