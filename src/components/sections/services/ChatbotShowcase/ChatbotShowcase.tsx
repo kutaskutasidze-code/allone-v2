@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ChatPlayback } from '../ChatPlayback';
+import { useI18n } from '@/lib/i18n';
 
 /* ── Channel logos ── */
 const channels = [
@@ -37,6 +38,7 @@ function LogoPill({ name, color, svg }: { name: string; color?: string; svg: Rea
 
 /* ── Main Component ── */
 export function ChatbotShowcase() {
+  const { t } = useI18n();
   return (
     <section className="relative pt-10 pb-24 lg:pt-14 lg:pb-32 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/30 to-white pointer-events-none" />
@@ -61,10 +63,10 @@ export function ChatbotShowcase() {
           className="text-center mb-14 lg:mb-20"
         >
           <span className="inline-block font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-4">
-            AI Chatbots
+            {t('services.chatbot.label')}
           </span>
           <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#071D2F] tracking-[-0.04em] leading-[1.1]">
-            AI chatbots for every channel
+            {t('services.chatbot.h2a')}
           </h2>
         </motion.div>
 
@@ -78,13 +80,13 @@ export function ChatbotShowcase() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">Channels</span>
+            <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">{t('services.chatbot.channels')}</span>
             <h3 className="font-display text-3xl lg:text-[2.5rem] font-semibold text-[#071D2F] mt-3 mb-4 tracking-[-0.04em] leading-[1.1]">
-              Every platform,{' '}<br className="hidden lg:block" />
-              one AI brain
+              {t('services.chatbot.channels.h3a')}{' '}<br className="hidden lg:block" />
+              {t('services.chatbot.channels.h3b')}
             </h3>
             <p className="font-body text-[15px] text-[#4D4D4D] leading-[1.7] mb-8 max-w-sm">
-              Deploy on WhatsApp, Instagram, Telegram, Messenger, and your website — one AI, everywhere your customers are.
+              {t('services.chatbot.channels.desc')}
             </p>
             <div className="flex flex-wrap gap-2">
               {channels.map((ch) => (
@@ -101,7 +103,7 @@ export function ChatbotShowcase() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="w-[340px] flex-shrink-0 mx-auto relative"
           >
-            <p className="text-center font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-4">Live preview</p>
+            <p className="text-center font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-4">{t('services.chatbot.preview')}</p>
             <ChatPlayback />
           </motion.div>
 
@@ -113,20 +115,20 @@ export function ChatbotShowcase() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="lg:text-right"
           >
-            <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">Integrations</span>
+            <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">{t('services.chatbot.integrations')}</span>
             <h3 className="font-display text-3xl lg:text-[2.5rem] font-semibold text-[#071D2F] mt-3 mb-4 tracking-[-0.04em] leading-[1.1]">
-              Connected to{' '}<br className="hidden lg:block" />
-              your tools
+              {t('services.chatbot.integrations.h3a')}{' '}<br className="hidden lg:block" />
+              {t('services.chatbot.integrations.h3b')}
             </h3>
             <p className="font-body text-[15px] text-[#4D4D4D] leading-[1.7] mb-8 max-w-sm lg:ml-auto">
-              Book meetings, update CRMs, process payments, and trigger workflows — all from the conversation.
+              {t('services.chatbot.integrations.desc')}
             </p>
             <div className="flex flex-wrap lg:justify-end gap-2">
               {integrations.map((integ) => (
                 <LogoPill key={integ.name} name={integ.name} svg={integ.svg} />
               ))}
               <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/30 backdrop-blur-lg border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
-                <span className="text-xs font-medium text-gray-400">+50 more</span>
+                <span className="text-xs font-medium text-gray-400">{t('services.chatbot.more')}</span>
               </div>
             </div>
           </motion.div>

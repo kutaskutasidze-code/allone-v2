@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "rm -rf .next && pnpm build",
+  "buildCommand": "pnpm build",
   "devCommand": "pnpm dev",
   "installCommand": "pnpm install",
   "crons": [
