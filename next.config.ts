@@ -44,9 +44,7 @@ const nextConfig: NextConfig = {
   experimental: {
     inlineCss: true,
   },
-  turbopack: {
-    root: '/Users/macintoshi/projects/allone-website',
-  },
+  turbopack: {},
   async headers() {
     return [
       {
