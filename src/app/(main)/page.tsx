@@ -425,11 +425,11 @@ export default function HomePage() {
   return (
     <div className="bg-white text-[#071D2F] font-body antialiased">
       <Hero />
-      <VideoShowcase />
       <div id="services">
         <ChatbotShowcase />
         <WebDevShowcase />
         <DashboardShowcase />
+        <VideoShowcase />
         <ConsultationCTA />
       </div>
       <LandingFooter />
