@@ -26,12 +26,12 @@ const lineChartData = [
 ];
 
 const pieChartData = [
-  { name: 'Support', value: 32, color: '#0a0a0a' },
-  { name: 'Sales', value: 24, color: '#3d5a80' },
-  { name: 'Data', value: 18, color: '#52525b' },
-  { name: 'Leads', value: 14, color: '#71717a' },
-  { name: 'Reports', value: 8, color: '#a1a1aa' },
-  { name: 'Other', value: 4, color: '#d4d4d8' },
+  { name: 'CRM Sync', value: 32, color: '#0A68F5' },
+  { name: 'Email', value: 24, color: '#0EA5E9' },
+  { name: 'Invoicing', value: 18, color: '#0B5CD6' },
+  { name: 'Leads', value: 14, color: '#38BDF8' },
+  { name: 'Reports', value: 8, color: '#93C5FD' },
+  { name: 'Other', value: 4, color: '#BFDBFE' },
 ];
 
 interface CustomTooltipProps {
@@ -43,17 +43,17 @@ interface CustomTooltipProps {
 function CustomLineTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#0a0a0a] text-white px-3 py-2 rounded-lg shadow-lg border border-[#27272a]">
-        <p className="text-xs font-medium mb-1">{label}</p>
+      <div className="bg-white/70 backdrop-blur-xl px-3 py-2 rounded-lg shadow-lg border border-white/80">
+        <p className="text-xs font-medium text-gray-900 mb-1">{label}</p>
         <div className="space-y-0.5">
-          <p className="text-[10px] text-[#a1a1aa] flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0a0a0a] border border-white/30" />
-            Runs: <span className="text-white font-medium">{payload[0]?.value}</span>
+          <p className="text-[10px] text-gray-500 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0A68F5]" />
+            Runs: <span className="text-gray-900 font-medium">{payload[0]?.value}</span>
           </p>
           {payload[1] && (
-            <p className="text-[10px] text-[#a1a1aa] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3d5a80]" />
-              Success: <span className="text-white font-medium">{payload[1]?.value}</span>
+            <p className="text-[10px] text-gray-500 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0EA5E9]" />
+              Success: <span className="text-gray-900 font-medium">{payload[1]?.value}</span>
             </p>
           )}
         </div>
@@ -73,24 +73,24 @@ export function PerformanceChart({ compact = false }: ChartProps) {
 
   if (compact) {
     return (
-      <div ref={ref} className="bg-white border border-[#e4e4e7] rounded-lg p-3 h-full">
+      <div ref={ref} className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-lg p-3 h-full shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
         <div className="flex items-center justify-between mb-2">
           <div>
             <h3 className="text-[#0a0a0a] text-xs font-semibold font-display">Performance</h3>
             <p className="text-[#71717a] text-[9px]">Last 7 days</p>
           </div>
-          <div className="flex items-center bg-[#f4f4f5] rounded p-0.5">
-            <button className="px-1.5 py-0.5 text-[8px] font-medium text-white bg-[#0a0a0a] rounded">7D</button>
+          <div className="flex items-center bg-white/30 rounded p-0.5">
+            <button className="px-1.5 py-0.5 text-[8px] font-medium text-white bg-[#0A68F5]/80 rounded">7D</button>
             <button className="px-1.5 py-0.5 text-[8px] font-medium text-[#71717a]">30D</button>
           </div>
         </div>
         <div className="flex items-center gap-3 mb-2">
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-[#0a0a0a]" />
+            <div className="w-2 h-2 rounded-full bg-[#0A68F5]" />
             <span className="text-[8px] text-[#71717a]">Runs</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-[#3d5a80]" />
+            <div className="w-2 h-2 rounded-full bg-[#0EA5E9]" />
             <span className="text-[8px] text-[#71717a]">Success</span>
           </div>
         </div>
@@ -100,33 +100,33 @@ export function PerformanceChart({ compact = false }: ChartProps) {
               <AreaChart data={lineChartData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gradientAutomationsCompact" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#0a0a0a" stopOpacity={0.15} />
-                    <stop offset="100%" stopColor="#0a0a0a" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#0A68F5" stopOpacity={0.2} />
+                    <stop offset="100%" stopColor="#0A68F5" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="gradientResponsesCompact" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#3d5a80" stopOpacity={0.15} />
-                    <stop offset="100%" stopColor="#3d5a80" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#0EA5E9" stopOpacity={0.2} />
+                    <stop offset="100%" stopColor="#0EA5E9" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
                 <XAxis
                   dataKey="day"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#a1a1aa', fontSize: 8 }}
+                  tick={{ fill: '#94a3b8', fontSize: 8 }}
                   dy={5}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#a1a1aa', fontSize: 8 }}
+                  tick={{ fill: '#94a3b8', fontSize: 8 }}
                   dx={-5}
                 />
                 <Tooltip content={<CustomLineTooltip />} />
                 <Area
                   type="monotone"
                   dataKey="automations"
-                  stroke="#0a0a0a"
+                  stroke="#0A68F5"
                   strokeWidth={1.5}
                   fill="url(#gradientAutomationsCompact)"
                   dot={false}
@@ -134,7 +134,7 @@ export function PerformanceChart({ compact = false }: ChartProps) {
                 <Area
                   type="monotone"
                   dataKey="responses"
-                  stroke="#3d5a80"
+                  stroke="#0EA5E9"
                   strokeWidth={1.5}
                   fill="url(#gradientResponsesCompact)"
                   dot={false}
@@ -156,7 +156,7 @@ export function PerformanceChart({ compact = false }: ChartProps) {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center bg-[#f4f4f5] rounded-lg p-0.5">
-            <button className="px-3 py-1.5 text-xs font-medium text-white bg-[#0a0a0a] rounded-md">7D</button>
+            <button className="px-3 py-1.5 text-xs font-medium text-white bg-[#0A68F5] rounded-md">7D</button>
             <button className="px-3 py-1.5 text-xs font-medium text-[#71717a] hover:text-[#0a0a0a]">30D</button>
             <button className="px-3 py-1.5 text-xs font-medium text-[#71717a] hover:text-[#0a0a0a]">90D</button>
           </div>
@@ -164,11 +164,11 @@ export function PerformanceChart({ compact = false }: ChartProps) {
       </div>
       <div className="flex items-center gap-5 mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#0a0a0a]" />
+          <div className="w-3 h-3 rounded-full bg-[#0A68F5]" />
           <span className="text-xs text-[#71717a]">Total Runs</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#3d5a80]" />
+          <div className="w-3 h-3 rounded-full bg-[#0EA5E9]" />
           <span className="text-xs text-[#71717a]">Successful</span>
         </div>
       </div>
@@ -178,46 +178,46 @@ export function PerformanceChart({ compact = false }: ChartProps) {
           <AreaChart data={lineChartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
             <defs>
               <linearGradient id="gradientAutomations" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#0a0a0a" stopOpacity={0.15} />
-                <stop offset="100%" stopColor="#0a0a0a" stopOpacity={0} />
+                <stop offset="0%" stopColor="#0A68F5" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="#0A68F5" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gradientResponses" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3d5a80" stopOpacity={0.15} />
-                <stop offset="100%" stopColor="#3d5a80" stopOpacity={0} />
+                <stop offset="0%" stopColor="#0EA5E9" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="#0EA5E9" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" vertical={false} />
             <XAxis
               dataKey="day"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#a1a1aa', fontSize: 12 }}
+              tick={{ fill: '#94a3b8', fontSize: 12 }}
               dy={10}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#a1a1aa', fontSize: 12 }}
+              tick={{ fill: '#94a3b8', fontSize: 12 }}
               dx={-10}
             />
             <Tooltip content={<CustomLineTooltip />} />
             <Area
               type="monotone"
               dataKey="automations"
-              stroke="#0a0a0a"
+              stroke="#0A68F5"
               strokeWidth={2}
               fill="url(#gradientAutomations)"
               dot={false}
-              activeDot={{ r: 5, fill: '#0a0a0a', strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: '#0A68F5', strokeWidth: 0 }}
             />
             <Area
               type="monotone"
               dataKey="responses"
-              stroke="#3d5a80"
+              stroke="#0EA5E9"
               strokeWidth={2}
               fill="url(#gradientResponses)"
               dot={false}
-              activeDot={{ r: 5, fill: '#3d5a80', strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: '#0EA5E9', strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -232,11 +232,11 @@ export function CategoryChart({ compact = false }: ChartProps) {
   const isInView = useInView(ref, { once: true, margin: '-50px' });
   if (compact) {
     return (
-      <div ref={ref} className="bg-white border border-[#e4e4e7] rounded-lg p-3 h-full">
+      <div ref={ref} className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-lg p-3 h-full shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="text-[#0a0a0a] text-xs font-semibold font-display">Categories</h3>
-            <p className="text-[#71717a] text-[9px]">By type</p>
+            <h3 className="text-[#0a0a0a] text-xs font-semibold font-display">Workflow Types</h3>
+            <p className="text-[#71717a] text-[9px]">By category</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -262,7 +262,7 @@ export function CategoryChart({ compact = false }: ChartProps) {
             </ResponsiveContainer>
             )}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-sm font-semibold text-[#0a0a0a] font-display">89.4k</span>
+              <span className="text-sm font-semibold text-[#0a0a0a] font-display">12.8k</span>
               <span className="text-[8px] text-[#71717a]">Total</span>
             </div>
           </div>
@@ -287,10 +287,10 @@ export function CategoryChart({ compact = false }: ChartProps) {
     <div ref={ref} className="bg-white border border-[#e4e4e7] rounded-2xl p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-[#0a0a0a] text-lg font-semibold font-display">AI Response Categories</h3>
-          <p className="text-[#71717a] text-sm mt-0.5">Distribution by type</p>
+          <h3 className="text-[#0a0a0a] text-lg font-semibold font-display">Workflow Types</h3>
+          <p className="text-[#71717a] text-sm mt-0.5">Distribution by category</p>
         </div>
-        <button className="text-xs text-[#3d5a80] font-medium hover:text-[#5a7a9e]">
+        <button className="text-xs text-[#0EA5E9] font-medium hover:text-[#5a7a9e]">
           View details
         </button>
       </div>
@@ -317,7 +317,7 @@ export function CategoryChart({ compact = false }: ChartProps) {
           </ResponsiveContainer>
           )}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-semibold text-[#0a0a0a] font-display">89.4k</span>
+            <span className="text-2xl font-semibold text-[#0a0a0a] font-display">12.8k</span>
             <span className="text-xs text-[#71717a]">Total</span>
           </div>
         </div>
