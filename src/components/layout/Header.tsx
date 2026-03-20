@@ -220,7 +220,16 @@ export function Header() {
                     const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
                     const Icon = item.icon;
                     return (
-                      <Link key={item.name} href={item.href} className="relative w-10 h-10 flex items-center justify-center rounded-full">
+                      <Link key={item.name} href={item.href} onClick={(e) => {
+                        if (item.href === '/#services') {
+                          e.preventDefault();
+                          if (pathname === '/') {
+                            document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+                          } else {
+                            window.location.href = '/#services';
+                          }
+                        }
+                      }} className="relative w-10 h-10 flex items-center justify-center rounded-full">
                         {isActive && (
                           <motion.div
                             layoutId="dock-lamp"

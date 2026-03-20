@@ -40,14 +40,14 @@ export function ChatbotShowcase() {
   return (
     <section className="relative pt-10 pb-24 lg:pt-14 lg:pb-32 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/30 to-white pointer-events-none" />
-      {/* Permanent glow in the background — visible through the glass chat */}
+      {/* Blue gradient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="relative w-[600px] h-[600px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-400/50 via-sky-300/45 to-rose-300/35 rounded-full blur-[80px]" />
-          <div className="absolute top-10 -left-10 w-64 h-64 bg-violet-300/55 rounded-full blur-[60px]" />
-          <div className="absolute -bottom-6 right-0 w-72 h-72 bg-sky-300/50 rounded-full blur-[70px]" />
-          <div className="absolute top-1/4 right-10 w-52 h-52 bg-rose-200/40 rounded-full blur-[50px]" />
-          <div className="absolute bottom-1/4 -left-6 w-48 h-48 bg-amber-200/35 rounded-full blur-[50px]" />
+        <div className="relative w-[700px] h-[600px]">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/45 via-sky-300/40 to-blue-500/30 rounded-full blur-[90px]" />
+          <div className="absolute top-10 -left-10 w-72 h-72 bg-blue-300/50 rounded-full blur-[70px]" />
+          <div className="absolute -bottom-6 right-0 w-72 h-72 bg-sky-400/45 rounded-full blur-[80px]" />
+          <div className="absolute top-1/4 right-10 w-56 h-56 bg-indigo-300/35 rounded-full blur-[60px]" />
+          <div className="absolute bottom-1/4 -left-6 w-52 h-52 bg-blue-200/40 rounded-full blur-[50px]" />
         </div>
       </div>
 
