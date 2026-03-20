@@ -4,7 +4,6 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { MacBookFrame } from './MacBookFrame';
 import { HeroPreview } from './HeroPreview';
-import { useI18n } from '@/lib/i18n';
 
 const techStack = [
   { name: 'Next.js', color: '#000000' },
@@ -15,7 +14,6 @@ const techStack = [
 ];
 
 export function WebDevShowcase() {
-  const { t } = useI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -65,17 +63,17 @@ export function WebDevShowcase() {
             transition={{ duration: 0.5 }}
             className="order-1 lg:order-2 text-center lg:text-left"
           >
-            <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">{t('services.webdev.label')}</span>
+            <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal">Web Development</span>
             <h2
               className="font-display text-3xl lg:text-[2.5rem] font-semibold text-[#071D2F] mt-3 mb-5 tracking-[-0.04em] leading-[1.1]"
             >
-              {t('services.webdev.h2a')}{' '}<br className="hidden lg:block" />
-              {t('services.webdev.h2b')}
+              Websites that convert{' '}<br className="hidden lg:block" />
+              visitors into customers
             </h2>
             <p
               className="font-body text-[15px] text-[#4D4D4D] leading-[1.7] mb-6 max-w-[280px] mx-auto lg:mx-0"
             >
-              {t('services.webdev.desc')}
+              We design and build fast, modern web applications with Next.js — optimized for performance, SEO, and conversion from day one.
             </p>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-2">
