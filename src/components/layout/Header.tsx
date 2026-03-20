@@ -123,7 +123,7 @@ export function Header() {
 
   const navItems = [
     { name: 'Home', i18nKey: 'nav.home', href: '/', icon: Home },
-    { name: 'Services', i18nKey: 'nav.services', href: '/services', icon: Zap },
+    { name: 'Services', i18nKey: 'nav.services', href: '/#services', icon: Zap },
     { name: 'Work', i18nKey: 'nav.work', href: '/work', icon: Briefcase },
     { name: 'Lab', i18nKey: 'nav.lab', href: '/lab', icon: Atom },
   ];

@@ -5,6 +5,12 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
+import dynamic from 'next/dynamic';
+
+const ChatbotShowcase = dynamic(() => import('@/components/sections/services/ChatbotShowcase').then(m => ({ default: m.ChatbotShowcase })));
+const WebDevShowcase = dynamic(() => import('@/components/sections/services/WebDevShowcase/WebDevShowcase').then(m => ({ default: m.WebDevShowcase })));
+const DashboardShowcase = dynamic(() => import('@/components/sections/DashboardShowcase').then(m => ({ default: m.DashboardShowcase })));
+const ConsultationCTA = dynamic(() => import('@/components/sections/services/ConsultationCTA').then(m => ({ default: m.ConsultationCTA })));
 
 /* ─────────────────────────────────────────────
    ALLONE V2 — Vercel-Inspired Landing Page
@@ -420,6 +426,12 @@ export default function HomePage() {
     <div className="bg-white text-[#071D2F] font-body antialiased">
       <Hero />
       <VideoShowcase />
+      <div id="services">
+        <ChatbotShowcase />
+        <WebDevShowcase />
+        <DashboardShowcase />
+        <ConsultationCTA />
+      </div>
       <SocialProof />
       <ServicesGrid />
       <TechShowcase />
