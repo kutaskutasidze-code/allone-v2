@@ -31,12 +31,12 @@ export function MetricCard({
 
   if (compact) {
     return (
-      <div className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-lg p-2.5 hover:border-white/70 transition-all duration-300 relative overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+      <div className="bg-white/40  border border-white/50 rounded-lg p-2.5 hover:border-white/70 transition-all duration-300 relative overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
         <div className="flex items-center justify-between mb-1.5">
           <div className="w-6 h-6 bg-white/40 rounded flex items-center justify-center">
             <Icon className="w-3.5 h-3.5" style={{ color: sparklineColor }} />
           </div>
-          <div className={`flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 rounded-full backdrop-blur-sm ${
+          <div className={`flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 rounded-full  ${
             isPositive
               ? 'text-emerald-700 bg-emerald-50/70'
               : 'text-red-600 bg-red-50/70'

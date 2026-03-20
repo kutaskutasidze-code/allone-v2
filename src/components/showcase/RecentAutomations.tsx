@@ -49,7 +49,7 @@ export function RecentAutomations({ compact = false }: RecentAutomationsProps) {
 
   if (compact) {
     return (
-      <div className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-lg p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+      <div className="bg-white/40  border border-white/50 rounded-lg p-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-[#0a0a0a] text-xs font-semibold font-display">Recent Automations</h3>
           <button className="text-[8px] text-[#3d5a80] font-medium hover:text-[#5a7a9e] transition-colors">

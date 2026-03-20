@@ -251,7 +251,7 @@ export function Header() {
                             </div>
                           </motion.div>
                         )}
-                        <Icon size={20} strokeWidth={2} className={isActive ? 'text-[#071D2F]' : 'text-[#071D2F]/40'} />
+                        <Icon size={20} strokeWidth={1.5} className={isActive ? 'text-[#071D2F]' : 'text-[#071D2F]/40'} />
                       </Link>
                     );
                   })}
@@ -263,7 +263,7 @@ export function Header() {
                     onClick={() => setLang(isKa ? 'en' : 'ka')}
                     className="w-10 h-10 flex items-center justify-center rounded-full text-[#071D2F]/40"
                   >
-                    <Globe size={18} strokeWidth={2} />
+                    <Globe size={18} strokeWidth={1.5} />
                   </button>
 
                   {/* Ask AI */}
@@ -309,7 +309,7 @@ export function Header() {
                   <div className="w-px h-5 bg-[#071D2F]/10 mx-1" />
 
                   <button onClick={() => setLang(isKa ? 'en' : 'ka')} className="w-8 h-8 flex items-center justify-center rounded-full text-[#071D2F]/40 hover:text-[#071D2F] transition-colors cursor-pointer" title={isKa ? 'Switch to English' : 'ქართულად'}>
-                    <Globe size={16} strokeWidth={2} />
+                    <Globe size={16} strokeWidth={1.5} />
                   </button>
 
                   <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={openChat} className="relative px-4 py-2 rounded-full text-[13px] font-semibold text-[#071D2F]/70 hover:text-[#071D2F] transition-colors cursor-pointer whitespace-nowrap">

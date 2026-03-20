@@ -43,7 +43,7 @@ interface CustomTooltipProps {
 function CustomLineTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/70 backdrop-blur-xl px-3 py-2 rounded-lg shadow-lg border border-white/80">
+      <div className="bg-white/70  px-3 py-2 rounded-lg shadow-lg border border-white/80">
         <p className="text-xs font-medium text-gray-900 mb-1">{label}</p>
         <div className="space-y-0.5">
           <p className="text-[10px] text-gray-500 flex items-center gap-1.5">
@@ -73,7 +73,7 @@ export function PerformanceChart({ compact = false }: ChartProps) {
 
   if (compact) {
     return (
-      <div ref={ref} className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-lg p-3 h-full shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+      <div ref={ref} className="bg-white/40  border border-white/50 rounded-lg p-3 h-full shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
         <div className="flex items-center justify-between mb-2">
           <div>
             <h3 className="text-[#0a0a0a] text-xs font-semibold font-display">Performance</h3>
@@ -232,7 +232,7 @@ export function CategoryChart({ compact = false }: ChartProps) {
   const isInView = useInView(ref, { once: true, margin: '-50px' });
   if (compact) {
     return (
-      <div ref={ref} className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-lg p-3 h-full shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+      <div ref={ref} className="bg-white/40  border border-white/50 rounded-lg p-3 h-full shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
         <div className="flex items-center justify-between mb-2">
           <div>
             <h3 className="text-[#0a0a0a] text-xs font-semibold font-display">Workflow Types</h3>

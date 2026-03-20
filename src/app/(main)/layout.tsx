@@ -15,7 +15,7 @@ export default function MainLayout({
 }) {
   const pathname = usePathname();
   const hideFooter = pathname === '/services';
-  const hideCta = pathname.startsWith('/lab') || pathname === '/work';
+  const hideCta = pathname.startsWith('/lab') || pathname === '/work' || pathname === '/';
 
   return (
     <I18nProvider>

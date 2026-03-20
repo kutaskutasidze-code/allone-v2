@@ -27,9 +27,8 @@ export function WebDevShowcase() {
 
   return (
     <section ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
-      {/* Background glow — black and green */}
-      {/* Premium dark glow with subtle green accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+      {/* Glow — hidden on mobile for performance */}
+      <div className="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <div className="relative w-[1100px] h-[800px]">
           {/* Large dark base */}
           <div className="absolute inset-[10%] bg-gray-900/[0.12] rounded-full blur-[150px]" />

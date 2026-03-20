@@ -11,9 +11,9 @@ const LIKA_PHOTO = "https://images.unsplash.com/photo-1494790108377-be9c29b29330
 // Browser Chrome Wrapper
 function BrowserChrome({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-full h-full flex flex-col bg-white/30 backdrop-blur-xl rounded-2xl overflow-hidden shadow-2xl border border-white/50">
+    <div className="w-full h-full flex flex-col bg-white/30  rounded-2xl overflow-hidden shadow-2xl border border-white/50">
       {/* Browser top bar */}
-      <div className="bg-white/40 backdrop-blur-lg px-4 py-3 flex items-center gap-4 border-b border-white/50">
+      <div className="bg-white/40  px-4 py-3 flex items-center gap-4 border-b border-white/50">
         {/* Traffic lights */}
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-[#ff5f57] opacity-40" />
@@ -23,7 +23,7 @@ function BrowserChrome({ children }: { children: React.ReactNode }) {
 
         {/* URL bar */}
         <div className="flex-1 max-w-md mx-auto">
-          <div className="bg-white/50 backdrop-blur-md rounded-lg px-4 py-1.5 flex items-center gap-2 border border-white/60">
+          <div className="bg-white/50  rounded-lg px-4 py-1.5 flex items-center gap-2 border border-white/60">
             <svg className="w-3.5 h-3.5 text-[#A5B4C0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -57,7 +57,7 @@ function LiveDot() {
 function InlineProgress({ current, target }: { current: number; target: number }) {
   const percentage = Math.min((current / target) * 100, 100);
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/40 backdrop-blur-md border border-white/50 rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/40  border border-white/50 rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
       <div className="w-6 h-6 bg-white/30 rounded flex items-center justify-center">
         <Target className="w-3 h-3 text-[#0A68F5]" />
       </div>
@@ -88,7 +88,7 @@ const compactNavItems = [
 
 function CompactSidebar() {
   return (
-    <aside className="w-[145px] h-full bg-white/30 backdrop-blur-lg border-r border-white/50 flex flex-col py-4 relative flex-shrink-0">
+    <aside className="w-[145px] h-full bg-white/30  border-r border-white/50 flex flex-col py-4 relative flex-shrink-0">
       {/* Logo */}
       <div className="px-4 mb-6">
         <div className="w-7 h-7 flex items-center justify-center">
@@ -114,7 +114,7 @@ function CompactSidebar() {
             key={index}
             className={`w-full h-8 rounded-lg flex items-center gap-2.5 px-3 transition-all duration-200 ${
               item.active
-                ? 'bg-[#0A68F5]/15 backdrop-blur-md text-[#0A68F5] shadow-[0_2px_8px_rgba(10,104,245,0.08)]'
+                ? 'bg-[#0A68F5]/15  text-[#0A68F5] shadow-[0_2px_8px_rgba(10,104,245,0.08)]'
                 : 'text-[#4A5B70] hover:text-[#071D2F] hover:bg-white/40'
             }`}
           >
@@ -125,7 +125,7 @@ function CompactSidebar() {
       </nav>
 
       {/* User Card */}
-      <div className="mx-2 mt-auto p-2 rounded-xl bg-white/40 backdrop-blur-md border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+      <div className="mx-2 mt-auto p-2 rounded-xl bg-white/40  border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full overflow-hidden border border-white/40 flex-shrink-0 shadow-sm relative">
             <Image
@@ -160,7 +160,7 @@ function DashboardContent() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-transparent">
         {/* Top Bar - compact */}
-        <header className="h-12 bg-white/30 backdrop-blur-lg border-b border-white/50 flex items-center justify-between px-5 flex-shrink-0">
+        <header className="h-12 bg-white/30  border-b border-white/50 flex items-center justify-between px-5 flex-shrink-0">
           {/* Search */}
           <div className="flex items-center gap-3 flex-1 max-w-xs">
             <div className="relative flex-1">
@@ -168,7 +168,7 @@ function DashboardContent() {
               <input
                 type="text"
                 placeholder="Search workflows..."
-                className="w-full h-8 pl-9 pr-10 rounded-full bg-white/40 backdrop-blur-md border border-white/60 text-[11px] text-[#071D2F] placeholder-[#7E8A97] focus:outline-none focus:border-[#0A68F5]/40 transition-colors"
+                className="w-full h-8 pl-9 pr-10 rounded-full bg-white/40  border border-white/60 text-[11px] text-[#071D2F] placeholder-[#7E8A97] focus:outline-none focus:border-[#0A68F5]/40 transition-colors"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 px-1.5 py-0.5 bg-white/50 rounded border border-white/60">
                 <Command className="w-2 h-2 text-[#7E8A97]" />
@@ -211,11 +211,11 @@ function DashboardContent() {
 
               <div className="flex items-center gap-3">
                 <InlineProgress current={1247} target={1500} />
-                <button className="h-8 px-4 rounded-full bg-white/40 backdrop-blur-md border border-white/50 text-[11px] font-bold text-[#4A5B70] flex items-center gap-1.5 hover:border-[#0A68F5]/40 hover:text-[#0A68F5] transition-all shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+                <button className="h-8 px-4 rounded-full bg-white/40  border border-white/50 text-[11px] font-bold text-[#4A5B70] flex items-center gap-1.5 hover:border-[#0A68F5]/40 hover:text-[#0A68F5] transition-all shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
                   <FileText className="w-3.5 h-3.5" />
                   Analytics
                 </button>
-                <button className="h-8 px-4 rounded-full bg-gradient-to-r from-[#0A68F5]/80 to-[#0B5CD6]/80 backdrop-blur-md text-[11px] font-bold text-white flex items-center gap-1.5 hover:from-[#0A68F5] hover:to-[#0B5CD6] transition-all shadow-md">
+                <button className="h-8 px-4 rounded-full bg-gradient-to-r from-[#0A68F5]/80 to-[#0B5CD6]/80  text-[11px] font-bold text-white flex items-center gap-1.5 hover:from-[#0A68F5] hover:to-[#0B5CD6] transition-all shadow-md">
                   <Plus className="w-3.5 h-3.5" />
                   Deploy
                 </button>
@@ -280,7 +280,7 @@ function DashboardContent() {
         </div>
 
         {/* Status Bar - compact */}
-        <div className="h-6 bg-white/30 backdrop-blur-lg border-t border-white/50 flex items-center justify-between px-4 flex-shrink-0">
+        <div className="h-6 bg-white/30  border-t border-white/50 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 text-[10px] text-[#7E8A97] font-medium">
               <LiveDot />
