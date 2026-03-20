@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { MacBookFrame } from './MacBookFrame';
 import { HeroPreview } from './HeroPreview';
@@ -20,14 +20,8 @@ export function WebDevShowcase() {
     offset: ['start end', 'end start'],
   });
 
-  const stiff = { stiffness: 200, damping: 40, mass: 1 };
-  const entryY_raw = useTransform(scrollYProgress, [0.1, 0.3], [80, 0]);
-  const entryScale_raw = useTransform(scrollYProgress, [0.1, 0.3], [0.92, 1]);
-  const entryRotateX_raw = useTransform(scrollYProgress, [0.1, 0.3], [4, 0]);
+  const entryY = useTransform(scrollYProgress, [0.1, 0.3], [60, 0]);
   const entryOpacity = useTransform(scrollYProgress, [0.1, 0.22], [0, 1]);
-  const entryY = useSpring(entryY_raw, stiff);
-  const entryScale = useSpring(entryScale_raw, stiff);
-  const entryRotateX = useSpring(entryRotateX_raw, stiff);
 
   return (
     <section ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
@@ -52,12 +46,9 @@ export function WebDevShowcase() {
           <motion.div
             style={{
               y: entryY,
-              scale: entryScale,
-              rotateX: entryRotateX,
               opacity: entryOpacity,
-              transformPerspective: 1200,
             }}
-            className="relative order-2 lg:order-1 lg:-ml-12"
+            className="relative order-2 lg:order-1 lg:-ml-12 will-change-transform"
           >
             <MacBookFrame>
               <HeroPreview />
