@@ -42,9 +42,12 @@ export function ChatbotShowcase() {
   return (
     <section className="relative pt-10 pb-24 lg:pt-14 lg:pb-32 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/30 to-white pointer-events-none" />
-      {/* Blue gradient glow — hidden on mobile for performance */}
-      <div className="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className="relative w-[700px] h-[600px]">
+      {/* Blue gradient glow — simplified on mobile */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        {/* Mobile: single lightweight glow */}
+        <div className="sm:hidden w-[350px] h-[350px] bg-blue-400/30 rounded-full blur-[60px]" />
+        {/* Desktop: full glow set */}
+        <div className="hidden sm:block relative w-[700px] h-[600px]">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/45 via-sky-300/40 to-blue-500/30 rounded-full blur-[90px]" />
           <div className="absolute top-10 -left-10 w-72 h-72 bg-blue-300/50 rounded-full blur-[70px]" />
           <div className="absolute -bottom-6 right-0 w-72 h-72 bg-sky-400/45 rounded-full blur-[80px]" />
