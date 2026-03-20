@@ -432,8 +432,6 @@ export default function HomePage() {
         <DashboardShowcase />
         <ConsultationCTA />
       </div>
-      <CTASection />
-      <FinalCTA />
       <LandingFooter />
     </div>
   );
