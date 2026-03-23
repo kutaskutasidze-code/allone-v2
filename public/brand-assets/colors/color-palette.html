@@ -15,13 +15,13 @@
 
 :root {
   --accent: #0A68F5;
-  --accent-light: #3B82F6;
-  --accent-dark: #1D4ED8;
+  --accent-light: #0B5CD6;
+  --accent-dark: #0950B8;
   --navy: #071D2F;
   --white: #FFFFFF;
-  --surface-1: #F8FAFE;
-  --surface-2: #F1F6FB;
-  --surface-3: #E0EEFB;
+  --surface-1: #FFFFFF;
+  --surface-2: #FFFFFF;
+  --surface-3: #FFFFFF;
   --border: #DCE9F6;
   --muted: #7E8A97;
   --success: #22C55E;
@@ -57,7 +57,7 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--white);
+  background: #F4F7FB;
   color: var(--navy);
   overflow-x: hidden;
   line-height: 1.6;
@@ -212,7 +212,7 @@ section {
   padding: 160px 40px 120px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(165deg, #FFFFFF 0%, #F8FAFE 30%, #F1F6FB 60%, #E8F1FD 100%);
+  background: linear-gradient(165deg, #FFFFFF 0%, #F9FBFD 30%, #F4F7FB 60%, #EEF2F8 100%);
   background-size: 200% 200%;
   animation: heroGradientShift 12s ease infinite;
 }
@@ -1139,23 +1139,23 @@ footer::before {
   <div class="container">
     <div class="section-label anim-slide-right">Layering</div>
     <h2 class="section-title anim-blur">Surfaces</h2>
-    <p class="section-desc anim-blur">Subtle tonal shifts that create depth and hierarchy without competing for attention.</p>
+    <p class="section-desc anim-blur">Inverted surface model &mdash; pure white surfaces float above the Cool Canvas background (#F4F7FB), creating depth through elevation rather than tinting.</p>
 
     <div class="surface-grid">
-      <div class="surface-block anim-scale" style="background: #F8FAFE;" tabindex="0" role="button" aria-label="Copy Frost color #F8FAFE" data-hex="#F8FAFE">
+      <div class="surface-block anim-scale" style="background: #FFFFFF;" tabindex="0" role="button" aria-label="Copy Pure White color #FFFFFF" data-hex="#FFFFFF">
         <span class="surface-badge">Surface 1</span>
-        <div class="surface-name">Frost</div>
-        <div class="surface-hex">#F8FAFE</div>
+        <div class="surface-name">Pure White</div>
+        <div class="surface-hex">#FFFFFF</div>
       </div>
-      <div class="surface-block anim-scale" style="background: #F1F6FB;" tabindex="0" role="button" aria-label="Copy Mist color #F1F6FB" data-hex="#F1F6FB">
+      <div class="surface-block anim-scale" style="background: #FFFFFF;" tabindex="0" role="button" aria-label="Copy Pure White color #FFFFFF" data-hex="#FFFFFF">
         <span class="surface-badge">Surface 2</span>
-        <div class="surface-name">Mist</div>
-        <div class="surface-hex">#F1F6FB</div>
+        <div class="surface-name">Pure White</div>
+        <div class="surface-hex">#FFFFFF</div>
       </div>
-      <div class="surface-block anim-scale" style="background: #E0EEFB;" tabindex="0" role="button" aria-label="Copy Ice color #E0EEFB" data-hex="#E0EEFB">
+      <div class="surface-block anim-scale" style="background: #FFFFFF;" tabindex="0" role="button" aria-label="Copy Pure White color #FFFFFF" data-hex="#FFFFFF">
         <span class="surface-badge">Surface 3</span>
-        <div class="surface-name">Ice</div>
-        <div class="surface-hex">#E0EEFB</div>
+        <div class="surface-name">Pure White</div>
+        <div class="surface-hex">#FFFFFF</div>
       </div>
     </div>
   </div>
@@ -1218,8 +1218,8 @@ footer::before {
         <div class="scale-bar-segment" style="background: #60A5FA;" data-hex="#60A5FA" data-name="Blue 400" tabindex="0" role="button" aria-label="Copy Blue 400 color #60A5FA">
           <div class="scale-tooltip">Blue 400 &middot; #60A5FA</div>
         </div>
-        <div class="scale-bar-segment" style="background: #3B82F6;" data-hex="#3B82F6" data-name="Blue 500" tabindex="0" role="button" aria-label="Copy Blue 500 color #3B82F6">
-          <div class="scale-tooltip">Blue 500 &middot; #3B82F6</div>
+        <div class="scale-bar-segment" style="background: #0A68F5;" data-hex="#0A68F5" data-name="Blue 500" tabindex="0" role="button" aria-label="Copy Blue 500 color #0A68F5">
+          <div class="scale-tooltip">Blue 500 &middot; #0A68F5</div>
         </div>
         <div class="scale-bar-segment" style="background: #0A68F5;" data-hex="#0A68F5" data-name="Blue 600" tabindex="0" role="button" aria-label="Copy Blue 600 color #0A68F5">
           <div class="scale-tooltip">Blue 600 &middot; #0A68F5</div>
@@ -1227,11 +1227,11 @@ footer::before {
         <div class="scale-bar-segment" style="background: #1D4ED8;" data-hex="#1D4ED8" data-name="Blue 700" tabindex="0" role="button" aria-label="Copy Blue 700 color #1D4ED8">
           <div class="scale-tooltip">Blue 700 &middot; #1D4ED8</div>
         </div>
-        <div class="scale-bar-segment" style="background: #1E40AF;" data-hex="#1E40AF" data-name="Blue 800" tabindex="0" role="button" aria-label="Copy Blue 800 color #1E40AF">
-          <div class="scale-tooltip">Blue 800 &middot; #1E40AF</div>
+        <div class="scale-bar-segment" style="background: #074499;" data-hex="#074499" data-name="Blue 800" tabindex="0" role="button" aria-label="Copy Blue 800 color #074499">
+          <div class="scale-tooltip">Blue 800 &middot; #074499</div>
         </div>
-        <div class="scale-bar-segment" style="background: #1E3A8A;" data-hex="#1E3A8A" data-name="Blue 900" tabindex="0" role="button" aria-label="Copy Blue 900 color #1E3A8A">
-          <div class="scale-tooltip">Blue 900 &middot; #1E3A8A</div>
+        <div class="scale-bar-segment" style="background: #05387B;" data-hex="#05387B" data-name="Blue 900" tabindex="0" role="button" aria-label="Copy Blue 900 color #05387B">
+          <div class="scale-tooltip">Blue 900 &middot; #05387B</div>
         </div>
         <div class="scale-bar-segment" style="background: #032557;" data-hex="#032557" data-name="Blue 950" tabindex="0" role="button" aria-label="Copy Blue 950 color #032557">
           <div class="scale-tooltip">Blue 950 &middot; #032557</div>
@@ -1258,9 +1258,9 @@ footer::before {
           <div class="scale-stop-num">400</div>
           <div class="scale-stop-hex">#60A5FA</div>
         </div>
-        <div class="scale-stop" data-hex="#3B82F6" tabindex="0" role="button" aria-label="Copy color #3B82F6">
+        <div class="scale-stop" data-hex="#0A68F5" tabindex="0" role="button" aria-label="Copy color #0A68F5">
           <div class="scale-stop-num">500</div>
-          <div class="scale-stop-hex">#3B82F6</div>
+          <div class="scale-stop-hex">#0A68F5</div>
         </div>
         <div class="scale-stop" data-hex="#0A68F5" tabindex="0" role="button" aria-label="Copy color #0A68F5">
           <div class="scale-stop-num">600</div>
@@ -1270,13 +1270,13 @@ footer::before {
           <div class="scale-stop-num">700</div>
           <div class="scale-stop-hex">#1D4ED8</div>
         </div>
-        <div class="scale-stop" data-hex="#1E40AF" tabindex="0" role="button" aria-label="Copy color #1E40AF">
+        <div class="scale-stop" data-hex="#074499" tabindex="0" role="button" aria-label="Copy color #074499">
           <div class="scale-stop-num">800</div>
-          <div class="scale-stop-hex">#1E40AF</div>
+          <div class="scale-stop-hex">#074499</div>
         </div>
-        <div class="scale-stop" data-hex="#1E3A8A" tabindex="0" role="button" aria-label="Copy color #1E3A8A">
+        <div class="scale-stop" data-hex="#05387B" tabindex="0" role="button" aria-label="Copy color #05387B">
           <div class="scale-stop-num">900</div>
-          <div class="scale-stop-hex">#1E3A8A</div>
+          <div class="scale-stop-hex">#05387B</div>
         </div>
         <div class="scale-stop" data-hex="#032557" tabindex="0" role="button" aria-label="Copy color #032557">
           <div class="scale-stop-num">950</div>
@@ -1300,7 +1300,7 @@ footer::before {
           <div class="ratio-segment" data-target="60" style="flex-basis: 0%; background: #FFFFFF;" data-color="white">
             <span class="ratio-segment-label" style="color: var(--muted);">60%</span>
           </div>
-          <div class="ratio-segment" data-target="25" style="flex-basis: 0%; background: #F1F6FB;" data-color="surface">
+          <div class="ratio-segment" data-target="25" style="flex-basis: 0%; background: #FFFFFF; border-right: 1px solid #DCE9F6;" data-color="surface">
             <span class="ratio-segment-label" style="color: var(--muted);">25%</span>
           </div>
           <div class="ratio-segment" data-target="10" style="flex-basis: 0%; background: #0A68F5;" data-color="accent">
@@ -1321,7 +1321,7 @@ footer::before {
           </div>
         </div>
         <div class="ratio-item" data-target-color="surface" tabindex="0" role="button">
-          <div class="ratio-dot" style="background: #F1F6FB; color: rgba(10,104,245,0.2);"></div>
+          <div class="ratio-dot" style="background: #FFFFFF; color: rgba(10,104,245,0.2); border: 1px solid #DCE9F6;"></div>
           <div class="ratio-text">
             <span class="ratio-pct" data-count-to="25">0%</span>
             <span class="ratio-name">Surface</span>

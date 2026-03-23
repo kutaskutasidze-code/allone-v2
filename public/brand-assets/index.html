@@ -33,13 +33,13 @@
 :root {
   --accent: #0A68F5;
   --accent-rgb: 10, 104, 245;
-  --accent-light: #3B82F6;
-  --accent-dark: #1D4ED8;
+  --accent-light: #0B5CD6;
+  --accent-dark: #0950B8;
   --dark: #071D2F;
   --white: #FFFFFF;
-  --surface-1: #F8FAFE;
-  --surface-2: #F1F6FB;
-  --surface-3: #E0EEFB;
+  --surface-1: #FFFFFF;
+  --surface-2: #FFFFFF;
+  --surface-3: #FFFFFF;
   --muted: #7E8A97;
   --border: #DCE9F6;
   --success: #22C55E;
@@ -80,7 +80,7 @@ html {
 }
 body {
   font-family: var(--font-body);
-  background: var(--white);
+  background: #F4F7FB;
   color: var(--dark);
   overflow-x: hidden;
   line-height: 1.6;
@@ -616,7 +616,7 @@ body {
   padding: 100px 40px 80px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(165deg, #FFFFFF 0%, #F8FAFE 30%, #F1F6FB 60%, #E8F1FD 100%);
+  background: linear-gradient(165deg, #FFFFFF 0%, #F9FBFD 30%, #F4F7FB 60%, #EEF2F8 100%);
 }
 
 .landing-logo {
@@ -856,7 +856,7 @@ body {
    PAGE 1: COLORS
    ══════════════════════════════════════════════ */
 .colors-hero {
-  background: linear-gradient(165deg, #FFFFFF 0%, #F8FAFE 30%, #F1F6FB 60%, #E8F1FD 100%);
+  background: linear-gradient(165deg, #FFFFFF 0%, #F9FBFD 30%, #F4F7FB 60%, #EEF2F8 100%);
   background-size: 200% 200%;
   animation: heroGradientShift 12s ease infinite;
 }
@@ -1543,7 +1543,7 @@ body {
   transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-spring), box-shadow 0.5s;
 }
 .peso-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 20px 56px rgba(0,0,0,0.1); }
-.peso-card.paid { background: linear-gradient(135deg, #EFF6FF, #F8FAFE); }
+.peso-card.paid { background: linear-gradient(135deg, #EFF6FF, #FFFFFF); }
 .peso-card.earned { background: linear-gradient(135deg, #F0FDF4, #F8FDF9); }
 .peso-card.shared { background: linear-gradient(135deg, #FFFBEB, #FEFDF5); }
 .peso-card.owned { background: linear-gradient(135deg, #0D2640, #122E4D); color: var(--white); }
@@ -2401,19 +2401,19 @@ body {
     <div class="container">
       <div class="section-label anim-blur" data-delay="0">02 / Tinted Surfaces</div>
       <h2 class="section-title anim-blur" data-delay="1">Layered depth</h2>
-      <p class="section-desc anim-blur" data-delay="2">Subtle blue-tinted surfaces create hierarchy without adding visual noise.</p>
+      <p class="section-desc anim-blur" data-delay="2">Inverted surface model &mdash; white card surfaces float above a cool canvas background (#F4F7FB).</p>
       <div class="surface-grid">
-        <div class="surface-block anim-scale" data-delay="3" style="background:#F8FAFE;" data-hex="#F8FAFE" tabindex="0" role="button">
+        <div class="surface-block anim-scale" data-delay="3" style="background:#FFFFFF;" data-hex="#FFFFFF" tabindex="0" role="button">
           <span class="surface-badge">surface-1</span>
-          <span class="surface-name">Ice Wash</span><span class="surface-hex">#F8FAFE</span>
+          <span class="surface-name">Pure White</span><span class="surface-hex">#FFFFFF</span>
         </div>
-        <div class="surface-block anim-scale" data-delay="4" style="background:#F1F6FB;" data-hex="#F1F6FB" tabindex="0" role="button">
+        <div class="surface-block anim-scale" data-delay="4" style="background:#FFFFFF;" data-hex="#FFFFFF" tabindex="0" role="button">
           <span class="surface-badge">surface-2</span>
-          <span class="surface-name">Frost</span><span class="surface-hex">#F1F6FB</span>
+          <span class="surface-name">Pure White</span><span class="surface-hex">#FFFFFF</span>
         </div>
-        <div class="surface-block anim-scale" data-delay="5" style="background:#E0EEFB;" data-hex="#E0EEFB" tabindex="0" role="button">
+        <div class="surface-block anim-scale" data-delay="5" style="background:#FFFFFF;" data-hex="#FFFFFF" tabindex="0" role="button">
           <span class="surface-badge">surface-3</span>
-          <span class="surface-name">Arctic Blue</span><span class="surface-hex">#E0EEFB</span>
+          <span class="surface-name">Pure White</span><span class="surface-hex">#FFFFFF</span>
         </div>
       </div>
     </div>
@@ -2491,7 +2491,7 @@ body {
             <div class="ratio-segment" data-target="60" data-color="white" style="flex-basis:60%;background:#FFFFFF;border-right:1px solid var(--border);">
               <span class="ratio-segment-label" style="color:var(--dark);">60%</span>
             </div>
-            <div class="ratio-segment" data-target="25" data-color="surface" style="flex-basis:25%;background:#F1F6FB;">
+            <div class="ratio-segment" data-target="25" data-color="surface" style="flex-basis:25%;background:#FFFFFF;border-right:1px solid var(--border);">
               <span class="ratio-segment-label" style="color:var(--dark);">25%</span>
             </div>
             <div class="ratio-segment" data-target="10" data-color="navy" style="flex-basis:10%;background:#071D2F;">
@@ -2504,7 +2504,7 @@ body {
         </div>
         <div class="ratio-legend anim-blur" data-delay="4">
           <div class="ratio-item" data-target-color="white"><div class="ratio-dot ratio-dot--outlined" style="background:#fff;"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="60">0%</span><span class="ratio-name">White Space</span></div></div>
-          <div class="ratio-item" data-target-color="surface"><div class="ratio-dot" style="background:#F1F6FB;border:1px solid var(--border);"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="25">0%</span><span class="ratio-name">Surfaces</span></div></div>
+          <div class="ratio-item" data-target-color="surface"><div class="ratio-dot" style="background:#FFFFFF;border:1px solid var(--border);"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="25">0%</span><span class="ratio-name">Surfaces</span></div></div>
           <div class="ratio-item" data-target-color="navy"><div class="ratio-dot" style="background:#071D2F;"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="10">0%</span><span class="ratio-name">Dark Navy</span></div></div>
           <div class="ratio-item" data-target-color="accent"><div class="ratio-dot" style="background:#0A68F5;"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="5">0%</span><span class="ratio-name">Accent Blue</span></div></div>
         </div>
@@ -3365,7 +3365,7 @@ body {
           <span class="bg-usage">Website surfaces</span>
           <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;">
           <span class="wordmark" style="color:var(--dark);">ALLONE</span>
-          <span class="bg-label">#F8FAFE</span>
+          <span class="bg-label">#F4F7FB</span>
         </div>
         <div class="bg-card bg-navy anim-scale" data-delay="3">
           <span class="bg-usage">Footer, dark mode</span>
