@@ -5,7 +5,41 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Globe, X, Send, Home, Zap, Briefcase, Atom } from 'lucide-react';
+import { Globe, X, Send } from 'lucide-react';
+
+// Filled SVG icons for mobile dock — crisp at small sizes
+function IconHome({ className }: { className?: string }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M12.71 2.29a1 1 0 00-1.42 0l-9 9a1 1 0 001.42 1.42L4 12.41V21a1 1 0 001 1h5a1 1 0 001-1v-5h2v5a1 1 0 001 1h5a1 1 0 001-1v-8.59l.29.3a1 1 0 001.42-1.42l-9-9z"/>
+    </svg>
+  );
+}
+
+function IconServices({ className }: { className?: string }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M13 2l.5 4.5c.3 2.7 2.3 4.7 5 5l4.5.5-4.5.5c-2.7.3-4.7 2.3-5 5L13 22l-.5-4.5c-.3-2.7-2.3-4.7-5-5L3 12l4.5-.5c2.7-.3 4.7-2.3 5-5L13 2z"/>
+      <path d="M6 2l.2 1.5c.1 1.1.9 1.9 2 2L9.7 5.7 8.2 5.9c-1.1.1-1.9.9-2 2L6 9.4l-.2-1.5c-.1-1.1-.9-1.9-2-2L2.3 5.7l1.5-.2c1.1-.1 1.9-.9 2-2L6 2z"/>
+    </svg>
+  );
+}
+
+function IconWork({ className }: { className?: string }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M20 7h-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2H4a2 2 0 00-2 2v11a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM10 5h4v2h-4V5z"/>
+    </svg>
+  );
+}
+
+function IconLab({ className }: { className?: string }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M9 2v7.06l-5.47 8.6A2 2 0 005.22 21h13.56a2 2 0 001.69-3.34L15 9.06V2h1a1 1 0 100-2H8a1 1 0 000 2h1zm2 0h2v7.5a1 1 0 00.16.54L16.5 15h-9l3.34-4.96A1 1 0 0011 9.5V2z"/>
+    </svg>
+  );
+}
 import { useI18n } from '@/lib/i18n';
 
 interface ChatMessage {
@@ -132,10 +166,10 @@ export function Header() {
   };
 
   const navItems = [
-    { name: 'Home', i18nKey: 'nav.home', href: '/', icon: Home },
-    { name: 'Services', i18nKey: 'nav.services', href: '/#services', icon: Zap },
-    { name: 'Work', i18nKey: 'nav.work', href: '/work', icon: Briefcase },
-    { name: 'Lab', i18nKey: 'nav.lab', href: '/lab', icon: Atom },
+    { name: 'Home', i18nKey: 'nav.home', href: '/', icon: IconHome },
+    { name: 'Services', i18nKey: 'nav.services', href: '/#services', icon: IconServices },
+    { name: 'Work', i18nKey: 'nav.work', href: '/work', icon: IconWork },
+    { name: 'Lab', i18nKey: 'nav.lab', href: '/lab', icon: IconLab },
   ];
 
   const dockWidth = isMobile ? 'auto' : chatMode === 'closed' ? 780 : 400;
@@ -251,7 +285,7 @@ export function Header() {
                             </div>
                           </motion.div>
                         )}
-                        <Icon size={20} strokeWidth={1.5} className={isActive ? 'text-[#071D2F]' : 'text-[#071D2F]/40'} />
+                        <Icon className={isActive ? 'text-[#071D2F]' : 'text-[#071D2F]/40'} />
                       </Link>
                     );
                   })}
