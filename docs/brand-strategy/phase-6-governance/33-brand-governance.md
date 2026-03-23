@@ -505,6 +505,8 @@ All components must reference these tokens rather than hard-coding color or typo
 - **Hero:** Full-viewport centered layout with Spline 3D interactive robot scene, CPU circuit animation, large display text (`clamp(2.5rem, 6vw, 5.5rem)`), single clear CTA. Radial gradient overlay fading to content.
 - **Cards:** White background on tinted canvas (#F4F7FB), optional border (#DCE9F6), border-radius `--radius-xl` (16px). Hover: lift 2-4px, border → accent, shadow-md. Filter buttons with active glow state.
 - **Buttons:** Primary (Electric Blue bg, white text, `radius-lg`, dual-layer shadow with inset highlight), Secondary (outlined, border on hover → accent), Ghost (text only, accent color)
+- **Filters (Public):** Pill-shaped (`rounded-full`) category buttons inside a blurred container. Active: accent bg + glow shadow (`shadow-lg shadow-accent/20`), white text. Inactive: gray text, transparent bg, hover → accent.
+- **Filters (Admin):** Compact segmented tabs (`rounded-md`) inside `rounded-lg bg-gray-100` container. Active: white bg + shadow-sm. Inactive: gray text.
 - **Footer:** White/light background with `border-t border-[#E0EEFB]`. Mono labels for section headings, muted gray nav links, structured grid with multiple border-t dividers. CTA section with navy text and blue accent highlights.
 
 ### 8.3 Social Media Templates

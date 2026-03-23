@@ -710,6 +710,102 @@ The panel features a gradient top border (`bg-gradient-to-r from-transparent via
 
 The asymmetric corner radius (one small corner per message type) creates a visual "tail" that indicates message direction — a subtle conversational design detail.
 
+### 7.8 Filter & Tab Patterns
+
+Three filter patterns are used across the ALLONE system, each suited to a different context:
+
+**Category Filter Pills (Customer-Facing)**
+
+Used for project/service category filtering on public pages. Pill-shaped buttons with glow effect when active.
+
+```
+Container:
+  display: inline-flex flex-wrap
+  gap: 8px (gap-2)
+  background: transparent
+  backdrop-filter: blur(sm)
+  border-radius: 16px (rounded-2xl)
+  padding: 8px (p-2)
+  border: 1px solid var(--gray-300)
+
+Active pill:
+  padding: 8px 16px (px-4 py-2)
+  border-radius: 9999px (rounded-full)
+  font-size: 0.875rem (text-sm)
+  font-weight: 500 (medium)
+  background: var(--accent) (#0A68F5)
+  color: #FFFFFF
+  box-shadow: 0 10px 15px rgba(10, 104, 245, 0.2)  /* shadow-lg shadow-accent/20 */
+  transition: all 300ms
+
+Inactive pill:
+  padding: 8px 16px (px-4 py-2)
+  border-radius: 9999px (rounded-full)
+  font-size: 0.875rem (text-sm)
+  font-weight: 500 (medium)
+  color: var(--gray-600)
+  background: transparent
+  hover: bg-gray-100, text-accent
+  transition: all 300ms
+```
+
+Framer Motion: `whileHover={{ scale: 1.02 }}`, `whileTap={{ scale: 0.98 }}`, staggered entrance with 50ms delays.
+
+The accent glow shadow (`shadow-lg shadow-accent/20`) on the active pill is a key brand element — it makes the selected filter feel elevated and energized, consistent with the primary button treatment.
+
+**Compact Tab Filters (Admin/Internal)**
+
+Used in admin panels for status filtering. Segmented control style within a tinted container.
+
+```
+Container:
+  display: flex
+  border-radius: 8px (rounded-lg)
+  background: var(--gray-100)
+  padding: 2px (p-0.5)
+
+Active tab:
+  padding: 6px 12px (px-3 py-1.5)
+  font-size: 0.75rem (text-xs)
+  font-weight: 500 (medium)
+  border-radius: 6px (rounded-md)
+  background: #FFFFFF
+  color: var(--black)
+  box-shadow: shadow-sm
+
+Inactive tab:
+  padding: 6px 12px (px-3 py-1.5)
+  font-size: 0.75rem (text-xs)
+  font-weight: 500 (medium)
+  border-radius: 6px (rounded-md)
+  color: var(--gray-500)
+  hover: color var(--black)
+  transition: all
+```
+
+**Statistical Filter Cards (Dashboards)**
+
+Used for dashboard quick-filters that display counts alongside labels.
+
+```
+Active card:
+  padding: 12px (p-3)
+  border-radius: 8px (rounded-lg)
+  background: var(--black) (#000000)
+  color: #FFFFFF
+  Count: text-lg font-semibold
+  Label: text-xs text-white/70
+
+Inactive card:
+  padding: 12px (p-3)
+  border-radius: 8px (rounded-lg)
+  background: #FFFFFF
+  border: 1px solid var(--gray-200)
+  hover: border-gray-400
+  Count: text-lg font-semibold
+  Label: text-xs text-gray-500
+```
+
 ---
 
 ## 8. Photography & Imagery
