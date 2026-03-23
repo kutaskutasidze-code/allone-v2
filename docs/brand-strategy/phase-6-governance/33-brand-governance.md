@@ -5,8 +5,8 @@
 | Field | Value |
 |---|---|
 | **Document** | ALLONE Brand Governance Manual |
-| **Version** | 1.0 |
-| **Effective Date** | March 2026 |
+| **Version** | 2.0 |
+| **Effective Date** | March 2026 (Updated) |
 | **Owner** | ALLONE Brand & Creative Team |
 | **Review Cycle** | Annual (next review: March 2027) |
 | **Classification** | Internal — All Team Members, Partners, Vendors |
@@ -182,18 +182,18 @@ The primary palette carries the core brand identity. These three colors appear i
 | Role | Color | Hex | RGB | Usage |
 |---|---|---|---|---|
 | **Electric Blue (Accent)** | Brand accent, CTAs, active states, links | `#0A68F5` | 10, 104, 245 | Interactive elements, emphasis, brand moments |
-| **Deep Navy (Text)** | Primary text, headings, dark UI elements | `#071D2F` | 7, 29, 47 | All body text, headings, dark backgrounds |
-| **Pure White (Background)** | Primary background, breathing space | `#FFFFFF` | 255, 255, 255 | Page backgrounds, card backgrounds, white space |
+| **Deep Navy (Text)** | Primary text, headings, dark UI elements | `#071D2F` | 7, 29, 47 | All body text, headings, structural elements |
+| **Cool Canvas (Background)** | Primary background, page canvas | `#F4F7FB` | 244, 247, 251 | Page backgrounds, tinted canvas |
 
 ### 4.2 Secondary Palette: Surface Colors
 
-Surface colors create depth and hierarchy without introducing new hues. They are tinted variations of the primary blue, maintaining visual coherence.
+ALLONE uses an **inverted layering model**: the page background is a cool-tinted canvas (#F4F7FB), while elevated elements — cards, panels, inputs — use pure white (#FFFFFF). This creates natural depth through background contrast alone, reducing the need for shadows and borders.
 
 | Role | Hex | RGB | Usage |
 |---|---|---|---|
-| **Surface Lightest** | `#F8FAFE` | 248, 250, 254 | Subtle section differentiation, hover states |
-| **Surface Light** | `#F1F6FB` | 241, 246, 251 | Card backgrounds, input fields, secondary sections |
-| **Surface Medium** | `#E0EEFB` | 224, 238, 251 | Active states, selected items, highlighted sections |
+| **Surface (White)** | `#FFFFFF` | 255, 255, 255 | Card backgrounds, elevated sections, panels |
+| **Surface-2 (White)** | `#FFFFFF` | 255, 255, 255 | Nested cards, secondary panels |
+| **Surface-3 (White)** | `#FFFFFF` | 255, 255, 255 | Active states, selected items |
 
 ### 4.3 Supporting Colors
 
@@ -225,20 +225,20 @@ The Electric Blue accent has an 11-stop scale for UI flexibility. This scale is 
 | 200 | `#BFDBFE` | `--accent-200` | Borders, dividers on dark |
 | 300 | `#93C5FD` | `--accent-300` | Icons, secondary elements |
 | 400 | `#60A5FA` | `--accent-400` | Charts, data visualization |
-| 500 | `#3B82F6` | `--accent-500` | Near-primary, alternate accent |
-| 600 | `#0A68F5` | `--accent-600` | **Primary accent** (brand blue) |
-| 700 | `#0550C7` | `--accent-700` | Hover states on primary |
-| 800 | `#073E9B` | `--accent-800` | Active/pressed states |
-| 900 | `#063578` | `--accent-900` | Dark mode accent |
+| 500 | `#0A68F5` | `--accent-500` | **Primary accent** (Electric Blue) |
+| 600 | `#0B5CD6` | `--accent-600` | Hover states on primary |
+| 700 | `#0950B8` | `--accent-700` | Pressed/active states |
+| 800 | `#074499` | `--accent-800` | Deep accent, dark UI elements |
+| 900 | `#05387B` | `--accent-900` | Deep accent for high-contrast needs |
 | 950 | `#032557` | `--accent-950` | Darkest accent, text on light |
 
 ### 4.6 Color Ratios
 
 The 60/25/10/5 ratio governs color distribution across any ALLONE design:
 
-- **60% — White / Light surfaces:** The dominant visual field. White space is not empty space; it is active breathing room that gives the brand its clarity.
+- **60% — Cool Canvas (#F4F7FB) + White surfaces:** The dominant visual field. The tinted canvas provides the base, with white cards and panels creating layered depth. Together they form the expansive breathing room that defines Cold Clarity.
 - **25% — Deep Navy text and dark elements:** Headlines, body copy, navigation, and structural elements. Navy provides the weight and authority.
-- **10% — Surface tints and borders:** The secondary palette creates subtle depth without competing with content. These are the quiet workhorses of the layout.
+- **10% — Borders and structural elements:** Border colors (#DCE9F6, #E8EEF4) create subtle separation without competing with content. These are the quiet workhorses of the layout.
 - **5% — Electric Blue accent:** The accent is powerful precisely because it is scarce. CTAs, active states, key data points, and brand moments. If more than 5% of a layout is Electric Blue, the accent loses its power.
 
 This ratio applies to overall page composition, not to individual components. A button can be 100% Electric Blue — but the page it sits on should still maintain the 60/25/10/5 distribution.
@@ -249,14 +249,15 @@ All color combinations must meet WCAG 2.1 AA standards at minimum:
 
 | Combination | Contrast Ratio | WCAG Rating | Status |
 |---|---|---|---|
-| #071D2F on #FFFFFF | 16.75:1 | AAA | Approved |
-| #0A68F5 on #FFFFFF | 4.58:1 | AA (normal text) | Approved |
-| #FFFFFF on #0A68F5 | 4.58:1 | AA (normal text) | Approved |
+| #071D2F on #FFFFFF | 16.75:1 | AAA | Approved — primary text on cards |
+| #071D2F on #F4F7FB | ~15.5:1 | AAA | Approved — primary text on canvas |
+| #0A68F5 on #FFFFFF | 4.58:1 | AA (normal text) | Approved — accent on cards |
+| #0A68F5 on #F4F7FB | ~4.3:1 | AA (large text only) | Use at 18px+ or 14px bold on canvas |
+| #FFFFFF on #0A68F5 | 4.58:1 | AA (normal text) | Approved — white on accent buttons |
 | #FFFFFF on #071D2F | 16.75:1 | AAA | Approved |
 | #7E8A97 on #FFFFFF | 4.03:1 | AA (large text only) | Approved for muted/secondary text at 14px+ |
-| #0A68F5 on #F8FAFE | 4.38:1 | AA (large text only) | Use at 18px+ or 14px bold |
 
-When placing text on surface colors, always verify contrast. The Surface Medium (#E0EEFB) has reduced contrast with both Electric Blue and Muted text — use Deep Navy text on medium surfaces.
+When placing text directly on the canvas (#F4F7FB), Deep Navy text maintains AAA compliance. Electric Blue accent text on canvas should be used at 18px+ to maintain AA compliance. Muted text (#7E8A97) on canvas has reduced contrast — prefer placing muted text on white surface cards.
 
 Never rely on color alone to convey information. Always pair color with text labels, icons, or patterns.
 
@@ -460,41 +461,51 @@ Custom icons may be created for service-specific or product-specific needs, but 
 The website (allone.ge) implements the brand through CSS custom properties defined in `globals.css` and exposed via Tailwind's `@theme inline` directive. Key tokens:
 
 ```
---color-bg:         #FFFFFF
---color-surface-1:  #F8FAFE
---color-surface-2:  #F1F6FB
---color-surface-3:  #E0EEFB
---color-accent:     #0A68F5
---color-text:       #071D2F
---color-muted:      #7E8A97
---color-border:     #DCE9F6
---color-success:    #22C55E
---color-warning:    #EAB308
---color-error:      #EF4444
+--background:       #F4F7FB    /* Cool canvas (page bg) */
+--surface:          #FFFFFF    /* Cards, panels (elevated) */
+--surface-2:        #FFFFFF
+--surface-3:        #FFFFFF
+--accent:           #0A68F5    /* Electric Blue (stop 500) */
+--accent-hover:     #0B5CD6    /* Hover state (stop 600) */
+--accent-light:     rgba(10, 104, 245, 0.08)
+--text:             #071D2F
+--heading:          #071D2F
+--muted:            #7E8A97
+--border:           #DCE9F6
+--border-light:     #E8EEF4
+--success:          #22C55E
+--warning:          #EAB308
+--error:            #EF4444
 
---font-display:     'General Sans', sans-serif
---font-body:        'Plus Jakarta Sans', sans-serif
---font-mono:        'JetBrains Mono', monospace
+--font-display:     'General Sans', system-ui, sans-serif
+--font-body:        'Plus Jakarta Sans', system-ui, sans-serif
+--font-mono:        'JetBrains Mono', ui-monospace, monospace
 
 --radius-sm:        6px
---radius-md:        12px
---radius-lg:        16px
---radius-full:      9999px
+--radius-md:        8px
+--radius-lg:        12px
+--radius-xl:        16px
+--radius-2xl:       20px
 
---shadow-sm:        0 1px 2px rgba(7, 29, 47, 0.04)
---shadow-md:        0 4px 12px rgba(7, 29, 47, 0.06)
---shadow-lg:        0 8px 24px rgba(7, 29, 47, 0.08)
+--section-gap:      8rem       /* 128px between major sections */
+--section-py:       6rem       /* 96px section padding */
+--content-gap:      3rem       /* 48px internal spacing */
+
+--ease-out:         cubic-bezier(0.16, 1, 0.3, 1)
+--ease-in-out:      cubic-bezier(0.65, 0, 0.35, 1)
+--ease-expo:        cubic-bezier(0.87, 0, 0.13, 1)
 ```
 
 All components must reference these tokens rather than hard-coding color or typography values.
 
 ### 8.2 Website Component Patterns
 
-- **Navbar:** Floating island pill shape with glass-blur effect, `rounded-full`, centered or left-aligned logo, right-aligned navigation
-- **Hero:** Centered layout with Spline 3D interactive scene, large display text, single clear CTA
-- **Cards:** White background, subtle border (#DCE9F6), border-radius `--radius-md` (12px), shadow on hover
-- **Buttons:** Primary (Electric Blue bg, white text, rounded-full), Secondary (outlined, Deep Navy border), Ghost (text only with hover underline)
-- **Footer:** Dark navy (#071D2F) contrast anchor, white text, structured grid layout
+- **Navbar/Dock:** Fixed-bottom floating pill island with glass-blur effect (`bg-white/50 backdrop-blur-xl`), `rounded-full`, centered. Contains icon nav (mobile) or text links (desktop), language toggle, and AI chat button. Animates between navigation and chat modes via Framer Motion springs.
+- **AI Chat:** Panel expands upward from dock (`bg-white/80 backdrop-blur-2xl`, `rounded-2xl`). User messages: navy bg, white text, `rounded-2xl rounded-br-sm`. Assistant messages: tinted bg, `rounded-2xl rounded-tl-sm`.
+- **Hero:** Full-viewport centered layout with Spline 3D interactive robot scene, CPU circuit animation, large display text (`clamp(2.5rem, 6vw, 5.5rem)`), single clear CTA. Radial gradient overlay fading to content.
+- **Cards:** White background on tinted canvas (#F4F7FB), optional border (#DCE9F6), border-radius `--radius-xl` (16px). Hover: lift 2-4px, border → accent, shadow-md. Filter buttons with active glow state.
+- **Buttons:** Primary (Electric Blue bg, white text, `radius-lg`, dual-layer shadow with inset highlight), Secondary (outlined, border on hover → accent), Ghost (text only, accent color)
+- **Footer:** White/light background with `border-t border-[#E0EEFB]`. Mono labels for section headings, muted gray nav links, structured grid with multiple border-t dividers. CTA section with navy text and blue accent highlights.
 
 ### 8.3 Social Media Templates
 
@@ -891,7 +902,7 @@ The brand guidelines should be updated (outside the annual cycle) when any of th
 | Version | Date | Changes | Approved By |
 |---|---|---|---|
 | v1.0 | March 2026 | Initial brand governance manual | Brand Owner |
-| — | — | — | — |
+| v2.0 | March 2026 | Updated to match live website: inverted surface model (#F4F7FB canvas + white surfaces), corrected accent scale (primary at 500), light footer, new components (AI Chat dock, CPU animation, ShineBorder, Lenis scroll), updated spacing tokens, button shadow system | Brand Owner |
 
 Future versions will be logged here. Each update must include a summary of changes, the rationale, and the approver. When a new major version is issued, all team members and vendors must be notified and given 30 days to transition materials to the new standards.
 
@@ -919,7 +930,8 @@ For daily use, keep these essentials accessible:
 |---|---|
 | **Primary Blue** | #0A68F5 |
 | **Text Color** | #071D2F |
-| **Background** | #FFFFFF |
+| **Background (Canvas)** | #F4F7FB |
+| **Surface (Cards)** | #FFFFFF |
 | **Muted Text** | #7E8A97 |
 | **Border** | #DCE9F6 |
 | **Display Font** | General Sans |
@@ -940,4 +952,4 @@ For brand questions, approval requests, or to report brand misuse:
 
 ---
 
-*This document is version 1.0 of the ALLONE Brand Governance Manual. It is a living document that will be updated as the brand evolves. All team members are responsible for understanding and applying these guidelines. When in doubt, refer to the Cold Clarity principle: clean without sterile, precise without mechanical, intelligent without intimidating.*
+*This document is version 2.0 of the ALLONE Brand Governance Manual. It is a living document that will be updated as the brand evolves. All team members are responsible for understanding and applying these guidelines. When in doubt, refer to the Cold Clarity principle: clean without sterile, precise without mechanical, intelligent without intimidating.*

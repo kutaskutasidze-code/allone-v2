@@ -1,9 +1,9 @@
 # 15. Visual Identity System
 
 **Document:** ALLONE Visual Identity Specification
-**Version:** 1.0
+**Version:** 2.0
 **Date:** March 2026
-**Status:** Active
+**Status:** Active — Updated to reflect current website implementation
 **Domain:** allone.ge
 
 ---
@@ -28,7 +28,7 @@
 
 ALLONE's visual identity operates under a design philosophy we call **Cold Clarity** — a system built on ultra-clean surfaces, high-contrast relationships, and deliberate precision at every level. This is not minimalism for the sake of emptiness. It is minimalism as a form of respect: respect for the user's attention, respect for the information being communicated, and respect for the craft of building software that actually works.
 
-Cold Clarity draws from Apple's tradition of invisible design — where the interface disappears and the content speaks. But where Apple often warms its palette with photography and gradients, ALLONE leans colder: pure white backgrounds, tinted blue surfaces, and a single electric accent that cuts through the quiet. The result is a brand that feels engineered rather than decorated, precise rather than playful, trustworthy rather than trendy.
+Cold Clarity draws from Apple's tradition of invisible design — where the interface disappears and the content speaks. But where Apple often warms its palette with photography and gradients, ALLONE leans colder: a cool-tinted canvas (#F4F7FB), crisp white elevated surfaces, and a single electric accent that cuts through the quiet. The layering model is inverted from the conventional approach — instead of white backgrounds with tinted cards, ALLONE places white cards and panels on a subtly tinted page, creating natural depth without relying on shadows. The result is a brand that feels engineered rather than decorated, precise rather than playful, trustworthy rather than trendy.
 
 ### Core Tenets
 
@@ -134,19 +134,21 @@ The ALLONE color system is built on a foundation of three roles: **background**,
 
 | Role        | Name           | Hex       | RGB              | Usage                                  |
 |-------------|----------------|-----------|------------------|----------------------------------------|
-| Background  | White          | `#FFFFFF` | `255, 255, 255`  | Page background, primary canvas        |
+| Background  | Cool Canvas    | `#F4F7FB` | `244, 247, 251`  | Page background, primary canvas        |
 | Text        | Dark Navy      | `#071D2F` | `7, 29, 47`      | Headings, body text, primary foreground |
 | Accent      | Electric Blue  | `#0A68F5` | `10, 104, 245`   | Links, CTAs, interactive elements, brand mark |
 
 ### 3.2 Surface Colors
 
-Surfaces provide subtle depth without resorting to shadows. Each surface level adds a slight blue tint to the white background, creating layered card and section backgrounds.
+The ALLONE surface model uses an **inverted layering approach**: the page background is a subtle cool tint (#F4F7FB), and elevated elements — cards, panels, modals — use pure white (#FFFFFF). This creates natural depth and separation without relying on heavy shadows. All three surface tokens resolve to white, providing a clean, bright surface that "lifts" off the tinted canvas.
 
 | Name       | Hex       | RGB              | Usage                                    |
 |------------|-----------|------------------|------------------------------------------|
-| Surface    | `#F8FAFE` | `248, 250, 254`  | Card backgrounds, elevated sections      |
-| Surface-2  | `#F1F6FB` | `241, 246, 251`  | Nested cards, secondary panels           |
-| Surface-3  | `#E0EEFB` | `224, 238, 251`  | Active states, selected items, highlights |
+| Surface    | `#FFFFFF` | `255, 255, 255`  | Card backgrounds, elevated sections      |
+| Surface-2  | `#FFFFFF` | `255, 255, 255`  | Nested cards, secondary panels           |
+| Surface-3  | `#FFFFFF` | `255, 255, 255`  | Active states, selected items, highlights |
+
+> **Design rationale:** The previous system (v1.0) used a white page with blue-tinted surfaces. The inverted model is superior because it eliminates the need for border or shadow on every card — the background contrast alone provides definition. White cards on a tinted canvas feel cleaner and more modern.
 
 ### 3.3 Border Colors
 
@@ -177,12 +179,14 @@ The full accent scale provides 11 stops from near-white to near-black, all deriv
 | 200  | `#BFDBFE` | `191, 219, 254`  | Accent borders, focus rings             |
 | 300  | `#93C5FD` | `147, 197, 253`  | Decorative accents                      |
 | 400  | `#60A5FA` | `96, 165, 250`   | Hover accent on dark backgrounds        |
-| 500  | `#3B82F6` | `59, 130, 246`   | Mid-range accent                        |
-| 600  | `#0A68F5` | `10, 104, 245`   | **Primary accent** (Electric Blue)      |
-| 700  | `#0B5CD6` | `11, 92, 214`    | Hover state for primary accent          |
-| 800  | `#1E40AF` | `30, 64, 175`    | Pressed/active state                    |
-| 900  | `#1E3A8A` | `30, 58, 138`    | Deep accent for high-contrast needs     |
+| 500  | `#0A68F5` | `10, 104, 245`   | **Primary accent** (Electric Blue)      |
+| 600  | `#0B5CD6` | `11, 92, 214`    | Hover state for primary accent          |
+| 700  | `#0950B8` | `9, 80, 184`     | Pressed/active state                    |
+| 800  | `#074499` | `7, 68, 153`     | Deep accent, dark UI elements           |
+| 900  | `#05387B` | `5, 56, 123`     | Deep accent for high-contrast needs     |
 | 950  | `#032557` | `3, 37, 87`      | Darkest accent, near-black tinted       |
+
+> **Note:** The primary accent sits at the 500 stop. The `--accent` and `--accent-hover` CSS variables map to stops 500 (#0A68F5) and 600 (#0B5CD6) respectively.
 
 ### 3.6 Semantic Colors
 
@@ -196,15 +200,19 @@ Semantic colors communicate system states. They are used exclusively for feedbac
 
 Semantic colors should never be used as background fills for large areas. They appear as text color, icon color, border color on input fields, and small indicator elements (badges, dots, toast notifications).
 
-### 3.7 Footer / Dark Context
+### 3.7 Footer / Light Context
 
-The footer and any dark-themed sections use Dark Navy (#071D2F) as the background color. In this context:
+The footer uses a white/light background with a top border (`border-t border-[#E0EEFB]`) that visually anchors the page bottom while maintaining the light, open feel of the Cold Clarity system.
 
-- Text becomes #FFFFFF (white) or rgba(255, 255, 255, 0.7) for muted
-- Accent remains #0A68F5 (Electric Blue) — it achieves 3.9:1 contrast against dark navy, suitable for large text and interactive elements
-- For small body text on dark navy, use #FFFFFF for maximum legibility
-- Borders become rgba(255, 255, 255, 0.1) — subtle white separators
-- Surface equivalents are not defined for dark mode; dark sections should remain flat
+- Background: White (#FFFFFF), matching the surface/card treatment
+- Top border: `#E0EEFB` — a single clean horizontal rule separating footer from content
+- Navigation links: Muted gray `#7E8A97`, hover → Dark Navy `#071D2F`
+- Copyright text: Light gray `#B0BAC5`
+- Section labels: JetBrains Mono uppercase, 11px, tracking-widest, accent color
+- CTA section within footer: Dark Navy `#071D2F` text with Electric Blue accent highlights
+- Vertical rhythm: Multiple `border-t` dividers create structured section breaks within the footer
+
+> **Design rationale:** The previous dark navy footer created a heavy visual anchor. The light footer maintains the airy, expansive quality of Cold Clarity throughout the entire page, while the top border and internal dividers provide sufficient structural definition.
 
 ### 3.8 Accessibility Notes
 
@@ -305,11 +313,13 @@ The radius scale is intentionally restrained. The smallest radius (6px) is just 
 
 | Token             | Value                       | Usage                              |
 |-------------------|-----------------------------|------------------------------------|
-| `--section-gap`   | `clamp(5rem, 12vw, 10rem)` | Vertical gap between major sections |
-| `--container-max` | 1200px (implied)            | Maximum content width              |
-| `--container-padding` | 1.5rem (mobile), 2rem (desktop) | Horizontal page gutters    |
+| `--section-gap`   | `8rem` (128px)              | Vertical gap between major sections |
+| `--section-py`    | `6rem` (96px)               | Section padding top/bottom         |
+| `--content-gap`   | `3rem` (48px)               | Internal spacing within sections   |
+| `--container-max` | 1280px (max-w-7xl)          | Maximum content width              |
+| `--container-padding` | `clamp(1rem, 5vw, 2rem)` | Responsive horizontal page gutters |
 
-The section gap uses a fluid clamp that scales from 80px on mobile to 160px on large desktop. This aggressive spacing is a hallmark of Cold Clarity — it creates unmistakable separation between content sections, forcing the user to process one section completely before encountering the next.
+The spacing system uses fixed values rather than fluid scaling, providing predictable vertical rhythm across all viewport sizes. Individual sections apply responsive padding via `clamp()` functions in their Tailwind classes (e.g., `py-[clamp(4rem,8vw,8rem)]`). The generous 128px section gap is a hallmark of Cold Clarity — it creates unmistakable separation between content sections, forcing the user to process one section completely before encountering the next.
 
 Internal spacing within components follows a 4px base grid: 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96. Component padding typically uses 16px (tight), 24px (default), or 32px (generous).
 
@@ -391,11 +401,12 @@ The standard scroll-triggered entrance animation. Elements rise from below while
 **Blur Reveal**
 ```
 opacity: 0 → 1
-filter: blur(10px) → blur(0)
-duration: 600ms
+filter: blur(12px) → blur(0)
+transform: translateY(8px) → translateY(0)
+duration: 800ms
 easing: ease-out
 ```
-A signature ALLONE animation. Elements appear from a blurred state into sharp focus. This is used for hero headlines and high-impact text, reinforcing the "clarity" concept — content literally comes into focus.
+A signature ALLONE animation. Elements appear from a blurred state into sharp focus with a subtle vertical shift. This is used for hero headlines and high-impact text, reinforcing the "clarity" concept — content literally comes into focus.
 
 **Line Reveal**
 ```
@@ -417,23 +428,42 @@ A continuous shimmer effect for loading skeletons and placeholder content. The g
 **Float**
 ```
 transform: translateY(0) → translateY(-10px) → translateY(0)
-duration: 3000ms
-easing: ease-in-out
+duration: 6000ms
+easing: linear
 iteration: infinite
 ```
-A gentle vertical oscillation for 3D elements, decorative graphics, or the Spline robot scene. The slow, continuous motion adds life to static layouts without being distracting.
+A gentle vertical oscillation for 3D elements, decorative graphics, or the Spline robot scene. The slow 6-second linear cycle creates an imperceptibly smooth drift that adds life to static layouts without being distracting.
 
 **Pulse Glow**
 ```
-box-shadow: 0 0 0 rgba(10,104,245,0) → 0 0 20px rgba(10,104,245,0.3) → 0 0 0 rgba(10,104,245,0)
+box-shadow: 0 0 20px rgba(10,104,245,0.15) → 0 0 40px rgba(10,104,245,0.3) → 0 0 20px rgba(10,104,245,0.15)
 duration: 2000ms
 easing: ease-in-out
 iteration: infinite
 ```
-A pulsing glow effect used on primary CTA buttons during key moments (e.g., pricing pages, consultation booking). The glow uses the Electric Blue accent color at 30% opacity, creating a subtle attention magnet.
+A pulsing glow effect used on primary CTA buttons during key moments (e.g., pricing pages, consultation booking). The glow oscillates between 15% and 30% opacity, creating a subtle, breathing attention magnet.
+
+**Shine Pulse**
+```
+background-position: 0% 0% → 100% 100% → 0% 0%
+duration: 8000ms
+easing: linear
+iteration: infinite
+```
+A slow background position animation used for ShineBorder and premium card effects. Creates a subtle traveling highlight.
 
 **Logo Scroll**
 A horizontal scrolling animation for client logo marquees. Logos scroll continuously from right to left at a constant velocity, with seamless looping achieved by duplicating the logo set.
+
+**Count Up**
+```
+opacity: 0 → 1
+transform: translateY(10px) → translateY(0)
+```
+A subtle entrance for numerical statistics and counters — less dramatic than fade-in-up, appropriate for data elements.
+
+**CPU Circuit Animation**
+A network of 14 independent path-based animations (`.cpu-line-1` through `.cpu-line-14`) using CSS `offset-path`. Small orbs travel along circuit-board-style paths with staggered durations (2s–3.2s) and delays, creating an organic, alive feeling. Orbs fade in at 8%, hold at 85% until 70%, then fade out to 0 at 100% offset-distance. This animation represents ALLONE's AI-native identity — a living circuit metaphor.
 
 ### 6.4 Stagger Pattern
 
@@ -462,6 +492,40 @@ For elements that require 3D transforms (the Spline robot scene, card tilt effec
 
 3D effects are used sparingly and always serve the hero section or interactive showcase elements. They should never appear in standard content sections.
 
+### 6.7 Smooth Scrolling (Lenis)
+
+The website uses Lenis for smooth, physics-based scrolling. Lenis provides a natural, weighted scroll feel without the jitter of native smooth-scroll CSS. Configuration:
+
+```css
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto; }
+```
+
+Lenis scroll is disabled during modal/overlay interactions and respects `prefers-reduced-motion`.
+
+### 6.8 Spring Physics (Framer Motion)
+
+Interactive element transitions use spring-based physics rather than duration-based easing for more natural, responsive motion:
+
+| Context | Stiffness | Damping | Usage |
+|---------|-----------|---------|-------|
+| Layout shifts | 200–400 | 24–30 | Navbar mode switches, panel transitions |
+| Interactive hover | 300 | 20 | Card interactions, button states |
+| Chat dock width | 200 | 24 | Expanding/collapsing AI chat |
+
+Springs provide velocity-aware motion — fast inputs produce fast responses, slow inputs produce gentle transitions. This is more natural than fixed-duration easing curves.
+
+### 6.9 ShineBorder Effect
+
+A premium card embellishment using a rotating conic gradient:
+
+```
+border-image: conic-gradient(from 0deg, transparent 0 340deg, #0A68F5 360deg)
+animation: shine 8s linear infinite
+```
+
+The ShineBorder creates a subtle traveling highlight around card edges, drawing attention without competing with content. Used sparingly on featured cards, active states, or promotional elements.
+
 ---
 
 ## 7. UI Component Patterns
@@ -476,20 +540,16 @@ padding: 12px 28px
 border-radius: 12px (radius-lg)
 font-family: 'Plus Jakarta Sans'
 font-weight: 600
-font-size: 15px
-box-shadow: 0 4px 15px rgba(10, 104, 245, 0.25)
-transition: all 200ms ease-out
+font-size: 0.875rem (14px)
+box-shadow: 0 1px 3px rgba(10, 104, 245, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)
+transition: all 200ms ease
 
 Hover:
   background: #0B5CD6 (accent-hover)
-  box-shadow: 0 6px 20px rgba(10, 104, 245, 0.35)
+  box-shadow: 0 4px 12px rgba(10, 104, 245, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)
   transform: translateY(-1px)
-
-Active:
-  transform: translateY(0)
-  box-shadow: 0 2px 8px rgba(10, 104, 245, 0.2)
 ```
-The primary button is the most prominent interactive element on any page. The accent glow shadow creates a subtle halo effect that makes the button "float" above the surface. On hover, the shadow intensifies and the button lifts by 1px, creating a tactile response.
+The primary button uses a dual-layer shadow: an outer accent glow plus an inset top highlight that creates a subtle 3D bevel effect. This makes the button feel tangible and clickable. On hover, the outer shadow deepens and the button lifts by 1px, while the inset highlight remains constant.
 
 **Secondary Button**
 ```
@@ -558,7 +618,7 @@ Cards use `radius-xl` (16px) to differentiate them from smaller interactive elem
 background: rgba(255, 255, 255, 0.7)
 backdrop-filter: blur(20px)
 -webkit-backdrop-filter: blur(20px)
-border: 1px solid rgba(255, 255, 255, 0.2)
+border: 1px solid var(--border)  /* #DCE9F6 */
 ```
 
 **Glass Strong**
@@ -566,10 +626,10 @@ border: 1px solid rgba(255, 255, 255, 0.2)
 background: rgba(255, 255, 255, 0.85)
 backdrop-filter: blur(40px)
 -webkit-backdrop-filter: blur(40px)
-border: 1px solid rgba(255, 255, 255, 0.3)
+border: 1px solid var(--border)  /* #DCE9F6 */
 ```
 
-Glass effects are used for the floating navbar and overlay elements that sit above content. The standard glass (70% white, 20px blur) provides translucency that lets background content peek through while maintaining text legibility. Glass Strong (85% white, 40px blur) is used when the glass element contains dense text or interactive controls that require higher contrast.
+Glass effects are used for the floating navbar dock and overlay elements that sit above content. Both variants use the standard border color (#DCE9F6) rather than semi-transparent white borders — this ensures definition on the tinted background (#F4F7FB) where white borders would be invisible. The standard glass (70% white, 20px blur) provides translucency that lets the tinted canvas peek through while maintaining text legibility. Glass Strong (85% white, 40px blur) is used when the glass element contains dense text or interactive controls.
 
 Glass effects require hardware-accelerated rendering. On browsers or devices that do not support `backdrop-filter`, the fallback is a solid white background with reduced opacity: `background: rgba(255, 255, 255, 0.95)`.
 
@@ -616,6 +676,39 @@ border-radius: 6px (radius-sm)
 ```
 
 The monospace uppercase label is one of the most distinctive typographic elements in the ALLONE system. Its wide tracking (0.05em), small size, and Electric Blue color create a visual pattern that immediately reads as "category" or "metadata." This consistency allows users to quickly identify navigational markers and content classification across all pages.
+
+### 7.6 Floating Dock (Navigation)
+
+The primary navigation is a floating dock — a pill-shaped island fixed at the bottom center of the viewport:
+
+```
+background: bg-white/50
+backdrop-filter: blur(xl)
+border-radius: rounded-full (9999px)
+shadow: 0 8px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)
+padding: px-4 sm:px-5 py-1.5
+z-index: 50
+```
+
+The dock contains icon navigation (mobile) or text links (desktop), a language toggle, and an AI chat button. Active navigation items show a `bg-[#071D2F]/[0.05]` underlay with a subtle top glow indicator. The dock uses Framer Motion layout animations for smooth transitions between navigation and chat modes.
+
+### 7.7 AI Chat Panel
+
+When the AI chat button is activated, a chat panel expands upward from the dock:
+
+```
+background: bg-white/80
+backdrop-filter: blur(2xl)
+border-radius: rounded-2xl
+shadow: 0 8px 40px rgba(0,0,0,0.08)
+```
+
+The panel features a gradient top border (`bg-gradient-to-r from-transparent via-[#071D2F]/[0.08] to-transparent`) and two message styles:
+
+- **User messages:** Dark Navy bg (#071D2F), white text, `rounded-2xl rounded-br-sm`, padding `px-3.5 py-2.5`
+- **Assistant messages:** Tinted bg `#F4F7FB/60`, `rounded-2xl rounded-tl-sm`
+
+The asymmetric corner radius (one small corner per message type) creates a visual "tail" that indicates message direction — a subtle conversational design detail.
 
 ---
 
@@ -721,20 +814,23 @@ Consistency also means consistency across contexts. The brand should feel the sa
 
 ### Color Cheat Sheet
 ```
-White:       #FFFFFF
-Surface:     #F8FAFE
-Surface-2:   #F1F6FB
-Surface-3:   #E0EEFB
+Background:  #F4F7FB  (cool canvas)
+Surface:     #FFFFFF  (cards, panels — white on tinted bg)
+Surface-2:   #FFFFFF
+Surface-3:   #FFFFFF
 Border:      #DCE9F6
 Border-Lt:   #E8EEF4
 Text:        #071D2F
 Muted:       #7E8A97
-Accent:      #0A68F5
-Accent-Hov:  #0B5CD6
+Accent:      #0A68F5  (stop 500)
+Accent-Hov:  #0B5CD6  (stop 600)
+Accent-700:  #0950B8
+Accent-800:  #074499
+Accent-900:  #05387B
+Accent-950:  #032557
 Success:     #22C55E
 Warning:     #EAB308
 Error:       #EF4444
-Dark:        #071D2F
 ```
 
 ### Typography Cheat Sheet
