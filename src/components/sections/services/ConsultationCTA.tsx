@@ -35,23 +35,23 @@ export function ConsultationCTA() {
           <form
             action="/contact"
             method="GET"
-            className="rounded-2xl bg-white/40 backdrop-blur-xl border border-white/50 shadow-[0_8px_60px_rgba(0,0,0,0.06),0_0_0_1px_rgba(255,255,255,0.6)_inset] p-5 lg:p-6"
+            className="rounded-2xl bg-white/40  border border-white/50 shadow-[0_8px_60px_rgba(0,0,0,0.06),0_0_0_1px_rgba(255,255,255,0.6)_inset] p-5 lg:p-6"
           >
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">{t('services.consult.name')}</label>
-                <input type="text" name="name" placeholder={t('services.consult.name')} className="w-full h-9 px-3 rounded-lg bg-white/50 backdrop-blur-md border border-gray-200/60 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0A68F5]/40 focus:ring-1 focus:ring-[#0A68F5]/20 transition-all" />
+                <input type="text" name="name" placeholder={t('services.consult.name')} className="w-full h-9 px-3 rounded-lg bg-white/50  border border-gray-200/60 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0A68F5]/40 focus:ring-1 focus:ring-[#0A68F5]/20 transition-all" />
               </div>
               <div>
                 <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">{t('services.consult.email')}</label>
-                <input type="email" name="email" placeholder="you@company.com" className="w-full h-9 px-3 rounded-lg bg-white/50 backdrop-blur-md border border-gray-200/60 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0A68F5]/40 focus:ring-1 focus:ring-[#0A68F5]/20 transition-all" />
+                <input type="email" name="email" placeholder="you@company.com" className="w-full h-9 px-3 rounded-lg bg-white/50  border border-gray-200/60 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0A68F5]/40 focus:ring-1 focus:ring-[#0A68F5]/20 transition-all" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">{t('services.consult.phone')}</label>
-                <input type="tel" name="phone" placeholder="+995 5XX XXX XXX" className="w-full h-9 px-3 rounded-lg bg-white/50 backdrop-blur-md border border-gray-200/60 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0A68F5]/40 focus:ring-1 focus:ring-[#0A68F5]/20 transition-all" />
+                <input type="tel" name="phone" placeholder="+995 5XX XXX XXX" className="w-full h-9 px-3 rounded-lg bg-white/50  border border-gray-200/60 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0A68F5]/40 focus:ring-1 focus:ring-[#0A68F5]/20 transition-all" />
               </div>
               <div>
                 <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">{t('services.consult.looking')}</label>
@@ -75,7 +75,7 @@ export function ConsultationCTA() {
 
             <div className="mb-4">
               <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">{t('services.consult.message')} <span className="text-gray-400 normal-case tracking-normal">{t('services.consult.optional')}</span></label>
-              <textarea name="message" rows={2} className="w-full px-3 py-2 rounded-lg bg-white/50 backdrop-blur-md border border-gray-200/60 text-sm text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:border-[#0A68F5]/40 focus:ring-1 focus:ring-[#0A68F5]/20 transition-all" />
+              <textarea name="message" rows={2} className="w-full px-3 py-2 rounded-lg bg-white/50  border border-gray-200/60 text-sm text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:border-[#0A68F5]/40 focus:ring-1 focus:ring-[#0A68F5]/20 transition-all" />
             </div>
 
             <button type="submit" className="w-full h-10 rounded-lg bg-gray-900 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-[0_2px_12px_rgba(0,0,0,0.15)] hover:bg-gray-800 transition-colors">

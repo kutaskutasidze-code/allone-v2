@@ -31,16 +31,11 @@ export function WebDevShowcase() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <div className="sm:hidden w-[280px] h-[280px] bg-gray-800/[0.08] rounded-full blur-[50px]" />
       </div>
-      <div className="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+      <div className="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-transform" style={{ transform: 'translate(-50%, -50%) translate3d(0,0,0)', contain: 'layout style paint' }}>
         <div className="relative w-[1100px] h-[800px]">
-          {/* Large dark base */}
           <div className="absolute inset-[10%] bg-gray-900/[0.12] rounded-full blur-[150px]" />
-          {/* Layered depth */}
           <div className="absolute top-[15%] right-[10%] w-[450px] h-[450px] bg-gray-800/[0.1] rounded-full blur-[120px]" />
           <div className="absolute bottom-[15%] left-[15%] w-[400px] h-[400px] bg-gray-900/[0.08] rounded-full blur-[130px]" />
-          {/* Green accent — refined, not neon */}
-          <div className="absolute top-[40%] left-[30%] w-[300px] h-[300px] bg-emerald-600/[0.12] rounded-full blur-[100px]" />
-          <div className="absolute bottom-[25%] right-[25%] w-[200px] h-[200px] bg-emerald-500/[0.08] rounded-full blur-[80px]" />
         </div>
       </div>
 
@@ -84,7 +79,7 @@ export function WebDevShowcase() {
               {techStack.map((tech) => (
                 <div
                   key={tech.name}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/40 backdrop-blur-lg border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]"
                 >
                   <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: tech.color }} />
                   <span className="text-xs font-medium text-gray-700">{tech.name}</span>

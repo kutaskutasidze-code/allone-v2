@@ -27,7 +27,7 @@ const integrations = [
 /* ── Logo pill ── */
 function LogoPill({ name, color, svg }: { name: string; color?: string; svg: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/40 backdrop-blur-lg border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
       <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={color ? { color, backgroundColor: `${color}10` } : undefined}>
         {svg}
       </div>
@@ -47,12 +47,10 @@ export function ChatbotShowcase() {
         {/* Mobile: single lightweight glow */}
         <div className="sm:hidden w-[350px] h-[350px] bg-blue-400/30 rounded-full blur-[60px]" />
         {/* Desktop: full glow set */}
-        <div className="hidden sm:block relative w-[700px] h-[600px]">
+        <div className="hidden sm:block relative w-[700px] h-[600px] will-change-transform" style={{ transform: 'translate3d(0,0,0)', contain: 'layout style paint' }}>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/45 via-sky-300/40 to-blue-500/30 rounded-full blur-[90px]" />
           <div className="absolute top-10 -left-10 w-72 h-72 bg-blue-300/50 rounded-full blur-[70px]" />
           <div className="absolute -bottom-6 right-0 w-72 h-72 bg-sky-400/45 rounded-full blur-[80px]" />
-          <div className="absolute top-1/4 right-10 w-56 h-56 bg-indigo-300/35 rounded-full blur-[60px]" />
-          <div className="absolute bottom-1/4 -left-6 w-52 h-52 bg-blue-200/40 rounded-full blur-[50px]" />
         </div>
       </div>
 
@@ -130,7 +128,7 @@ export function ChatbotShowcase() {
               {integrations.map((integ) => (
                 <LogoPill key={integ.name} name={integ.name} svg={integ.svg} />
               ))}
-              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/30 backdrop-blur-lg border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/70 border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
                 <span className="text-xs font-medium text-gray-400">{t('services.chatbot.more')}</span>
               </div>
             </div>

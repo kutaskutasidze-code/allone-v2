@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
@@ -42,12 +41,13 @@ function Hero() {
         <div className="sm:hidden absolute inset-0 flex items-center justify-center">
           <div className="w-[300px] h-[150px] bg-blue-500/50 rounded-full blur-[60px]" />
         </div>
+        {/* Desktop: CSS-animated blobs (compositor thread, no JS per-frame) */}
         <div className="hidden sm:contents">
-          <motion.div className="absolute w-[700px] h-[200px] rounded-[50%]" style={{ backgroundColor: 'rgb(96,165,250)', opacity: 0.6, filter: 'blur(90px)', WebkitFilter: 'blur(90px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [-120, -60, -140, -80, -120], y: [0, -20, 15, -10, 0], scaleX: [1, 1.2, 0.95, 1.1, 1], opacity: [0.6, 0.5, 0.65, 0.55, 0.6] }} transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }} />
-          <motion.div className="absolute w-[600px] h-[180px] rounded-[50%]" style={{ backgroundColor: 'rgb(56,189,248)', opacity: 0.55, filter: 'blur(80px)', WebkitFilter: 'blur(80px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [80, 30, 120, 60, 80], y: [-10, 20, -15, 10, -10], scaleX: [1.1, 0.9, 1.15, 1, 1.1], opacity: [0.55, 0.65, 0.5, 0.6, 0.55] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
-          <motion.div className="absolute w-[650px] h-[170px] rounded-[50%]" style={{ backgroundColor: 'rgb(99,102,241)', opacity: 0.5, filter: 'blur(70px)', WebkitFilter: 'blur(70px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [0, 70, -50, 30, 0], y: [30, 10, 40, 15, 30], scaleX: [1, 1.15, 1.05, 1.2, 1], opacity: [0.5, 0.4, 0.55, 0.45, 0.5] }} transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }} />
-          <motion.div className="absolute w-[550px] h-[160px] rounded-[50%]" style={{ backgroundColor: 'rgb(14,165,233)', opacity: 0.55, filter: 'blur(80px)', WebkitFilter: 'blur(80px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [-30, 50, -60, 20, -30], y: [-25, -40, -15, -35, -25], scaleX: [1.05, 0.95, 1.1, 1, 1.05], opacity: [0.55, 0.6, 0.5, 0.55, 0.55] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }} />
-          <motion.div className="absolute w-[180px] h-[100px] rounded-[50%] z-20" style={{ backgroundColor: 'rgb(59,130,246)', opacity: 0.45, filter: 'blur(50px)', WebkitFilter: 'blur(50px)', transform: 'translate3d(0,0,0)' }} animate={{ x: [160, -160, 150, -140, 160], y: [-100, 100, -90, 80, -100], backgroundColor: ['rgb(59,130,246)', 'rgb(56,189,248)', 'rgb(99,102,241)', 'rgb(59,130,246)'], opacity: [0.45, 0.55, 0.35, 0.5, 0.45] }} transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }} />
+          <div className="absolute w-[700px] h-[200px] rounded-[50%] animate-[heroBlob1_14s_ease-in-out_infinite] will-change-transform" style={{ backgroundColor: 'rgb(96,165,250)', opacity: 0.6, filter: 'blur(90px)', WebkitFilter: 'blur(90px)' }} />
+          <div className="absolute w-[600px] h-[180px] rounded-[50%] animate-[heroBlob2_12s_ease-in-out_infinite] will-change-transform" style={{ backgroundColor: 'rgb(56,189,248)', opacity: 0.55, filter: 'blur(80px)', WebkitFilter: 'blur(80px)' }} />
+          <div className="absolute w-[650px] h-[170px] rounded-[50%] animate-[heroBlob3_16s_ease-in-out_infinite] will-change-transform" style={{ backgroundColor: 'rgb(99,102,241)', opacity: 0.5, filter: 'blur(70px)', WebkitFilter: 'blur(70px)' }} />
+          <div className="absolute w-[550px] h-[160px] rounded-[50%] animate-[heroBlob4_18s_ease-in-out_infinite] will-change-transform" style={{ backgroundColor: 'rgb(14,165,233)', opacity: 0.55, filter: 'blur(80px)', WebkitFilter: 'blur(80px)' }} />
+          <div className="absolute w-[180px] h-[100px] rounded-[50%] z-20 animate-[heroBlob5_12s_ease-in-out_infinite] will-change-transform" style={{ backgroundColor: 'rgb(59,130,246)', opacity: 0.45, filter: 'blur(50px)', WebkitFilter: 'blur(50px)' }} />
         </div>
         <div className="relative z-10">
           <Image src="/images/allone-logo-rounded.png" alt="allone" width={240} height={240} className="brightness-0 invert drop-shadow-[0_0_40px_rgba(255,255,255,0.3)] w-[160px] h-[160px] sm:w-[240px] sm:h-[240px]" priority />

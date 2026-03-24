@@ -84,9 +84,9 @@ export function ChatPlayback() {
   }, []);
 
   return (
-    <div className="w-full rounded-[20px] overflow-hidden bg-white/15 backdrop-blur-2xl border border-white/30 shadow-[0_8px_60px_rgba(0,0,0,0.08),0_0_0_1px_rgba(255,255,255,0.7)_inset,0_1px_0_rgba(255,255,255,0.9)_inset]">
+    <div className="w-full rounded-[20px] overflow-hidden bg-white/90 border border-white/30 shadow-[0_8px_60px_rgba(0,0,0,0.08),0_0_0_1px_rgba(255,255,255,0.7)_inset,0_1px_0_rgba(255,255,255,0.9)_inset]">
       {/* Header */}
-      <div className="px-4 py-3 bg-white/20 backdrop-blur-xl border-b border-white/40 flex items-center gap-3">
+      <div className="px-4 py-3 bg-gray-50/80 border-b border-white/40 flex items-center gap-3">
         <div className="flex gap-1.5">
           <span className="w-[10px] h-[10px] rounded-full bg-[#ff5f57]" />
           <span className="w-[10px] h-[10px] rounded-full bg-[#febc2e]" />
@@ -103,7 +103,7 @@ export function ChatPlayback() {
         {/* Welcome */}
         <div className="flex gap-2 items-end">
           <BotAvatar />
-          <div className="bg-white/40 backdrop-blur-lg rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-white/70">
+          <div className="bg-gray-50/90 rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/50">
             <p className="text-[13px] text-gray-700 leading-relaxed">Hi! How can I help you today?</p>
           </div>
         </div>
@@ -111,14 +111,14 @@ export function ChatPlayback() {
         {messages.map((msg, i) => (
           msg.type === 'user' ? (
             <div key={i} className="flex justify-end">
-              <div className="bg-gray-900/80 backdrop-blur-lg rounded-2xl rounded-br-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_12px_rgba(0,0,0,0.12)] border border-gray-800/30">
+              <div className="bg-gray-900/90 rounded-2xl rounded-br-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_12px_rgba(0,0,0,0.12)] border border-gray-800/30">
                 <p className="text-[13px] text-white leading-relaxed">{msg.text}</p>
               </div>
             </div>
           ) : (
             <div key={i} className="flex gap-2 items-end">
               <BotAvatar />
-              <div className="bg-white/40 backdrop-blur-lg rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-white/70">
+              <div className="bg-gray-50/90 rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/50">
                 <p className="text-[13px] text-gray-700 leading-relaxed">{msg.text}</p>
               </div>
             </div>
@@ -128,7 +128,7 @@ export function ChatPlayback() {
         {isTyping && (
           <div className="flex gap-2 items-end">
             <BotAvatar />
-            <div className="bg-white/40 backdrop-blur-lg rounded-2xl rounded-bl-md px-3.5 py-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-white/70">
+            <div className="bg-gray-50/90 rounded-2xl rounded-bl-md px-3.5 py-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-200/50">
               <div className="flex gap-1 items-center">
                 <span className="w-1.5 h-1.5 bg-gray-400/60 rounded-full animate-pulse [animation-delay:0ms]" />
                 <span className="w-1.5 h-1.5 bg-gray-400/60 rounded-full animate-pulse [animation-delay:200ms]" />
@@ -140,8 +140,8 @@ export function ChatPlayback() {
       </div>
 
       {/* Input */}
-      <div className="px-3 py-2.5 bg-white/15 backdrop-blur-xl border-t border-white/40">
-        <div className="bg-white/25 backdrop-blur-lg rounded-xl flex items-center gap-2 px-3.5 py-2 min-h-[38px] border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.03)_inset]">
+      <div className="px-3 py-2.5 bg-gray-50/60 border-t border-gray-200/40">
+        <div className="bg-white/80 rounded-xl flex items-center gap-2 px-3.5 py-2 min-h-[38px] border border-gray-200/50 shadow-[0_1px_4px_rgba(0,0,0,0.03)_inset]">
           <div className="flex-1 min-w-0 flex items-center">
             {currentInput ? (
               <span className="text-[13px] text-gray-800 break-words leading-relaxed">{currentInput}</span>
@@ -150,7 +150,7 @@ export function ChatPlayback() {
             )}
           </div>
           <motion.button
-            className="w-7 h-7 rounded-lg bg-gray-900/80 backdrop-blur-sm flex items-center justify-center flex-shrink-0 shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+            className="w-7 h-7 rounded-lg bg-gray-900/90 flex items-center justify-center flex-shrink-0 shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
             animate={isSending ? { scale: [1, 0.85, 1] } : {}}
             transition={{ duration: 0.15, ease: 'easeOut' }}
           >

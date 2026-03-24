@@ -21,10 +21,9 @@ export function DashboardShowcase() {
       {/* Blue gradient glow — simplified on mobile */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/4 -translate-y-1/2 pointer-events-none">
         <div className="sm:hidden w-[300px] h-[300px] bg-blue-400/25 rounded-full blur-[50px]" />
-        <div className="hidden sm:block relative w-[900px] h-[700px]">
+        <div className="hidden sm:block relative w-[900px] h-[700px] will-change-transform" style={{ transform: 'translate3d(0,0,0)', contain: 'layout style paint' }}>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/40 via-sky-300/35 to-blue-500/25 rounded-full blur-[100px]" />
           <div className="absolute -top-10 right-20 w-72 h-72 bg-blue-300/45 rounded-full blur-[80px]" />
-          <div className="absolute bottom-10 left-10 w-80 h-80 bg-sky-400/40 rounded-full blur-[90px]" />
         </div>
       </div>
 
@@ -49,7 +48,7 @@ export function DashboardShowcase() {
 
             <div className="flex flex-wrap gap-2">
               {['n8n', 'Make', 'Zapier', 'Custom APIs', 'Webhooks'].map((tag) => (
-                <span key={tag} className="px-3 py-2 text-xs font-medium text-gray-500 rounded-xl bg-white/40 backdrop-blur-lg border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+                <span key={tag} className="px-3 py-2 text-xs font-medium text-gray-500 rounded-xl bg-white/80 border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
                   {tag}
                 </span>
               ))}
@@ -62,7 +61,7 @@ export function DashboardShowcase() {
               y: dashY,
               opacity: dashOpacity,
             }}
-            className="relative lg:-mr-48"
+            className="relative lg:-mr-48 will-change-transform"
           >
             {/* Glassy wrapper */}
             <div className="relative rounded-2xl overflow-hidden border border-white/40 shadow-[0_8px_60px_rgba(0,0,0,0.06),0_0_0_1px_rgba(255,255,255,0.6)_inset]">
