@@ -27,7 +27,7 @@ const integrations = [
 /* ── Logo pill ── */
 function LogoPill({ name, color, svg }: { name: string; color?: string; svg: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
+    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/40 backdrop-blur-lg border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
       <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={color ? { color, backgroundColor: `${color}10` } : undefined}>
         {svg}
       </div>
@@ -128,7 +128,7 @@ export function ChatbotShowcase() {
               {integrations.map((integ) => (
                 <LogoPill key={integ.name} name={integ.name} svg={integ.svg} />
               ))}
-              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/70 border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+              <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/30 backdrop-blur-lg border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
                 <span className="text-xs font-medium text-gray-400">{t('services.chatbot.more')}</span>
               </div>
             </div>

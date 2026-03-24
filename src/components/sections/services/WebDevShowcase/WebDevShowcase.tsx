@@ -79,7 +79,7 @@ export function WebDevShowcase() {
               {techStack.map((tech) => (
                 <div
                   key={tech.name}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/40 backdrop-blur-lg border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]"
                 >
                   <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: tech.color }} />
                   <span className="text-xs font-medium text-gray-700">{tech.name}</span>
