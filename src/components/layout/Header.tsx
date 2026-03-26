@@ -55,16 +55,6 @@ export function Header() {
   const pathname = usePathname();
   const isKa = lang === 'ka';
 
-  // Track if #services section is in viewport
-  const [servicesInView, setServicesInView] = useState(false);
-  useEffect(() => {
-    const el = document.getElementById('services');
-    if (!el) return;
-    const obs = new IntersectionObserver(([entry]) => setServicesInView(entry.isIntersecting), { threshold: 0.1 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [pathname]);
-
   // Mobile state
   const [isMobile, setIsMobile] = useState(false);
 
@@ -167,7 +157,7 @@ export function Header() {
 
   const navItems = [
     { name: 'Home', i18nKey: 'nav.home', href: '/', icon: IconHome },
-    { name: 'Services', i18nKey: 'nav.services', href: '/#services', icon: IconServices },
+    { name: 'Services', i18nKey: 'nav.services', href: '/services', icon: IconServices },
     { name: 'Work', i18nKey: 'nav.work', href: '/work', icon: IconWork },
     { name: 'Lab', i18nKey: 'nav.lab', href: '/lab', icon: IconLab },
   ];
@@ -261,19 +251,10 @@ export function Header() {
                 <>
                   {/* Mobile: icon nav */}
                   {navItems.map((item) => {
-                    const isActive = item.href === '/#services' ? (pathname === '/' && servicesInView) : item.href === '/' ? (pathname === '/' && !servicesInView) : pathname.startsWith(item.href);
+                    const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
                     const Icon = item.icon;
                     return (
-                      <Link key={item.name} href={item.href} onClick={(e) => {
-                        if (item.href === '/#services') {
-                          e.preventDefault();
-                          if (pathname === '/') {
-                            document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-                          } else {
-                            window.location.href = '/#services';
-                          }
-                        }
-                      }} className="relative w-10 h-10 flex items-center justify-center rounded-full">
+                      <Link key={item.name} href={item.href} className="relative w-10 h-10 flex items-center justify-center rounded-full">
                         {isActive && (
                           <motion.div
                             layoutId="dock-lamp"
@@ -320,7 +301,7 @@ export function Header() {
                   <div className="w-px h-5 bg-[#071D2F]/10 mx-1" />
 
                   {navItems.map((item) => {
-                    const isActive = item.href === '/#services' ? (pathname === '/' && servicesInView) : item.href === '/' ? (pathname === '/' && !servicesInView) : pathname.startsWith(item.href);
+                    const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
                     return (
                       <Link
                         key={item.name}
