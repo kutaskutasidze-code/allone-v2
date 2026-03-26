@@ -14,7 +14,6 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideFooter = pathname === '/services';
   const hideCta = pathname.startsWith('/lab') || pathname === '/work' || pathname === '/';
 
   return (
@@ -25,7 +24,7 @@ export default function MainLayout({
             <SmoothScroll>
               <Header />
               <main className="min-h-screen relative">{children}</main>
-              {!hideFooter && <Footer hideCta={hideCta} />}
+              <Footer hideCta={hideCta} />
             </SmoothScroll>
           </ErrorBoundary>
         </ChatProvider>
