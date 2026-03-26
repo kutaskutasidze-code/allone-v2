@@ -31,7 +31,7 @@ export function WebDevShowcase() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <div className="sm:hidden w-[280px] h-[280px] bg-gray-800/[0.08] rounded-full blur-[50px]" />
       </div>
-      <div className="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-transform" style={{ transform: 'translate(-50%, -50%) translate3d(0,0,0)', contain: 'layout style paint' }}>
+      <div className="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-transform" style={{ transform: 'translate(-50%, -50%) translate3d(0,0,0)', contain: 'layout style' }}>
         <div className="relative w-[1100px] h-[800px]">
           <div className="absolute inset-[10%] bg-gray-900/[0.12] rounded-full blur-[150px]" />
           <div className="absolute top-[15%] right-[10%] w-[450px] h-[450px] bg-gray-800/[0.1] rounded-full blur-[120px]" />

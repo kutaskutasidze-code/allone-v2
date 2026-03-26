@@ -47,7 +47,7 @@ export function ChatbotShowcase() {
         {/* Mobile: single lightweight glow */}
         <div className="sm:hidden w-[350px] h-[350px] bg-blue-400/30 rounded-full blur-[60px]" />
         {/* Desktop: full glow set */}
-        <div className="hidden sm:block relative w-[700px] h-[600px] will-change-transform" style={{ transform: 'translate3d(0,0,0)', contain: 'layout style paint' }}>
+        <div className="hidden sm:block relative w-[700px] h-[600px] will-change-transform" style={{ transform: 'translate3d(0,0,0)', contain: 'layout style' }}>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/45 via-sky-300/40 to-blue-500/30 rounded-full blur-[90px]" />
           <div className="absolute top-10 -left-10 w-72 h-72 bg-blue-300/50 rounded-full blur-[70px]" />
           <div className="absolute -bottom-6 right-0 w-72 h-72 bg-sky-400/45 rounded-full blur-[80px]" />
