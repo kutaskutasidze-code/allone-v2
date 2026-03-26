@@ -207,9 +207,9 @@ export const contactFormSchema = z.object({
     .max(100)
     .default('other'),
   message: z.string()
-    .min(10, 'Message must be at least 10 characters')
     .max(5000, 'Message too long')
-    .transform(s => s.trim()),
+    .transform(s => s.trim())
+    .default(''),
 });
 
 // ============================================
