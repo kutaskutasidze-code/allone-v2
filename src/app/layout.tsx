@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   publisher: 'ALLONE',
   category: 'Technology',
   icons: {
-    icon: '/favicon.svg',
+    icon: '/favicon-32.png',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
