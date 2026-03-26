@@ -5,33 +5,12 @@ import Image from 'next/image';
 import { Container } from './Container';
 import { useI18n } from '@/lib/i18n';
 
-export function Footer({ hideCta = false }: { hideCta?: boolean }) {
+export function Footer() {
   const { t } = useI18n();
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-white border-t border-[#E0EEFB]">
-      {/* CTA Section */}
-      {!hideCta && <Container>
-        <div className="py-[clamp(3rem,6vw,5rem)] text-center">
-          <p className="font-mono text-[11px] text-[#7E8A97] tracking-widest uppercase mb-3">{t('footer.cta.label')}</p>
-          <h2 className="text-2xl lg:text-3xl font-semibold text-[#071D2F] leading-[1.1] tracking-[-0.03em] mb-2">
-            {t('footer.cta.title1')} <span className="text-[#0A68F5]">{t('footer.cta.title2')}</span>
-          </h2>
-          <p className="text-[#7E8A97] text-sm max-w-md mx-auto mb-6">
-            {t('footer.cta.desc')}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/contact" className="btn-primary text-sm px-6 py-2.5">
-              {t('footer.cta.start')}
-            </Link>
-            <Link href="/services" className="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold text-[#071D2F] border border-[#DCE9F6] rounded-[var(--radius-lg)] hover:border-[#0A68F5] hover:bg-[#F8FAFE] transition-all duration-200">
-              {t('footer.cta.services')}
-            </Link>
-          </div>
-        </div>
-      </Container>}
-
       {/* Links Grid */}
       <div className="border-t border-[#E0EEFB]">
         <Container>

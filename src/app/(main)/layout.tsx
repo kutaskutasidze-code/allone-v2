@@ -6,16 +6,11 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ChatProvider } from '@/components/chat';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
 import { I18nProvider } from '@/lib/i18n';
-import { usePathname } from 'next/navigation';
-
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const hideCta = pathname.startsWith('/lab') || pathname === '/work' || pathname === '/';
-
   return (
     <I18nProvider>
       <ContactInfoProvider>
@@ -24,7 +19,7 @@ export default function MainLayout({
             <SmoothScroll>
               <Header />
               <main className="min-h-screen relative">{children}</main>
-              <Footer hideCta={hideCta} />
+              <Footer />
             </SmoothScroll>
           </ErrorBoundary>
         </ChatProvider>
