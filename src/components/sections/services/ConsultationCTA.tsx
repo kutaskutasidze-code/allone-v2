@@ -6,7 +6,7 @@ import { useI18n } from '@/lib/i18n';
 export function ConsultationCTA() {
   const { t } = useI18n();
   return (
-    <section className="relative py-12 lg:py-16 overflow-x-clip">
+    <section id="consulting" className="relative py-12 lg:py-16 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/30 to-transparent pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-6">

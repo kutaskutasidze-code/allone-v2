@@ -40,7 +40,7 @@ function LogoPill({ name, color, svg }: { name: string; color?: string; svg: Rea
 export function ChatbotShowcase() {
   const { t } = useI18n();
   return (
-    <section className="relative pt-10 pb-24 lg:pt-14 lg:pb-32 overflow-x-clip">
+    <section id="chatbots" className="relative pt-10 pb-24 lg:pt-14 lg:pb-32 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/30 to-white pointer-events-none" />
       {/* Blue gradient glow — simplified on mobile */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">

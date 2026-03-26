@@ -78,16 +78,16 @@ export function Footer({ hideCta = false }: { hideCta?: boolean }) {
                 {t('footer.services')}
               </p>
               <nav className="space-y-2.5">
-                <Link href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                <Link href="/services#chatbots" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.chatbots')}
                 </Link>
-                <Link href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                <Link href="/services#web-development" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.webdev')}
                 </Link>
-                <Link href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                <Link href="/services#automation" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.automation')}
                 </Link>
-                <Link href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                <Link href="/services#consulting" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.consulting')}
                 </Link>
               </nav>

@@ -15,7 +15,7 @@ export function DashboardShowcase() {
   const dashOpacity = useTransform(scrollYProgress, [0.1, 0.25], [0, 1]);
 
   return (
-    <section ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
+    <section id="automation" ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/30 pointer-events-none" />
 
       {/* Blue gradient glow — simplified on mobile */}

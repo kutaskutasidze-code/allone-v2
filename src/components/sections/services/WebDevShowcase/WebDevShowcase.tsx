@@ -26,7 +26,7 @@ export function WebDevShowcase() {
   const entryOpacity = useTransform(scrollYProgress, [0.1, 0.22], [0, 1]);
 
   return (
-    <section ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
+    <section id="web-development" ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
       {/* Glow — simplified on mobile */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
         <div className="sm:hidden w-[280px] h-[280px] bg-gray-800/[0.08] rounded-full blur-[50px]" />
