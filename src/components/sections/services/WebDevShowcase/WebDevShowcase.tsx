@@ -6,13 +6,7 @@ import { MacBookFrame } from './MacBookFrame';
 import { HeroPreview } from './HeroPreview';
 import { useI18n } from '@/lib/i18n';
 
-const techStack = [
-  { name: 'Next.js', color: '#000000' },
-  { name: 'React', color: '#61DAFB' },
-  { name: 'TypeScript', color: '#3178C6' },
-  { name: 'Tailwind CSS', color: '#06B6D4' },
-  { name: 'Supabase', color: '#3FCF8E' },
-];
+const techStack: { name: string; color: string }[] = [];
 
 export function WebDevShowcase() {
   const { t } = useI18n();

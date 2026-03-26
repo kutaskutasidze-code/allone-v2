@@ -14,7 +14,7 @@ export function OrganizationSchema({
   url = 'https://allone.ge',
   logo = 'https://allone.ge/images/allone-logo.png',
   description = 'AI automation agency that converges all your systems into one intelligent layer. Custom AI solutions, workflow automation, intelligent chatbots, and modern website development for businesses worldwide.',
-  email = 'hello@allone.ge',
+  email = 'info@allonelabs.com',
   sameAs = [],
 }: OrganizationSchemaProps) {
   const schema = {

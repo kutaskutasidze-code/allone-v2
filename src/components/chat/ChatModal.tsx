@@ -375,7 +375,7 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
           msg.id === assistantId
             ? {
                 ...msg,
-                content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly at info@allone.ge",
+                content: "I'm sorry, I'm having trouble connecting right now. Please try again or contact us directly at info@allonelabs.com",
                 isStreaming: false
               }
             : msg

@@ -728,7 +728,7 @@ export default function PresentationPage() {
               <motion.div variants={fadeUp} className="flex gap-8 mt-10 text-[13px] text-[var(--muted)]">
                 <span>Tbilisi, Georgia</span>
                 <span>Brussels, Belgium</span>
-                <span>info@allone.ge</span>
+                <span>info@allonelabs.com</span>
               </motion.div>
             </motion.div>
           )}

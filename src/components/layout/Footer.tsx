@@ -79,10 +79,10 @@ export function Footer() {
               </p>
               <div className="space-y-2.5">
                 <a
-                  href="mailto:info@allone.ge"
+                  href="mailto:info@allonelabs.com"
                   className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200"
                 >
-                  info@allone.ge
+                  info@allonelabs.com
                 </a>
               </div>
             </div>

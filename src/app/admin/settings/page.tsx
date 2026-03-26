@@ -124,7 +124,7 @@ export default function SettingsPage() {
               type="email"
               value={formData.email || ''}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="info@allone.ge"
+              placeholder="info@allonelabs.com"
               required
               className="w-full px-0 py-2 text-sm bg-transparent border-0 border-b border-[var(--gray-200)] focus:border-[var(--black)] focus:outline-none transition-colors"
             />

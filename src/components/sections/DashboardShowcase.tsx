@@ -46,13 +46,7 @@ export function DashboardShowcase() {
               From lead scoring to invoice processing, we build custom workflows that run 24/7 — so your team focuses on what matters.
             </p>
 
-            <div className="flex flex-wrap gap-2">
-              {['n8n', 'Make', 'Zapier', 'Custom APIs', 'Webhooks'].map((tag) => (
-                <span key={tag} className="px-3 py-2 text-xs font-medium text-gray-500 rounded-xl bg-white/40 backdrop-blur-lg border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.04),0_0_0_1px_rgba(255,255,255,0.5)_inset]">
-                  {tag}
-                </span>
-              ))}
-            </div>
+            <div className="flex flex-wrap gap-2" />
           </motion.div>
 
           {/* Right — Dashboard zoomed in, overflowing right */}

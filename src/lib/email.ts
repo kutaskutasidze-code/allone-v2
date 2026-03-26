@@ -22,7 +22,7 @@ export async function sendEmail(data: EmailData): Promise<void> {
 
   const serviceLabel = getServiceLabel(data.service);
   const fromAddress = process.env.SMTP_FROM || 'ALLONE Website <onboarding@resend.dev>';
-  const toAddress = process.env.CONTACT_EMAIL || 'info@allone.ge';
+  const toAddress = process.env.CONTACT_EMAIL || 'info@allonelabs.com';
 
   const htmlContent = `
     <!DOCTYPE html>

@@ -15,7 +15,7 @@ interface ContactInfoContextType {
 }
 
 const DEFAULT_CONTACT_INFO: ContactInfo = {
-  email: 'info@allone.ge',
+  email: 'info@allonelabs.com',
   location: 'San Francisco, CA',
   phone: null,
 };
