@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { CpuArchitecture } from '@/components/ui/CpuArchitecture';
 import { useI18n } from '@/lib/i18n';
 
 export function LabHero() {
@@ -15,15 +14,6 @@ export function LabHero() {
         </filter>
         <rect width="100%" height="100%" filter="url(#lab-noise)" />
       </svg>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.5, delay: 0.3 }}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      >
-        <CpuArchitecture className="h-[250vh] w-auto md:h-auto md:w-[350vw] opacity-90" />
-      </motion.div>
-
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
