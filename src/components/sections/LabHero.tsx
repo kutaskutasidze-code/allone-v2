@@ -2,16 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { CpuArchitecture } from '@/components/ui/CpuArchitecture';
-import { GradientBlobs } from '@/components/ui/GradientBlobs';
 import { useI18n } from '@/lib/i18n';
 
 export function LabHero() {
   const { t } = useI18n();
   return (
     <section className="relative flex items-center justify-center bg-white/90 pt-10 sm:pt-20 pb-32 lg:pt-24 lg:pb-40 overflow-hidden">
-      {/* Gradient blobs behind CPU architecture */}
-      <GradientBlobs variant="hero" />
-
       {/* Film grain noise overlay */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 opacity-[0.035]" xmlns="http://www.w3.org/2000/svg">
         <filter id="lab-noise">
