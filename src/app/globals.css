@@ -56,6 +56,7 @@ html.lenis, html.lenis body { height: auto; }
   --font-sans: var(--font-body);
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-heading: 'Space Grotesk', system-ui, sans-serif;
 
   /* Easing */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -192,6 +193,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .font-display {
   font-family: var(--font-display);
+}
+
+.font-heading {
+  font-family: var(--font-heading);
 }
 
 .font-body {
