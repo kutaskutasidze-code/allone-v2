@@ -4,10 +4,68 @@ import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { ChatPlayback } from '@/components/sections/services/ChatPlayback';
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { ChatPlaybackGlassy as ChatPlayback } from './ChatPlaybackGlassy';
+import { WebDevFloatingElements } from './WebDevFloatingElements';
 
-function TypeWriter({ text, delay = 0, onDone }: { text: string; delay?: number; onDone?: () => void }) {
+function useViewportDims() {
+  const [dims, setDims] = useState({ vw: typeof window !== 'undefined' ? window.innerWidth : 1200, vh: typeof window !== 'undefined' ? window.innerHeight : 800 });
+  useEffect(() => {
+    let rafId: number;
+    const update = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => setDims({ vw: window.innerWidth, vh: window.innerHeight }));
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => { window.removeEventListener('resize', update); cancelAnimationFrame(rafId); };
+  }, []);
+  return dims;
+}
+
+function AnimatedLine({ text, scrollYProgress, delay, exitRange }: { text: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number] }) {
+  const lineOpacity = useTransform(scrollYProgress, [0.12 + delay, 0.19 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
+  const lineY = useTransform(scrollYProgress, [0.12 + delay, 0.19 + delay, exitRange[0], exitRange[1]], [40, 0, 0, -30]);
+  const lineBlur = useTransform(scrollYProgress, [0.12 + delay, 0.19 + delay], [12, 0]);
+  const lineFilter = useTransform(lineBlur, (v) => `blur(${v}px)`);
+  return (
+    <motion.span
+      className="font-display text-[clamp(28px,4vw,44px)] font-medium text-[#071D2F] text-center leading-[1.2] tracking-[-0.03em] block"
+      style={{ opacity: lineOpacity, y: lineY, filter: lineFilter }}
+    >
+      {text}
+    </motion.span>
+  );
+}
+
+function AnimatedWord({ word, scrollYProgress, delay, exitRange }: { word: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number] }) {
+  const wordOpacity = useTransform(scrollYProgress, [0.16 + delay, 0.24 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
+  const wordY = useTransform(scrollYProgress, [0.16 + delay, 0.24 + delay], [40, 0]);
+  const wordBlur = useTransform(scrollYProgress, [0.16 + delay, 0.24 + delay], [12, 0]);
+  const wordFilter = useTransform(wordBlur, (v) => `blur(${v}px)`);
+  return (
+    <motion.span
+      className="font-mono text-[clamp(36px,6vw,72px)] font-medium uppercase tracking-widest leading-none inline-block"
+      style={{ color: '#071D2F', opacity: wordOpacity, y: wordY, filter: wordFilter }}
+    >
+      {word}
+    </motion.span>
+  );
+}
+
+function CornerBrackets({ size = 'md', color = 'border-[#0ea5e9]/40' }: { size?: 'sm' | 'md' | 'lg'; color?: string }) {
+  const s = size === 'sm' ? 'w-2.5 h-2.5' : size === 'lg' ? 'w-4 h-4' : 'w-3 h-3';
+  return (
+    <>
+      <div className={`absolute top-0 left-0 ${s} border-t border-l ${color}`} />
+      <div className={`absolute top-0 right-0 ${s} border-t border-r ${color}`} />
+      <div className={`absolute bottom-0 left-0 ${s} border-b border-l ${color}`} />
+      <div className={`absolute bottom-0 right-0 ${s} border-b border-r ${color}`} />
+    </>
+  );
+}
+
+function TypeWriter({ text, delay = 0 }: { text: string; delay?: number }) {
   const [displayed, setDisplayed] = useState(0);
   const [started, setStarted] = useState(false);
   const [showCursor, setShowCursor] = useState(false);
@@ -23,9 +81,7 @@ function TypeWriter({ text, delay = 0, onDone }: { text: string; delay?: number;
   useEffect(() => {
     if (!started || displayed >= text.length) {
       if (started && displayed >= text.length) {
-        // Hide cursor after typing finishes
         const hide = setTimeout(() => setShowCursor(false), 600);
-        onDone?.();
         return () => clearTimeout(hide);
       }
       return;
@@ -70,13 +126,13 @@ function MeshGradient() {
     let time = 50;
 
     const dpr = window.devicePixelRatio || 1;
-    let lastW = 0, lastH = 0;
+    let curW = 0, curH = 0;
 
     const resize = () => {
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
-      if (w > 0 && h > 0 && (w !== lastW || h !== lastH)) {
-        lastW = w; lastH = h;
+      if (w > 0 && h > 0 && (w !== curW || h !== curH)) {
+        curW = w; curH = h;
         canvas.width = w * dpr;
         canvas.height = h * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -85,91 +141,91 @@ function MeshGradient() {
     resize();
     window.addEventListener('resize', resize);
 
+    // Static color data — hoisted out of draw loop to avoid per-frame allocations
+    const blues: number[][] = [
+      [40, 160, 235, 0.45], [20, 130, 220, 0.4], [70, 190, 248, 0.42], [30, 145, 230, 0.4],
+      [85, 200, 250, 0.4], [50, 170, 240, 0.38], [60, 180, 245, 0.38], [95, 210, 252, 0.35],
+    ];
+    const accents = [
+      { color: [10, 80, 170, 0.18], r: 0.22 },
+      { color: [5, 65, 150, 0.15], r: 0.2 },
+      { color: [15, 95, 185, 0.14], r: 0.24 },
+    ];
+    const silvers = [
+      { color: [180, 190, 200, 0.2], r: 0.25 },
+      { color: [195, 205, 215, 0.18], r: 0.22 },
+      { color: [170, 180, 195, 0.15], r: 0.2 },
+    ];
+    const whiteColor = [255, 255, 255, 0.25];
+    // Pre-allocate points array (8 blues + 3 accents + 3 silvers + 5 whites = 19)
+    const points: { x: number; y: number; r: number; color: number[] }[] = Array.from({ length: 19 }, () => ({ x: 0, y: 0, r: 0, color: [0, 0, 0, 0] }));
+
+    const s = Math.sin;
+    const c = Math.cos;
+
     const draw = () => {
-      resize();
-      const w = canvas.offsetWidth;
-      const h = canvas.offsetHeight;
+      const w = curW;
+      const h = curH;
       if (w === 0 || h === 0) { animId = requestAnimationFrame(draw); return; }
       time += 0.008;
 
-      // White base
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, w, h);
 
-      const s = Math.sin;
-      const c = Math.cos;
       const t = time;
+      let idx = 0;
 
-      // Generate points with unique phase offsets so they're always spread out
-      const pts: { x: number; y: number; r: number; color: number[] }[] = [];
-      // Blues — 8 large points
-      const blueCount = 8;
-      for (let i = 0; i < blueCount; i++) {
-        const phase = (i / blueCount) * Math.PI * 2;
+      // Blues
+      for (let i = 0; i < 8; i++) {
+        const phase = (i / 8) * Math.PI * 2;
         const speed1 = 0.5 + (i % 3) * 0.15;
         const speed2 = 0.55 + (i % 4) * 0.12;
         const range = 0.42 + (i % 3) * 0.07;
-        const x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.3) * range * 0.5);
-        const y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.7) * range * 0.5);
-        const blues = [
-          [40, 160, 235, 0.45],   // medium sky
-          [20, 130, 220, 0.4],    // mid blue
-          [70, 190, 248, 0.42],   // light sky
-          [30, 145, 230, 0.4],    // cornflower
-          [85, 200, 250, 0.4],    // pale cyan
-          [50, 170, 240, 0.38],   // bright blue
-          [60, 180, 245, 0.38],   // sky
-          [95, 210, 252, 0.35],   // light cyan
-        ];
-        pts.push({ x, y, r: w * (0.35 + (i % 3) * 0.05), color: blues[i] });
+        const p = points[idx++];
+        p.x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.3) * range * 0.5);
+        p.y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.7) * range * 0.5);
+        p.r = w * (0.35 + (i % 3) * 0.05);
+        p.color = blues[i];
       }
 
-      // Darker accents for depth
-      const accents = [
-        { color: [10, 80, 170, 0.18], r: 0.22 },
-        { color: [5, 65, 150, 0.15], r: 0.2 },
-        { color: [15, 95, 185, 0.14], r: 0.24 },
-      ];
-
-      // Silver accents
-      const silvers = [
-        { color: [180, 190, 200, 0.2], r: 0.25 },
-        { color: [195, 205, 215, 0.18], r: 0.22 },
-        { color: [170, 180, 195, 0.15], r: 0.2 },
-      ];
+      // Accents
       for (let i = 0; i < accents.length; i++) {
         const phase = (i / accents.length) * Math.PI * 2 + 1.2;
         const speed1 = 0.35 + (i % 2) * 0.15;
         const speed2 = 0.4 + (i % 2) * 0.1;
         const range = 0.25 + (i % 2) * 0.05;
-        const x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.4) * range * 0.35);
-        const y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.9) * range * 0.35);
-        pts.push({ x, y, r: w * accents[i].r, color: accents[i].color });
+        const p = points[idx++];
+        p.x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.4) * range * 0.35);
+        p.y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.9) * range * 0.35);
+        p.r = w * accents[i].r;
+        p.color = accents[i].color;
       }
 
-      // Silver points
+      // Silvers
       for (let i = 0; i < silvers.length; i++) {
         const phase = (i / silvers.length) * Math.PI * 2 + 2.5;
         const speed1 = 0.45 + (i % 2) * 0.12;
         const speed2 = 0.5 + (i % 2) * 0.1;
         const range = 0.25 + (i % 2) * 0.06;
-        const x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.3) * range * 0.35);
-        const y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.9) * range * 0.35);
-        pts.push({ x, y, r: w * silvers[i].r, color: silvers[i].color });
+        const p = points[idx++];
+        p.x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.3) * range * 0.35);
+        p.y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.9) * range * 0.35);
+        p.r = w * silvers[i].r;
+        p.color = silvers[i].color;
       }
 
-      // Moving whites
-      const whiteCount = 5;
-      for (let i = 0; i < whiteCount; i++) {
-        const phase = (i / whiteCount) * Math.PI * 2 + 0.5;
+      // Whites
+      for (let i = 0; i < 5; i++) {
+        const phase = (i / 5) * Math.PI * 2 + 0.5;
         const speed1 = 0.4 + (i % 3) * 0.1;
         const speed2 = 0.45 + (i % 2) * 0.12;
         const range = 0.28 + (i % 3) * 0.05;
-        const x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.5) * range * 0.4);
-        const y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.8) * range * 0.4);
-        pts.push({ x, y, r: w * 0.3, color: [255, 255, 255, 0.25] });
+        const p = points[idx++];
+        p.x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.5) * range * 0.4);
+        p.y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.8) * range * 0.4);
+        p.r = w * 0.3;
+        p.color = whiteColor;
       }
-      const points = pts;
 
       for (const p of points) {
         const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
@@ -202,19 +258,7 @@ function MeshGradient() {
 function Hero() {
   const { t } = useI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ vw: typeof window !== 'undefined' ? window.innerWidth : 1200, vh: typeof window !== 'undefined' ? window.innerHeight : 800 });
-
-  useEffect(() => {
-    const update = () => setDims({ vw: window.innerWidth, vh: window.innerHeight });
-    update();
-    window.addEventListener('resize', update);
-    // Also listen for orientation change on mobile
-    window.addEventListener('orientationchange', () => setTimeout(update, 100));
-    return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('orientationchange', update);
-    };
-  }, []);
+  const dims = useViewportDims();
 
   const headline1 = t('landing.hero.h1a');
   const headline2 = t('landing.hero.h1b');
@@ -230,11 +274,11 @@ function Hero() {
   const myStart = (dims.vh - startH) / 2;
 
   // Card expands → full screen → collapses back
-  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.85], [mxStart, -2, -2, mxStart]);
-  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.85], [myStart, -2, -2, -2]);
-  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.85], [myStart, -2, -2, dims.vh]);
-  const bgRadius = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.85], [16, 0, 0, 16]);
-  const borderOpacity = useTransform(scrollYProgress, [0, 0.15, 0.7, 0.85], [1, 0, 0, 1]);
+  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [mxStart, -2, -2, mxStart]);
+  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, -2]);
+  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, dims.vh]);
+  const bgRadius = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [16, 0, 0, 16]);
+  const borderOpacity = useTransform(scrollYProgress, [0, 0.15, 0.65, 0.78], [1, 0, 0, 1]);
 
   // Hero text: moves up and fades
   const textY = useTransform(scrollYProgress, [0, 0.25], [0, -120]);
@@ -244,7 +288,7 @@ function Hero() {
   const servicesY = useTransform(scrollYProgress, [0.25, 0.4, 0.6, 0.75], [dims.vh, 0, 0, -dims.vh]);
 
   return (
-    <div ref={sectionRef} className="relative h-[260vh]">
+    <div ref={sectionRef} className="relative h-[220vh]">
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       <motion.div
         className="fixed z-0 overflow-hidden"
@@ -307,6 +351,15 @@ function Hero() {
           </div>
         </motion.div>
 
+        {/* Tagline — line by line blur-deblur reveal */}
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none px-8">
+          <div className="flex flex-col items-center gap-2 max-w-[700px]">
+            <AnimatedLine text="We build AI-powered systems" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.28, 0.35]} />
+            <AnimatedLine text="that automate your business" scrollYProgress={scrollYProgress} delay={0.04} exitRange={[0.28, 0.35]} />
+            <AnimatedLine text="and let you focus on what matters." scrollYProgress={scrollYProgress} delay={0.08} exitRange={[0.28, 0.35]} />
+          </div>
+        </div>
+
         {/* Services — scrolls up from below */}
         <motion.div
           className="absolute left-0 right-0 top-0 z-10 flex items-center justify-center h-full"
@@ -317,45 +370,26 @@ function Hero() {
               <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-3 block">What we build</span>
               <h2 className="font-display text-3xl sm:text-4xl font-semibold text-[#071D2F] tracking-[-0.04em]">Solutions that work for you</h2>
             </div>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               {[
-                {
-                  num: '01',
-                  title: 'AI Chatbots',
-                  desc: 'Deploy intelligent conversational AI across every channel your customers use.',
-                  details: ['WhatsApp, Instagram, Telegram, Messenger', 'Natural language understanding', 'Multilingual support (EN, KA, RU)', 'CRM & helpdesk integrations', 'Lead qualification & routing', 'Analytics & conversation insights', '24/7 autonomous operation'],
-                },
-                {
-                  num: '02',
-                  title: 'Workflow Automation',
-                  desc: 'Eliminate manual work with intelligent pipelines that handle your operations.',
-                  details: ['Invoice & document processing', 'Lead scoring & enrichment', 'Email triage & auto-response', 'Data sync across platforms', 'Custom trigger & action logic', 'Error handling with smart retries', 'Real-time monitoring dashboard'],
-                },
-                {
-                  num: '03',
-                  title: 'Custom AI',
-                  desc: 'Purpose-built models trained on your data for decisions only you can make.',
-                  details: ['Fine-tuned language models', 'RAG with your knowledge base', 'Document extraction & OCR', 'Classification & categorization', 'Sentiment & intent analysis', 'Embedding search & similarity', 'Continuous learning pipelines'],
-                },
-                {
-                  num: '04',
-                  title: 'Web Development',
-                  desc: 'Modern, fast websites and apps engineered to convert and scale.',
-                  details: ['Next.js & React architecture', 'Sub-second load times', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design', 'Headless CMS setup'],
-                },
+                { num: '01', title: 'AI Chatbots', desc: 'Deploy intelligent conversational AI across every channel your customers use.', details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
+                { num: '02', title: 'Web Development', desc: 'Modern, fast websites and apps engineered to convert and scale.', details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
+                { num: '03', title: 'Workflow Automation', desc: 'Eliminate manual work with intelligent pipelines that handle your operations.', details: ['Invoice & document processing', 'Lead scoring & enrichment', 'Custom trigger & action logic', 'Data sync across platforms', 'Real-time monitoring dashboard'] },
               ].map((service) => (
                 <div
                   key={service.title}
-                  className="p-6 backdrop-blur-xl border border-white/30 transition-all duration-200 hover:-translate-y-1 hover:border-white/50 flex flex-col group"
+                  className="p-6 backdrop-blur-xl border border-white/30 flex flex-col group"
                   style={{
                     background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
                     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
                   }}
                 >
                   <span className="font-mono text-[10px] text-[#0ea5e9]/60 mb-3">{service.num}</span>
-                  <h3 className="font-display text-lg font-semibold text-[#071D2F] mb-2 tracking-[-0.02em]">{service.title}</h3>
-                  <p className="text-[13px] text-[#4D4D4D] leading-relaxed mb-5">{service.desc}</p>
-                  <div className="w-8 h-px bg-[#0ea5e9]/30 mb-5" />
+                  <div className="relative px-4 py-3 mb-5">
+                    <CornerBrackets />
+                    <h3 className="font-display text-xl lg:text-2xl font-semibold text-[#071D2F] mb-2 tracking-[-0.03em]">{service.title}</h3>
+                    <p className="text-[13px] text-[#4D4D4D] leading-relaxed">{service.desc}</p>
+                  </div>
                   <ul className="flex flex-col gap-2.5 mt-auto">
                     {service.details.map((detail) => (
                       <li key={detail} className="flex items-start gap-2.5 text-[12px] text-[#555] leading-snug">
@@ -369,6 +403,7 @@ function Hero() {
             </div>
           </div>
         </motion.div>
+
       </div>
     </div>
   );
@@ -406,114 +441,151 @@ function Pill({ name, color, icon }: { name: string; color?: string; icon: React
 
 function ChatbotSection() {
   const { t } = useI18n();
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const dims = useViewportDims();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // Cards split on scroll — no fade, just move off screen
+  const leftX = useTransform(scrollYProgress, [0.15, 0.3], [0, -dims.vw * 0.7]);
+  const rightX = useTransform(scrollYProgress, [0.15, 0.3], [0, dims.vw * 0.7]);
+
+  // Card container fades with the split
+  const cardContainerOpacity = useTransform(scrollYProgress, [0.15, 0.25], [1, 0]);
+
+  // Title moves up + shrinks
+  const titleY = useTransform(scrollYProgress, [0.35, 0.45], [0, -(dims.vh * 0.3)]);
+  const titleScale2 = useTransform(scrollYProgress, [0.35, 0.45], [1, 0.55]);
+
+  // Glassy frame appears and disappears
+  const frameOpacity = useTransform(scrollYProgress, [0.42, 0.5, 0.75, 0.82], [0, 1, 1, 0]);
+  const frameY2 = useTransform(scrollYProgress, [0.42, 0.5, 0.75, 0.82], [40, 0, 0, -30]);
+  const frameScale = useTransform(scrollYProgress, [0.75, 0.82], [1, 0.9]);
+
 
   return (
-    <section className="relative z-10 bg-white -mt-8">
-      {/* Single outer container with thin inner dividers */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-80px' }}
-        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        className="relative max-w-7xl mx-auto mx-6 overflow-hidden"
-        style={{
-          border: '1px solid rgba(14,165,233,0.25)',
-          boxShadow: '0 0 0 4px rgba(14,165,233,0.04), 0 25px 80px rgba(14,165,233,0.08), 0 8px 24px rgba(0,0,0,0.04)',
-          background: 'linear-gradient(160deg, #f0f9ff 0%, #e8f4fd 30%, #ffffff 60%, #f0f9ff 100%)',
-        }}
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-2">
-          {/* Left — Two stacked panels */}
-          <div className="flex flex-col">
-            {/* Channels */}
-            <motion.div
-              initial={{ opacity: 0, x: -80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="p-7 flex-1"
-              style={{ borderBottom: '1px solid rgba(14,165,233,0.2)' }}
-            >
-              <div className="flex items-baseline gap-3 mb-3">
-                <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">01</span>
-                <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.channels')}</span>
-              </div>
-              <h3 className="font-display text-base font-semibold text-[#071D2F] mb-1.5 tracking-[-0.02em] leading-[1.2]">
-                {t('services.chatbot.channels.h3a')}{' '}
-                {t('services.chatbot.channels.h3b')}
-              </h3>
-              <p className="text-[12px] text-[#4D4D4D]/70 leading-[1.6] mb-4">
-                {t('services.chatbot.channels.desc')}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {channelData.map((ch) => (
-                  <Pill key={ch.name} {...ch} />
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Integrations */}
-            <motion.div
-              initial={{ opacity: 0, x: -80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="p-7 flex-1"
-            >
-              <div className="flex items-baseline gap-3 mb-3">
-                <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">02</span>
-                <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.integrations')}</span>
-              </div>
-              <h3 className="font-display text-base font-semibold text-[#071D2F] mb-1.5 tracking-[-0.02em] leading-[1.2]">
-                {t('services.chatbot.integrations.h3a')}{' '}
-                {t('services.chatbot.integrations.h3b')}
-              </h3>
-              <p className="text-[12px] text-[#4D4D4D]/70 leading-[1.6] mb-4">
-                {t('services.chatbot.integrations.desc')}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {integrationData.map((integ) => (
-                  <Pill key={integ.name} {...integ} />
-                ))}
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Right — Title + Chatbot */}
+    <div ref={sectionRef} className="relative z-10 bg-white -mt-8">
+      <div className="relative h-[400vh]">
+        <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
+          {/* "Your Vision, Deployed." reveal — each word staggers in */}
           <motion.div
-            initial={{ opacity: 0, x: 80 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center justify-center px-6 lg:px-0 py-10"
-            style={{ borderLeft: '1px solid rgba(14,165,233,0.2)' }}
+            className="absolute inset-0 flex items-center justify-center z-0"
+            style={{ y: titleY }}
           >
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center mb-4"
+              className="flex items-center justify-center gap-[0.3em] flex-wrap"
+              style={{ scale: titleScale2 }}
             >
-              <h2 className="font-mono text-lg sm:text-xl font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>
-                AI Chatbots
-              </h2>
-              <p className="text-[12px] text-[#4D4D4D]/60 mt-1.5">Deploy on every channel, one brain behind it all</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-[360px]"
-            >
-              <ChatPlayback />
+              <AnimatedWord word="Your" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.75, 0.82]} />
+              <AnimatedWord word="Vision," scrollYProgress={scrollYProgress} delay={0.03} exitRange={[0.75, 0.82]} />
+              <AnimatedWord word="Deployed." scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.75, 0.82]} />
             </motion.div>
           </motion.div>
+
+          {/* Glassy frame — appears after title moves up */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center z-[5]pointer-events-none"
+            style={{ opacity: frameOpacity, y: frameY2, scale: frameScale }}
+          >
+            <div
+              className="max-w-[600px] w-full mx-6 p-8 backdrop-blur-xl border border-white/30 relative"
+              style={{
+                background: 'linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 40px rgba(0,0,0,0.04)',
+                marginTop: dims.vh * 0.15,
+              }}
+            >
+              {/* Blue glow behind frame */}
+              <div className="absolute -inset-6 -z-10 rounded-full bg-[#0ea5e9]/15 blur-[40px]" />
+              <CornerBrackets size="lg" />
+              <p className="text-center text-[15px] text-[#071D2F] leading-relaxed mb-6">
+                High-performance websites and web apps that convert visitors into customers. Built for speed, designed for impact.
+              </p>
+              <div className="flex justify-center gap-6 text-[12px] text-[#4D4D4D]/80 font-mono">
+                <span>Blazing fast</span>
+                <span className="text-[#0ea5e9]/30">|</span>
+                <span>SEO optimized</span>
+                <span className="text-[#0ea5e9]/30">|</span>
+                <span>Mobile first</span>
+                <span className="text-[#0ea5e9]/30">|</span>
+                <span>Fully responsive</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Floating UI elements */}
+          <div className="absolute inset-0 z-20 flex items-center justify-center"  style={{ pointerEvents: 'none' }}>
+            <WebDevFloatingElements scrollYProgress={scrollYProgress} />
+          </div>
+
+          {/* Chatbot cards — split apart on scroll */}
+          <motion.div
+            className="relative z-10 max-w-7xl w-full mx-6 lg:mx-auto"
+            style={{ opacity: cardContainerOpacity }}
+          >
+            <div
+              className="border border-[#0ea5e9]/25"
+              style={{
+                boxShadow: '0 25px 80px rgba(14,165,233,0.06), 0 8px 24px rgba(0,0,0,0.03)',
+                background: 'linear-gradient(160deg, #f0f9ff 0%, #e8f4fd 30%, #ffffff 60%, #f0f9ff 100%)',
+              }}
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2">
+                {/* Left — Channels + Integrations */}
+                <motion.div className="flex flex-col" style={{ x: leftX }}>
+                  <div className="relative p-7 flex-1 overflow-hidden border-b border-[#0ea5e9]/25">
+                    <div className="flex items-baseline gap-3 mb-3">
+                      <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">01</span>
+                      <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.channels')}</span>
+                    </div>
+                    <h3 className="font-display text-base font-semibold text-[#071D2F] mb-1.5 tracking-[-0.02em] leading-[1.2]">
+                      {t('services.chatbot.channels.h3a')}{' '}{t('services.chatbot.channels.h3b')}
+                    </h3>
+                    <p className="text-[12px] text-[#4D4D4D]/70 leading-[1.6] mb-4">{t('services.chatbot.channels.desc')}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {channelData.map((ch) => <Pill key={ch.name} {...ch} />)}
+                    </div>
+                  </div>
+                  <div className="relative p-7 flex-1 overflow-hidden">
+                    <div className="flex items-baseline gap-3 mb-3">
+                      <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">02</span>
+                      <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.integrations')}</span>
+                    </div>
+                    <h3 className="font-display text-base font-semibold text-[#071D2F] mb-1.5 tracking-[-0.02em] leading-[1.2]">
+                      {t('services.chatbot.integrations.h3a')}{' '}{t('services.chatbot.integrations.h3b')}
+                    </h3>
+                    <p className="text-[12px] text-[#4D4D4D]/70 leading-[1.6] mb-4">{t('services.chatbot.integrations.desc')}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {integrationData.map((integ) => <Pill key={integ.name} {...integ} />)}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Right — Title + Chatbot */}
+                <motion.div
+                  className="relative flex flex-col items-center justify-center px-6 lg:px-0 py-10 overflow-hidden border-l border-[#0ea5e9]/25"
+                  style={{ x: rightX }}
+                >
+                  <div className="relative z-10 text-center mb-4">
+                    <h2 className="font-mono text-lg sm:text-xl font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>
+                      AI Chatbots
+                    </h2>
+                    <p className="text-[12px] text-[#4D4D4D]/60 mt-1.5">Deploy on every channel, one brain behind it all</p>
+                  </div>
+                  <div className="relative z-10 w-full max-w-[360px]">
+                    <div className="absolute inset-6 -z-10 rounded-full bg-[#38bdf8]/35 blur-[15px]" />
+                    <ChatPlayback />
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-    </section>
+      </div>
+    </div>
   );
 }
 
