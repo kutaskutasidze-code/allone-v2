@@ -282,6 +282,7 @@ const elements = [
   },
 ];
 
+
 export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps) {
   return (
     <>
@@ -295,6 +296,7 @@ export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps
             y={el.y}
             w={el.w}
             rotate={el.rotate}
+            index={i}
           >
             {el.content}
           </FloatingElement>
@@ -304,38 +306,57 @@ export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps
   );
 }
 
-const EXIT_START = 0.75;
+const EXIT_START = 0.72;
+// Target slightly above textbox center
+const TEXTBOX_TARGET_Y = 30;
 
 function FloatingElement({
   scrollYProgress,
   baseEntry,
   x, y, w, rotate,
+  index,
   children,
 }: {
   scrollYProgress: MotionValue<number>;
   baseEntry: number;
   x: number; y: number; w: number; rotate: number;
+  index: number;
   children: React.ReactNode;
 }) {
+  const stagger = index * 0.008;
+  const exitStart = EXIT_START + stagger;
+
+  // Fade in, then vanish behind textbox at the end of collapse
   const opacity = useTransform(
     scrollYProgress,
-    [baseEntry, baseEntry + 0.04, EXIT_START + 0.04, EXIT_START + 0.12],
+    [baseEntry, baseEntry + 0.04, exitStart + 0.06, exitStart + 0.09],
     [0, 1, 1, 0]
+  );
+
+  // Move to textbox center
+  const collapseX = useTransform(
+    scrollYProgress,
+    [exitStart, exitStart + 0.10],
+    [0, -x]
   );
   const translateY = useTransform(
     scrollYProgress,
-    [baseEntry, baseEntry + 0.05, EXIT_START, EXIT_START + 0.08],
-    [30, 0, 0, -y * 0.8]
+    [baseEntry, baseEntry + 0.05, exitStart, exitStart + 0.10],
+    [30, 0, 0, TEXTBOX_TARGET_Y - y]
   );
-  const collapseX = useTransform(
-    scrollYProgress,
-    [EXIT_START, EXIT_START + 0.08],
-    [0, -x * 0.8]
-  );
+
+  // Scale down as they go behind
   const collapseScale = useTransform(
     scrollYProgress,
-    [EXIT_START, EXIT_START + 0.08],
-    [1, 0.3]
+    [exitStart, exitStart + 0.10],
+    [1, 0.4]
+  );
+
+  // Flatten rotation
+  const collapseRotate = useTransform(
+    scrollYProgress,
+    [exitStart, exitStart + 0.10],
+    [rotate, 0]
   );
 
   return (
@@ -351,7 +372,7 @@ function FloatingElement({
         y: translateY,
         x: collapseX,
         scale: collapseScale,
-        rotate,
+        rotate: collapseRotate,
         perspective: 600,
       }}
       whileHover={{

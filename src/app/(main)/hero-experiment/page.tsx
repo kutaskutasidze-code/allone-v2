@@ -460,10 +460,11 @@ function ChatbotSection() {
   const titleY = useTransform(scrollYProgress, [0.35, 0.45], [0, -(dims.vh * 0.3)]);
   const titleScale2 = useTransform(scrollYProgress, [0.35, 0.45], [1, 0.55]);
 
-  // Glassy frame appears and disappears
-  const frameOpacity = useTransform(scrollYProgress, [0.42, 0.5, 0.75, 0.82], [0, 1, 1, 0]);
-  const frameY2 = useTransform(scrollYProgress, [0.42, 0.5, 0.75, 0.82], [40, 0, 0, -30]);
-  const frameScale = useTransform(scrollYProgress, [0.75, 0.82], [1, 0.9]);
+  // Glassy text frame — stays visible while elements collapse behind it
+  const frameOpacity = useTransform(scrollYProgress, [0.42, 0.5, 0.85, 0.92], [0, 1, 1, 0]);
+  const frameY2 = useTransform(scrollYProgress, [0.42, 0.5, 0.85, 0.92], [40, 0, 0, -30]);
+  const frameScale = useTransform(scrollYProgress, [0.85, 0.92], [1, 0.9]);
+
 
 
   return (
@@ -476,18 +477,21 @@ function ChatbotSection() {
             style={{ y: titleY }}
           >
             <motion.div
-              className="flex items-center justify-center gap-[0.3em] flex-wrap"
+              className="flex flex-col items-center"
               style={{ scale: titleScale2 }}
             >
-              <AnimatedWord word="Your" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.75, 0.82]} />
-              <AnimatedWord word="Vision," scrollYProgress={scrollYProgress} delay={0.03} exitRange={[0.75, 0.82]} />
-              <AnimatedWord word="Deployed." scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.75, 0.82]} />
+              <div className="flex items-center justify-center gap-[0.5em] flex-wrap px-4">
+                <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.75, 0.82]} />
+                <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={0.03} exitRange={[0.75, 0.82]} />
+                <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.75, 0.82]} />
+                <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={0.09} exitRange={[0.75, 0.82]} />
+              </div>
             </motion.div>
           </motion.div>
 
-          {/* Glassy frame — appears after title moves up */}
+          {/* Glassy text frame — appears first, fades before folder */}
           <motion.div
-            className="absolute inset-0 flex items-center justify-center z-[5]pointer-events-none"
+            className="absolute inset-0 flex items-center justify-center z-[5] pointer-events-none"
             style={{ opacity: frameOpacity, y: frameY2, scale: frameScale }}
           >
             <div
@@ -498,7 +502,6 @@ function ChatbotSection() {
                 marginTop: dims.vh * 0.15,
               }}
             >
-              {/* Blue glow behind frame */}
               <div className="absolute -inset-6 -z-10 rounded-full bg-[#0ea5e9]/15 blur-[40px]" />
               <CornerBrackets size="lg" />
               <p className="text-center text-[15px] text-[#071D2F] leading-relaxed mb-6">
@@ -509,15 +512,13 @@ function ChatbotSection() {
                 <span className="text-[#0ea5e9]/30">|</span>
                 <span>SEO optimized</span>
                 <span className="text-[#0ea5e9]/30">|</span>
-                <span>Mobile first</span>
-                <span className="text-[#0ea5e9]/30">|</span>
                 <span>Fully responsive</span>
               </div>
             </div>
           </motion.div>
 
-          {/* Floating UI elements */}
-          <div className="absolute inset-0 z-20 flex items-center justify-center"  style={{ pointerEvents: 'none' }}>
+          {/* Floating UI elements — behind the textbox (lower z) */}
+          <div className="absolute inset-0 z-[3] flex items-center justify-center" style={{ pointerEvents: 'none' }}>
             <WebDevFloatingElements scrollYProgress={scrollYProgress} />
           </div>
 
