@@ -344,8 +344,15 @@ function AdminLeadsPageContent() {
                     type="number"
                     min={1}
                     max={totalPages}
-                    value={page}
-                    onChange={(e) => {
+                    defaultValue={page}
+                    key={page}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const v = parseInt((e.target as HTMLInputElement).value);
+                        if (v >= 1 && v <= totalPages) setPage(v);
+                      }
+                    }}
+                    onBlur={(e) => {
                       const v = parseInt(e.target.value);
                       if (v >= 1 && v <= totalPages) setPage(v);
                     }}
