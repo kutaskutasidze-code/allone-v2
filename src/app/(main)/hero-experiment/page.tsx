@@ -274,11 +274,13 @@ function Hero() {
   const startH = dims.vh * 0.65;
   const mxStart = (dims.vw - startW) / 2;
   const myStart = (dims.vh - startH) / 2;
+  // Extend past viewport edges to cover dynamic island / safe areas
+  const overExtend = -50;
 
   // Card expands → full screen → collapses back
-  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [mxStart, -2, -2, mxStart]);
-  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, -2]);
-  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, dims.vh]);
+  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [mxStart, overExtend, overExtend, mxStart]);
+  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, overExtend, overExtend, overExtend]);
+  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, overExtend, overExtend, dims.vh]);
   const bgRadius = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [16, 0, 0, 16]);
   const borderOpacity = useTransform(scrollYProgress, [0, 0.15, 0.65, 0.78], [1, 0, 0, 1]);
 
@@ -473,7 +475,7 @@ function ChatbotSection() {
   return (
     <div ref={sectionRef} className="relative z-10 bg-white -mt-8">
       <div className="relative h-[400vh]">
-        <div className="sticky top-0 h-screen flex items-start lg:items-center justify-center overflow-hidden pt-4 lg:pt-0 pb-16 lg:pb-0">
+        <div className="sticky top-0 h-screen flex items-start lg:items-center justify-center overflow-y-auto lg:overflow-hidden pt-4 lg:pt-0 pb-16 lg:pb-0">
           {/* "Your Vision, Deployed." reveal — each word staggers in */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center z-0"
