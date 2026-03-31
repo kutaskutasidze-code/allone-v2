@@ -291,8 +291,8 @@ export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps
     const update = () => {
       const w = window.innerWidth;
       setScale(Math.min(1, w / 1200));
-      // Show 4 on mobile/tablet, all 8 on desktop
-      setMaxElements(w < 1024 ? 4 : 8);
+      // Show 2 on mobile, 4 on tablet, all 8 on desktop
+      setMaxElements(w < 640 ? 2 : w < 1024 ? 4 : 8);
     };
     update();
     window.addEventListener('resize', update);

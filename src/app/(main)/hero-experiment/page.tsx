@@ -24,30 +24,30 @@ function useViewportDims() {
   return dims;
 }
 
-function AnimatedLine({ text, scrollYProgress, delay, exitRange }: { text: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number] }) {
+function AnimatedLine({ text, scrollYProgress, delay, exitRange, noBlur }: { text: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number]; noBlur?: boolean }) {
   const lineOpacity = useTransform(scrollYProgress, [0.12 + delay, 0.19 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
   const lineY = useTransform(scrollYProgress, [0.12 + delay, 0.19 + delay, exitRange[0], exitRange[1]], [40, 0, 0, -30]);
-  const lineBlur = useTransform(scrollYProgress, [0.12 + delay, 0.19 + delay], [12, 0]);
-  const lineFilter = useTransform(lineBlur, (v) => `blur(${v}px)`);
+  const lineBlur = useTransform(scrollYProgress, noBlur ? [0, 1] : [0.12 + delay, 0.19 + delay], noBlur ? [0, 0] : [12, 0]);
+  const lineFilter = useTransform(lineBlur, (v) => v === 0 ? 'none' : `blur(${v}px)`);
   return (
     <motion.span
       className="font-display text-[clamp(28px,4vw,44px)] font-medium text-[#071D2F] text-center leading-[1.2] tracking-[-0.03em] block"
-      style={{ opacity: lineOpacity, y: lineY, filter: lineFilter }}
+      style={{ opacity: lineOpacity, y: lineY, filter: noBlur ? undefined : lineFilter }}
     >
       {text}
     </motion.span>
   );
 }
 
-function AnimatedWord({ word, scrollYProgress, delay, exitRange }: { word: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number] }) {
+function AnimatedWord({ word, scrollYProgress, delay, exitRange, noBlur }: { word: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number]; noBlur?: boolean }) {
   const wordOpacity = useTransform(scrollYProgress, [0.16 + delay, 0.24 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
   const wordY = useTransform(scrollYProgress, [0.16 + delay, 0.24 + delay], [40, 0]);
-  const wordBlur = useTransform(scrollYProgress, [0.16 + delay, 0.24 + delay], [12, 0]);
-  const wordFilter = useTransform(wordBlur, (v) => `blur(${v}px)`);
+  const wordBlur = useTransform(scrollYProgress, noBlur ? [0, 1] : [0.16 + delay, 0.24 + delay], noBlur ? [0, 0] : [12, 0]);
+  const wordFilter = useTransform(wordBlur, (v) => v === 0 ? 'none' : `blur(${v}px)`);
   return (
     <motion.span
       className="font-mono text-[clamp(22px,6vw,72px)] font-medium uppercase tracking-wider lg:tracking-widest leading-none inline-block"
-      style={{ color: '#071D2F', opacity: wordOpacity, y: wordY, filter: wordFilter }}
+      style={{ color: '#071D2F', opacity: wordOpacity, y: wordY, filter: noBlur ? undefined : wordFilter }}
     >
       {word}
     </motion.span>
@@ -116,6 +116,7 @@ function TypeWriter({ text, delay = 0 }: { text: string; delay?: number }) {
 
 function MeshGradient() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -125,9 +126,19 @@ function MeshGradient() {
 
     let animId: number;
     let time = 50;
+    let isVisible = true;
 
-    const dpr = window.devicePixelRatio || 1;
+    // Cap DPR at 2 on mobile for performance
+    const isMobile = window.innerWidth < 1024;
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 3);
     let curW = 0, curH = 0;
+
+    // Pause animation when off-screen
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) animId = requestAnimationFrame(draw);
+    }, { threshold: 0 });
+    if (containerRef.current) observer.observe(containerRef.current);
 
     const resize = () => {
       const w = canvas.offsetWidth;
@@ -142,7 +153,13 @@ function MeshGradient() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Static color data — hoisted out of draw loop to avoid per-frame allocations
+    // On mobile, use fewer points (12 vs 19) for performance
+    const blueCount = isMobile ? 5 : 8;
+    const accentCount = isMobile ? 2 : 3;
+    const silverCount = isMobile ? 2 : 3;
+    const whiteCount = isMobile ? 3 : 5;
+    const totalPoints = blueCount + accentCount + silverCount + whiteCount;
+
     const blues: number[][] = [
       [40, 160, 235, 0.45], [20, 130, 220, 0.4], [70, 190, 248, 0.42], [30, 145, 230, 0.4],
       [85, 200, 250, 0.4], [50, 170, 240, 0.38], [60, 180, 245, 0.38], [95, 210, 252, 0.35],
@@ -158,13 +175,13 @@ function MeshGradient() {
       { color: [170, 180, 195, 0.15], r: 0.2 },
     ];
     const whiteColor = [255, 255, 255, 0.25];
-    // Pre-allocate points array (8 blues + 3 accents + 3 silvers + 5 whites = 19)
-    const points: { x: number; y: number; r: number; color: number[] }[] = Array.from({ length: 19 }, () => ({ x: 0, y: 0, r: 0, color: [0, 0, 0, 0] }));
+    const points: { x: number; y: number; r: number; color: number[] }[] = Array.from({ length: totalPoints }, () => ({ x: 0, y: 0, r: 0, color: [0, 0, 0, 0] }));
 
     const s = Math.sin;
     const c = Math.cos;
 
     const draw = () => {
+      if (!isVisible) return; // pause when off-screen
       const w = curW;
       const h = curH;
       if (w === 0 || h === 0) { animId = requestAnimationFrame(draw); return; }
@@ -174,11 +191,11 @@ function MeshGradient() {
       ctx.fillRect(0, 0, w, h);
 
       const t = time;
-      const dim = Math.max(w, h); // use larger dimension for radius so blobs stay big on mobile
+      const dim = Math.max(w, h);
       let idx = 0;
 
       // Blues
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < blueCount; i++) {
         const phase = (i / 8) * Math.PI * 2;
         const speed1 = 0.5 + (i % 3) * 0.15;
         const speed2 = 0.55 + (i % 4) * 0.12;
@@ -191,7 +208,7 @@ function MeshGradient() {
       }
 
       // Accents
-      for (let i = 0; i < accents.length; i++) {
+      for (let i = 0; i < accentCount; i++) {
         const phase = (i / accents.length) * Math.PI * 2 + 1.2;
         const speed1 = 0.35 + (i % 2) * 0.15;
         const speed2 = 0.4 + (i % 2) * 0.1;
@@ -204,7 +221,7 @@ function MeshGradient() {
       }
 
       // Silvers
-      for (let i = 0; i < silvers.length; i++) {
+      for (let i = 0; i < silverCount; i++) {
         const phase = (i / silvers.length) * Math.PI * 2 + 2.5;
         const speed1 = 0.45 + (i % 2) * 0.12;
         const speed2 = 0.5 + (i % 2) * 0.1;
@@ -217,8 +234,8 @@ function MeshGradient() {
       }
 
       // Whites
-      for (let i = 0; i < 5; i++) {
-        const phase = (i / 5) * Math.PI * 2 + 0.5;
+      for (let i = 0; i < whiteCount; i++) {
+        const phase = (i / whiteCount) * Math.PI * 2 + 0.5;
         const speed1 = 0.4 + (i % 3) * 0.1;
         const speed2 = 0.45 + (i % 2) * 0.12;
         const range = 0.28 + (i % 3) * 0.05;
@@ -246,14 +263,14 @@ function MeshGradient() {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
+      observer.disconnect();
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-    />
+    <div ref={containerRef} className="absolute inset-0">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+    </div>
   );
 }
 
@@ -280,6 +297,7 @@ function Hero() {
   const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, dims.vh]);
   const bgRadius = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [16, 0, 0, 16]);
   const borderOpacity = useTransform(scrollYProgress, [0, 0.15, 0.65, 0.78], [1, 0, 0, 1]);
+  const isMobileHero = dims.vw < 1024;
 
   // Hero text: moves up and fades
   const textY = useTransform(scrollYProgress, [0, 0.25], [0, -120]);
@@ -356,9 +374,9 @@ function Hero() {
         {/* Tagline — line by line blur-deblur reveal */}
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none px-8">
           <div className="flex flex-col items-center gap-2 max-w-[700px]">
-            <AnimatedLine text="We build AI-powered systems" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.28, 0.35]} />
-            <AnimatedLine text="that automate your business" scrollYProgress={scrollYProgress} delay={0.04} exitRange={[0.28, 0.35]} />
-            <AnimatedLine text="and let you focus on what matters." scrollYProgress={scrollYProgress} delay={0.08} exitRange={[0.28, 0.35]} />
+            <AnimatedLine text="We build AI-powered systems" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.28, 0.35]} noBlur={isMobileHero} />
+            <AnimatedLine text="that automate your business" scrollYProgress={scrollYProgress} delay={0.04} exitRange={[0.28, 0.35]} noBlur={isMobileHero} />
+            <AnimatedLine text="and let you focus on what matters." scrollYProgress={scrollYProgress} delay={0.08} exitRange={[0.28, 0.35]} noBlur={isMobileHero} />
           </div>
         </div>
 
@@ -478,7 +496,7 @@ function ChatbotSection() {
   return (
     <div ref={sectionRef} className="relative z-10 bg-white -mt-8">
       <div className="relative h-[400vh]">
-        <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
+        <div className="sticky top-0 h-screen flex items-start pt-2 lg:items-center lg:pt-0 justify-center overflow-hidden">
           {/* "Your Vision, Deployed." reveal — each word staggers in */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center z-0"
@@ -489,10 +507,10 @@ function ChatbotSection() {
               style={{ scale: titleScale2 }}
             >
               <div className="flex items-center justify-center gap-[0.5em] flex-wrap px-4">
-                <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.75, 0.82]} />
-                <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={0.03} exitRange={[0.75, 0.82]} />
-                <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.75, 0.82]} />
-                <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={0.09} exitRange={[0.75, 0.82]} />
+                <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.75, 0.82]} noBlur={isMobile} />
+                <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={0.03} exitRange={[0.75, 0.82]} noBlur={isMobile} />
+                <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.75, 0.82]} noBlur={isMobile} />
+                <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={0.09} exitRange={[0.75, 0.82]} noBlur={isMobile} />
               </div>
             </motion.div>
           </motion.div>
@@ -647,7 +665,7 @@ function WorkflowSection() {
   const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], isMobile ? [1, 1] : [0, 1]);
 
   return (
-    <section key={dims.ready ? 'ready' : 'ssr'} ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
+    <section ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
       {/* Blue glow — scales in, smaller + less blur on mobile */}
       <motion.div
         className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-[opacity]"

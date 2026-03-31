@@ -84,9 +84,9 @@ export function ChatPlaybackGlassy() {
   }, []);
 
   return (
-    <div className="w-full rounded-[20px] overflow-hidden bg-white/10 backdrop-blur-lg sm:backdrop-blur-3xl border border-white/20 shadow-[0_12px_80px_rgba(14,165,233,0.1),0_0_0_1px_rgba(255,255,255,0.5)_inset,0_1px_0_rgba(255,255,255,0.8)_inset]">
+    <div className="w-full rounded-[20px] overflow-hidden bg-white/20 sm:bg-white/10 backdrop-blur-md sm:backdrop-blur-3xl border border-white/20 shadow-[0_12px_80px_rgba(14,165,233,0.1),0_0_0_1px_rgba(255,255,255,0.5)_inset,0_1px_0_rgba(255,255,255,0.8)_inset]">
       {/* Header */}
-      <div className="px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-3xl border-b border-white/20 flex items-center gap-2 sm:gap-3">
+      <div className="px-3 sm:px-4 py-2 sm:py-3 bg-white/20 sm:bg-white/10 backdrop-blur-md sm:backdrop-blur-3xl border-b border-white/20 flex items-center gap-2 sm:gap-3">
         <div className="flex gap-1 sm:gap-1.5">
           <span className="w-[8px] sm:w-[10px] h-[8px] sm:h-[10px] rounded-full bg-[#ff5f57]" />
           <span className="w-[8px] sm:w-[10px] h-[8px] sm:h-[10px] rounded-full bg-[#febc2e]" />
@@ -140,7 +140,7 @@ export function ChatPlaybackGlassy() {
       </div>
 
       {/* Input */}
-      <div className="px-2 sm:px-3 py-2 sm:py-2.5 bg-white/10 backdrop-blur-3xl border-t border-white/20">
+      <div className="px-2 sm:px-3 py-2 sm:py-2.5 bg-white/20 sm:bg-white/10 backdrop-blur-md sm:backdrop-blur-3xl border-t border-white/20">
         <div className="bg-transparent backdrop-blur-none rounded-lg sm:rounded-xl flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 min-h-[32px] sm:min-h-[38px] border border-white/20">
           <div className="flex-1 min-w-0 flex items-center">
             {currentInput ? (
