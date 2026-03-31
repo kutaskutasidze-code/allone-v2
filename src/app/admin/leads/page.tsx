@@ -96,8 +96,29 @@ function AdminLeadsPageContent() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
   const [error, setError] = useState('');
   const limit = 50;
+
+  // Fetch status counts separately (always unfiltered)
+  const fetchStatusCounts = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/leads?limit=1');
+      if (!res.ok) return;
+      const result = await res.json();
+      const allTotal = result.meta?.total || 0;
+
+      const counts: Record<string, number> = { all: allTotal };
+      for (const status of ['new', 'contacted', 'qualified', 'won', 'lost']) {
+        const r = await fetch(`/api/admin/leads?status=${status}&limit=1`);
+        if (r.ok) {
+          const d = await r.json();
+          counts[status] = d.meta?.total || 0;
+        }
+      }
+      setStatusCounts(counts);
+    } catch { /* ignore */ }
+  }, []);
 
   const fetchLeads = useCallback(async () => {
     try {
@@ -121,6 +142,7 @@ function AdminLeadsPageContent() {
   }, [statusFilter, search, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
+  useEffect(() => { fetchStatusCounts(); }, [fetchStatusCounts]);
 
   const updateLead = async (id: string, updates: Record<string, unknown>) => {
     try {
@@ -130,7 +152,11 @@ function AdminLeadsPageContent() {
         body: JSON.stringify(updates),
       });
       if (!res.ok) throw new Error('Failed to update');
-      setLeads(prev => prev.map(l => l.id === id ? { ...l, ...updates } as LeadWithSalesUser : l));
+      const result = await res.json();
+      // Use server response to update local state (preserves all fields including notes)
+      setLeads(prev => prev.map(l => l.id === id ? { ...l, ...result.data } as LeadWithSalesUser : l));
+      // Refresh counts if status changed
+      if ('status' in updates) fetchStatusCounts();
     } catch {
       setError('Failed to update lead');
     }
@@ -150,15 +176,6 @@ function AdminLeadsPageContent() {
 
   const totalPages = Math.ceil(total / limit);
 
-  const stats = {
-    total,
-    new: leads.filter(l => l.status === 'new').length,
-    contacted: leads.filter(l => l.status === 'contacted').length,
-    qualified: leads.filter(l => l.status === 'qualified').length,
-    won: leads.filter(l => l.status === 'won').length,
-    lost: leads.filter(l => l.status === 'lost').length,
-  };
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -175,6 +192,17 @@ function AdminLeadsPageContent() {
 
       {/* Status Filter */}
       <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => { setStatusFilter('all'); setPage(1); }}
+          className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+            statusFilter === 'all'
+              ? 'bg-gray-900 text-white shadow-sm'
+              : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
+          }`}
+        >
+          <span className="text-base font-semibold mr-1.5">{statusCounts.all ?? '-'}</span>
+          All
+        </button>
         {LEAD_STATUSES.map((s) => (
           <button
             key={s.value}
@@ -185,21 +213,10 @@ function AdminLeadsPageContent() {
                 : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
             }`}
           >
-            <span className="text-base font-semibold mr-1.5">{stats[s.value as keyof typeof stats] ?? '-'}</span>
+            <span className="text-base font-semibold mr-1.5">{statusCounts[s.value] ?? '-'}</span>
             {s.label}
           </button>
         ))}
-        <button
-          onClick={() => { setStatusFilter('all'); setPage(1); }}
-          className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-            statusFilter === 'all'
-              ? 'bg-gray-900 text-white shadow-sm'
-              : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
-          }`}
-        >
-          <span className="text-base font-semibold mr-1.5">{total}</span>
-          All
-        </button>
       </div>
 
       {/* Search */}
@@ -307,20 +324,54 @@ function AdminLeadsPageContent() {
               <span className="text-xs text-gray-500">
                 Page {page} of {totalPages} · {total} leads
               </span>
-              <div className="flex gap-1">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setPage(1)}
+                  disabled={page === 1}
+                  className="px-2 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                >
+                  First
+                </button>
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
                   className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
                 >
-                  Previous
+                  Prev
                 </button>
+                {(() => {
+                  const pages: number[] = [];
+                  let start = Math.max(1, page - 2);
+                  let end = Math.min(totalPages, start + 4);
+                  if (end - start < 4) start = Math.max(1, end - 4);
+                  for (let i = start; i <= end; i++) pages.push(i);
+                  return pages.map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`w-8 py-1.5 text-xs rounded-lg transition-colors ${
+                        p === page
+                          ? 'bg-gray-900 text-white'
+                          : 'border border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ));
+                })()}
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                   className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
                 >
                   Next
+                </button>
+                <button
+                  onClick={() => setPage(totalPages)}
+                  disabled={page === totalPages}
+                  className="px-2 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                >
+                  Last
                 </button>
               </div>
             </div>
