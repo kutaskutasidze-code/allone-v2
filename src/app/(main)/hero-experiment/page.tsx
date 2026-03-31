@@ -24,30 +24,26 @@ function useViewportDims() {
   return dims;
 }
 
-function AnimatedLine({ text, scrollYProgress, delay, exitRange, noBlur }: { text: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number]; noBlur?: boolean }) {
+function AnimatedLine({ text, scrollYProgress, delay, exitRange }: { text: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number] }) {
   const lineOpacity = useTransform(scrollYProgress, [0.12 + delay, 0.19 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
   const lineY = useTransform(scrollYProgress, [0.12 + delay, 0.19 + delay, exitRange[0], exitRange[1]], [40, 0, 0, -30]);
-  const lineBlur = useTransform(scrollYProgress, noBlur ? [0, 1] : [0.12 + delay, 0.19 + delay], noBlur ? [0, 0] : [12, 0]);
-  const lineFilter = useTransform(lineBlur, (v) => v === 0 ? 'none' : `blur(${v}px)`);
   return (
     <motion.span
       className="font-display text-[clamp(28px,4vw,44px)] font-medium text-[#071D2F] text-center leading-[1.2] tracking-[-0.03em] block"
-      style={{ opacity: lineOpacity, y: lineY, filter: noBlur ? undefined : lineFilter }}
+      style={{ opacity: lineOpacity, y: lineY }}
     >
       {text}
     </motion.span>
   );
 }
 
-function AnimatedWord({ word, scrollYProgress, delay, exitRange, noBlur }: { word: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number]; noBlur?: boolean }) {
+function AnimatedWord({ word, scrollYProgress, delay, exitRange }: { word: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number] }) {
   const wordOpacity = useTransform(scrollYProgress, [0.16 + delay, 0.24 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
   const wordY = useTransform(scrollYProgress, [0.16 + delay, 0.24 + delay], [40, 0]);
-  const wordBlur = useTransform(scrollYProgress, noBlur ? [0, 1] : [0.16 + delay, 0.24 + delay], noBlur ? [0, 0] : [12, 0]);
-  const wordFilter = useTransform(wordBlur, (v) => v === 0 ? 'none' : `blur(${v}px)`);
   return (
     <motion.span
       className="font-mono text-[clamp(22px,6vw,72px)] font-medium uppercase tracking-wider lg:tracking-widest leading-none inline-block"
-      style={{ color: '#071D2F', opacity: wordOpacity, y: wordY, filter: noBlur ? undefined : wordFilter }}
+      style={{ color: '#071D2F', opacity: wordOpacity, y: wordY }}
     >
       {word}
     </motion.span>
@@ -297,7 +293,6 @@ function Hero() {
   const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, dims.vh]);
   const bgRadius = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [16, 0, 0, 16]);
   const borderOpacity = useTransform(scrollYProgress, [0, 0.15, 0.65, 0.78], [1, 0, 0, 1]);
-  const isMobileHero = dims.vw < 1024;
 
   // Hero text: moves up and fades
   const textY = useTransform(scrollYProgress, [0, 0.25], [0, -120]);
@@ -374,9 +369,9 @@ function Hero() {
         {/* Tagline — line by line blur-deblur reveal */}
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none px-8">
           <div className="flex flex-col items-center gap-2 max-w-[700px]">
-            <AnimatedLine text="We build AI-powered systems" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.28, 0.35]} noBlur={isMobileHero} />
-            <AnimatedLine text="that automate your business" scrollYProgress={scrollYProgress} delay={0.04} exitRange={[0.28, 0.35]} noBlur={isMobileHero} />
-            <AnimatedLine text="and let you focus on what matters." scrollYProgress={scrollYProgress} delay={0.08} exitRange={[0.28, 0.35]} noBlur={isMobileHero} />
+            <AnimatedLine text="We build AI-powered systems" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.28, 0.35]} />
+            <AnimatedLine text="that automate your business" scrollYProgress={scrollYProgress} delay={0.04} exitRange={[0.28, 0.35]} />
+            <AnimatedLine text="and let you focus on what matters." scrollYProgress={scrollYProgress} delay={0.08} exitRange={[0.28, 0.35]} />
           </div>
         </div>
 
@@ -507,10 +502,10 @@ function ChatbotSection() {
               style={{ scale: titleScale2 }}
             >
               <div className="flex items-center justify-center gap-[0.5em] flex-wrap px-4">
-                <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.75, 0.82]} noBlur={isMobile} />
-                <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={0.03} exitRange={[0.75, 0.82]} noBlur={isMobile} />
-                <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.75, 0.82]} noBlur={isMobile} />
-                <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={0.09} exitRange={[0.75, 0.82]} noBlur={isMobile} />
+                <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.75, 0.82]} />
+                <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={0.03} exitRange={[0.75, 0.82]} />
+                <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.75, 0.82]} />
+                <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={0.09} exitRange={[0.75, 0.82]} />
               </div>
             </motion.div>
           </motion.div>
@@ -657,12 +652,11 @@ function WorkflowSection() {
     offset: ['start end', 'end start'],
   });
 
-  // No scroll-driven fade on mobile
-  const cardOpacity = useTransform(scrollYProgress, [0.06, 0.18], isMobile ? [1, 1] : [0, 1]);
-  const cardY = useTransform(scrollYProgress, [0.06, 0.22], isMobile ? [0, 0] : [80, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0.10, 0.20], isMobile ? [1, 1] : [0, 1]);
-  const textX = useTransform(scrollYProgress, [0.10, 0.22], isMobile ? [0, 0] : [40, 0]);
-  const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], isMobile ? [1, 1] : [0, 1]);
+  const cardOpacity = useTransform(scrollYProgress, [0.06, 0.18], [0, 1]);
+  const cardY = useTransform(scrollYProgress, [0.06, 0.22], [80, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0.10, 0.20], [0, 1]);
+  const textX = useTransform(scrollYProgress, [0.10, 0.22], [40, 0]);
+  const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], [0, 1]);
 
   return (
     <section ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
@@ -694,12 +688,12 @@ function WorkflowSection() {
               {/* Title + Description — first on mobile, second on desktop */}
               <motion.div
                 className="relative flex flex-col justify-center p-7 lg:p-10 order-first lg:order-last border-b lg:border-b-0 lg:border-t-0 lg:border-l border-[#0ea5e9]/25"
-                style={isMobile ? {} : { opacity: textOpacity, x: textX }}
+                style={{ opacity: textOpacity, x: textX }}
               >
                 <motion.div
                   className="flex items-baseline gap-3 mb-3"
-                  initial={isMobile ? false : { opacity: 0, y: 15 }}
-                  whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.1 }}
                 >
@@ -708,8 +702,8 @@ function WorkflowSection() {
                 </motion.div>
                 <motion.h3
                   className="font-display text-xl lg:text-2xl font-semibold text-[#071D2F] mb-3 tracking-[-0.02em] leading-[1.2]"
-                  initial={isMobile ? false : { opacity: 0, y: 15 }}
-                  whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
@@ -717,8 +711,8 @@ function WorkflowSection() {
                 </motion.h3>
                 <motion.p
                   className="text-[13px] text-[#4D4D4D]/70 leading-[1.7] mb-6"
-                  initial={isMobile ? false : { opacity: 0, y: 15 }}
-                  whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
@@ -734,8 +728,8 @@ function WorkflowSection() {
                     <motion.div
                       key={i}
                       className="flex items-center gap-2.5"
-                      initial={isMobile ? false : { opacity: 0, x: 20 }}
-                      whileInView={isMobile ? undefined : { opacity: 1, x: 0 }}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
                     >
