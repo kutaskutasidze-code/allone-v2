@@ -222,29 +222,35 @@ const elements = [
     entryOffset: 0.02,
   },
   {
-    // 7. Project showcase photo card
+    // 7. E-commerce Product Card
     content: (
-      <div className="-m-4 h-[calc(100%+2rem)] overflow-hidden rounded-lg">
-        {/* Gradient photo placeholder — simulates a portfolio screenshot */}
-        <div className="h-full w-full bg-gradient-to-br from-[#071D2F] via-[#0c4a6e] to-[#0ea5e9] relative">
-          {/* Fake UI elements on the "screenshot" */}
-          <div className="absolute top-3 left-3 right-3">
-            <div className="h-1.5 w-12 bg-white/20 rounded-full mb-2" />
-            <div className="h-1 w-20 bg-white/10 rounded-full" />
+      <div>
+        {/* Product image placeholder */}
+        <div className="h-[70px] -mx-4 -mt-4 mb-2.5 bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 60 60" className="w-10 h-10 text-gray-300"><rect x="8" y="14" width="44" height="32" rx="3" fill="currentColor" fillOpacity="0.3"/><circle cx="20" cy="26" r="4" fill="currentColor" fillOpacity="0.4"/><path d="M8 38l12-8 8 5 10-10 14 10v7H8z" fill="currentColor" fillOpacity="0.3"/></svg>
+        </div>
+        <div className="flex items-start justify-between gap-2 mb-1.5">
+          <div>
+            <div className="text-[10px] font-semibold text-gray-900">Minimal Desk Lamp</div>
+            <div className="text-[8px] text-gray-400">Matte Black · LED</div>
           </div>
-          <div className="absolute bottom-3 left-3 right-3 flex gap-1.5">
-            <div className="h-8 flex-1 bg-white/10 rounded-sm" />
-            <div className="h-8 flex-1 bg-white/10 rounded-sm" />
-            <div className="h-8 flex-1 bg-white/10 rounded-sm" />
-          </div>
-          {/* Allone logo watermark */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white/10 text-[20px] font-bold tracking-widest">ALLONE</span>
-          </div>
+          <span className="text-[11px] font-bold text-gray-900">$89</span>
+        </div>
+        <div className="flex items-center gap-0.5 mb-2">
+          {[1,2,3,4,5].map((_, i) => (
+            <svg key={i} viewBox="0 0 12 12" className="w-2.5 h-2.5" fill={i < 4 ? '#f59e0b' : '#e5e7eb'}><path d="M6 0l1.8 3.7L12 4.3l-3 2.9.7 4.1L6 9.3 2.3 11.3l.7-4.1-3-2.9 4.2-.6z"/></svg>
+          ))}
+          <span className="text-[7px] text-gray-400 ml-0.5">4.0 (128)</span>
+        </div>
+        <div className="flex gap-1.5">
+          <button className="flex-1 bg-gray-900 text-white text-[8px] font-medium py-1.5 rounded text-center">Add to Cart</button>
+          <button className="w-7 h-7 flex items-center justify-center rounded border border-gray-200">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 text-gray-400"><path d="M8 14s-5.5-3.5-5.5-7A3 3 0 018 4.5 3 3 0 0113.5 7C13.5 10.5 8 14 8 14z"/></svg>
+          </button>
         </div>
       </div>
     ),
-    w: 200, h: 140,
+    w: 180, h: 195,
     x: -420, y: 60,
     rotate: -3,
     entryOffset: 0.025,
