@@ -451,9 +451,15 @@ function ChatbotSection() {
     offset: ['start start', 'end start'],
   });
 
-  // Cards split on scroll — no fade, just move off screen
+  const isMobile = dims.vw < 1024;
+
+  // Desktop: left/right split
   const leftX = useTransform(scrollYProgress, [0.15, 0.3], [0, -dims.vw * 0.7]);
   const rightX = useTransform(scrollYProgress, [0.15, 0.3], [0, dims.vw * 0.7]);
+
+  // Mobile: top/bottom split (channels up, integrations down)
+  const topY = useTransform(scrollYProgress, [0.15, 0.3], [0, -dims.vh]);
+  const bottomY = useTransform(scrollYProgress, [0.15, 0.3], [0, dims.vh]);
 
   // Card container fades with the split
   const cardContainerOpacity = useTransform(scrollYProgress, [0.15, 0.25], [1, 0]);
@@ -536,54 +542,86 @@ function ChatbotSection() {
                 background: 'linear-gradient(160deg, #f0f9ff 0%, #e8f4fd 30%, #ffffff 60%, #f0f9ff 100%)',
               }}
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                {/* Chatbot — shows first on mobile (order-first), second on desktop (lg:order-last) */}
-                <motion.div
-                  className="relative flex flex-col items-center justify-center px-4 lg:px-0 py-5 lg:py-10 overflow-hidden order-first lg:order-last border-b lg:border-b-0 lg:border-l border-[#0ea5e9]/25"
-                  style={{ x: rightX }}
-                >
-                  <div className="relative z-10 text-center mb-4">
-                    <h2 className="font-mono text-lg sm:text-xl font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>
-                      AI Chatbots
-                    </h2>
-                    <p className="text-[12px] text-[#4D4D4D]/60 mt-1.5">Deploy on every channel, one brain behind it all</p>
-                  </div>
-                  <div className="relative z-10 w-full max-w-[300px] lg:max-w-[360px]">
-                    <div className="absolute inset-6 -z-10 rounded-full bg-[#38bdf8]/35 blur-[15px]" />
-                    <ChatPlayback />
-                  </div>
-                </motion.div>
+              {isMobile ? (
+                /* ─── MOBILE: vertical split between channels (top) and integrations (bottom) ─── */
+                <div className="flex flex-col">
+                  {/* TOP HALF: Chatbot + Channels — slides up */}
+                  <motion.div style={{ y: topY }}>
+                    <div className="relative flex flex-col items-center justify-center px-4 py-5 overflow-hidden border-b border-[#0ea5e9]/25">
+                      <div className="relative z-10 text-center mb-3">
+                        <h2 className="font-mono text-lg font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>AI Chatbots</h2>
+                        <p className="text-[11px] text-[#4D4D4D]/60 mt-1">Deploy on every channel, one brain behind it all</p>
+                      </div>
+                      <div className="relative z-10 w-full max-w-[280px]">
+                        <div className="absolute inset-6 -z-10 rounded-full bg-[#38bdf8]/35 blur-[15px]" />
+                        <ChatPlayback />
+                      </div>
+                    </div>
+                    <div className="relative p-4 overflow-hidden border-b border-[#0ea5e9]/25">
+                      <div className="flex items-baseline gap-3 mb-2">
+                        <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">01</span>
+                        <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.channels')}</span>
+                      </div>
+                      <h3 className="font-display text-sm font-semibold text-[#071D2F] mb-1 tracking-[-0.02em]">{t('services.chatbot.channels.h3a')}{' '}{t('services.chatbot.channels.h3b')}</h3>
+                      <p className="text-[11px] text-[#4D4D4D]/70 leading-[1.5] mb-3">{t('services.chatbot.channels.desc')}</p>
+                      <div className="flex flex-wrap gap-1">{channelData.map((ch) => <Pill key={ch.name} {...ch} />)}</div>
+                    </div>
+                  </motion.div>
 
-                {/* Channels + Integrations — second on mobile, first on desktop */}
-                <motion.div className="flex flex-col order-last lg:order-first" style={{ x: leftX }}>
-                  <div className="relative p-4 lg:p-7 flex-1 overflow-hidden border-b border-[#0ea5e9]/25">
-                    <div className="flex items-baseline gap-3 mb-3">
-                      <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">01</span>
-                      <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.channels')}</span>
+                  {/* BOTTOM HALF: Integrations — slides down */}
+                  <motion.div style={{ y: bottomY }}>
+                    <div className="relative p-4 overflow-hidden">
+                      <div className="flex items-baseline gap-3 mb-2">
+                        <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">02</span>
+                        <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.integrations')}</span>
+                      </div>
+                      <h3 className="font-display text-sm font-semibold text-[#071D2F] mb-1 tracking-[-0.02em]">{t('services.chatbot.integrations.h3a')}{' '}{t('services.chatbot.integrations.h3b')}</h3>
+                      <p className="text-[11px] text-[#4D4D4D]/70 leading-[1.5] mb-3">{t('services.chatbot.integrations.desc')}</p>
+                      <div className="flex flex-wrap gap-1">{integrationData.map((integ) => <Pill key={integ.name} {...integ} />)}</div>
                     </div>
-                    <h3 className="font-display text-base font-semibold text-[#071D2F] mb-1.5 tracking-[-0.02em] leading-[1.2]">
-                      {t('services.chatbot.channels.h3a')}{' '}{t('services.chatbot.channels.h3b')}
-                    </h3>
-                    <p className="text-[12px] text-[#4D4D4D]/70 leading-[1.6] mb-4">{t('services.chatbot.channels.desc')}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {channelData.map((ch) => <Pill key={ch.name} {...ch} />)}
+                  </motion.div>
+                </div>
+              ) : (
+                /* ─── DESKTOP: left/right split ─── */
+                <div className="grid grid-cols-2">
+                  {/* Left — Channels + Integrations */}
+                  <motion.div className="flex flex-col" style={{ x: leftX }}>
+                    <div className="relative p-7 flex-1 overflow-hidden border-b border-[#0ea5e9]/25">
+                      <div className="flex items-baseline gap-3 mb-3">
+                        <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">01</span>
+                        <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.channels')}</span>
+                      </div>
+                      <h3 className="font-display text-base font-semibold text-[#071D2F] mb-1.5 tracking-[-0.02em] leading-[1.2]">{t('services.chatbot.channels.h3a')}{' '}{t('services.chatbot.channels.h3b')}</h3>
+                      <p className="text-[12px] text-[#4D4D4D]/70 leading-[1.6] mb-4">{t('services.chatbot.channels.desc')}</p>
+                      <div className="flex flex-wrap gap-1.5">{channelData.map((ch) => <Pill key={ch.name} {...ch} />)}</div>
                     </div>
-                  </div>
-                  <div className="relative p-4 lg:p-7 flex-1 overflow-hidden">
-                    <div className="flex items-baseline gap-3 mb-3">
-                      <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">02</span>
-                      <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.integrations')}</span>
+                    <div className="relative p-7 flex-1 overflow-hidden">
+                      <div className="flex items-baseline gap-3 mb-3">
+                        <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">02</span>
+                        <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.integrations')}</span>
+                      </div>
+                      <h3 className="font-display text-base font-semibold text-[#071D2F] mb-1.5 tracking-[-0.02em] leading-[1.2]">{t('services.chatbot.integrations.h3a')}{' '}{t('services.chatbot.integrations.h3b')}</h3>
+                      <p className="text-[12px] text-[#4D4D4D]/70 leading-[1.6] mb-4">{t('services.chatbot.integrations.desc')}</p>
+                      <div className="flex flex-wrap gap-1.5">{integrationData.map((integ) => <Pill key={integ.name} {...integ} />)}</div>
                     </div>
-                    <h3 className="font-display text-base font-semibold text-[#071D2F] mb-1.5 tracking-[-0.02em] leading-[1.2]">
-                      {t('services.chatbot.integrations.h3a')}{' '}{t('services.chatbot.integrations.h3b')}
-                    </h3>
-                    <p className="text-[12px] text-[#4D4D4D]/70 leading-[1.6] mb-4">{t('services.chatbot.integrations.desc')}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {integrationData.map((integ) => <Pill key={integ.name} {...integ} />)}
+                  </motion.div>
+
+                  {/* Right — Title + Chatbot */}
+                  <motion.div
+                    className="relative flex flex-col items-center justify-center py-10 overflow-hidden border-l border-[#0ea5e9]/25"
+                    style={{ x: rightX }}
+                  >
+                    <div className="relative z-10 text-center mb-4">
+                      <h2 className="font-mono text-lg sm:text-xl font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>AI Chatbots</h2>
+                      <p className="text-[12px] text-[#4D4D4D]/60 mt-1.5">Deploy on every channel, one brain behind it all</p>
                     </div>
-                  </div>
-                </motion.div>
-              </div>
+                    <div className="relative z-10 w-full max-w-[360px]">
+                      <div className="absolute inset-6 -z-10 rounded-full bg-[#38bdf8]/35 blur-[15px]" />
+                      <ChatPlayback />
+                    </div>
+                  </motion.div>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>
