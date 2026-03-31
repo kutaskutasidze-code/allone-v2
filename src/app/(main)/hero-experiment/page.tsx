@@ -10,12 +10,12 @@ import { WebDevFloatingElements } from './WebDevFloatingElements';
 import { LeadFlowVisual } from './LeadFlowVisual';
 
 function useViewportDims() {
-  const [dims, setDims] = useState({ vw: typeof window !== 'undefined' ? window.innerWidth : 1200, vh: typeof window !== 'undefined' ? window.innerHeight : 800 });
+  const [dims, setDims] = useState({ vw: 1200, vh: 800, ready: false });
   useEffect(() => {
     let rafId: number;
     const update = () => {
       cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => setDims({ vw: window.innerWidth, vh: window.innerHeight }));
+      rafId = requestAnimationFrame(() => setDims({ vw: window.innerWidth, vh: window.innerHeight, ready: true }));
     };
     update();
     window.addEventListener('resize', update);
@@ -299,6 +299,7 @@ function Hero() {
           right: marginX,
           bottom: marginBottom,
           borderRadius: bgRadius,
+          visibility: dims.ready ? 'visible' : 'hidden',
         }}
       >
         <MeshGradient />
@@ -471,7 +472,7 @@ function ChatbotSection() {
   return (
     <div ref={sectionRef} className="relative z-10 bg-white -mt-8">
       <div className="relative h-[300vh] lg:h-[400vh]">
-        <div className="sticky top-0 h-screen flex items-start lg:items-center justify-center overflow-hidden pt-16 lg:pt-0">
+        <div className="sticky top-0 h-screen flex items-start lg:items-center justify-center overflow-hidden pt-4 lg:pt-0 pb-16 lg:pb-0">
           {/* "Your Vision, Deployed." reveal — each word staggers in */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center z-0"
