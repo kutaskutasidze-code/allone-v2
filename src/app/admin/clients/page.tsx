@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import { ConfirmDialog, PageHeader, EmptyState } from '@/components/admin';
+import { ConfirmDialog, PageHeader, StatusBadge, EmptyState } from '@/components/admin';
 import { Input } from '@/components/ui';
 import type { Client } from '@/types/database';
 import { Pencil, Trash2, Users, X, Save } from 'lucide-react';
@@ -133,7 +133,7 @@ export default function ClientsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -147,50 +147,64 @@ export default function ClientsPage() {
       />
 
       {/* Add Form Modal */}
-      {showAddForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setShowAddForm(false)} />
-          <div className="relative z-10 w-full max-w-md bg-white rounded-xl p-6 mx-4 border border-[var(--gray-200)]">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-base font-medium text-[var(--black)]">Add Client</h2>
-              <button onClick={() => setShowAddForm(false)} className="text-[var(--gray-400)] hover:text-[var(--black)]">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <form onSubmit={handleAdd} className="space-y-4">
-              <Input
-                label="Company Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Acme Inc"
-                required
-              />
-              <Input
-                label="Logo Text"
-                value={formData.logo_text}
-                onChange={(e) => setFormData({ ...formData, logo_text: e.target.value })}
-                placeholder="e.g., ACME"
-                required
-              />
-              <div className="flex justify-end gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2 text-sm text-[var(--gray-600)] hover:text-[var(--black)]"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-[var(--black)] rounded-lg hover:bg-[var(--gray-800)]"
-                >
-                  Add Client
+      <AnimatePresence>
+        {showAddForm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+              onClick={() => setShowAddForm(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="relative z-10 w-full max-w-md bg-white rounded-xl shadow-xl shadow-black/[0.08] p-6 mx-4"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-base font-semibold text-gray-900">Add Client</h2>
+                <button onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-gray-900 transition-colors">
+                  <X className="h-5 w-5" />
                 </button>
               </div>
-            </form>
+              <form onSubmit={handleAdd} className="space-y-4">
+                <Input
+                  label="Company Name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g., Acme Inc"
+                  required
+                />
+                <Input
+                  label="Logo Text"
+                  value={formData.logo_text}
+                  onChange={(e) => setFormData({ ...formData, logo_text: e.target.value })}
+                  placeholder="e.g., ACME"
+                  required
+                />
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddForm(false)}
+                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 active:scale-[0.98] transition-all"
+                  >
+                    Add Client
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {clients.length === 0 ? (
         <EmptyState
@@ -200,38 +214,35 @@ export default function ClientsPage() {
           action={{ label: 'Add Client', onClick: () => setShowAddForm(true) }}
         />
       ) : (
-        <div className="space-y-2">
-          {clients.map((client, index) => (
-            <motion.div
+        <div className="space-y-1.5">
+          {clients.map((client) => (
+            <div
               key={client.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.03 }}
-              className="flex items-center gap-4 p-4 bg-white border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+              className="group flex items-center gap-4 p-4 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
             >
               {editingId === client.id ? (
                 <div className="flex-1 flex items-center gap-3">
                   <input
                     value={editData.logo_text}
                     onChange={(e) => setEditData({ ...editData, logo_text: e.target.value })}
-                    className="w-20 px-2 py-1 text-sm border border-[var(--gray-200)] rounded-lg focus:border-[var(--gray-400)] focus:outline-none"
+                    className="w-20 px-2 py-1 text-sm border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none"
                     placeholder="Logo"
                   />
                   <input
                     value={editData.name}
                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                    className="flex-1 px-2 py-1 text-sm border border-[var(--gray-200)] rounded-lg focus:border-[var(--gray-400)] focus:outline-none"
+                    className="flex-1 px-2 py-1 text-sm border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none"
                     placeholder="Name"
                   />
                   <button
                     onClick={() => handleUpdate(client.id)}
-                    className="p-2 text-[var(--black)] hover:bg-[var(--gray-100)] rounded-lg"
+                    className="p-2 text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                   >
                     <Save className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setEditingId(null)}
-                    className="p-2 text-[var(--gray-400)] hover:text-[var(--black)] hover:bg-[var(--gray-100)] rounded-lg"
+                    className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -239,45 +250,41 @@ export default function ClientsPage() {
               ) : (
                 <>
                   {/* Logo Text */}
-                  <div className="w-16 h-10 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
-                    <span className="text-sm font-bold text-[var(--gray-700)]">{client.logo_text}</span>
+                  <div className="w-16 h-10 flex items-center justify-center rounded-lg bg-gray-50">
+                    <span className="text-sm font-bold text-gray-700">{client.logo_text}</span>
                   </div>
 
                   {/* Name */}
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium text-[var(--black)]">{client.name}</span>
+                    <span className="text-sm font-medium text-gray-900">{client.name}</span>
                   </div>
 
                   {/* Status */}
                   <button
                     onClick={() => togglePublished(client.id, client.is_published)}
-                    className={`flex-shrink-0 px-2 py-1 text-xs font-medium rounded-md transition-colors ${
-                      client.is_published
-                        ? 'bg-[var(--gray-900)] text-white'
-                        : 'bg-[var(--gray-100)] text-[var(--gray-600)] hover:bg-[var(--gray-200)]'
-                    }`}
+                    className="flex-shrink-0"
                   >
-                    {client.is_published ? 'Live' : 'Draft'}
+                    <StatusBadge published={client.is_published} />
                   </button>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => startEdit(client)}
-                      className="p-2 rounded-lg text-[var(--gray-400)] hover:text-[var(--black)] hover:bg-[var(--gray-100)] transition-colors"
+                      className="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setDeleteId(client.id)}
-                      className="p-2 rounded-lg text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
+                      className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </>
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
       )}

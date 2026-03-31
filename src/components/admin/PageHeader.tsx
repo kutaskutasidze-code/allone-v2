@@ -13,33 +13,29 @@ interface PageHeaderProps {
   };
 }
 
+const buttonClasses = 'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm hover:bg-gray-800 active:scale-[0.98] transition-all duration-150';
+
 export function PageHeader({ title, description, action }: PageHeaderProps) {
   return (
-    <div className="flex items-start justify-between mb-8">
+    <div className="flex items-start justify-between mb-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">
+        <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">
           {title}
         </h1>
         {description && (
-          <p className="mt-1 text-sm text-[var(--gray-500)]">
+          <p className="mt-1.5 text-sm text-gray-500">
             {description}
           </p>
         )}
       </div>
       {action && (
         action.href ? (
-          <Link
-            href={action.href}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--black)] rounded-lg hover:bg-[var(--gray-800)] transition-colors duration-200"
-          >
+          <Link href={action.href} className={buttonClasses}>
             <Plus className="h-4 w-4" />
             {action.label}
           </Link>
         ) : (
-          <button
-            onClick={action.onClick}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--black)] rounded-lg hover:bg-[var(--gray-800)] transition-colors duration-200"
-          >
+          <button onClick={action.onClick} className={buttonClasses}>
             <Plus className="h-4 w-4" />
             {action.label}
           </button>

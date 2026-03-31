@@ -74,34 +74,38 @@ async function sendDigest() {
 
   const { data: newLeads, error } = await supabase
     .from('leads')
-    .select('id, name, email, phone, company, source, status, city, country, created_at')
+    .select('id, name, email, phone, company, source, status, city, country, relevance_score, created_at')
     .gte('created_at', oneDayAgo)
-    .eq('country', 'GE')
+    .order('relevance_score', { ascending: false })
     .order('created_at', { ascending: false })
     .limit(200);
 
   if (error) throw new Error(`Digest query failed: ${error.message}`);
-  if (!newLeads || newLeads.length === 0) return { sent: false, reason: 'No new Georgian leads in last 24 hours' };
+  if (!newLeads || newLeads.length === 0) return { sent: false, reason: 'No new leads in last 24 hours' };
 
+  const leadsWithPhone = newLeads.filter(l => l.phone);
   const leadsWithContact = newLeads.filter(l => l.email || l.phone);
 
-  const leadsHtml = newLeads.map(lead => `
-    <tr>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.name || '')}</td>
+  const leadsHtml = newLeads.map(lead => {
+    const hasPhone = !!lead.phone;
+    const rowStyle = hasPhone ? 'font-weight: 500;' : 'color: #94a3b8;';
+    return `
+    <tr style="${rowStyle}">
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.name || '')}${hasPhone ? ' &#x260E;' : ''}</td>
       <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.email || '-')}</td>
       <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.phone || '-')}</td>
       <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.company || '-')}</td>
       <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.city || '-')}</td>
       <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.status || '')}</td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 
   const html = `
     <div style="font-family: 'Segoe UI', sans-serif; max-width: 700px; margin: 0 auto;">
       <div style="background: #0f172a; padding: 24px 32px; border-radius: 12px 12px 0 0;">
-        <h2 style="margin: 0; color: white;">Daily Lead Report — Georgia</h2>
+        <h2 style="margin: 0; color: white;">Daily Lead Report</h2>
         <p style="margin: 4px 0 0; color: #94a3b8; font-size: 14px;">${newLeads.length} new lead${newLeads.length > 1 ? 's' : ''} in the last 24 hours</p>
-        <p style="margin: 4px 0 0; color: #94a3b8; font-size: 13px;">${leadsWithContact.length} with contact info (email or phone)</p>
+        <p style="margin: 4px 0 0; color: #94a3b8; font-size: 13px;"><strong style="color: #22c55e;">${leadsWithPhone.length} with phone</strong> · ${leadsWithContact.length} with any contact info</p>
       </div>
       <div style="background: white; padding: 24px 32px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
         <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
@@ -124,11 +128,11 @@ async function sendDigest() {
   const contactEmail = process.env.CONTACT_EMAIL || 'kutaskutasidze@gmail.com';
   const sent = await sendResendEmail(
     contactEmail,
-    `[Allone] ${newLeads.length} Georgian lead${newLeads.length > 1 ? 's' : ''} — Daily Report`,
+    `[Allone] ${newLeads.length} new lead${newLeads.length > 1 ? 's' : ''} — Daily Report`,
     html,
   );
 
-  return { sent, leads: newLeads.length, withContact: leadsWithContact.length };
+  return { sent, leads: newLeads.length, withPhone: leadsWithPhone.length, withContact: leadsWithContact.length };
 }
 
 // ========== 2. STALE LEADS CHECK ==========

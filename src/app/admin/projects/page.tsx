@@ -3,9 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import { ConfirmDialog, PageHeader, EmptyState } from '@/components/admin';
+import { ConfirmDialog, PageHeader, StatusBadge, EmptyState } from '@/components/admin';
 import type { Project } from '@/types/database';
 import {
   Pencil,
@@ -116,7 +115,7 @@ export default function ProjectsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -132,18 +131,18 @@ export default function ProjectsPage() {
       {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--gray-400)]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search projects..."
-            className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none transition-colors"
+            className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none transition-colors"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray-400)] hover:text-[var(--black)]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900"
             >
               <X className="w-4 h-4" />
             </button>
@@ -153,7 +152,7 @@ export default function ProjectsPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-3 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none cursor-pointer"
+          className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
         >
           <option value="all">All Categories</option>
           {categories.map((cat) => (
@@ -161,15 +160,15 @@ export default function ProjectsPage() {
           ))}
         </select>
 
-        <div className="flex rounded-lg border border-[var(--gray-200)] bg-white overflow-hidden">
+        <div className="flex rounded-lg border border-gray-200 bg-white overflow-hidden">
           {(['all', 'published', 'draft'] as const).map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
               className={`px-3 py-2 text-sm font-medium transition-colors ${
                 statusFilter === status
-                  ? 'bg-[var(--gray-900)] text-white'
-                  : 'text-[var(--gray-600)] hover:bg-white'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
               {status === 'all' ? 'All' : status === 'published' ? 'Live' : 'Draft'}
@@ -181,12 +180,12 @@ export default function ProjectsPage() {
       {/* Active Filters */}
       {hasActiveFilters && (
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-[var(--gray-500)]">
+          <span className="text-gray-500">
             {filteredProjects.length} of {projects.length}
           </span>
           <button
             onClick={clearFilters}
-            className="text-[var(--gray-500)] hover:text-[var(--black)] underline"
+            className="text-gray-500 hover:text-gray-900 underline"
           >
             Clear
           </button>
@@ -203,37 +202,34 @@ export default function ProjectsPage() {
         />
       ) : filteredProjects.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-sm text-[var(--gray-500)]">No projects match your filters.</p>
+          <p className="text-sm text-gray-500">No projects match your filters.</p>
           <button
             onClick={clearFilters}
-            className="mt-2 text-sm text-[var(--gray-600)] hover:text-[var(--black)] underline"
+            className="mt-2 text-sm text-gray-600 hover:text-gray-900 underline"
           >
             Clear all filters
           </button>
         </div>
       ) : (
-        <div className="space-y-2">
-          {filteredProjects.map((project, index) => (
-            <motion.div
+        <div className="space-y-1.5">
+          {filteredProjects.map((project) => (
+            <div
               key={project.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.03 }}
-              className="group flex items-center gap-4 p-4 bg-white border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+              className="group flex items-center gap-4 p-4 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
             >
               {/* Image */}
-              <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[var(--gray-100)] overflow-hidden">
+              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gray-50 overflow-hidden">
                 {project.image_url ? (
                   <Image
                     src={project.image_url}
                     alt={project.title}
-                    width={48}
-                    height={48}
+                    width={56}
+                    height={56}
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <ImageIcon className="w-5 h-5 text-[var(--gray-400)]" />
+                    <ImageIcon className="w-5 h-5 text-gray-400" />
                   </div>
                 )}
               </div>
@@ -241,14 +237,14 @@ export default function ProjectsPage() {
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-medium text-[var(--black)] truncate">
+                  <h3 className="text-sm font-medium text-gray-900 truncate">
                     {project.title}
                   </h3>
-                  <span className="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-medium rounded bg-[var(--gray-100)] text-[var(--gray-600)]">
+                  <span className="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-medium rounded bg-gray-50 text-gray-500 ring-1 ring-gray-200">
                     {project.category}
                   </span>
                 </div>
-                <p className="mt-0.5 text-xs text-[var(--gray-500)] truncate">
+                <p className="mt-0.5 text-xs text-gray-500 truncate">
                   {project.technologies.join(' · ')}
                 </p>
               </div>
@@ -256,31 +252,27 @@ export default function ProjectsPage() {
               {/* Status */}
               <button
                 onClick={() => togglePublished(project.id, project.is_published)}
-                className={`flex-shrink-0 px-2 py-1 text-xs font-medium rounded-md transition-colors ${
-                  project.is_published
-                    ? 'bg-[var(--gray-900)] text-white'
-                    : 'bg-[var(--gray-100)] text-[var(--gray-600)] hover:bg-[var(--gray-200)]'
-                }`}
+                className="flex-shrink-0"
               >
-                {project.is_published ? 'Live' : 'Draft'}
+                <StatusBadge published={project.is_published} />
               </button>
 
               {/* Actions */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Link
                   href={`/admin/projects/${project.id}`}
-                  className="p-2 rounded-lg text-[var(--gray-400)] hover:text-[var(--black)] hover:bg-[var(--gray-100)] transition-colors"
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 >
                   <Pencil className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={() => setDeleteId(project.id)}
-                  className="p-2 rounded-lg text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}

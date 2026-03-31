@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import { ConfirmDialog, PageHeader, EmptyState } from '@/components/admin';
+import { ConfirmDialog, PageHeader, StatusBadge, EmptyState } from '@/components/admin';
 import type { Service } from '@/types/database';
 import { Pencil, Trash2, Briefcase } from 'lucide-react';
 
@@ -69,7 +68,7 @@ export default function ServicesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -90,26 +89,23 @@ export default function ServicesPage() {
           action={{ label: 'Add Service', href: '/admin/services/new' }}
         />
       ) : (
-        <div className="space-y-2">
-          {services.map((service, index) => (
-            <motion.div
+        <div className="space-y-1.5">
+          {services.map((service) => (
+            <div
               key={service.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.03 }}
-              className="flex items-center gap-4 p-4 bg-white border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+              className="group flex items-center gap-4 p-4 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
             >
               {/* Icon */}
-              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
+              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-gray-50">
                 <span className="text-sm">{service.icon}</span>
               </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-[var(--black)]">
+                <h3 className="text-sm font-medium text-gray-900">
                   {service.title}
                 </h3>
-                <p className="text-xs text-[var(--gray-500)]">
+                <p className="text-xs text-gray-500">
                   {service.features.length} feature{service.features.length !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -117,31 +113,27 @@ export default function ServicesPage() {
               {/* Status */}
               <button
                 onClick={() => togglePublished(service.id, service.is_published)}
-                className={`flex-shrink-0 px-2 py-1 text-xs font-medium rounded-md transition-colors ${
-                  service.is_published
-                    ? 'bg-[var(--gray-900)] text-white'
-                    : 'bg-[var(--gray-100)] text-[var(--gray-600)] hover:bg-[var(--gray-200)]'
-                }`}
+                className="flex-shrink-0"
               >
-                {service.is_published ? 'Live' : 'Draft'}
+                <StatusBadge published={service.is_published} />
               </button>
 
               {/* Actions */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Link
                   href={`/admin/services/${service.id}`}
-                  className="p-2 rounded-lg text-[var(--gray-400)] hover:text-[var(--black)] hover:bg-[var(--gray-100)] transition-colors"
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 >
                   <Pencil className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={() => setDeleteId(service.id)}
-                  className="p-2 rounded-lg text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}

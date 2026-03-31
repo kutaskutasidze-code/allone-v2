@@ -12,12 +12,10 @@ export function AdminLayoutContent({
   const pathname = usePathname();
   const isLoginPage = pathname === '/admin/login';
 
-  // Sidebar state
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // Track desktop vs mobile
   useEffect(() => {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
@@ -27,12 +25,10 @@ export function AdminLayoutContent({
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileOpen(false);
   }, [pathname]);
 
-  // Close mobile menu on window resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -43,17 +39,14 @@ export function AdminLayoutContent({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Login page has its own full-screen layout
   if (isLoginPage) {
     return <>{children}</>;
   }
 
-  // Calculate margin for desktop only
   const desktopMargin = isDesktop ? (isCollapsed ? 72 : 256) : 0;
 
-  // All other admin pages get the sidebar layout
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <AdminSidebar
         isCollapsed={isCollapsed}
         onToggle={() => {
@@ -70,7 +63,9 @@ export function AdminLayoutContent({
         className="min-h-screen transition-[margin-left] duration-200 ease-out"
         style={{ marginLeft: desktopMargin }}
       >
-        <div className="p-4 pt-16 lg:pt-6 lg:p-8">{children}</div>
+        <div className="p-5 pt-16 lg:pt-8 lg:px-10 lg:pb-10">
+          <div className="max-w-7xl mx-auto">{children}</div>
+        </div>
       </main>
     </div>
   );

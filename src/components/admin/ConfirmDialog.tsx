@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -51,56 +51,56 @@ export function ConfirmDialog({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/30"
-        onClick={onClose}
-      />
-
-      {/* Dialog */}
-      <div
-        ref={dialogRef}
-        className="relative z-10 w-full max-w-sm bg-white rounded-xl border border-[var(--gray-200)] mx-4"
-      >
-        <div className="p-5">
-          <div className="flex items-start justify-between mb-4">
-            <h3 className="text-base font-medium text-[var(--black)]">{title}</h3>
-            <button
-              onClick={onClose}
-              className="text-[var(--gray-400)] hover:text-[var(--black)] transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-          <p className="text-sm text-[var(--gray-500)]">{message}</p>
-        </div>
-
-        <div className="flex justify-end gap-2 px-5 py-4 border-t border-[var(--gray-100)]">
-          <button
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
             onClick={onClose}
-            disabled={isLoading}
-            className="px-4 py-2 text-sm font-medium text-[var(--gray-600)] hover:text-[var(--black)] transition-colors disabled:opacity-50"
+          />
+
+          <motion.div
+            ref={dialogRef}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="relative z-10 w-full max-w-sm bg-white rounded-xl shadow-xl shadow-black/[0.08] mx-4"
           >
-            {cancelText}
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={isLoading}
-            className={cn(
-              'px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors disabled:opacity-50',
-              variant === 'danger'
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-[var(--black)] hover:bg-[var(--gray-800)]'
-            )}
-          >
-            {isLoading ? 'Processing...' : confirmText}
-          </button>
+            <div className="p-6">
+              <h3 className="text-base font-semibold text-gray-900 mb-2">{title}</h3>
+              <p className="text-sm text-gray-500">{message}</p>
+            </div>
+
+            <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-100">
+              <button
+                onClick={onClose}
+                disabled={isLoading}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
+              >
+                {cancelText}
+              </button>
+              <button
+                onClick={onConfirm}
+                disabled={isLoading}
+                className={cn(
+                  'px-4 py-2 text-sm font-medium text-white rounded-lg transition-all active:scale-[0.98] disabled:opacity-50',
+                  variant === 'danger'
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'bg-gray-900 hover:bg-gray-800'
+                )}
+              >
+                {isLoading ? 'Processing...' : confirmText}
+              </button>
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 }
