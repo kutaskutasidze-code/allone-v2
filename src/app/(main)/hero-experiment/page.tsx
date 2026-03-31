@@ -269,22 +269,15 @@ function Hero() {
     offset: ['start start', 'end start'],
   });
 
-  const isMobile = dims.vw < 1024;
   const startW = Math.min(920, dims.vw - 32);
   const startH = dims.vh * 0.65;
   const mxStart = (dims.vw - startW) / 2;
   const myStart = (dims.vh - startH) / 2;
 
-  // Desktop: margin-based expand/collapse
-  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], isMobile ? [0, 0, 0, 0] : [mxStart, -2, -2, mxStart]);
-  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], isMobile ? [0, 0, 0, 0] : [myStart, -2, -2, -2]);
-  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], isMobile ? [0, 0, 0, 0] : [myStart, -2, -2, dims.vh]);
-
-  // Mobile: scale-based expand/collapse (GPU-composited, no layout reflow)
-  const startScale = isMobile ? startW / dims.vw : 1;
-  const bgScale = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], isMobile ? [startScale, 1, 1, startScale] : [1, 1, 1, 1]);
-  const bgTranslateY = useTransform(scrollYProgress, [0.6, 0.78], isMobile ? [0, dims.vh] : [0, 0]);
-
+  // Card expands → full screen → collapses back
+  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [mxStart, -2, -2, mxStart]);
+  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, -2]);
+  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, dims.vh]);
   const bgRadius = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [16, 0, 0, 16]);
   const borderOpacity = useTransform(scrollYProgress, [0, 0.15, 0.65, 0.78], [1, 0, 0, 1]);
 
@@ -301,13 +294,11 @@ function Hero() {
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform"
         style={{
-          top: isMobile ? 0 : marginTop,
-          left: isMobile ? 0 : marginX,
-          right: isMobile ? 0 : marginX,
-          bottom: isMobile ? 0 : marginBottom,
+          top: marginTop,
+          left: marginX,
+          right: marginX,
+          bottom: marginBottom,
           borderRadius: bgRadius,
-          scale: bgScale,
-          y: bgTranslateY,
         }}
       >
         <MeshGradient />
