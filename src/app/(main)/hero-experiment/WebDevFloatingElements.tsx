@@ -428,7 +428,6 @@ function FloatingElement({
           borderBottom: '1px solid rgba(14,165,233,0.1)',
         }}
       >
-        {/* Top edge highlight */}
         <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
         {children}
       </div>

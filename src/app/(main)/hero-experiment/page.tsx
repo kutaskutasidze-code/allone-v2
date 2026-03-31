@@ -645,8 +645,6 @@ function ChatbotSection() {
 
 function WorkflowSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const dims = useViewportDims();
-  const isMobile = dims.vw < 1024;
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
