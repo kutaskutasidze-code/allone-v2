@@ -174,6 +174,7 @@ function MeshGradient() {
       ctx.fillRect(0, 0, w, h);
 
       const t = time;
+      const dim = Math.max(w, h); // use larger dimension for radius so blobs stay big on mobile
       let idx = 0;
 
       // Blues
@@ -185,7 +186,7 @@ function MeshGradient() {
         const p = points[idx++];
         p.x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.3) * range * 0.5);
         p.y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.7) * range * 0.5);
-        p.r = w * (0.35 + (i % 3) * 0.05);
+        p.r = dim * (0.35 + (i % 3) * 0.05);
         p.color = blues[i];
       }
 
@@ -198,7 +199,7 @@ function MeshGradient() {
         const p = points[idx++];
         p.x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.4) * range * 0.35);
         p.y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.9) * range * 0.35);
-        p.r = w * accents[i].r;
+        p.r = dim * accents[i].r;
         p.color = accents[i].color;
       }
 
@@ -211,7 +212,7 @@ function MeshGradient() {
         const p = points[idx++];
         p.x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.3) * range * 0.35);
         p.y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.9) * range * 0.35);
-        p.r = w * silvers[i].r;
+        p.r = dim * silvers[i].r;
         p.color = silvers[i].color;
       }
 
@@ -224,7 +225,7 @@ function MeshGradient() {
         const p = points[idx++];
         p.x = w * (0.5 + s(t * speed1 + phase) * range + c(t * speed2 + phase * 1.5) * range * 0.4);
         p.y = h * (0.5 + c(t * speed2 + phase) * range + s(t * speed1 + phase * 0.8) * range * 0.4);
-        p.r = w * 0.3;
+        p.r = dim * 0.3;
         p.color = whiteColor;
       }
 
@@ -471,7 +472,7 @@ function ChatbotSection() {
 
   return (
     <div ref={sectionRef} className="relative z-10 bg-white -mt-8">
-      <div className="relative h-[300vh] lg:h-[400vh]">
+      <div className="relative h-[400vh]">
         <div className="sticky top-0 h-screen flex items-start lg:items-center justify-center overflow-hidden pt-4 lg:pt-0 pb-16 lg:pb-0">
           {/* "Your Vision, Deployed." reveal — each word staggers in */}
           <motion.div
