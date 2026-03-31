@@ -269,15 +269,22 @@ function Hero() {
     offset: ['start start', 'end start'],
   });
 
+  const isMobile = dims.vw < 1024;
   const startW = Math.min(920, dims.vw - 32);
   const startH = dims.vh * 0.65;
   const mxStart = (dims.vw - startW) / 2;
   const myStart = (dims.vh - startH) / 2;
 
-  // Card expands → full screen → collapses back
-  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [mxStart, -2, -2, mxStart]);
-  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, -2]);
-  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, dims.vh]);
+  // Desktop: margin-based expand/collapse
+  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], isMobile ? [0, 0, 0, 0] : [mxStart, -2, -2, mxStart]);
+  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], isMobile ? [0, 0, 0, 0] : [myStart, -2, -2, -2]);
+  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], isMobile ? [0, 0, 0, 0] : [myStart, -2, -2, dims.vh]);
+
+  // Mobile: scale-based expand/collapse (GPU-composited, no layout reflow)
+  const startScale = isMobile ? startW / dims.vw : 1;
+  const bgScale = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], isMobile ? [startScale, 1, 1, startScale] : [1, 1, 1, 1]);
+  const bgTranslateY = useTransform(scrollYProgress, [0.6, 0.78], isMobile ? [0, dims.vh] : [0, 0]);
+
   const bgRadius = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [16, 0, 0, 16]);
   const borderOpacity = useTransform(scrollYProgress, [0, 0.15, 0.65, 0.78], [1, 0, 0, 1]);
 
@@ -294,11 +301,13 @@ function Hero() {
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform"
         style={{
-          top: marginTop,
-          left: marginX,
-          right: marginX,
-          bottom: marginBottom,
+          top: isMobile ? 0 : marginTop,
+          left: isMobile ? 0 : marginX,
+          right: isMobile ? 0 : marginX,
+          bottom: isMobile ? 0 : marginBottom,
           borderRadius: bgRadius,
+          scale: bgScale,
+          y: bgTranslateY,
         }}
       >
         <MeshGradient />
@@ -379,32 +388,22 @@ function Hero() {
               ].map((service) => (
                 <div
                   key={service.title}
-                  className="p-2.5 lg:p-6 backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-row lg:flex-col gap-2 lg:gap-0 group"
+                  className="p-3 lg:p-6 backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-col group"
                   style={{
                     background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
                     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
                   }}
                 >
-                  {/* Left on mobile: number + title */}
-                  <div className="flex-1 min-w-0">
-                    <span className="font-mono text-[8px] lg:text-[10px] text-[#0ea5e9]/60 mb-0.5 lg:mb-3 block">{service.num}</span>
-                    <div className="relative px-2 py-1.5 lg:px-4 lg:py-3 mb-0 lg:mb-5">
-                      <CornerBrackets />
-                      <h3 className="font-display text-[13px] lg:text-2xl font-semibold text-[#071D2F] mb-0 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
-                      <p className="text-[9px] lg:text-[13px] text-[#4D4D4D] leading-snug lg:leading-relaxed hidden sm:block">{service.desc}</p>
-                    </div>
+                  <span className="font-mono text-[8px] lg:text-[10px] text-[#0ea5e9]/60 mb-1 lg:mb-3">{service.num}</span>
+                  <div className="relative px-2.5 py-1.5 lg:px-4 lg:py-3 mb-2 lg:mb-5">
+                    <CornerBrackets />
+                    <h3 className="font-display text-sm lg:text-2xl font-semibold text-[#071D2F] mb-0.5 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
+                    <p className="text-[10px] lg:text-[13px] text-[#4D4D4D] leading-snug lg:leading-relaxed">{service.desc}</p>
                   </div>
-                  {/* Right on mobile: bullets */}
-                  <ul className="flex flex-col gap-0.5 lg:gap-2.5 mt-auto flex-shrink-0">
-                    {service.details.slice(0, 3).map((detail) => (
-                      <li key={detail} className="flex items-start gap-1 lg:gap-2.5 text-[9px] lg:text-[12px] text-[#555] leading-snug lg:hidden">
-                        <span className="w-0.5 h-0.5 lg:w-1 lg:h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
-                        {detail}
-                      </li>
-                    ))}
+                  <ul className="flex flex-col gap-1 lg:gap-2.5 mt-auto">
                     {service.details.map((detail) => (
-                      <li key={detail} className="hidden lg:flex items-start gap-2.5 text-[12px] text-[#555] leading-snug">
-                        <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1.5" />
+                      <li key={detail} className="flex items-start gap-1.5 lg:gap-2.5 text-[10px] lg:text-[12px] text-[#555] leading-snug">
+                        <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
                         {detail}
                       </li>
                     ))}
@@ -617,13 +616,13 @@ function WorkflowSection() {
 
   return (
     <section ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
-      {/* Blue glow — scales in */}
+      {/* Blue glow — scales in, smaller + less blur on mobile */}
       <motion.div
-        className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-        style={{ scale: glowScale, opacity: glowOpacity }}
+        className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-[opacity]"
+        style={{ opacity: glowOpacity }}
       >
-        <div className="relative w-[800px] h-[600px]" style={{ transform: 'translate3d(0,0,0)' }}>
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-sky-300/15 to-blue-500/10 rounded-full blur-[100px]" />
+        <div className="relative w-[400px] h-[300px] lg:w-[800px] lg:h-[600px]" style={{ transform: 'translate3d(0,0,0)' }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-sky-300/15 to-blue-500/10 rounded-full blur-[50px] lg:blur-[100px]" />
         </div>
       </motion.div>
 
