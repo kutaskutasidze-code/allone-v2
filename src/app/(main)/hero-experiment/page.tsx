@@ -457,9 +457,9 @@ function ChatbotSection() {
   const leftX = useTransform(scrollYProgress, [0.15, 0.3], [0, -dims.vw * 0.7]);
   const rightX = useTransform(scrollYProgress, [0.15, 0.3], [0, dims.vw * 0.7]);
 
-  // Mobile: top/bottom split (channels up, integrations down)
-  const topY = useTransform(scrollYProgress, [0.15, 0.3], [0, -dims.vh]);
-  const bottomY = useTransform(scrollYProgress, [0.15, 0.3], [0, dims.vh]);
+  // Mobile: top/bottom split (channels up, integrations down) — later start so user sees more
+  const topY = useTransform(scrollYProgress, [0.22, 0.38], [0, -dims.vh]);
+  const bottomY = useTransform(scrollYProgress, [0.22, 0.38], [0, dims.vh]);
 
   // Card container fades with the split
   const cardContainerOpacity = useTransform(scrollYProgress, [0.15, 0.25], [1, 0]);
@@ -647,7 +647,7 @@ function WorkflowSection() {
   const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], isMobile ? [1, 1] : [0, 1]);
 
   return (
-    <section ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
+    <section key={dims.ready ? 'ready' : 'ssr'} ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
       {/* Blue glow — scales in, smaller + less blur on mobile */}
       <motion.div
         className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-[opacity]"
