@@ -274,13 +274,10 @@ function Hero() {
   const startH = dims.vh * 0.65;
   const mxStart = (dims.vw - startW) / 2;
   const myStart = (dims.vh - startH) / 2;
-  // Extend past viewport edges to cover dynamic island / safe areas
-  const overExtend = -50;
-
   // Card expands → full screen → collapses back
-  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [mxStart, overExtend, overExtend, mxStart]);
-  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, overExtend, overExtend, overExtend]);
-  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, overExtend, overExtend, dims.vh]);
+  const marginX = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [mxStart, -2, -2, mxStart]);
+  const marginTop = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, -2]);
+  const marginBottom = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [myStart, -2, -2, dims.vh]);
   const bgRadius = useTransform(scrollYProgress, [0, 0.2, 0.6, 0.78], [16, 0, 0, 16]);
   const borderOpacity = useTransform(scrollYProgress, [0, 0.15, 0.65, 0.78], [1, 0, 0, 1]);
 
@@ -475,7 +472,7 @@ function ChatbotSection() {
   return (
     <div ref={sectionRef} className="relative z-10 bg-white -mt-8">
       <div className="relative h-[400vh]">
-        <div className="sticky top-0 h-screen flex items-start lg:items-center justify-center overflow-y-auto lg:overflow-hidden pt-4 lg:pt-0 pb-16 lg:pb-0">
+        <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
           {/* "Your Vision, Deployed." reveal — each word staggers in */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center z-0"
@@ -597,17 +594,19 @@ function ChatbotSection() {
 
 function WorkflowSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const dims = useViewportDims();
+  const isMobile = dims.vw < 1024;
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
 
-  const cardOpacity = useTransform(scrollYProgress, [0.06, 0.18], [0, 1]);
-  const cardY = useTransform(scrollYProgress, [0.06, 0.22], [80, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0.10, 0.20], [0, 1]);
-  const textX = useTransform(scrollYProgress, [0.10, 0.22], [40, 0]);
-  const glowScale = useTransform(scrollYProgress, [0.05, 0.25], [0.6, 1]);
-  const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], [0, 1]);
+  // No scroll-driven fade on mobile
+  const cardOpacity = useTransform(scrollYProgress, [0.06, 0.18], isMobile ? [1, 1] : [0, 1]);
+  const cardY = useTransform(scrollYProgress, [0.06, 0.22], isMobile ? [0, 0] : [80, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0.10, 0.20], isMobile ? [1, 1] : [0, 1]);
+  const textX = useTransform(scrollYProgress, [0.10, 0.22], isMobile ? [0, 0] : [40, 0]);
+  const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], isMobile ? [1, 1] : [0, 1]);
 
   return (
     <section ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
@@ -639,12 +638,12 @@ function WorkflowSection() {
               {/* Title + Description — first on mobile, second on desktop */}
               <motion.div
                 className="relative flex flex-col justify-center p-7 lg:p-10 order-first lg:order-last border-b lg:border-b-0 lg:border-t-0 lg:border-l border-[#0ea5e9]/25"
-                style={{ opacity: textOpacity, x: textX }}
+                style={isMobile ? {} : { opacity: textOpacity, x: textX }}
               >
                 <motion.div
                   className="flex items-baseline gap-3 mb-3"
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={isMobile ? false : { opacity: 0, y: 15 }}
+                  whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.1 }}
                 >
@@ -653,8 +652,8 @@ function WorkflowSection() {
                 </motion.div>
                 <motion.h3
                   className="font-display text-xl lg:text-2xl font-semibold text-[#071D2F] mb-3 tracking-[-0.02em] leading-[1.2]"
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={isMobile ? false : { opacity: 0, y: 15 }}
+                  whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
@@ -662,8 +661,8 @@ function WorkflowSection() {
                 </motion.h3>
                 <motion.p
                   className="text-[13px] text-[#4D4D4D]/70 leading-[1.7] mb-6"
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={isMobile ? false : { opacity: 0, y: 15 }}
+                  whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
@@ -679,8 +678,8 @@ function WorkflowSection() {
                     <motion.div
                       key={i}
                       className="flex items-center gap-2.5"
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
+                      initial={isMobile ? false : { opacity: 0, x: 20 }}
+                      whileInView={isMobile ? undefined : { opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
                     >
