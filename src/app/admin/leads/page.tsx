@@ -322,54 +322,48 @@ function AdminLeadsPageContent() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">
               <span className="text-xs text-gray-500">
-                Page {page} of {totalPages} · {total} leads
+                {total} leads
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setPage(1)}
                   disabled={page === 1}
-                  className="px-2 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
                 >
                   First
                 </button>
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
                 >
                   Prev
                 </button>
-                {(() => {
-                  const pages: number[] = [];
-                  let start = Math.max(1, page - 2);
-                  let end = Math.min(totalPages, start + 4);
-                  if (end - start < 4) start = Math.max(1, end - 4);
-                  for (let i = start; i <= end; i++) pages.push(i);
-                  return pages.map(p => (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`w-8 py-1.5 text-xs rounded-lg transition-colors ${
-                        p === page
-                          ? 'bg-gray-900 text-white'
-                          : 'border border-gray-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ));
-                })()}
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <input
+                    type="number"
+                    min={1}
+                    max={totalPages}
+                    value={page}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value);
+                      if (v >= 1 && v <= totalPages) setPage(v);
+                    }}
+                    className="w-12 py-1.5 text-center text-xs rounded-lg border border-gray-200 focus:border-gray-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <span>of {totalPages}</span>
+                </div>
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
                 >
                   Next
                 </button>
                 <button
                   onClick={() => setPage(totalPages)}
                   disabled={page === totalPages}
-                  className="px-2 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
                 >
                   Last
                 </button>
