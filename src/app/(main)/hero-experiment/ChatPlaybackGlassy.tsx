@@ -84,42 +84,42 @@ export function ChatPlaybackGlassy() {
   }, []);
 
   return (
-    <div className="w-full rounded-[20px] overflow-hidden bg-white/10 backdrop-blur-3xl border border-white/20 shadow-[0_12px_80px_rgba(14,165,233,0.1),0_0_0_1px_rgba(255,255,255,0.5)_inset,0_1px_0_rgba(255,255,255,0.8)_inset]">
+    <div className="w-full rounded-[20px] overflow-hidden bg-white/10 backdrop-blur-lg sm:backdrop-blur-3xl border border-white/20 shadow-[0_12px_80px_rgba(14,165,233,0.1),0_0_0_1px_rgba(255,255,255,0.5)_inset,0_1px_0_rgba(255,255,255,0.8)_inset]">
       {/* Header */}
-      <div className="px-4 py-3 bg-white/10 backdrop-blur-3xl border-b border-white/20 flex items-center gap-3">
-        <div className="flex gap-1.5">
-          <span className="w-[10px] h-[10px] rounded-full bg-[#ff5f57]" />
-          <span className="w-[10px] h-[10px] rounded-full bg-[#febc2e]" />
-          <span className="w-[10px] h-[10px] rounded-full bg-[#28c840]" />
+      <div className="px-3 sm:px-4 py-2 sm:py-3 bg-white/10 backdrop-blur-3xl border-b border-white/20 flex items-center gap-2 sm:gap-3">
+        <div className="flex gap-1 sm:gap-1.5">
+          <span className="w-[8px] sm:w-[10px] h-[8px] sm:h-[10px] rounded-full bg-[#ff5f57]" />
+          <span className="w-[8px] sm:w-[10px] h-[8px] sm:h-[10px] rounded-full bg-[#febc2e]" />
+          <span className="w-[8px] sm:w-[10px] h-[8px] sm:h-[10px] rounded-full bg-[#28c840]" />
         </div>
-        <div className="flex items-center gap-2 ml-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 ml-1">
           <BotAvatar />
-          <span className="text-[12px] text-gray-600 font-semibold tracking-[-0.01em]">ALLONE AI</span>
+          <span className="text-[10px] sm:text-[12px] text-gray-600 font-semibold tracking-[-0.01em]">ALLONE AI</span>
         </div>
       </div>
 
       {/* Messages */}
-      <div ref={chatContainerRef} className="h-[220px] sm:h-[280px] p-4 space-y-3 overflow-y-auto bg-white/5">
+      <div ref={chatContainerRef} className="h-[220px] sm:h-[280px] p-2.5 sm:p-4 space-y-2 sm:space-y-3 overflow-y-auto bg-white/5">
         {/* Welcome */}
-        <div className="flex gap-2 items-end">
+        <div className="flex gap-1.5 sm:gap-2 items-end">
           <BotAvatar />
-          <div className="bg-white/25 backdrop-blur-2xl rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-white/40">
-            <p className="text-[13px] text-gray-700 leading-relaxed">Hi! How can I help you today?</p>
+          <div className="bg-white/25 backdrop-blur-2xl rounded-xl sm:rounded-2xl rounded-bl-md px-2.5 sm:px-3.5 py-1.5 sm:py-2 max-w-[82%] shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-white/40">
+            <p className="text-[11px] sm:text-[13px] text-gray-700 leading-relaxed">Hi! How can I help you today?</p>
           </div>
         </div>
 
         {messages.map((msg, i) => (
           msg.type === 'user' ? (
             <div key={i} className="flex justify-end">
-              <div className="bg-gray-900/80 backdrop-blur-lg rounded-2xl rounded-br-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_12px_rgba(0,0,0,0.12)] border border-gray-800/30">
-                <p className="text-[13px] text-white leading-relaxed">{msg.text}</p>
+              <div className="bg-gray-900/80 backdrop-blur-lg rounded-xl sm:rounded-2xl rounded-br-md px-2.5 sm:px-3.5 py-1.5 sm:py-2 max-w-[82%] shadow-[0_2px_12px_rgba(0,0,0,0.12)] border border-gray-800/30">
+                <p className="text-[11px] sm:text-[13px] text-white leading-relaxed">{msg.text}</p>
               </div>
             </div>
           ) : (
-            <div key={i} className="flex gap-2 items-end">
+            <div key={i} className="flex gap-1.5 sm:gap-2 items-end">
               <BotAvatar />
-              <div className="bg-white/25 backdrop-blur-2xl rounded-2xl rounded-bl-md px-3.5 py-2 max-w-[82%] shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-white/40">
-                <p className="text-[13px] text-gray-700 leading-relaxed">{msg.text}</p>
+              <div className="bg-white/25 backdrop-blur-2xl rounded-xl sm:rounded-2xl rounded-bl-md px-2.5 sm:px-3.5 py-1.5 sm:py-2 max-w-[82%] shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-white/40">
+                <p className="text-[11px] sm:text-[13px] text-gray-700 leading-relaxed">{msg.text}</p>
               </div>
             </div>
           )
@@ -140,17 +140,17 @@ export function ChatPlaybackGlassy() {
       </div>
 
       {/* Input */}
-      <div className="px-3 py-2.5 bg-white/10 backdrop-blur-3xl border-t border-white/20">
-        <div className="bg-transparent backdrop-blur-none rounded-xl flex items-center gap-2 px-3.5 py-2 min-h-[38px] border border-white/20">
+      <div className="px-2 sm:px-3 py-2 sm:py-2.5 bg-white/10 backdrop-blur-3xl border-t border-white/20">
+        <div className="bg-transparent backdrop-blur-none rounded-lg sm:rounded-xl flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 min-h-[32px] sm:min-h-[38px] border border-white/20">
           <div className="flex-1 min-w-0 flex items-center">
             {currentInput ? (
-              <span className="text-[13px] text-gray-800 break-words leading-relaxed">{currentInput}</span>
+              <span className="text-[11px] sm:text-[13px] text-gray-800 break-words leading-relaxed">{currentInput}</span>
             ) : (
-              <span className="text-[13px] text-gray-400">Type a message...</span>
+              <span className="text-[11px] sm:text-[13px] text-gray-400">Type a message...</span>
             )}
           </div>
           <motion.button
-            className="w-7 h-7 rounded-lg bg-gray-900/80 backdrop-blur-sm flex items-center justify-center flex-shrink-0 shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+            className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gray-900/80 backdrop-blur-sm flex items-center justify-center flex-shrink-0 shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
             animate={isSending ? { scale: [1, 0.85, 1] } : {}}
             transition={{ duration: 0.15, ease: 'easeOut' }}
           >

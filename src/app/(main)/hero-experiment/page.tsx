@@ -292,7 +292,7 @@ function Hero() {
     <div ref={sectionRef} className="relative h-[220vh]">
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       <motion.div
-        className="fixed z-0 overflow-hidden"
+        className="fixed z-0 overflow-hidden will-change-transform"
         style={{
           top: marginTop,
           left: marginX,
@@ -341,11 +341,11 @@ function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Link href="/contact" className="flex items-center gap-2 h-12 px-6 text-base font-medium text-white bg-[#0369a1] rounded-full hover:bg-[#0284c7] transition-all duration-150">
-                <Image src="/images/allone-logo-transparent.png" alt="" width={22} height={22} className="brightness-0 invert" />
+              <Link href="/contact" className="flex items-center gap-1.5 lg:gap-2 h-10 lg:h-12 px-4 lg:px-6 text-sm lg:text-base font-medium text-white bg-[#0369a1] rounded-full hover:bg-[#0284c7] transition-all duration-150">
+                <Image src="/images/allone-logo-transparent.png" alt="" width={22} height={22} className="brightness-0 invert w-[18px] h-[18px] lg:w-[22px] lg:h-[22px]" />
                 {t('landing.hero.cta1')}
               </Link>
-              <Link href="/contact" className="relative flex items-center h-12 px-6 text-base font-medium text-[#071D2F] rounded-full backdrop-blur-xl transition-all duration-200 hover:shadow-lg overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.25) 100%)', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 1px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.3)' }}>
+              <Link href="/contact" className="relative flex items-center h-10 lg:h-12 px-4 lg:px-6 text-sm lg:text-base font-medium text-[#071D2F] rounded-full backdrop-blur-xl transition-all duration-200 hover:shadow-lg overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.25) 100%)', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 1px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.3)' }}>
                 {t('landing.hero.cta2')}
               </Link>
             </motion.div>
@@ -379,26 +379,32 @@ function Hero() {
               ].map((service) => (
                 <div
                   key={service.title}
-                  className="p-3 lg:p-6 backdrop-blur-xl border border-white/30 flex flex-row lg:flex-col gap-3 lg:gap-0 group"
+                  className="p-2.5 lg:p-6 backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-row lg:flex-col gap-2 lg:gap-0 group"
                   style={{
                     background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
                     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
                   }}
                 >
-                  {/* Left on mobile: number + title + desc */}
+                  {/* Left on mobile: number + title */}
                   <div className="flex-1 min-w-0">
-                    <span className="font-mono text-[10px] text-[#0ea5e9]/60 mb-1 lg:mb-3 block">{service.num}</span>
-                    <div className="relative px-3 py-2 lg:px-4 lg:py-3 mb-1 lg:mb-5">
+                    <span className="font-mono text-[8px] lg:text-[10px] text-[#0ea5e9]/60 mb-0.5 lg:mb-3 block">{service.num}</span>
+                    <div className="relative px-2 py-1.5 lg:px-4 lg:py-3 mb-0 lg:mb-5">
                       <CornerBrackets />
-                      <h3 className="font-display text-sm lg:text-2xl font-semibold text-[#071D2F] mb-0.5 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
-                      <p className="text-[11px] lg:text-[13px] text-[#4D4D4D] leading-relaxed">{service.desc}</p>
+                      <h3 className="font-display text-[13px] lg:text-2xl font-semibold text-[#071D2F] mb-0 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
+                      <p className="text-[9px] lg:text-[13px] text-[#4D4D4D] leading-snug lg:leading-relaxed hidden sm:block">{service.desc}</p>
                     </div>
                   </div>
                   {/* Right on mobile: bullets */}
-                  <ul className="flex flex-col gap-1 lg:gap-2.5 mt-auto flex-shrink-0">
+                  <ul className="flex flex-col gap-0.5 lg:gap-2.5 mt-auto flex-shrink-0">
+                    {service.details.slice(0, 3).map((detail) => (
+                      <li key={detail} className="flex items-start gap-1 lg:gap-2.5 text-[9px] lg:text-[12px] text-[#555] leading-snug lg:hidden">
+                        <span className="w-0.5 h-0.5 lg:w-1 lg:h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
+                        {detail}
+                      </li>
+                    ))}
                     {service.details.map((detail) => (
-                      <li key={detail} className="flex items-start gap-1.5 lg:gap-2.5 text-[10px] lg:text-[12px] text-[#555] leading-snug">
-                        <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
+                      <li key={detail} className="hidden lg:flex items-start gap-2.5 text-[12px] text-[#555] leading-snug">
+                        <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1.5" />
                         {detail}
                       </li>
                     ))}

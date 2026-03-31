@@ -286,16 +286,24 @@ const elements = [
 
 export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps) {
   const [scale, setScale] = useState(1);
+  const [maxElements, setMaxElements] = useState(8);
   useEffect(() => {
-    const update = () => setScale(Math.min(1, window.innerWidth / 1200));
+    const update = () => {
+      const w = window.innerWidth;
+      setScale(Math.min(1, w / 1200));
+      // Hide on small mobile, show fewer on tablet, all on desktop
+      setMaxElements(w < 640 ? 0 : w < 1024 ? 4 : 8);
+    };
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
 
+  if (maxElements === 0) return null;
+
   return (
-    <div style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}>
-      {elements.map((el, i) => {
+    <div style={{ transform: `scale(${scale})`, transformOrigin: 'center center', willChange: 'transform' }}>
+      {elements.slice(0, maxElements).map((el, i) => {
         return (
           <FloatingElement
             key={i}
@@ -383,6 +391,7 @@ function FloatingElement({
         scale: collapseScale,
         rotate: collapseRotate,
         perspective: 600,
+        willChange: 'transform, opacity',
       }}
       whileHover={{
         rotateX: -8,
