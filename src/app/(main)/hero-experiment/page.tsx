@@ -7,6 +7,7 @@ import { useI18n } from '@/lib/i18n';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { ChatPlaybackGlassy as ChatPlayback } from './ChatPlaybackGlassy';
 import { WebDevFloatingElements } from './WebDevFloatingElements';
+import { LeadFlowVisual } from './LeadFlowVisual';
 
 function useViewportDims() {
   const [dims, setDims] = useState({ vw: typeof window !== 'undefined' ? window.innerWidth : 1200, vh: typeof window !== 'undefined' ? window.innerHeight : 800 });
@@ -45,7 +46,7 @@ function AnimatedWord({ word, scrollYProgress, delay, exitRange }: { word: strin
   const wordFilter = useTransform(wordBlur, (v) => `blur(${v}px)`);
   return (
     <motion.span
-      className="font-mono text-[clamp(36px,6vw,72px)] font-medium uppercase tracking-widest leading-none inline-block"
+      className="font-mono text-[clamp(22px,6vw,72px)] font-medium uppercase tracking-wider lg:tracking-widest leading-none inline-block"
       style={{ color: '#071D2F', opacity: wordOpacity, y: wordY, filter: wordFilter }}
     >
       {word}
@@ -366,11 +367,11 @@ function Hero() {
           style={{ y: servicesY }}
         >
           <div className="max-w-[1100px] mx-auto px-6">
-            <div className="text-center mb-10">
-              <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-3 block">What we build</span>
-              <h2 className="font-display text-3xl sm:text-4xl font-semibold text-[#071D2F] tracking-[-0.04em]">Solutions that work for you</h2>
+            <div className="text-center mb-4 lg:mb-10">
+              <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 lg:mb-3 block">What we build</span>
+              <h2 className="font-mono text-[clamp(18px,4vw,48px)] font-medium uppercase tracking-wider lg:tracking-widest leading-none text-[#071D2F]">Solutions that work for you</h2>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-3">
               {[
                 { num: '01', title: 'AI Chatbots', desc: 'Deploy intelligent conversational AI across every channel your customers use.', details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
                 { num: '02', title: 'Web Development', desc: 'Modern, fast websites and apps engineered to convert and scale.', details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
@@ -378,22 +379,26 @@ function Hero() {
               ].map((service) => (
                 <div
                   key={service.title}
-                  className="p-6 backdrop-blur-xl border border-white/30 flex flex-col group"
+                  className="p-3 lg:p-6 backdrop-blur-xl border border-white/30 flex flex-row lg:flex-col gap-3 lg:gap-0 group"
                   style={{
                     background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
                     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
                   }}
                 >
-                  <span className="font-mono text-[10px] text-[#0ea5e9]/60 mb-3">{service.num}</span>
-                  <div className="relative px-4 py-3 mb-5">
-                    <CornerBrackets />
-                    <h3 className="font-display text-xl lg:text-2xl font-semibold text-[#071D2F] mb-2 tracking-[-0.03em]">{service.title}</h3>
-                    <p className="text-[13px] text-[#4D4D4D] leading-relaxed">{service.desc}</p>
+                  {/* Left on mobile: number + title + desc */}
+                  <div className="flex-1 min-w-0">
+                    <span className="font-mono text-[10px] text-[#0ea5e9]/60 mb-1 lg:mb-3 block">{service.num}</span>
+                    <div className="relative px-3 py-2 lg:px-4 lg:py-3 mb-1 lg:mb-5">
+                      <CornerBrackets />
+                      <h3 className="font-display text-sm lg:text-2xl font-semibold text-[#071D2F] mb-0.5 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
+                      <p className="text-[11px] lg:text-[13px] text-[#4D4D4D] leading-relaxed">{service.desc}</p>
+                    </div>
                   </div>
-                  <ul className="flex flex-col gap-2.5 mt-auto">
+                  {/* Right on mobile: bullets */}
+                  <ul className="flex flex-col gap-1 lg:gap-2.5 mt-auto flex-shrink-0">
                     {service.details.map((detail) => (
-                      <li key={detail} className="flex items-start gap-2.5 text-[12px] text-[#555] leading-snug">
-                        <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1.5" />
+                      <li key={detail} className="flex items-start gap-1.5 lg:gap-2.5 text-[10px] lg:text-[12px] text-[#555] leading-snug">
+                        <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
                         {detail}
                       </li>
                     ))}
@@ -469,8 +474,8 @@ function ChatbotSection() {
 
   return (
     <div ref={sectionRef} className="relative z-10 bg-white -mt-8">
-      <div className="relative h-[400vh]">
-        <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
+      <div className="relative h-[300vh] lg:h-[400vh]">
+        <div className="sticky top-0 h-screen flex items-start lg:items-center justify-center overflow-hidden pt-16 lg:pt-0">
           {/* "Your Vision, Deployed." reveal — each word staggers in */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center z-0"
@@ -524,7 +529,7 @@ function ChatbotSection() {
 
           {/* Chatbot cards — split apart on scroll */}
           <motion.div
-            className="relative z-10 max-w-7xl w-full mx-6 lg:mx-auto"
+            className="relative z-10 max-w-7xl w-full mx-3 sm:mx-6 lg:mx-auto"
             style={{ opacity: cardContainerOpacity }}
           >
             <div
@@ -535,9 +540,26 @@ function ChatbotSection() {
               }}
             >
               <div className="grid grid-cols-1 lg:grid-cols-2">
-                {/* Left — Channels + Integrations */}
-                <motion.div className="flex flex-col" style={{ x: leftX }}>
-                  <div className="relative p-7 flex-1 overflow-hidden border-b border-[#0ea5e9]/25">
+                {/* Chatbot — shows first on mobile (order-first), second on desktop (lg:order-last) */}
+                <motion.div
+                  className="relative flex flex-col items-center justify-center px-4 lg:px-0 py-5 lg:py-10 overflow-hidden order-first lg:order-last border-b lg:border-b-0 lg:border-l border-[#0ea5e9]/25"
+                  style={{ x: rightX }}
+                >
+                  <div className="relative z-10 text-center mb-4">
+                    <h2 className="font-mono text-lg sm:text-xl font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>
+                      AI Chatbots
+                    </h2>
+                    <p className="text-[12px] text-[#4D4D4D]/60 mt-1.5">Deploy on every channel, one brain behind it all</p>
+                  </div>
+                  <div className="relative z-10 w-full max-w-[300px] lg:max-w-[360px]">
+                    <div className="absolute inset-6 -z-10 rounded-full bg-[#38bdf8]/35 blur-[15px]" />
+                    <ChatPlayback />
+                  </div>
+                </motion.div>
+
+                {/* Channels + Integrations — second on mobile, first on desktop */}
+                <motion.div className="flex flex-col order-last lg:order-first" style={{ x: leftX }}>
+                  <div className="relative p-4 lg:p-7 flex-1 overflow-hidden border-b border-[#0ea5e9]/25">
                     <div className="flex items-baseline gap-3 mb-3">
                       <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">01</span>
                       <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.channels')}</span>
@@ -550,7 +572,7 @@ function ChatbotSection() {
                       {channelData.map((ch) => <Pill key={ch.name} {...ch} />)}
                     </div>
                   </div>
-                  <div className="relative p-7 flex-1 overflow-hidden">
+                  <div className="relative p-4 lg:p-7 flex-1 overflow-hidden">
                     <div className="flex items-baseline gap-3 mb-3">
                       <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">02</span>
                       <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('services.chatbot.integrations')}</span>
@@ -564,23 +586,6 @@ function ChatbotSection() {
                     </div>
                   </div>
                 </motion.div>
-
-                {/* Right — Title + Chatbot */}
-                <motion.div
-                  className="relative flex flex-col items-center justify-center px-6 lg:px-0 py-10 overflow-hidden border-l border-[#0ea5e9]/25"
-                  style={{ x: rightX }}
-                >
-                  <div className="relative z-10 text-center mb-4">
-                    <h2 className="font-mono text-lg sm:text-xl font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>
-                      AI Chatbots
-                    </h2>
-                    <p className="text-[12px] text-[#4D4D4D]/60 mt-1.5">Deploy on every channel, one brain behind it all</p>
-                  </div>
-                  <div className="relative z-10 w-full max-w-[360px]">
-                    <div className="absolute inset-6 -z-10 rounded-full bg-[#38bdf8]/35 blur-[15px]" />
-                    <ChatPlayback />
-                  </div>
-                </motion.div>
               </div>
             </div>
           </motion.div>
@@ -590,11 +595,115 @@ function ChatbotSection() {
   );
 }
 
+function WorkflowSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const cardOpacity = useTransform(scrollYProgress, [0.06, 0.18], [0, 1]);
+  const cardY = useTransform(scrollYProgress, [0.06, 0.22], [80, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0.10, 0.20], [0, 1]);
+  const textX = useTransform(scrollYProgress, [0.10, 0.22], [40, 0]);
+  const glowScale = useTransform(scrollYProgress, [0.05, 0.25], [0.6, 1]);
+  const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], [0, 1]);
+
+  return (
+    <section ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
+      {/* Blue glow — scales in */}
+      <motion.div
+        className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        style={{ scale: glowScale, opacity: glowOpacity }}
+      >
+        <div className="relative w-[800px] h-[600px]" style={{ transform: 'translate3d(0,0,0)' }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-sky-300/15 to-blue-500/10 rounded-full blur-[100px]" />
+        </div>
+      </motion.div>
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        <motion.div style={{ opacity: cardOpacity, y: cardY }}>
+          <div
+            className="border border-[#0ea5e9]/25"
+            style={{
+              boxShadow: '0 25px 80px rgba(14,165,233,0.06), 0 8px 24px rgba(0,0,0,0.03)',
+              background: 'linear-gradient(160deg, #f0f9ff 0%, #e8f4fd 30%, #ffffff 60%, #f0f9ff 100%)',
+            }}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr]">
+              {/* Lead Flow Visual — second on mobile, first on desktop */}
+              <div className="relative p-7 overflow-hidden order-last lg:order-first">
+                <LeadFlowVisual />
+              </div>
+
+              {/* Title + Description — first on mobile, second on desktop */}
+              <motion.div
+                className="relative flex flex-col justify-center p-7 lg:p-10 order-first lg:order-last border-b lg:border-b-0 lg:border-t-0 lg:border-l border-[#0ea5e9]/25"
+                style={{ opacity: textOpacity, x: textX }}
+              >
+                <motion.div
+                  className="flex items-baseline gap-3 mb-3"
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                  <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">03</span>
+                  <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">Workflow Automation</span>
+                </motion.div>
+                <motion.h3
+                  className="font-display text-xl lg:text-2xl font-semibold text-[#071D2F] mb-3 tracking-[-0.02em] leading-[1.2]"
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  Automate the work that slows you down
+                </motion.h3>
+                <motion.p
+                  className="text-[13px] text-[#4D4D4D]/70 leading-[1.7] mb-6"
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  From lead scoring to invoice processing, we build custom workflows that run 24/7 — so your team focuses on what matters.
+                </motion.p>
+                <div className="space-y-3">
+                  {[
+                    'New lead captured',
+                    'Personalized outreach sent',
+                    'Meeting auto-booked',
+                    'Team notified instantly',
+                  ].map((step, i) => (
+                    <motion.div
+                      key={i}
+                      className="flex items-center gap-2.5"
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
+                    >
+                      <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0" />
+                      <span className="text-[12px] text-[#555] leading-snug">{step}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 export default function HeroExperiment() {
   return (
     <div className="bg-white text-[#071D2F] font-body antialiased">
       <Hero />
       <ChatbotSection />
+      <WorkflowSection />
     </div>
   );
 }

@@ -99,7 +99,7 @@ export function ChatPlaybackGlassy() {
       </div>
 
       {/* Messages */}
-      <div ref={chatContainerRef} className="h-[280px] p-4 space-y-3 overflow-y-auto bg-white/5">
+      <div ref={chatContainerRef} className="h-[220px] sm:h-[280px] p-4 space-y-3 overflow-y-auto bg-white/5">
         {/* Welcome */}
         <div className="flex gap-2 items-end">
           <BotAvatar />

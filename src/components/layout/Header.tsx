@@ -35,7 +35,7 @@ function IconWork({ className }: { className?: string }) {
 
 function IconLab({ className }: { className?: string }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className={`${className} translate-y-[2.5px]`}>
       <path d="M9 2v7.06l-5.47 8.6A2 2 0 005.22 21h13.56a2 2 0 001.69-3.34L15 9.06V2h1a1 1 0 100-2H8a1 1 0 000 2h1zm2 0h2v7.5a1 1 0 00.16.54L16.5 15h-9l3.34-4.96A1 1 0 0011 9.5V2z"/>
     </svg>
   );

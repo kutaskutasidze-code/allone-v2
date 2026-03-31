@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion, useTransform, type MotionValue } from 'framer-motion';
 
 interface FloatingElementProps {
@@ -284,8 +285,16 @@ const elements = [
 
 
 export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps) {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const update = () => setScale(Math.min(1, window.innerWidth / 1200));
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
   return (
-    <>
+    <div style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}>
       {elements.map((el, i) => {
         return (
           <FloatingElement
@@ -302,7 +311,7 @@ export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps
           </FloatingElement>
         );
       })}
-    </>
+    </div>
   );
 }
 
