@@ -20,6 +20,12 @@ export async function POST(request: NextRequest) {
     // Parse and validate request body
     const body = await request.json();
 
+    // Honeypot: if this field is filled, it's a bot
+    if (body.website_url) {
+      logger.info('Honeypot triggered, rejecting spam', { ip });
+      return success({ message: 'Message sent successfully!' });
+    }
+
     const result = contactFormSchema.safeParse(body);
     if (!result.success) {
       return validationError(result.error);

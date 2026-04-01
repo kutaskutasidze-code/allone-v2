@@ -31,12 +31,13 @@ interface FormErrors {
 
 export function ContactForm() {
   const { contactInfo } = useContactInfo();
-  const [formData, setFormData] = useState<FormState>({
+  const [formData, setFormData] = useState<FormState & { website_url?: string }>({
     name: '',
     email: '',
     company: '',
     service: '',
     message: '',
+    website_url: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -177,6 +178,17 @@ export function ContactForm() {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Honeypot */}
+              <input
+                type="text"
+                name="website_url"
+                value={formData.website_url}
+                onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute opacity-0 h-0 w-0 overflow-hidden pointer-events-none"
+              />
               <div className="grid sm:grid-cols-2 gap-8">
                 <Input
                   label="Name"

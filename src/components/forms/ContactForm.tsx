@@ -27,12 +27,13 @@ const inputClass =
 
 export function ContactForm() {
   const { t } = useI18n();
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormData & { website_url?: string }>({
     name: '',
     email: '',
     company: '',
     service: 'other',
     message: '',
+    website_url: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -86,6 +87,17 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Honeypot - hidden from humans, bots will fill it */}
+      <input
+        type="text"
+        name="website_url"
+        value={formData.website_url}
+        onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute opacity-0 h-0 w-0 overflow-hidden pointer-events-none"
+      />
       {error && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}

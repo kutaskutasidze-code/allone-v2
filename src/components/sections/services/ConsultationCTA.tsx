@@ -26,6 +26,7 @@ export function ConsultationCTA() {
           company: '',
           service: interests.join(', ') || 'Consultation',
           message: `Phone: ${formData.get('phone') || 'N/A'}\n\n${formData.get('message') || ''}`.trim(),
+          website_url: formData.get('website_url') || '',
         }),
       });
 
@@ -68,6 +69,15 @@ export function ConsultationCTA() {
             onSubmit={handleSubmit}
             className="rounded-2xl bg-white/40 backdrop-blur-xl border border-white/50 shadow-[0_8px_60px_rgba(0,0,0,0.06),0_0_0_1px_rgba(255,255,255,0.6)_inset] p-5 lg:p-6"
           >
+            {/* Honeypot */}
+            <input
+              type="text"
+              name="website_url"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="absolute opacity-0 h-0 w-0 overflow-hidden pointer-events-none"
+            />
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-[10px] font-medium text-gray-500 uppercase tracking-wider mb-1.5">{t('services.consult.name')}</label>
