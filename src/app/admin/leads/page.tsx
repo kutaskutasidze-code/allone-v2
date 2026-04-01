@@ -11,6 +11,21 @@ import type { LeadWithSalesUser } from '@/types/database';
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
+const PITCH_LABELS: Record<string, string> = {
+  no_website: 'No website',
+  website_broken: 'Website broken',
+  no_https: 'Not secure (HTTP)',
+  not_mobile_friendly: 'Not mobile-friendly',
+  no_chat_widget: 'No chat widget',
+  no_online_booking: 'No online booking',
+  no_social_links: 'No social media',
+  slow_website: 'Slow website',
+  basic_website_builder: 'Wix/Tilda site',
+  new_business: 'New business',
+};
+
+const HIDDEN_TAGS = new Set(['enrich_attempted', 'website_audited']);
+
 function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; currentStatus: string; onUpdate: (id: string, status: string) => void }) {
   const [open, setOpen] = useState(false);
 
@@ -287,6 +302,16 @@ function AdminLeadsPageContent() {
                     {lead.source && <span>· {lead.source}</span>}
                     <span>· {formatDate(lead.created_at)}</span>
                   </div>
+                  {/* Pitch reasons */}
+                  {lead.tags && lead.tags.filter((t: string) => !HIDDEN_TAGS.has(t)).length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {lead.tags.filter((t: string) => !HIDDEN_TAGS.has(t)).map((tag: string) => (
+                        <span key={tag} className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-amber-50 text-amber-700 ring-1 ring-amber-200">
+                          {PITCH_LABELS[tag] || tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   {lead.notes && (
                     <div className="mt-2 text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">
                       {lead.notes}
