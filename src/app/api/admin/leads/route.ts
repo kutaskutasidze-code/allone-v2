@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     let query = admin
       .from('leads')
       .select(`
-        id, name, email, phone, company, city, country, website, matched_service, status, value, source, source_url, notes, created_at, updated_at,
+        id, name, email, phone, company, city, country, website, matched_service, status, value, source, source_url, notes, tags, created_at, updated_at,
         sales_user:sales_users(id, name, email)
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
@@ -41,6 +41,14 @@ export async function GET(request: NextRequest) {
       const validStatuses = ['new', 'contacted', 'qualified', 'won', 'lost'];
       if (validStatuses.includes(status)) {
         query = query.eq('status', status);
+      }
+    }
+
+    const service = searchParams.get('service');
+    if (service && service !== 'all') {
+      const validServices = ['chatbots', 'custom_ai', 'automation', 'website', 'consulting'];
+      if (validServices.includes(service)) {
+        query = query.eq('matched_service', service);
       }
     }
 

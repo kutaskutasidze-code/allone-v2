@@ -109,6 +109,7 @@ function AdminLeadsPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState(initialStatus);
+  const [serviceFilter, setServiceFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
@@ -140,6 +141,7 @@ function AdminLeadsPageContent() {
       setIsLoading(true);
       const params = new URLSearchParams();
       if (statusFilter !== 'all') params.set('status', statusFilter);
+      if (serviceFilter !== 'all') params.set('service', serviceFilter);
       if (search) params.set('search', search);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
@@ -154,7 +156,7 @@ function AdminLeadsPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, search, page]);
+  }, [statusFilter, serviceFilter, search, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
   useEffect(() => { fetchStatusCounts(); }, [fetchStatusCounts]);
@@ -232,6 +234,27 @@ function AdminLeadsPageContent() {
             {s.label}
           </button>
         ))}
+      </div>
+
+      {/* Service Filter */}
+      <div className="flex items-center gap-3">
+        <select
+          value={serviceFilter}
+          onChange={(e) => { setServiceFilter(e.target.value); setPage(1); }}
+          className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+        >
+          <option value="all">All Services</option>
+          <option value="website">Website</option>
+          <option value="chatbots">Chatbots</option>
+          <option value="automation">Automation</option>
+          <option value="consulting">Consulting</option>
+          <option value="custom_ai">Custom AI</option>
+        </select>
+        {serviceFilter !== 'all' && (
+          <button onClick={() => { setServiceFilter('all'); setPage(1); }} className="text-xs text-gray-500 hover:text-gray-900">
+            Clear
+          </button>
+        )}
       </div>
 
       {/* Search */}
