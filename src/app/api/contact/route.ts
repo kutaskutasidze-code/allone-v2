@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { sendEmail } from '@/lib/email';
 import { success, error, validationError, rateLimited, methodNotAllowed } from '@/lib/api-response';
 import { contactFormSchema } from '@/lib/validations';
 import { checkContactRateLimit, getClientIp } from '@/lib/rate-limit';
@@ -32,7 +33,16 @@ export async function POST(request: NextRequest) {
       service: validated.service,
     });
 
-    // Lead is saved to DB below; notification comes via daily digest cron (/api/cron/leads?task=digest)
+    // Send immediate email for inbound contact form leads (these are actual prospects)
+    await sendEmail({
+      name: validated.name,
+      email: validated.email,
+      company: validated.company,
+      service: validated.service,
+      message: validated.message,
+    });
+
+    logger.info('Contact form email sent', { email: validated.email });
 
     // Save lead to database
     let leadSaved = false;

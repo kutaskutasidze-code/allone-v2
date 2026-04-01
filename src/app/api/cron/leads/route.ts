@@ -72,10 +72,12 @@ const SCRAPE_SCHEDULE: { city: string; bbox: string; label: string }[] = [
 async function sendDigest() {
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
+  // Scraped leads only (exclude contact form submissions which have source='contact_form')
   const { data: newLeads, error } = await supabase
     .from('leads')
     .select('id, name, email, phone, company, source, status, city, country, relevance_score, created_at')
     .gte('created_at', oneDayAgo)
+    .neq('source', 'contact_form')
     .order('relevance_score', { ascending: false })
     .order('created_at', { ascending: false })
     .limit(200);
