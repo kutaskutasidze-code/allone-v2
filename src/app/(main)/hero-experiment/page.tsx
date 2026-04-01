@@ -489,7 +489,7 @@ function ChatbotSection() {
 
 
   return (
-    <div ref={sectionRef} className="relative z-10 bg-white -mt-8">
+    <div id="services" ref={sectionRef} className="relative z-10 bg-white -mt-8">
       <div className="relative h-[400vh]">
         <div className="sticky top-0 h-screen flex items-start pt-2 lg:items-center lg:pt-0 justify-center overflow-hidden">
           {/* "Your Vision, Deployed." reveal — each word staggers in */}
@@ -657,7 +657,7 @@ function WorkflowSection() {
   const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], [0, 1]);
 
   return (
-    <section ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
+    <section id="automation" ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden">
       {/* Blue glow — scales in, smaller + less blur on mobile */}
       <motion.div
         className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-[opacity]"

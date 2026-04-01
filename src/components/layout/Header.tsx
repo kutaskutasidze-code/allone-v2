@@ -157,7 +157,7 @@ export function Header() {
 
   const navItems = [
     { name: 'Home', i18nKey: 'nav.home', href: '/', icon: IconHome },
-    { name: 'Services', i18nKey: 'nav.services', href: '/services', icon: IconServices },
+    { name: 'Services', i18nKey: 'nav.services', href: '/#services', icon: IconServices },
     { name: 'Work', i18nKey: 'nav.work', href: '/work', icon: IconWork },
     { name: 'Lab', i18nKey: 'nav.lab', href: '/lab', icon: IconLab },
   ];
@@ -251,7 +251,7 @@ export function Header() {
                 <>
                   {/* Mobile: icon nav */}
                   {navItems.map((item) => {
-                    const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+                    const isActive = item.href === '/' ? pathname === '/' : item.href.startsWith('/#') ? pathname === '/' : pathname.startsWith(item.href);
                     const Icon = item.icon;
                     return (
                       <Link key={item.name} href={item.href} className="relative w-10 h-10 flex items-center justify-center rounded-full">
@@ -301,7 +301,7 @@ export function Header() {
                   <div className="w-px h-5 bg-[#071D2F]/10 mx-1" />
 
                   {navItems.map((item) => {
-                    const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+                    const isActive = item.href === '/' ? pathname === '/' : item.href.startsWith('/#') ? pathname === '/' : pathname.startsWith(item.href);
                     return (
                       <Link
                         key={item.name}
