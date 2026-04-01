@@ -44,7 +44,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: '/',
-    languages: { 'en': '/', 'ka': '/', 'x-default': '/' },
   },
   description:
     'AI automation agency building custom AI chatbots, workflow automation, and intelligent software. Based in Tbilisi, Georgia & Brussels, Belgium. All systems converge into one.',
@@ -102,7 +101,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
   viewportFit: 'cover',
 };
 

@@ -14,7 +14,7 @@ export function OrganizationSchema({
   url = 'https://allone.ge',
   logo = 'https://allone.ge/images/allone-logo.png',
   description = 'AI automation agency that converges all your systems into one intelligent layer. Custom AI solutions, workflow automation, intelligent chatbots, and modern website development for businesses worldwide.',
-  email = 'info@allonelabs.com',
+  email = 'hello@allone.ge',
   sameAs = [],
 }: OrganizationSchemaProps) {
   const schema = {
@@ -36,15 +36,22 @@ export function OrganizationSchema({
       'Web Development',
       'AI Consulting',
     ],
-    areaServed: {
-      '@type': 'GeoCircle',
-      geoMidpoint: {
-        '@type': 'GeoCoordinates',
-        latitude: 41.7151,
-        longitude: 44.8271,
+    areaServed: [
+      {
+        '@type': 'City',
+        name: 'Tbilisi',
+        containedInPlace: { '@type': 'Country', name: 'Georgia' },
       },
-      geoRadius: '10000',
-    },
+      {
+        '@type': 'City',
+        name: 'Brussels',
+        containedInPlace: { '@type': 'Country', name: 'Belgium' },
+      },
+      {
+        '@type': 'Place',
+        name: 'Worldwide',
+      },
+    ],
     contactPoint: [
       {
         '@type': 'ContactPoint',
@@ -70,29 +77,24 @@ export function OrganizationSchema({
       name: 'AI Automation Services',
       itemListElement: [
         {
-          '@type': 'OfferCatalog',
-          name: 'AI Chatbots',
-          description: 'Custom conversational AI with 24/7 automated customer support',
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: 'AI Chatbots', description: 'Custom conversational AI with 24/7 automated customer support across WhatsApp, Telegram, Instagram, and web' },
         },
         {
-          '@type': 'OfferCatalog',
-          name: 'Custom AI Solutions',
-          description: 'Bespoke machine learning models, computer vision, and NLP pipelines',
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: 'Custom AI Solutions', description: 'Bespoke machine learning models, computer vision, and NLP pipelines' },
         },
         {
-          '@type': 'OfferCatalog',
-          name: 'Workflow Automation',
-          description: 'End-to-end process automation with AI-powered decision making',
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: 'Workflow Automation', description: 'End-to-end process automation with AI-powered decision making using n8n, Zapier, and custom pipelines' },
         },
         {
-          '@type': 'OfferCatalog',
-          name: 'Website Development',
-          description: 'High-performance Next.js websites with AI-powered features',
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: 'Website Development', description: 'High-performance Next.js websites and web apps with SEO optimization and modern UI' },
         },
         {
-          '@type': 'OfferCatalog',
-          name: 'Strategy & Consulting',
-          description: 'AI readiness assessment and implementation roadmaps',
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: 'Strategy & Consulting', description: 'AI readiness assessment and implementation roadmaps for businesses' },
         },
       ],
     },
@@ -160,11 +162,8 @@ export function WebsiteSchema({
     name,
     url,
     description,
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: `${url}/search?q={search_term_string}`,
-      'query-input': 'required name=search_term_string',
-    },
+    inLanguage: 'en',
+    publisher: { '@type': 'Organization', name: 'ALLONE', url },
   };
 
   return (
