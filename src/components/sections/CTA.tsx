@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Container } from '@/components/layout';
 import { ShimmerText } from '@/components/ui/ShimmerText';
-import SlideTextButton from '@/components/kokonutui/slide-text-button';
+import SlideTextButton from '@/components/ui/slide-text-button';
 import { useI18n } from '@/lib/i18n';
 
 export function CTA() {

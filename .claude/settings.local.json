@@ -165,7 +165,10 @@
       "Bash(chmod +x /tmp/find_dead.sh)",
       "Bash(bash /tmp/find_dead.sh)",
       "Bash(/tmp/final_map.sh:*)",
-      "Bash(bash /tmp/final_map.sh)"
+      "Bash(bash /tmp/final_map.sh)",
+      "Bash(for dir:*)",
+      "Bash(do echo:*)",
+      "Read(//Users/wulu/Desktop/Projects/allone-website/**)"
     ]
   }
 }

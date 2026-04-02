@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState, useEffect } from 'react';
-import { useVoiceAgent, type AgentState } from '@/components/allone-ai/useVoiceAgent';
+import { useVoiceAgent, type AgentState } from '@/lib/voice/useVoiceAgent';
 import Orb from './Orb';
 
 type OrbSize = 'hero' | 'md' | 'sm';

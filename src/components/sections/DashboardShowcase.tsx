@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { EmbeddableDashboard } from '@/components/showcase/DashboardShowcase';
+import { EmbeddableDashboard } from '@/components/sections/dashboard/DashboardShowcase';
 
 export function DashboardShowcase() {
   const sectionRef = useRef<HTMLDivElement>(null);
