@@ -1,15 +1,31 @@
 import { getSupabase, LeadData } from './client.js';
 import { logger } from '../utils/logger.js';
+import { normalizeGeorgianPhone } from '../utils/phone.js';
 
 export async function insertLead(lead: LeadData): Promise<{ success: boolean; isDuplicate: boolean; id?: string }> {
   const supabase = getSupabase();
 
-  // Check for duplicates by website or email
-  if (lead.website || lead.email) {
+  // Normalize phone before insert/dedup
+  if (lead.phone && lead.country === 'GE') {
+    const normalized = normalizeGeorgianPhone(lead.phone);
+    if (normalized) {
+      lead.phone = normalized;
+    } else {
+      lead.phone = undefined; // invalid Georgian number
+    }
+  }
+
+  // Check for duplicates by phone, website, or email
+  const orClauses: string[] = [];
+  if (lead.phone) orClauses.push(`phone.eq.${lead.phone}`);
+  if (lead.website) orClauses.push(`website.eq.${lead.website}`);
+  if (lead.email) orClauses.push(`email.eq.${lead.email}`);
+
+  if (orClauses.length > 0) {
     const { data: existing } = await supabase
       .from('leads')
       .select('id')
-      .or(`website.eq.${lead.website},email.eq.${lead.email}`)
+      .or(orClauses.join(','))
       .limit(1)
       .single();
 
@@ -22,10 +38,30 @@ export async function insertLead(lead: LeadData): Promise<{ success: boolean; is
   const { data, error } = await supabase
     .from('leads')
     .insert({
-      ...lead,
+      name: lead.name,
+      company: lead.company || null,
+      company_name_local: lead.company_name_local || null,
+      email: lead.email || null,
+      phone: lead.phone || null,
+      website: lead.website || null,
+      industry: lead.industry || null,
+      company_size: lead.company_size || null,
+      description: lead.description || null,
+      address: lead.address || null,
+      city: lead.city || null,
+      country: lead.country,
+      linkedin_url: lead.linkedin_url || null,
+      facebook_url: lead.facebook_url || null,
+      instagram_url: lead.instagram_url || null,
+      matched_service: lead.matched_service || null,
+      relevance_score: lead.relevance_score || 0,
+      tags: lead.tags || null,
+      source_id: lead.source_id || null,
+      source_url: lead.source_url || null,
       status: 'new',
       value: 0,
       is_scraped: true,
+      updated_at: new Date().toISOString(),
     })
     .select('id')
     .single();

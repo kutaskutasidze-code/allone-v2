@@ -1,1 +1,1 @@
-export { default } from './hero-experiment/page';
+export { default } from './landing/page';

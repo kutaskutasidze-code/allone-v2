@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALLONE — Brand System</title>
+<title>AllOne — Brand System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════
-   ALLONE Brand System — Unified SPA
+   AllOne Brand System — Unified SPA
    ══════════════════════════════════════════════ */
 
 /* ── FONT FACES ─────────────────────────────── */
@@ -31,10 +31,10 @@
 
 /* ── DESIGN TOKENS ──────────────────────────── */
 :root {
-  --accent: #0A68F5;
-  --accent-rgb: 10, 104, 245;
-  --accent-light: #0B5CD6;
-  --accent-dark: #0950B8;
+  --accent: #0EA5E9;
+  --accent-rgb: 14, 165, 233;
+  --accent-light: #0284C7;
+  --accent-dark: #0369A1;
   --dark: #071D2F;
   --white: #FFFFFF;
   --surface-1: #FFFFFF;
@@ -66,7 +66,7 @@
   --radius-md: 16px;
   --radius-sm: 12px;
   --glass-bg: rgba(255,255,255,0.6);
-  --glass-border: 1px solid rgba(10,104,245,0.1);
+  --glass-border: 1px solid rgba(14,165,233,0.1);
   --glass-blur: blur(12px) saturate(180%);
 }
 
@@ -92,7 +92,7 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-::selection { background: rgba(10,104,245,0.12); color: var(--dark); }
+::selection { background: rgba(14,165,233,0.12); color: var(--dark); }
 
 /* ── FOCUS STATES ───────────────────────────── */
 *:focus-visible {
@@ -111,12 +111,12 @@ body {
   background: linear-gradient(90deg, var(--accent), var(--accent-light));
   z-index: 10000;
   transition: none;
-  box-shadow: 0 0 10px rgba(10,104,245,0.4);
+  box-shadow: 0 0 10px rgba(14,165,233,0.4);
   pointer-events: none;
 }
 
 /* ══════════════════════════════════════════════
-   NAVBAR — Floating Pill (matches allone.ge)
+   NAVBAR — Floating Pill (matches allonelabs.com)
    ══════════════════════════════════════════════ */
 #navbar {
   position: fixed;
@@ -153,7 +153,7 @@ body {
   border: none;
   transition: background 0.25s var(--ease);
 }
-.nav-home:hover { background: rgba(10,104,245,0.05); }
+.nav-home:hover { background: rgba(14,165,233,0.05); }
 .nav-home img {
   height: 22px; width: 22px;
   object-fit: contain;
@@ -193,7 +193,7 @@ body {
   top: 0;
   height: 100%;
   border-radius: 9999px;
-  background: rgba(10,104,245,0.05);
+  background: rgba(14,165,233,0.05);
   transition: left 0.35s var(--ease-spring), width 0.35s var(--ease-spring);
   pointer-events: none;
   z-index: 0;
@@ -220,7 +220,7 @@ body {
   transform: translateX(-50%);
   width: 48px;
   height: 8px;
-  background: rgba(10,104,245,0.15);
+  background: rgba(14,165,233,0.15);
   filter: blur(6px);
   border-radius: 50%;
   pointer-events: none;
@@ -239,7 +239,7 @@ body {
   z-index: 10001;
   transition: background 0.25s;
 }
-.hamburger:hover { background: rgba(10,104,245,0.05); }
+.hamburger:hover { background: rgba(14,165,233,0.05); }
 .hamburger span {
   display: block;
   width: 18px; height: 2px;
@@ -286,7 +286,7 @@ body {
 }
 .mobile-menu button:hover, .mobile-menu button.active {
   color: var(--accent);
-  background: rgba(10,104,245,0.06);
+  background: rgba(14,165,233,0.06);
 }
 
 @media (max-width: 768px) {
@@ -545,7 +545,7 @@ body {
   position: absolute; top: 50%; left: 50%;
   width: 500px; height: 500px; transform: translate(-50%, -55%);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(10,104,245,0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 70%);
   pointer-events: none; z-index: 0;
   animation: glowPulse 8s ease-in-out infinite;
 }
@@ -581,7 +581,7 @@ body {
 .glass-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
-  border-color: rgba(10,104,245,0.15);
+  border-color: rgba(14,165,233,0.15);
 }
 .glass-card h4 {
   font-family: var(--font-display);
@@ -595,7 +595,7 @@ body {
   padding: 10px 0; margin: 0 -12px; padding-left: 12px; padding-right: 12px;
   border-radius: 6px; transition: background 0.2s;
 }
-.glass-card .spec-row:hover { background: rgba(10,104,245,0.06); }
+.glass-card .spec-row:hover { background: rgba(14,165,233,0.06); }
 .glass-card .spec-label {
   font-family: var(--font-mono); font-size: 11px;
   text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
@@ -623,11 +623,11 @@ body {
   width: 160px; height: 160px;
   object-fit: contain;
   animation: landingBreathe 6s ease-in-out infinite;
-  filter: drop-shadow(0 0 60px rgba(10,104,245,0.15));
+  filter: drop-shadow(0 0 60px rgba(14,165,233,0.15));
 }
 @keyframes landingBreathe {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 60px rgba(10,104,245,0.15)); }
-  50% { transform: scale(1.03); filter: drop-shadow(0 0 80px rgba(10,104,245,0.25)); }
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 60px rgba(14,165,233,0.15)); }
+  50% { transform: scale(1.03); filter: drop-shadow(0 0 80px rgba(14,165,233,0.25)); }
 }
 
 .landing-title {
@@ -664,21 +664,21 @@ body {
 .landing-card:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
-  border-color: rgba(10,104,245,0.2);
+  border-color: rgba(14,165,233,0.2);
 }
 .landing-card:active { transform: translateY(-8px) scale(0.97); }
 
 .landing-card-icon {
   width: 48px; height: 48px;
   border-radius: 14px;
-  background: rgba(10,104,245,0.06);
+  background: rgba(14,165,233,0.06);
   display: flex; align-items: center; justify-content: center;
   font-size: 22px;
   color: var(--accent);
   transition: background 0.3s;
 }
 .landing-card:hover .landing-card-icon {
-  background: rgba(10,104,245,0.12);
+  background: rgba(14,165,233,0.12);
 }
 
 .landing-card-name {
@@ -716,7 +716,7 @@ body {
 }
 .hero-orb--1 {
   width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(10,104,245,0.15), transparent 70%);
+  background: radial-gradient(circle, rgba(14,165,233,0.15), transparent 70%);
   top: -10%; right: -5%;
   animation: orbDrift1 24s ease-in-out infinite;
 }
@@ -728,7 +728,7 @@ body {
 }
 .hero-orb--3 {
   width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(10,104,245,0.08), transparent 70%);
+  background: radial-gradient(circle, rgba(14,165,233,0.08), transparent 70%);
   top: 40%; left: 50%;
   animation: orbDrift3 28s ease-in-out infinite;
 }
@@ -755,10 +755,10 @@ body {
   color: var(--accent);
   margin-bottom: 28px;
   position: relative;
-  background: rgba(10,104,245,0.06);
+  background: rgba(14,165,233,0.06);
   padding: 8px 20px;
   border-radius: 100px;
-  border: 1px solid rgba(10,104,245,0.12);
+  border: 1px solid rgba(14,165,233,0.12);
 }
 
 .hero-title {
@@ -885,7 +885,7 @@ body {
 }
 .color-block:hover {
   transform: translateY(-8px) scale(1.015);
-  box-shadow: 0 24px 64px -12px rgba(7,29,47,0.18), 0 0 0 1px rgba(10,104,245,0.08);
+  box-shadow: 0 24px 64px -12px rgba(7,29,47,0.18), 0 0 0 1px rgba(14,165,233,0.08);
 }
 .color-block:active { transform: translateY(-8px) scale(0.98); transition-duration: 0.1s; }
 .color-block--outlined {
@@ -931,7 +931,7 @@ body {
 .surface-block:hover {
   transform: translateY(-8px) scale(1.01);
   box-shadow: 0 20px 56px -8px rgba(7,29,47,0.1);
-  border-color: rgba(10,104,245,0.15);
+  border-color: rgba(14,165,233,0.15);
 }
 .surface-name {
   font-family: var(--font-display); font-weight: 600; font-size: 18px;
@@ -946,7 +946,7 @@ body {
 .surface-badge {
   position: absolute; top: 20px; right: 24px;
   font-family: var(--font-mono); font-size: 11px; color: var(--accent);
-  background: rgba(10,104,245,0.06);
+  background: rgba(14,165,233,0.06);
   padding: 4px 12px; border-radius: 8px;
 }
 
@@ -966,7 +966,7 @@ body {
 .semantic-pill:hover {
   transform: translateY(-8px);
   box-shadow: 0 16px 40px -8px rgba(7,29,47,0.1);
-  border-color: rgba(10,104,245,0.15);
+  border-color: rgba(14,165,233,0.15);
 }
 .semantic-dot {
   width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
@@ -993,7 +993,7 @@ body {
 .scale-bar {
   height: 72px; border-radius: 100px;
   display: flex; overflow: hidden;
-  box-shadow: 0 4px 24px -4px rgba(10,104,245,0.2), var(--shadow-sm);
+  box-shadow: 0 4px 24px -4px rgba(14,165,233,0.2), var(--shadow-sm);
   position: relative;
 }
 .scale-bar::after {
@@ -1034,7 +1034,7 @@ body {
   text-align: center; cursor: pointer; padding: 8px 0;
   border-radius: 10px; transition: background 0.3s;
 }
-.scale-stop:hover { background: rgba(10,104,245,0.04); }
+.scale-stop:hover { background: rgba(14,165,233,0.04); }
 .scale-stop-num {
   font-family: var(--font-display); font-weight: 600; font-size: 13px;
   color: var(--dark); margin-bottom: 2px;
@@ -1072,7 +1072,7 @@ body {
   cursor: pointer; padding: 8px 16px; border-radius: 12px;
   transition: background 0.3s;
 }
-.ratio-item:hover { background: rgba(10,104,245,0.04); }
+.ratio-item:hover { background: rgba(14,165,233,0.04); }
 .ratio-dot {
   width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
   transition: box-shadow 0.3s, transform 0.3s;
@@ -1194,7 +1194,7 @@ body {
 }
 .weight-row::before {
   content: ''; position: absolute; left: 0; top: 0;
-  width: 0; height: 100%; background: rgba(10,104,245,0.06);
+  width: 0; height: 100%; background: rgba(14,165,233,0.06);
   border-radius: 8px; transition: width 0.4s var(--ease-out-expo);
 }
 .weight-row:hover::before { width: 100%; }
@@ -1251,7 +1251,7 @@ body {
   color: #E2E8F0; padding-left: 48px;
 }
 .code-block .keyword { color: #7DD3FC; }
-.code-block .function { color: #93C5FD; }
+.code-block .function { color: #7DD3FC; }
 .code-block .string { color: #86EFAC; }
 .code-block .property { color: #FDE68A; }
 .code-block .bracket { color: #A5B4C4; }
@@ -1278,7 +1278,7 @@ body {
   border-left: 3px solid transparent;
 }
 .scale-row:hover {
-  padding-left: 28px; background: rgba(10,104,245,0.03);
+  padding-left: 28px; background: rgba(14,165,233,0.03);
   border-left-color: var(--accent);
 }
 .scale-row .scale-detail {
@@ -1289,7 +1289,7 @@ body {
 }
 .scale-row.expanded .scale-detail { max-height: 80px; opacity: 1; margin-top: 12px; }
 .scale-row.expanded {
-  background: rgba(10,104,245,0.03);
+  background: rgba(14,165,233,0.03);
   border-left-color: var(--accent); padding: 24px 16px 24px 28px;
 }
 .scale-text {
@@ -1482,10 +1482,10 @@ body {
   font-family: var(--font-mono); font-size: 15px; font-weight: 700;
   color: var(--muted); width: 90px; text-align: right;
 }
-.funnel-bar.level-0 { background: linear-gradient(90deg, #EFF6FF, #DBEAFE); color: var(--dark); }
-.funnel-bar.level-1 { background: linear-gradient(90deg, #DBEAFE, #BFDBFE); color: var(--dark); }
-.funnel-bar.level-2 { background: linear-gradient(90deg, #BFDBFE, #93C5FD); color: var(--dark); }
-.funnel-bar.level-3 { background: linear-gradient(90deg, #93C5FD, #60A5FA); color: var(--dark); }
+.funnel-bar.level-0 { background: linear-gradient(90deg, #F0F9FF, #E0F2FE); color: var(--dark); }
+.funnel-bar.level-1 { background: linear-gradient(90deg, #E0F2FE, #BAE6FD); color: var(--dark); }
+.funnel-bar.level-2 { background: linear-gradient(90deg, #BAE6FD, #7DD3FC); color: var(--dark); }
+.funnel-bar.level-3 { background: linear-gradient(90deg, #7DD3FC, #38BDF8); color: var(--dark); }
 .funnel-bar.level-4 { background: linear-gradient(90deg, var(--accent), #3B8DFF); color: var(--white); box-shadow: 0 4px 20px rgba(var(--accent-rgb),0.3); }
 
 /* Journey */
@@ -1543,7 +1543,7 @@ body {
   transition: opacity 0.7s var(--ease-out-expo), transform 0.7s var(--ease-spring), box-shadow 0.5s;
 }
 .peso-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 20px 56px rgba(0,0,0,0.1); }
-.peso-card.paid { background: linear-gradient(135deg, #EFF6FF, #FFFFFF); }
+.peso-card.paid { background: linear-gradient(135deg, #F0F9FF, #FFFFFF); }
 .peso-card.earned { background: linear-gradient(135deg, #F0FDF4, #F8FDF9); }
 .peso-card.shared { background: linear-gradient(135deg, #FFFBEB, #FEFDF5); }
 .peso-card.owned { background: linear-gradient(135deg, #0D2640, #122E4D); color: var(--white); }
@@ -1629,7 +1629,7 @@ body {
   position: absolute; top: 50%; left: 50%;
   width: 600px; height: 600px;
   transform: translate(-50%, -55%); border-radius: 50%;
-  background: radial-gradient(circle, rgba(10,104,245,0.07) 0%, rgba(10,104,245,0.02) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(14,165,233,0.07) 0%, rgba(14,165,233,0.02) 40%, transparent 70%);
   animation: glowPulse 8s ease-in-out infinite; pointer-events: none; z-index: 0;
 }
 @keyframes glowPulse {
@@ -1639,7 +1639,7 @@ body {
 .particles { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .particle {
   position: absolute; width: 4px; height: 4px; border-radius: 50%;
-  background: rgba(10,104,245,0.2); animation: particleFloat linear infinite;
+  background: rgba(14,165,233,0.2); animation: particleFloat linear infinite;
 }
 @keyframes particleFloat {
   0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
@@ -1650,12 +1650,12 @@ body {
 
 .logo-hero-logo {
   width: clamp(140px, 18vw, 240px); height: auto;
-  opacity: 0; filter: blur(12px) drop-shadow(0 20px 60px rgba(10,104,245,0.12));
+  opacity: 0; filter: blur(12px) drop-shadow(0 20px 60px rgba(14,165,233,0.12));
   transform: scale(1.2);
   animation: heroLogoIn 1.4s var(--ease) 0.2s forwards, heroBreathe 8s ease-in-out 2s infinite;
   position: relative; z-index: 1;
 }
-@keyframes heroLogoIn { to { opacity: 1; filter: blur(0) drop-shadow(0 20px 60px rgba(10,104,245,0.12)); transform: scale(1); } }
+@keyframes heroLogoIn { to { opacity: 1; filter: blur(0) drop-shadow(0 20px 60px rgba(14,165,233,0.12)); transform: scale(1); } }
 @keyframes heroBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.025); } }
 .logo-hero-wordmark {
   font-family: var(--font-display); font-size: clamp(52px, 8vw, 100px);
@@ -1690,12 +1690,12 @@ body {
 .variation-card.light-bg {
   background: var(--glass-bg);
   backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border-color: rgba(255,255,255,0.35); box-shadow: 0 2px 40px rgba(10,104,245,0.06);
+  border-color: rgba(255,255,255,0.35); box-shadow: 0 2px 40px rgba(14,165,233,0.06);
 }
 .variation-card.light-bg:hover {
   transform: translateY(-12px);
-  box-shadow: 0 20px 80px rgba(10,104,245,0.14), 0 0 0 1px rgba(10,104,245,0.15);
-  border-color: rgba(10,104,245,0.2);
+  box-shadow: 0 20px 80px rgba(14,165,233,0.14), 0 0 0 1px rgba(14,165,233,0.15);
+  border-color: rgba(14,165,233,0.2);
 }
 .variation-card.dark-bg {
   background: rgba(7,29,47,0.55);
@@ -1704,9 +1704,9 @@ body {
 }
 .variation-card.dark-bg:hover {
   transform: translateY(-12px);
-  box-shadow: 0 20px 60px rgba(7,29,47,0.35), 0 0 0 1px rgba(10,104,245,0.2);
+  box-shadow: 0 20px 60px rgba(7,29,47,0.35), 0 0 0 1px rgba(14,165,233,0.2);
 }
-.variation-card img { height: 64px; width: auto; object-fit: contain; transition: transform 0.3s var(--ease); }
+.variation-card img { height: 88px; width: auto; object-fit: contain; transition: transform 0.3s var(--ease); }
 .variation-card:hover img { transform: scale(1.06); }
 .variation-card .wordmark {
   font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: -0.02em;
@@ -1768,7 +1768,7 @@ body {
 }
 .clearspace-zone { fill: transparent; transition: fill 0.4s; rx: 12; }
 .clearspace-container:hover .draw-dash.in { opacity: 0.55; }
-.clearspace-container:hover .clearspace-zone { fill: rgba(10,104,245,0.1); }
+.clearspace-container:hover .clearspace-zone { fill: rgba(14,165,233,0.1); }
 
 /* Minimum sizes */
 .sizes-row { display: flex; align-items: flex-end; justify-content: center; gap: clamp(24px, 4vw, 64px); flex-wrap: wrap; }
@@ -1888,10 +1888,10 @@ body {
 .bg-navy { background: var(--dark); box-shadow: 0 8px 40px rgba(7,29,47,0.25); }
 .bg-navy .wordmark { color: var(--white); }
 .bg-navy .bg-label { color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); }
-.bg-accent { background: var(--accent); box-shadow: 0 8px 40px rgba(10,104,245,0.25); }
+.bg-accent { background: var(--accent); box-shadow: 0 8px 40px rgba(14,165,233,0.25); }
 .bg-accent .wordmark { color: var(--white); }
 .bg-accent .bg-label { color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.12); }
-.bg-gradient { background: linear-gradient(135deg, #071D2F 0%, #0A68F5 100%); }
+.bg-gradient { background: linear-gradient(135deg, #071D2F 0%, #0EA5E9 100%); }
 .bg-gradient .wordmark { color: var(--white); }
 .bg-gradient .bg-label { color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.1); }
 .bg-photo {
@@ -1900,8 +1900,8 @@ body {
 }
 .bg-photo::after {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at 20% 80%, rgba(10,104,245,0.12) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(10,104,245,0.08) 0%, transparent 50%);
+  background: radial-gradient(circle at 20% 80%, rgba(14,165,233,0.12) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(14,165,233,0.08) 0%, transparent 50%);
   border-radius: var(--radius); pointer-events: none;
 }
 .bg-photo img, .bg-photo .wordmark, .bg-photo .bg-label { position: relative; z-index: 1; }
@@ -1917,7 +1917,7 @@ body {
    ══════════════════════════════════════════════ */
 .template-card {
   position: relative; border-radius: 24px;
-  background: rgba(255,255,255,0.6); border: 1px solid rgba(10,104,245,0.06);
+  background: rgba(255,255,255,0.6); border: 1px solid rgba(14,165,233,0.06);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   padding: 40px; box-shadow: var(--shadow-lg);
   transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
@@ -2000,7 +2000,7 @@ body {
 .linkedin-image::before {
   content: ''; position: absolute; top: -50%; right: -30%;
   width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(10,104,245,0.2) 0%, transparent 70%); border-radius: 50%;
+  background: radial-gradient(circle, rgba(14,165,233,0.2) 0%, transparent 70%); border-radius: 50%;
 }
 .linkedin-image .stat-big {
   font-family: var(--font-display); font-size: 72px; font-weight: 900;
@@ -2060,11 +2060,11 @@ body {
 }
 .story-screen::before {
   content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
-  background: linear-gradient(to top, rgba(10,104,245,0.15), transparent); pointer-events: none;
+  background: linear-gradient(to top, rgba(14,165,233,0.15), transparent); pointer-events: none;
 }
 .story-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .story-particle {
-  position: absolute; border-radius: 50%; background: rgba(10,104,245,0.3);
+  position: absolute; border-radius: 50%; background: rgba(14,165,233,0.3);
   animation: storyParticleFloat 8s ease-in-out infinite;
 }
 .story-particle:nth-child(1) { width: 60px; height: 60px; top: 15%; left: 10%; }
@@ -2078,7 +2078,7 @@ body {
 .story-stat {
   font-family: var(--font-display); font-size: 96px; font-weight: 900;
   color: var(--white); letter-spacing: -0.04em; line-height: 1;
-  position: relative; z-index: 2; text-shadow: 0 4px 30px rgba(10,104,245,0.3);
+  position: relative; z-index: 2; text-shadow: 0 4px 30px rgba(14,165,233,0.3);
 }
 .story-stat-label {
   font-size: 20px; color: rgba(255,255,255,0.7); font-weight: 500;
@@ -2102,7 +2102,7 @@ body {
 }
 .ig-post-mockup:hover { transform: translateY(-8px); box-shadow: var(--shadow-float); }
 .ig-post-header { display: flex; align-items: center; gap: 10px; padding: 14px 16px; }
-.ig-post-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); padding: 2px; flex-shrink: 0; }
+.ig-post-avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent); padding: 2px; flex-shrink: 0; }
 .ig-post-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: contain; }
 .ig-post-username { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--dark); }
 .ig-post-image { width: 100%; aspect-ratio: 1/1; position: relative; overflow: hidden; }
@@ -2294,7 +2294,7 @@ body {
 <!-- Navbar — Floating Pill -->
 <nav id="navbar">
   <button class="nav-home" id="navHome" aria-label="Home">
-    <img class="logo-img" alt="ALLONE">
+    <img class="logo-img" alt="AllOne">
   </button>
   <div class="nav-tabs" id="navTabs">
     <button class="nav-tab" data-page="colors">Colors</button>
@@ -2322,7 +2322,7 @@ body {
      LANDING PAGE
      ══════════════════════════════════════════════ -->
 <div id="page-landing" class="page">
-  <img class="landing-logo logo-img anim-blur" data-delay="0" alt="ALLONE">
+  <img class="landing-logo logo-img anim-blur" data-delay="0" alt="AllOne">
   <h1 class="landing-title anim-blur" data-delay="1">Brand System</h1>
   <div class="landing-cards">
     <a class="landing-card anim-blur" data-delay="2" data-nav="colors" href="#colors">
@@ -2361,162 +2361,13 @@ body {
      PAGE 1: COLORS
      ══════════════════════════════════════════════ -->
 <div id="page-colors" class="page" style="display:none;">
-
-  <!-- Hero -->
-  <div class="page-hero colors-hero">
-    <div class="hero-orb hero-orb--1"></div>
-    <div class="hero-orb hero-orb--2"></div>
-    <div class="hero-orb hero-orb--3"></div>
-    <div class="hero-badge anim-blur" data-delay="0">Color System</div>
-    <h1 class="hero-title anim-blur" data-delay="1"><span class="gradient-text">Cold Clarity</span></h1>
-    <p class="hero-subtitle anim-blur" data-delay="2">A restrained palette built on clarity and trust. Electric blue commands attention, dark navy grounds every composition, and tinted surfaces breathe light into the system.</p>
-    <div class="scroll-indicator anim-blur" data-delay="3"><span>Scroll</span><div class="scroll-line"></div></div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:24px;padding:40px;">
+    <div style="font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">Full Page</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(32px,5vw,48px);font-weight:800;letter-spacing:-0.03em;color:var(--dark);text-align:center;">Color System</h2>
+    <p style="font-family:var(--font-body);font-size:16px;color:var(--muted);text-align:center;max-width:480px;line-height:1.7;">This section has been moved to its own dedicated page for the best experience.</p>
+    <a href="/brand-assets/colors/color-palette.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:14px 28px;background:var(--accent);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border-radius:100px;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(14,165,233,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      View Color System &rarr;</a>
   </div>
-
-  <!-- Primary Colors -->
-  <section class="page-section">
-    <div class="container">
-      <div class="section-label anim-blur" data-delay="0">01 / Primary Palette</div>
-      <h2 class="section-title anim-blur" data-delay="1">Three pillars of identity</h2>
-      <p class="section-desc anim-blur" data-delay="2">Every color earns its place. Blue for action, navy for authority, white for space.</p>
-      <div class="color-grid">
-        <div class="color-block anim-scale" data-delay="3" style="background:#0A68F5;" data-hex="#0A68F5" tabindex="0" role="button" aria-label="Copy Electric Blue hex">
-          <span class="color-name" style="color:#fff;">Electric Blue</span>
-          <span class="color-hex" style="color:rgba(255,255,255,0.8);">#0A68F5</span>
-        </div>
-        <div class="color-block anim-scale" data-delay="4" style="background:#071D2F;" data-hex="#071D2F" tabindex="0" role="button">
-          <span class="color-name" style="color:#fff;">Dark Navy</span>
-          <span class="color-hex" style="color:rgba(255,255,255,0.7);">#071D2F</span>
-        </div>
-        <div class="color-block color-block--outlined anim-scale" data-delay="5" style="background:#FFFFFF;" data-hex="#FFFFFF" tabindex="0" role="button">
-          <span class="color-name">Pure White</span>
-          <span class="color-hex">#FFFFFF</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Surfaces -->
-  <section class="page-section" style="background:var(--surface-1);">
-    <div class="container">
-      <div class="section-label anim-blur" data-delay="0">02 / Tinted Surfaces</div>
-      <h2 class="section-title anim-blur" data-delay="1">Layered depth</h2>
-      <p class="section-desc anim-blur" data-delay="2">Inverted surface model &mdash; white card surfaces float above a cool canvas background (#F4F7FB).</p>
-      <div class="surface-grid">
-        <div class="surface-block anim-scale" data-delay="3" style="background:#FFFFFF;" data-hex="#FFFFFF" tabindex="0" role="button">
-          <span class="surface-badge">surface-1</span>
-          <span class="surface-name">Pure White</span><span class="surface-hex">#FFFFFF</span>
-        </div>
-        <div class="surface-block anim-scale" data-delay="4" style="background:#FFFFFF;" data-hex="#FFFFFF" tabindex="0" role="button">
-          <span class="surface-badge">surface-2</span>
-          <span class="surface-name">Pure White</span><span class="surface-hex">#FFFFFF</span>
-        </div>
-        <div class="surface-block anim-scale" data-delay="5" style="background:#FFFFFF;" data-hex="#FFFFFF" tabindex="0" role="button">
-          <span class="surface-badge">surface-3</span>
-          <span class="surface-name">Pure White</span><span class="surface-hex">#FFFFFF</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Semantic -->
-  <section class="page-section">
-    <div class="container">
-      <div class="section-label anim-blur" data-delay="0">03 / Semantic Colors</div>
-      <h2 class="section-title anim-blur" data-delay="1">Purposeful signals</h2>
-      <p class="section-desc anim-blur" data-delay="2">Colors that communicate system state at a glance.</p>
-      <div class="semantic-grid">
-        <div class="semantic-pill anim-slide-left" data-delay="3" data-hex="#22C55E" tabindex="0" role="button">
-          <div class="semantic-dot semantic-dot--success"></div>
-          <div><div class="semantic-label">Success</div><div class="semantic-hex-label">#22C55E</div></div>
-        </div>
-        <div class="semantic-pill anim-slide-left" data-delay="4" data-hex="#EAB308" tabindex="0" role="button">
-          <div class="semantic-dot semantic-dot--warning"></div>
-          <div><div class="semantic-label">Warning</div><div class="semantic-hex-label">#EAB308</div></div>
-        </div>
-        <div class="semantic-pill anim-slide-left" data-delay="5" data-hex="#EF4444" tabindex="0" role="button">
-          <div class="semantic-dot semantic-dot--error"></div>
-          <div><div class="semantic-label">Error</div><div class="semantic-hex-label">#EF4444</div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Accent Scale -->
-  <section class="page-section" style="background:var(--surface-1);">
-    <div class="container">
-      <div class="section-label anim-blur" data-delay="0">04 / Accent Scale</div>
-      <h2 class="section-title anim-blur" data-delay="1">11-stop gradient</h2>
-      <p class="section-desc anim-blur" data-delay="2">From near-white to deep navy, an interactive scale for every context.</p>
-      <div class="scale-bar-wrapper anim-blur" data-delay="3">
-        <div class="scale-bar">
-          <div class="scale-bar-segment" style="background:#EBF3FE;" data-hex="#EBF3FE"><div class="scale-tooltip">50 &middot; #EBF3FE</div></div>
-          <div class="scale-bar-segment" style="background:#C5DBFA;" data-hex="#C5DBFA"><div class="scale-tooltip">100 &middot; #C5DBFA</div></div>
-          <div class="scale-bar-segment" style="background:#9EC3F7;" data-hex="#9EC3F7"><div class="scale-tooltip">200 &middot; #9EC3F7</div></div>
-          <div class="scale-bar-segment" style="background:#78ABF3;" data-hex="#78ABF3"><div class="scale-tooltip">300 &middot; #78ABF3</div></div>
-          <div class="scale-bar-segment" style="background:#5192F0;" data-hex="#5192F0"><div class="scale-tooltip">400 &middot; #5192F0</div></div>
-          <div class="scale-bar-segment" style="background:#0A68F5;" data-hex="#0A68F5"><div class="scale-tooltip">500 &middot; #0A68F5</div></div>
-          <div class="scale-bar-segment" style="background:#0858D0;" data-hex="#0858D0"><div class="scale-tooltip">600 &middot; #0858D0</div></div>
-          <div class="scale-bar-segment" style="background:#0648AB;" data-hex="#0648AB"><div class="scale-tooltip">700 &middot; #0648AB</div></div>
-          <div class="scale-bar-segment" style="background:#043886;" data-hex="#043886"><div class="scale-tooltip">800 &middot; #043886</div></div>
-          <div class="scale-bar-segment" style="background:#032861;" data-hex="#032861"><div class="scale-tooltip">900 &middot; #032861</div></div>
-          <div class="scale-bar-segment" style="background:#071D2F;" data-hex="#071D2F"><div class="scale-tooltip">950 &middot; #071D2F</div></div>
-        </div>
-        <div class="scale-stops">
-          <div class="scale-stop" data-hex="#EBF3FE"><div class="scale-stop-num">50</div><div class="scale-stop-hex">#EBF3FE</div></div>
-          <div class="scale-stop" data-hex="#C5DBFA"><div class="scale-stop-num">100</div><div class="scale-stop-hex">#C5DBFA</div></div>
-          <div class="scale-stop" data-hex="#9EC3F7"><div class="scale-stop-num">200</div><div class="scale-stop-hex">#9EC3F7</div></div>
-          <div class="scale-stop" data-hex="#78ABF3"><div class="scale-stop-num">300</div><div class="scale-stop-hex">#78ABF3</div></div>
-          <div class="scale-stop" data-hex="#5192F0"><div class="scale-stop-num">400</div><div class="scale-stop-hex">#5192F0</div></div>
-          <div class="scale-stop" data-hex="#0A68F5"><div class="scale-stop-num">500</div><div class="scale-stop-hex">#0A68F5</div></div>
-          <div class="scale-stop" data-hex="#0858D0"><div class="scale-stop-num">600</div><div class="scale-stop-hex">#0858D0</div></div>
-          <div class="scale-stop" data-hex="#0648AB"><div class="scale-stop-num">700</div><div class="scale-stop-hex">#0648AB</div></div>
-          <div class="scale-stop" data-hex="#043886"><div class="scale-stop-num">800</div><div class="scale-stop-hex">#043886</div></div>
-          <div class="scale-stop" data-hex="#032861"><div class="scale-stop-num">900</div><div class="scale-stop-hex">#032861</div></div>
-          <div class="scale-stop" data-hex="#071D2F"><div class="scale-stop-num">950</div><div class="scale-stop-hex">#071D2F</div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Color Ratios -->
-  <section class="page-section">
-    <div class="container">
-      <div class="section-label anim-blur" data-delay="0">05 / Color Ratios</div>
-      <h2 class="section-title anim-blur" data-delay="1">The 60/25/10/5 rule</h2>
-      <p class="section-desc anim-blur" data-delay="2">How color distributes across every ALLONE composition.</p>
-      <div class="ratio-visual">
-        <div class="ratio-bar-container anim-blur" data-delay="3">
-          <div class="ratio-bar" id="ratio-bar" data-animated="false">
-            <div class="ratio-segment" data-target="60" data-color="white" style="flex-basis:60%;background:#FFFFFF;border-right:1px solid var(--border);">
-              <span class="ratio-segment-label" style="color:var(--dark);">60%</span>
-            </div>
-            <div class="ratio-segment" data-target="25" data-color="surface" style="flex-basis:25%;background:#FFFFFF;border-right:1px solid var(--border);">
-              <span class="ratio-segment-label" style="color:var(--dark);">25%</span>
-            </div>
-            <div class="ratio-segment" data-target="10" data-color="navy" style="flex-basis:10%;background:#071D2F;">
-              <span class="ratio-segment-label" style="color:#fff;">10%</span>
-            </div>
-            <div class="ratio-segment" data-target="5" data-color="accent" style="flex-basis:5%;background:#0A68F5;">
-              <span class="ratio-segment-label" style="color:#fff;">5%</span>
-            </div>
-          </div>
-        </div>
-        <div class="ratio-legend anim-blur" data-delay="4">
-          <div class="ratio-item" data-target-color="white"><div class="ratio-dot ratio-dot--outlined" style="background:#fff;"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="60">0%</span><span class="ratio-name">White Space</span></div></div>
-          <div class="ratio-item" data-target-color="surface"><div class="ratio-dot" style="background:#FFFFFF;border:1px solid var(--border);"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="25">0%</span><span class="ratio-name">Surfaces</span></div></div>
-          <div class="ratio-item" data-target-color="navy"><div class="ratio-dot" style="background:#071D2F;"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="10">0%</span><span class="ratio-name">Dark Navy</span></div></div>
-          <div class="ratio-item" data-target-color="accent"><div class="ratio-dot" style="background:#0A68F5;"></div><div class="ratio-text"><span class="ratio-pct" data-count-to="5">0%</span><span class="ratio-name">Accent Blue</span></div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="page-footer">
-    <img class="footer-logo logo-img" alt="ALLONE">
-    <p>ALLONE &mdash; Brand Strategy System &middot; 2026</p>
-  </footer>
 </div>
 
 
@@ -2524,1175 +2375,52 @@ body {
      PAGE: TYPOGRAPHY
      ═══════════════════════════════════════════════════════════════════ -->
 <div class="page" id="page-typography" style="display:none;">
-
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="hero-watermark">Typography</div>
-    <div class="container" style="text-align:center;">
-      <span class="mono-label anim-blur" data-delay="1">TYPOGRAPHY SPECIMEN</span>
-      <h1 class="page-hero-title anim-blur" data-delay="2">
-        <span class="gradient-text">Three voices.</span><br>One system.
-      </h1>
-      <p class="page-hero-sub anim-blur" data-delay="3">A typographic system designed for clarity, precision, and presence. Three carefully selected families working in concert to communicate with purpose.</p>
-    </div>
-    <div class="scroll-indicator anim-blur" data-delay="5">
-      <span>Scroll</span>
-      <div class="scroll-line"></div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 1: Display — General Sans -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">01 — Display</span>
-      <div class="display-giant anim-blur" data-delay="1">General<br>Sans</div>
-
-      <div class="two-col">
-        <div>
-          <div class="alphabet-row anim-blur" data-delay="1" id="alphaUpper1">ABCDEFGHIJKLM</div>
-          <div class="alphabet-row anim-blur" data-delay="2" id="alphaUpper2">NOPQRSTUVWXYZ</div>
-          <div class="alphabet-row alphabet-secondary anim-blur" data-delay="3" id="alphaLower" style="margin-top:32px;">abcdefghijklmnopqrstuvwxyz</div>
-          <div class="alphabet-row alphabet-secondary anim-blur" data-delay="4" id="alphaNum">0123456789 &amp; @</div>
-        </div>
-        <div class="glass-card anim-scale" data-delay="2">
-          <h4>Specifications</h4>
-          <div class="spec-row"><span class="spec-label">Family</span><span class="spec-value">General Sans</span></div>
-          <div class="spec-row"><span class="spec-label">Weights</span><span class="spec-value">500 &middot; 600 &middot; 700</span></div>
-          <div class="spec-row"><span class="spec-label">Line Height</span><span class="spec-value">1.05</span></div>
-          <div class="spec-row"><span class="spec-label">Tracking</span><span class="spec-value">-0.03em</span></div>
-          <div class="spec-row"><span class="spec-label">Role</span><span class="spec-value">Headings, hero text, feature titles</span></div>
-          <div class="spec-row"><span class="spec-label">Fallback</span><span class="spec-value">Inter, system-ui</span></div>
-        </div>
-      </div>
-
-      <div class="heading-samples">
-        <span class="mono-label anim-blur" style="margin-bottom:32px;display:block;">Heading Hierarchy</span>
-        <div class="heading-sample anim-slide-left" data-delay="1" data-css="font: 600 48px/1.05 'General Sans'; letter-spacing: -0.03em;">
-          <span class="size-label">H1 &middot; 48px</span>
-          <span class="sample-text" style="font-size:48px;">Intelligence at scale</span>
-          <span class="css-tooltip">font: 600 48px/1.05 General Sans; letter-spacing: -0.03em</span>
-        </div>
-        <div class="heading-sample anim-slide-left" data-delay="2" data-css="font: 600 36px/1.05 'General Sans'; letter-spacing: -0.03em;">
-          <span class="size-label">H2 &middot; 36px</span>
-          <span class="sample-text" style="font-size:36px;">Enterprise-grade automation</span>
-          <span class="css-tooltip">font: 600 36px/1.05 General Sans; letter-spacing: -0.03em</span>
-        </div>
-        <div class="heading-sample anim-slide-left" data-delay="3" data-css="font: 600 24px/1.15 'General Sans'; letter-spacing: -0.02em;">
-          <span class="size-label">H3 &middot; 24px</span>
-          <span class="sample-text" style="font-size:24px;">Converging AI with local expertise</span>
-          <span class="css-tooltip">font: 600 24px/1.15 General Sans; letter-spacing: -0.02em</span>
-        </div>
-        <div class="heading-sample anim-slide-left" data-delay="4" data-css="font: 600 20px/1.2 'General Sans'; letter-spacing: -0.02em;">
-          <span class="size-label">H4 &middot; 20px</span>
-          <span class="sample-text" style="font-size:20px;">Delivering the future of work</span>
-          <span class="css-tooltip">font: 600 20px/1.2 General Sans; letter-spacing: -0.02em</span>
-        </div>
-        <div class="heading-sample anim-slide-left" data-delay="5" data-css="font: 600 18px/1.3 'General Sans'; letter-spacing: -0.01em;">
-          <span class="size-label">H5 &middot; 18px</span>
-          <span class="sample-text" style="font-size:18px;">Precision-driven solutions</span>
-          <span class="css-tooltip">font: 600 18px/1.3 General Sans; letter-spacing: -0.01em</span>
-        </div>
-        <div class="heading-sample anim-slide-left" data-delay="6" data-css="font: 600 16px/1.4 'General Sans'; letter-spacing: -0.01em;">
-          <span class="size-label">H6 &middot; 16px</span>
-          <span class="sample-text" style="font-size:16px;">Built for clarity</span>
-          <span class="css-tooltip">font: 600 16px/1.4 General Sans; letter-spacing: -0.01em</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 2: Body — Plus Jakarta Sans -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">02 — Body</span>
-      <div class="body-giant anim-blur" data-delay="1">Plus Jakarta<br>Sans</div>
-
-      <div class="two-col">
-        <div>
-          <p class="body-paragraph anim-blur" data-delay="2">We converge AI intelligence with local expertise to deliver enterprise-grade automation at 90% less cost. Every interaction should feel like the future, today.</p>
-          <p class="body-paragraph anim-blur" data-delay="3" style="color:var(--muted);">Typography is the voice of design. The right typeface doesn't just carry words — it carries intent, emotion, and trust. Plus Jakarta Sans speaks with warmth and clarity, making complex ideas feel approachable.</p>
-        </div>
-        <div class="glass-card anim-scale" data-delay="3">
-          <h4>Specifications</h4>
-          <div class="spec-row"><span class="spec-label">Family</span><span class="spec-value">Plus Jakarta Sans</span></div>
-          <div class="spec-row"><span class="spec-label">Weights</span><span class="spec-value">300 &middot; 400 &middot; 500 &middot; 600 &middot; 700</span></div>
-          <div class="spec-row"><span class="spec-label">Base Size</span><span class="spec-value">16px</span></div>
-          <div class="spec-row"><span class="spec-label">Line Height</span><span class="spec-value">1.7</span></div>
-          <div class="spec-row"><span class="spec-label">Tracking</span><span class="spec-value">-0.01em</span></div>
-          <div class="spec-row"><span class="spec-label">Role</span><span class="spec-value">Body text, descriptions, UI</span></div>
-          <div class="spec-row"><span class="spec-label">Source</span><span class="spec-value">Google Fonts</span></div>
-        </div>
-      </div>
-
-      <div class="weight-demo">
-        <span class="mono-label anim-blur" style="margin-bottom:16px;display:block;">Weight Variations</span>
-        <div class="weight-controls anim-blur" data-delay="1">
-          <button class="weight-btn active" data-weight="all" tabindex="0">All</button>
-          <button class="weight-btn" data-weight="300" tabindex="0">Light 300</button>
-          <button class="weight-btn" data-weight="400" tabindex="0">Regular 400</button>
-          <button class="weight-btn" data-weight="500" tabindex="0">Medium 500</button>
-          <button class="weight-btn" data-weight="600" tabindex="0">Semibold 600</button>
-          <button class="weight-btn" data-weight="700" tabindex="0">Bold 700</button>
-        </div>
-        <div id="weightRows">
-          <div class="weight-row anim-slide-left" data-delay="2" data-w="300">
-            <span class="weight-label">Light &middot; 300</span>
-            <span class="weight-text" style="font-weight:300;">The quiet confidence of restraint — when less becomes infinitely more.</span>
-          </div>
-          <div class="weight-row anim-slide-left" data-delay="3" data-w="400">
-            <span class="weight-label">Regular &middot; 400</span>
-            <span class="weight-text" style="font-weight:400;">We converge AI intelligence with local expertise to deliver enterprise-grade automation.</span>
-          </div>
-          <div class="weight-row anim-slide-left" data-delay="4" data-w="500">
-            <span class="weight-label">Medium &middot; 500</span>
-            <span class="weight-text" style="font-weight:500;">Clarity and precision define every interaction, every decision, every outcome.</span>
-          </div>
-          <div class="weight-row anim-slide-left" data-delay="5" data-w="600">
-            <span class="weight-label">Semibold &middot; 600</span>
-            <span class="weight-text" style="font-weight:600;">Purpose-built systems that transform how businesses operate at scale.</span>
-          </div>
-          <div class="weight-row anim-slide-left" data-delay="6" data-w="700">
-            <span class="weight-label">Bold &middot; 700</span>
-            <span class="weight-text" style="font-weight:700;">The future is not an abstraction. It is an architecture we are building now.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 3: Mono — JetBrains Mono -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">03 — Mono</span>
-      <div class="mono-giant anim-blur" data-delay="1">JetBrains<br>Mono</div>
-
-      <div class="code-block anim-scale" data-delay="2" id="codeBlock">
-        <button class="copy-btn" id="codeCopy" tabindex="0" aria-label="Copy code">Copy</button>
-        <div class="line-numbers">1<br>2<br>3<br>4<br>5</div>
-        <div class="window-dots"><span></span><span></span><span></span></div>
-        <pre id="codeContent"><span class="comment">// AI convergence — the allone way</span>
-<span class="keyword">const</span> <span class="function">future</span> <span class="bracket">=</span> <span class="keyword">await</span> allone.<span class="function">automate</span><span class="bracket">({</span>
-  <span class="property">services</span><span class="bracket">:</span> <span class="bracket">[</span><span class="string">'chatbot'</span><span class="bracket">,</span> <span class="string">'workflow'</span><span class="bracket">,</span> <span class="string">'custom-ai'</span><span class="bracket">]</span><span class="bracket">,</span>
-  <span class="property">market</span><span class="bracket">:</span> <span class="string">'georgia'</span><span class="bracket">,</span>
-  <span class="property">cost</span><span class="bracket">:</span> <span class="string">'enterprise * 0.10'</span>
-<span class="bracket">}</span><span class="bracket">)</span><span class="bracket">;</span></pre>
-      </div>
-
-      <div class="mono-label-showcase anim-blur" data-delay="3">AI CONVERGENCE AGENCY</div>
-
-      <div style="margin-top:64px;">
-        <div class="two-col-equal">
-          <div class="glass-card anim-scale" data-delay="3">
-            <h4>Specifications</h4>
-            <div class="spec-row"><span class="spec-label">Family</span><span class="spec-value">JetBrains Mono</span></div>
-            <div class="spec-row"><span class="spec-label">Weights</span><span class="spec-value">300 &middot; 400 &middot; 500 &middot; 600</span></div>
-            <div class="spec-row"><span class="spec-label">Label Size</span><span class="spec-value">0.75rem (12px)</span></div>
-            <div class="spec-row"><span class="spec-label">Tracking</span><span class="spec-value">0.05em</span></div>
-            <div class="spec-row"><span class="spec-label">Transform</span><span class="spec-value">UPPERCASE</span></div>
-          </div>
-          <div class="glass-card anim-scale" data-delay="4">
-            <h4>Usage</h4>
-            <div class="spec-row"><span class="spec-label">Primary</span><span class="spec-value">Section labels, tags</span></div>
-            <div class="spec-row"><span class="spec-label">Secondary</span><span class="spec-value">Code blocks, data</span></div>
-            <div class="spec-row"><span class="spec-label">Tertiary</span><span class="spec-value">Navigation, metadata</span></div>
-            <div class="spec-row"><span class="spec-label">Source</span><span class="spec-value">Google Fonts</span></div>
-            <div class="spec-row"><span class="spec-label">Ligatures</span><span class="spec-value">Enabled</span></div>
-            <div class="spec-row"><span class="spec-label">Fallback</span><span class="spec-value">SF Mono, Fira Code</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 4: Type Scale -->
-  <section class="scale-section">
-    <div class="container">
-      <span class="mono-label anim-blur">04 — Type Scale</span>
-      <h2 class="anim-blur" data-delay="1" style="font-family:var(--font-display);font-size:clamp(36px,5vw,48px);font-weight:700;letter-spacing:-0.03em;line-height:1.05;margin-bottom:80px;color:var(--dark);">The complete<br>hierarchy.</h2>
-
-      <div class="scale-row anim-slide-left" data-delay="1" data-css="font: 700 72px/1.02 'General Sans'; letter-spacing: -0.035em" tabindex="0" role="button" aria-label="Hero type scale, click to copy CSS">
-        <div>
-          <span class="scale-text" style="font-size:clamp(36px,5vw,72px);">The future is here</span>
-          <div class="scale-detail">font-family: General Sans &middot; weight: 700 &middot; line-height: 1.02 &middot; tracking: -0.035em</div>
-        </div>
-        <span class="scale-label">Hero &middot; 72px<br>General Sans 700</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="2" data-css="font: 600 48px/1.05 'General Sans'; letter-spacing: -0.03em" tabindex="0" role="button" aria-label="H1 type scale, click to copy CSS">
-        <div>
-          <span class="scale-text" style="font-size:clamp(28px,4vw,48px);">Intelligence at scale</span>
-          <div class="scale-detail">font-family: General Sans &middot; weight: 600 &middot; line-height: 1.05 &middot; tracking: -0.03em</div>
-        </div>
-        <span class="scale-label">H1 &middot; 48px<br>General Sans 600</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="3" data-css="font: 600 36px/1.1 'General Sans'; letter-spacing: -0.03em" tabindex="0" role="button" aria-label="H2 type scale, click to copy CSS">
-        <div>
-          <span class="scale-text" style="font-size:clamp(24px,3.5vw,36px);">Enterprise automation</span>
-          <div class="scale-detail">font-family: General Sans &middot; weight: 600 &middot; line-height: 1.1 &middot; tracking: -0.03em</div>
-        </div>
-        <span class="scale-label">H2 &middot; 36px<br>General Sans 600</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="4" data-css="font: 600 24px/1.15 'General Sans'; letter-spacing: -0.02em" tabindex="0" role="button" aria-label="H3 type scale, click to copy CSS">
-        <div>
-          <span class="scale-text" style="font-size:clamp(20px,2.5vw,24px);">Converging AI with expertise</span>
-          <div class="scale-detail">font-family: General Sans &middot; weight: 600 &middot; line-height: 1.15 &middot; tracking: -0.02em</div>
-        </div>
-        <span class="scale-label">H3 &middot; 24px<br>General Sans 600</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="5" data-css="font: 600 20px/1.2 'General Sans'; letter-spacing: -0.02em" tabindex="0" role="button" aria-label="H4 type scale, click to copy CSS">
-        <div>
-          <span class="scale-text" style="font-size:clamp(18px,2vw,20px);">Local knowledge, global reach</span>
-          <div class="scale-detail">font-family: General Sans &middot; weight: 600 &middot; line-height: 1.2 &middot; tracking: -0.02em</div>
-        </div>
-        <span class="scale-label">H4 &middot; 20px<br>General Sans 600</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="6" data-css="font: 500 18px/1.7 'Plus Jakarta Sans'; letter-spacing: -0.01em" tabindex="0" role="button" aria-label="Body Large type scale, click to copy CSS">
-        <div>
-          <span class="scale-text body-font" style="font-size:18px;">We deliver enterprise-grade automation with the precision of AI.</span>
-          <div class="scale-detail">font-family: Plus Jakarta Sans &middot; weight: 500 &middot; line-height: 1.7 &middot; tracking: -0.01em</div>
-        </div>
-        <span class="scale-label">Body Large &middot; 18px<br>Plus Jakarta Sans 500</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="7" data-css="font: 400 16px/1.7 'Plus Jakarta Sans'; letter-spacing: -0.01em" tabindex="0" role="button" aria-label="Body type scale, click to copy CSS">
-        <div>
-          <span class="scale-text body-font" style="font-size:16px;">Every interaction should feel like the future, today.</span>
-          <div class="scale-detail">font-family: Plus Jakarta Sans &middot; weight: 400 &middot; line-height: 1.7 &middot; tracking: -0.01em</div>
-        </div>
-        <span class="scale-label">Body &middot; 16px<br>Plus Jakarta Sans 400</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="8" data-css="font: 400 14px/1.6 'Plus Jakarta Sans'; letter-spacing: 0" tabindex="0" role="button" aria-label="Small type scale, click to copy CSS">
-        <div>
-          <span class="scale-text body-font" style="font-size:14px;">Intelligent automation for the modern enterprise landscape.</span>
-          <div class="scale-detail">font-family: Plus Jakarta Sans &middot; weight: 400 &middot; line-height: 1.6 &middot; tracking: 0</div>
-        </div>
-        <span class="scale-label">Small &middot; 14px<br>Plus Jakarta Sans 400</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="9" data-css="font: 400 12px/1.5 'Plus Jakarta Sans'" tabindex="0" role="button" aria-label="Caption type scale, click to copy CSS">
-        <div>
-          <span class="scale-text body-font" style="font-size:12px;">Designed for clarity, built for purpose.</span>
-          <div class="scale-detail">font-family: Plus Jakarta Sans &middot; weight: 400 &middot; line-height: 1.5</div>
-        </div>
-        <span class="scale-label">Caption &middot; 12px<br>Plus Jakarta Sans 400</span>
-      </div>
-      <div class="scale-row anim-slide-left" data-delay="10" data-css="font: 500 10px/1.4 'JetBrains Mono'; letter-spacing: 0.05em; text-transform: uppercase" tabindex="0" role="button" aria-label="Label type scale, click to copy CSS">
-        <div>
-          <span class="scale-text mono-font" style="font-size:10px;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent);">AI CONVERGENCE AGENCY</span>
-          <div class="scale-detail">font-family: JetBrains Mono &middot; weight: 500 &middot; tracking: 0.05em &middot; transform: uppercase</div>
-        </div>
-        <span class="scale-label">Label &middot; 10px<br>JetBrains Mono 500</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="page-footer">
-    <img class="footer-logo logo-img" alt="ALLONE">
-    <p>ALLONE &mdash; Brand Strategy System &middot; 2026</p>
-  </footer>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:24px;padding:40px;">
+    <div style="font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">Full Page</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(32px,5vw,48px);font-weight:800;letter-spacing:-0.03em;color:var(--dark);text-align:center;">Typography</h2>
+    <p style="font-family:var(--font-body);font-size:16px;color:var(--muted);text-align:center;max-width:480px;line-height:1.7;">This section has been moved to its own dedicated page for the best experience.</p>
+    <a href="/brand-assets/typography/type-specimen.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:14px 28px;background:var(--accent);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border-radius:100px;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(14,165,233,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      View Typography &rarr;</a>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════
      PAGE: DIAGRAMS
      ═══════════════════════════════════════════════════════════════════ -->
 <div class="page" id="page-diagrams" style="display:none;">
-
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="hero-geo hero-geo-1"></div>
-    <div class="hero-geo hero-geo-2"></div>
-    <div class="hero-geo hero-geo-3"></div>
-    <div class="container" style="text-align:center;">
-      <span class="mono-label anim-blur" data-delay="1">STRATEGY DIAGRAMS</span>
-      <h1 class="page-hero-title anim-blur" data-delay="2">
-        <span class="gradient-text">Data-driven</span><br>brand strategy.
-      </h1>
-      <p class="page-hero-sub anim-blur" data-delay="3">Visual frameworks that define ALLONE's competitive position, customer journey, and growth model.</p>
-    </div>
-    <div class="scroll-indicator anim-blur" data-delay="5">
-      <span>Scroll</span>
-      <div class="scroll-line"></div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 1: Brand Personality Bar Chart -->
-  <section class="personality-section">
-    <div class="container">
-      <div class="anim-blur">
-        <span class="mono-label">01 / Personality</span>
-        <h2 class="section-title-lg">Brand Personality &mdash; Aaker Model</h2>
-        <p class="section-subtitle-sm">Five core dimensions that define how ALLONE is perceived in the market. Competence is our dominant trait.</p>
-      </div>
-
-      <div class="bar-chart" id="barChart">
-        <div class="bar-row anim-blur" data-delay="1" data-width="60" data-score="3" data-max="5">
-          <span class="bar-label">Sincerity</span>
-          <div class="bar-track"><div class="bar-fill" style="--final-width:60%"></div></div>
-          <span class="bar-score"><span class="count-up" data-target="3">0</span> / 5</span>
-          <div class="bar-tooltip">Sincerity &mdash; Honest, wholesome, cheerful brand perception</div>
-        </div>
-        <div class="bar-row anim-blur" data-delay="2" data-width="80" data-score="4" data-max="5">
-          <span class="bar-label">Excitement</span>
-          <div class="bar-track"><div class="bar-fill" style="--final-width:80%"></div></div>
-          <span class="bar-score"><span class="count-up" data-target="4">0</span> / 5</span>
-          <div class="bar-tooltip">Excitement &mdash; Daring, spirited, imaginative, up-to-date</div>
-        </div>
-        <div class="bar-row highlighted anim-blur" data-delay="3" data-width="100" data-score="5" data-max="5">
-          <span class="bar-label">Competence</span>
-          <div class="bar-track"><div class="bar-fill" style="--final-width:100%"></div></div>
-          <span class="bar-score"><span class="count-up" data-target="5">0</span> / 5</span>
-          <div class="bar-tooltip">Competence &mdash; Reliable, intelligent, successful — dominant trait</div>
-        </div>
-        <div class="bar-row anim-blur" data-delay="4" data-width="80" data-score="4" data-max="5">
-          <span class="bar-label">Sophistication</span>
-          <div class="bar-track"><div class="bar-fill" style="--final-width:80%"></div></div>
-          <span class="bar-score"><span class="count-up" data-target="4">0</span> / 5</span>
-          <div class="bar-tooltip">Sophistication &mdash; Upper-class, charming, premium positioning</div>
-        </div>
-        <div class="bar-row anim-blur" data-delay="5" data-width="40" data-score="2" data-max="5">
-          <span class="bar-label">Ruggedness</span>
-          <div class="bar-track"><div class="bar-fill" style="--final-width:40%"></div></div>
-          <span class="bar-score"><span class="count-up" data-target="2">0</span> / 5</span>
-          <div class="bar-tooltip">Ruggedness &mdash; Outdoorsy, tough — intentionally low for our brand</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 2: Positioning Matrix -->
-  <section>
-    <div class="container">
-      <div class="anim-blur">
-        <span class="mono-label">02 / Positioning</span>
-        <h2 class="section-title-lg">Competitive Positioning Matrix</h2>
-        <p class="section-subtitle-sm">Mapping the Georgian tech landscape by AI capability and local trust. ALLONE occupies the high-trust, high-AI quadrant.</p>
-      </div>
-
-      <div class="matrix-container anim-scale" data-delay="2" id="matrixContainer">
-        <span class="matrix-x-label">AI Capability &rarr;</span>
-        <span class="matrix-y-label">&larr; Local Trust</span>
-
-        <span class="matrix-quadrant-label q-tl" data-quadrant="tl">High Trust / Low AI</span>
-        <span class="matrix-quadrant-label q-tr quadrant-highlight" data-quadrant="tr">High Trust / High AI</span>
-        <span class="matrix-quadrant-label q-bl" data-quadrant="bl">Low Trust / Low AI</span>
-        <span class="matrix-quadrant-label q-br" data-quadrant="br">Low Trust / High AI</span>
-
-        <div class="matrix-grid">
-          <div class="matrix-line-h"></div>
-          <div class="matrix-line-v"></div>
-
-          <div class="matrix-dot competitor" style="left:22%;top:24%;" data-quadrant="tl" data-dot-index="0" tabindex="0">
-            <span class="dot-label">Omedia</span>
-            <div class="dot-tooltip">Omedia<br>Traditional agency, strong local trust</div>
-          </div>
-          <div class="matrix-dot competitor" style="left:38%;top:28%;" data-quadrant="tl" data-dot-index="1" tabindex="0">
-            <span class="dot-label">Redberry</span>
-            <div class="dot-tooltip">Redberry<br>Creative-focused, growing AI adoption</div>
-          </div>
-          <div class="matrix-dot competitor" style="left:78%;top:68%;" data-quadrant="br" data-dot-index="2" tabindex="0">
-            <span class="dot-label">Accenture AI</span>
-            <div class="dot-tooltip">Accenture AI<br>Global capability, low local presence</div>
-          </div>
-          <div class="matrix-dot competitor" style="left:18%;top:72%;" data-quadrant="bl" data-dot-index="3" tabindex="0">
-            <span class="dot-label">Freelancers</span>
-            <div class="dot-tooltip">Freelancers<br>Variable quality, limited scalability</div>
-          </div>
-          <div class="matrix-dot hero-dot" style="left:calc(78% - 36px);top:calc(18% - 36px);" data-quadrant="tr" data-dot-index="4" tabindex="0">
-            ALLONE
-            <div class="dot-tooltip">ALLONE<br>AI-native + deep local relationships</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 3: Marketing Funnel -->
-  <section class="funnel-section">
-    <div class="container">
-      <div class="anim-blur">
-        <span class="mono-label">03 / Funnel</span>
-        <h2 class="section-title-lg">Marketing Funnel</h2>
-        <p class="section-subtitle-sm">From awareness to advocacy &mdash; how prospects flow through ALLONE's acquisition pipeline with key metrics at each stage.</p>
-      </div>
-
-      <div class="funnel" id="funnel">
-        <div class="funnel-row" data-funnel-index="0">
-          <div class="funnel-bar-wrapper">
-            <div class="funnel-bar level-0" data-final-width="100" style="--final-width:100%">
-              <span class="funnel-bar-name">Awareness</span>
-              <span class="funnel-bar-desc">Content, Ads, PR, Events</span>
-            </div>
-          </div>
-          <span class="funnel-metric"><span class="count-up" data-target="10000" data-format="comma">0</span></span>
-        </div>
-        <div class="funnel-row" data-funnel-index="1">
-          <div class="funnel-bar-wrapper">
-            <div class="funnel-bar level-1" data-final-width="80" style="--final-width:80%">
-              <span class="funnel-bar-name">Interest</span>
-              <span class="funnel-bar-desc">Website, Blog, Social</span>
-            </div>
-          </div>
-          <span class="funnel-metric"><span class="count-up" data-target="500">0</span></span>
-        </div>
-        <div class="funnel-row" data-funnel-index="2">
-          <div class="funnel-bar-wrapper">
-            <div class="funnel-bar level-2" data-final-width="60" style="--final-width:60%">
-              <span class="funnel-bar-name">Consideration</span>
-              <span class="funnel-bar-desc">Case Studies, Demos</span>
-            </div>
-          </div>
-          <span class="funnel-metric"><span class="count-up" data-target="100">0</span></span>
-        </div>
-        <div class="funnel-row" data-funnel-index="3">
-          <div class="funnel-bar-wrapper">
-            <div class="funnel-bar level-3" data-final-width="40" style="--final-width:40%">
-              <span class="funnel-bar-name">Decision</span>
-              <span class="funnel-bar-desc">Proposals, Meetings</span>
-            </div>
-          </div>
-          <span class="funnel-metric"><span class="count-up" data-target="15">0</span></span>
-        </div>
-        <div class="funnel-row" data-funnel-index="4">
-          <div class="funnel-bar-wrapper">
-            <div class="funnel-bar level-4" data-final-width="25" style="--final-width:25%">
-              <span class="funnel-bar-name">Advocacy</span>
-              <span class="funnel-bar-desc">Referrals, Reviews</span>
-            </div>
-          </div>
-          <span class="funnel-metric"><span class="count-up" data-target="5">0</span></span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 4: Customer Journey -->
-  <section>
-    <div class="container">
-      <div class="anim-blur">
-        <span class="mono-label">04 / Journey</span>
-        <h2 class="section-title-lg">Customer Journey Map</h2>
-        <p class="section-subtitle-sm">The emotional and tactical arc from first contact to brand advocate, with key touchpoints at each stage.</p>
-      </div>
-
-      <div class="journey" id="journey">
-        <div class="journey-emotions">
-          <div class="journey-emotion"><span class="journey-emotion-text" data-emo-index="0">Curious</span></div>
-          <div class="journey-emotion"><span class="journey-emotion-text" data-emo-index="1">Evaluating</span></div>
-          <div class="journey-emotion"><span class="journey-emotion-text" data-emo-index="2">Anxious</span></div>
-          <div class="journey-emotion"><span class="journey-emotion-text" data-emo-index="3">Confident</span></div>
-          <div class="journey-emotion"><span class="journey-emotion-text" data-emo-index="4">Satisfied</span></div>
-          <div class="journey-emotion"><span class="journey-emotion-text" data-emo-index="5">Proud</span></div>
-        </div>
-
-        <div class="journey-timeline">
-          <div class="journey-line" id="journeyLine"></div>
-
-          <div class="journey-stage" data-stage-index="0">
-            <div class="journey-circle">Aware&shy;ness</div>
-            <div class="journey-stage-name">Awareness</div>
-            <div class="journey-touchpoints">
-              <span class="journey-touchpoint">LinkedIn post</span>
-              <span class="journey-touchpoint">Referral</span>
-              <span class="journey-touchpoint">PR article</span>
-            </div>
-          </div>
-
-          <div class="journey-stage" data-stage-index="1">
-            <div class="journey-circle">Consi&shy;dera&shy;tion</div>
-            <div class="journey-stage-name">Consideration</div>
-            <div class="journey-touchpoints">
-              <span class="journey-touchpoint">Website visit</span>
-              <span class="journey-touchpoint">Case study</span>
-            </div>
-          </div>
-
-          <div class="journey-stage" data-stage-index="2">
-            <div class="journey-circle">Deci&shy;sion</div>
-            <div class="journey-stage-name">Decision</div>
-            <div class="journey-touchpoints">
-              <span class="journey-touchpoint">Proposal</span>
-              <span class="journey-touchpoint">Demo call</span>
-              <span class="journey-touchpoint">Pricing</span>
-            </div>
-          </div>
-
-          <div class="journey-stage" data-stage-index="3">
-            <div class="journey-circle">On&shy;board&shy;ing</div>
-            <div class="journey-stage-name">Onboarding</div>
-            <div class="journey-touchpoints">
-              <span class="journey-touchpoint">Kickoff call</span>
-              <span class="journey-touchpoint">Slack channel</span>
-            </div>
-          </div>
-
-          <div class="journey-stage" data-stage-index="4">
-            <div class="journey-circle">Deli&shy;very</div>
-            <div class="journey-stage-name">Delivery</div>
-            <div class="journey-touchpoints">
-              <span class="journey-touchpoint">Weekly updates</span>
-              <span class="journey-touchpoint">Milestone reviews</span>
-            </div>
-          </div>
-
-          <div class="journey-stage" data-stage-index="5">
-            <div class="journey-circle">Advo&shy;cacy</div>
-            <div class="journey-stage-name">Advocacy</div>
-            <div class="journey-touchpoints">
-              <span class="journey-touchpoint">Testimonial</span>
-              <span class="journey-touchpoint">Referral</span>
-              <span class="journey-touchpoint">Case study</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 5: PESO Model -->
-  <section class="peso-section">
-    <div class="container">
-      <div class="anim-blur">
-        <span class="mono-label">05 / Distribution</span>
-        <h2 class="section-title-lg">PESO Media Model</h2>
-        <p class="section-subtitle-sm">ALLONE's integrated media strategy across Paid, Earned, Shared, and Owned channels with budget allocation.</p>
-      </div>
-
-      <div class="peso-grid" id="pesoGrid">
-        <div class="peso-card paid" data-peso-index="0">
-          <div class="peso-budget"><span class="count-up" data-target="20">0</span>%</div>
-          <h3 class="peso-title">Paid</h3>
-          <div class="peso-subtitle">Paid Media</div>
-          <ul class="peso-items">
-            <li>LinkedIn Sponsored Ads</li>
-            <li>Google Ads (Search + Display)</li>
-            <li>Retargeting Campaigns</li>
-            <li>Sponsored Content</li>
-          </ul>
-          <div class="peso-bar-track"><div class="peso-bar-fill" data-bar-target="20"></div></div>
-        </div>
-
-        <div class="peso-card earned" data-peso-index="1">
-          <div class="peso-budget"><span class="count-up" data-target="10">0</span>%</div>
-          <h3 class="peso-title">Earned</h3>
-          <div class="peso-subtitle">Earned Media</div>
-          <ul class="peso-items">
-            <li>PR &amp; Media Coverage</li>
-            <li>Speaking Engagements</li>
-            <li>Industry Awards</li>
-            <li>Press Mentions</li>
-          </ul>
-          <div class="peso-bar-track"><div class="peso-bar-fill" data-bar-target="10"></div></div>
-        </div>
-
-        <div class="peso-card shared" data-peso-index="2">
-          <div class="peso-budget"><span class="count-up" data-target="30">0</span>%</div>
-          <h3 class="peso-title">Shared</h3>
-          <div class="peso-subtitle">Shared Media</div>
-          <ul class="peso-items">
-            <li>Social Media Content</li>
-            <li>Community Building</li>
-            <li>Client Advocacy</li>
-            <li>Partnership Content</li>
-          </ul>
-          <div class="peso-bar-track"><div class="peso-bar-fill" data-bar-target="30"></div></div>
-        </div>
-
-        <div class="peso-card owned" data-peso-index="3">
-          <div class="peso-budget"><span class="count-up" data-target="40">0</span>%</div>
-          <h3 class="peso-title">Owned</h3>
-          <div class="peso-subtitle">Owned Media</div>
-          <ul class="peso-items">
-            <li>Website &amp; Blog</li>
-            <li>Email Newsletters</li>
-            <li>Product Documentation</li>
-            <li>Case Study Library</li>
-          </ul>
-          <div class="peso-bar-track"><div class="peso-bar-fill" data-bar-target="40"></div></div>
-        </div>
-
-        <div class="peso-center-badge">
-          <img class="logo-img" alt="ALLONE" style="width:40px;height:40px;object-fit:contain;">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="page-footer">
-    <img class="footer-logo logo-img" alt="ALLONE">
-    <p>ALLONE &mdash; Brand Strategy System &middot; 2026</p>
-  </footer>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:24px;padding:40px;">
+    <div style="font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">Full Page</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(32px,5vw,48px);font-weight:800;letter-spacing:-0.03em;color:var(--dark);text-align:center;">Strategy Diagrams</h2>
+    <p style="font-family:var(--font-body);font-size:16px;color:var(--muted);text-align:center;max-width:480px;line-height:1.7;">This section has been moved to its own dedicated page for the best experience.</p>
+    <a href="/brand-assets/diagrams/strategy-diagrams.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:14px 28px;background:var(--accent);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border-radius:100px;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(14,165,233,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      View Strategy Diagrams &rarr;</a>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════
      PAGE: LOGOS
      ═══════════════════════════════════════════════════════════════════ -->
 <div class="page" id="page-logos" style="display:none;">
-
-  <!-- Hero -->
-  <section class="page-hero logo-hero">
-    <div class="hero-glow"></div>
-    <div class="particles" id="particles"></div>
-    <div class="hero-content" style="text-align:center;">
-      <img class="hero-breathing-logo logo-img" alt="ALLONE" style="width:120px;height:120px;object-fit:contain;margin:0 auto 24px;">
-      <h1 class="hero-wordmark anim-blur" data-delay="1">ALLONE</h1>
-      <p class="hero-tagline anim-blur" data-delay="2">The Future Runs Itself</p>
-      <span class="mono-label anim-blur" data-delay="3">Brand Identity System</span>
-    </div>
-    <div class="scroll-indicator anim-blur" data-delay="5">
-      <span>Scroll</span>
-      <div class="scroll-line"></div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 1: Logo Variations -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">Logo System</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Logo Variations</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">A flexible identity system designed for every context and medium.</p>
-
-      <div class="variations-grid">
-        <div class="variation-card light-bg anim-scale" data-delay="1" data-copy="Primary -- Use on white or light backgrounds" tabindex="0" role="button">
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;">
-          <span class="wordmark dark">ALLONE</span>
-          <span class="variation-label on-light">Primary</span>
-        </div>
-        <div class="variation-card dark-bg anim-scale" data-delay="2" data-copy="Reversed -- Use on dark or navy backgrounds" tabindex="0" role="button">
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;filter:brightness(10);">
-          <span class="wordmark light">ALLONE</span>
-          <span class="variation-label on-dark">Reversed</span>
-        </div>
-        <div class="variation-card light-bg anim-scale" data-delay="3" data-copy="Icon Only -- Use as favicon, app icon, or avatar" tabindex="0" role="button">
-          <img class="logo-img" alt="ALLONE" style="width:64px;height:64px;object-fit:contain;">
-          <span class="variation-label on-light">Icon Only</span>
-        </div>
-        <div class="variation-card light-bg anim-scale" data-delay="4" data-copy="Wordmark Only -- Use where icon is already present" tabindex="0" role="button">
-          <span class="wordmark dark" style="font-size:36px;">ALLONE</span>
-          <span class="variation-label on-light">Wordmark Only</span>
-        </div>
-        <div class="variation-card light-bg anim-scale" data-delay="5" data-copy="Monochrome Dark -- Use for print or single-color contexts" tabindex="0" role="button">
-          <img class="logo-img" alt="ALLONE" style="width:64px;height:64px;object-fit:contain;filter:grayscale(1);">
-          <span class="wordmark dark">ALLONE</span>
-          <span class="variation-label on-light">Monochrome</span>
-        </div>
-        <div class="variation-card dark-bg anim-scale" data-delay="6" data-copy="Mono Light -- Use for dark backgrounds in single-color contexts" tabindex="0" role="button">
-          <img class="logo-img" alt="ALLONE" style="width:64px;height:64px;object-fit:contain;filter:brightness(10) grayscale(1);">
-          <span class="wordmark light">ALLONE</span>
-          <span class="variation-label on-dark">Mono Light</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 2: Clear Space -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">Spacing Rules</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Clear Space</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Maintain a minimum exclusion zone around the logo equal to the height of one diamond arm unit <strong>(x)</strong>.</p>
-
-      <div class="clearspace-container anim-scale" data-delay="3" id="clearspace-diagram">
-        <svg class="clearspace-svg" viewBox="0 0 520 360" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect class="draw-dash" x="40" y="30" width="440" height="300" rx="12"/>
-          <rect class="clearspace-zone" x="40" y="30" width="440" height="300"/>
-          <line class="draw-line" x1="40" y1="50" x2="180" y2="50"/>
-          <line class="draw-line" x1="340" y1="50" x2="480" y2="50"/>
-          <line class="draw-line" x1="40" y1="310" x2="180" y2="310"/>
-          <line class="draw-line" x1="340" y1="310" x2="480" y2="310"/>
-          <line class="draw-line" x1="60" y1="30" x2="60" y2="130"/>
-          <line class="draw-line" x1="60" y1="230" x2="60" y2="330"/>
-          <line class="draw-line" x1="460" y1="30" x2="460" y2="130"/>
-          <line class="draw-line" x1="460" y1="230" x2="460" y2="330"/>
-          <text class="x-label" x="260" y="26" text-anchor="middle">x</text>
-          <text class="x-label" x="260" y="352" text-anchor="middle">x</text>
-          <text class="x-label" x="20" y="184" text-anchor="middle">x</text>
-          <text class="x-label" x="502" y="184" text-anchor="middle">x</text>
-        </svg>
-        <img class="clearspace-logo logo-img" alt="ALLONE" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140px;height:140px;object-fit:contain;">
-      </div>
-
-      <p class="clearspace-note anim-blur" data-delay="4">
-        The clear space unit <code>x</code> equals the height of one diamond arm in the logo mark.
-        No other visual elements, text, or edges should enter this zone.
-      </p>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 3: Minimum Sizes -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">Scale</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Minimum Sizes</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Recommended sizing to maintain legibility and visual integrity at every scale.</p>
-
-      <div class="sizes-row">
-        <div class="size-item anim-slide-left" data-delay="1">
-          <img class="logo-img" alt="ALLONE" style="width:120px;height:120px;object-fit:contain;">
-          <div class="size-tooltip">Best for hero banners and splash screens</div>
-          <div class="size-meta">
-            <span class="size-value"><span class="counter" data-target="120">0</span>px</span>
-            <span class="size-use">Hero / Headers</span>
-          </div>
-        </div>
-        <div class="size-item anim-slide-left" data-delay="2">
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;">
-          <div class="size-tooltip">Ideal for presentations and documents</div>
-          <div class="size-meta">
-            <span class="size-value"><span class="counter" data-target="80">0</span>px</span>
-            <span class="size-use">Presentations</span>
-          </div>
-        </div>
-        <div class="size-item anim-slide-left" data-delay="3">
-          <img class="logo-img" alt="ALLONE" style="width:48px;height:48px;object-fit:contain;">
-          <div class="size-tooltip">Navigation bars and inline usage</div>
-          <div class="size-meta">
-            <span class="size-value"><span class="counter" data-target="48">0</span>px</span>
-            <span class="size-use">Navigation</span>
-          </div>
-        </div>
-        <div class="size-item anim-slide-left" data-delay="4">
-          <img class="logo-img" alt="ALLONE" style="width:32px;height:32px;object-fit:contain;">
-          <div class="size-tooltip">Favicons and small UI elements</div>
-          <div class="size-meta">
-            <span class="size-value"><span class="counter" data-target="32">0</span>px</span>
-            <span class="size-use">Favicons</span>
-            <span class="size-badge recommended">Recommended</span>
-          </div>
-        </div>
-        <div class="size-item anim-slide-left" data-delay="5">
-          <img class="logo-img" alt="ALLONE" style="width:24px;height:24px;object-fit:contain;">
-          <div class="size-tooltip">Absolute minimum — below this loses legibility</div>
-          <div class="size-meta">
-            <span class="size-value"><span class="counter" data-target="24">0</span>px</span>
-            <span class="size-use">Minimum</span>
-            <span class="size-badge minimum">Min. Size</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 4: Logo Misuse -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">Guidelines</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Logo Misuse</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Protect brand integrity. Never modify the logo in any of these ways.</p>
-
-      <div class="misuse-grid">
-        <div class="misuse-card misuse-stretched anim-scale" data-delay="1">
-          <div class="misuse-x">&times;</div>
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:40px;object-fit:fill;">
-          <span class="misuse-label">Don't stretch or distort</span>
-          <div class="misuse-correct"><img class="logo-img" alt="Correct" style="width:60px;height:60px;object-fit:contain;"><span>Correct</span></div>
-        </div>
-        <div class="misuse-card misuse-recolored anim-scale" data-delay="2">
-          <div class="misuse-x">&times;</div>
-          <img class="logo-img" alt="ALLONE" style="width:60px;height:60px;object-fit:contain;filter:hue-rotate(90deg);">
-          <span class="misuse-label">Don't change brand colors</span>
-          <div class="misuse-correct"><img class="logo-img" alt="Correct" style="width:60px;height:60px;object-fit:contain;"><span>Correct</span></div>
-        </div>
-        <div class="misuse-card misuse-shadow anim-scale" data-delay="3">
-          <div class="misuse-x">&times;</div>
-          <img class="logo-img" alt="ALLONE" style="width:60px;height:60px;object-fit:contain;filter:drop-shadow(4px 4px 8px rgba(0,0,0,0.5));">
-          <span class="misuse-label">Don't add shadows or effects</span>
-          <div class="misuse-correct"><img class="logo-img" alt="Correct" style="width:60px;height:60px;object-fit:contain;"><span>Correct</span></div>
-        </div>
-        <div class="misuse-card misuse-rotated anim-scale" data-delay="4">
-          <div class="misuse-x">&times;</div>
-          <img class="logo-img" alt="ALLONE" style="width:60px;height:60px;object-fit:contain;transform:rotate(15deg);">
-          <span class="misuse-label">Don't rotate or tilt</span>
-          <div class="misuse-correct"><img class="logo-img" alt="Correct" style="width:60px;height:60px;object-fit:contain;"><span>Correct</span></div>
-        </div>
-        <div class="misuse-card misuse-busy anim-scale" data-delay="5">
-          <div class="misuse-x">&times;</div>
-          <img class="logo-img" alt="ALLONE" style="width:60px;height:60px;object-fit:contain;opacity:0.4;">
-          <span class="misuse-label">Don't place on busy backgrounds</span>
-          <div class="misuse-correct"><img class="logo-img" alt="Correct" style="width:60px;height:60px;object-fit:contain;"><span>Correct</span></div>
-        </div>
-        <div class="misuse-card misuse-cropped anim-scale" data-delay="6">
-          <div class="misuse-x">&times;</div>
-          <div class="crop-wrapper" style="overflow:hidden;width:40px;height:60px;"><img class="logo-img" alt="ALLONE" style="width:60px;height:60px;object-fit:contain;margin-left:-10px;"></div>
-          <span class="misuse-label">Don't crop the logo</span>
-          <div class="misuse-correct"><img class="logo-img" alt="Correct" style="width:60px;height:60px;object-fit:contain;"><span>Correct</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 5: Color Backgrounds -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">Contexts</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">On Color Backgrounds</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Approved logo placements across the full range of brand surfaces.</p>
-
-      <div class="bg-grid">
-        <div class="bg-card bg-white anim-scale" data-delay="1">
-          <span class="bg-usage">Primary usage</span>
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;">
-          <span class="wordmark" style="color:var(--dark);">ALLONE</span>
-          <span class="bg-label">#FFFFFF</span>
-        </div>
-        <div class="bg-card bg-light anim-scale" data-delay="2">
-          <span class="bg-usage">Website surfaces</span>
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;">
-          <span class="wordmark" style="color:var(--dark);">ALLONE</span>
-          <span class="bg-label">#F4F7FB</span>
-        </div>
-        <div class="bg-card bg-navy anim-scale" data-delay="3">
-          <span class="bg-usage">Footer, dark mode</span>
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;filter:brightness(10);">
-          <span class="wordmark" style="color:#fff;">ALLONE</span>
-          <span class="bg-label">#071D2F</span>
-        </div>
-        <div class="bg-card bg-accent anim-scale" data-delay="4">
-          <span class="bg-usage">CTAs, feature sections</span>
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;filter:brightness(10);">
-          <span class="wordmark" style="color:#fff;">ALLONE</span>
-          <span class="bg-label">#0A68F5</span>
-        </div>
-        <div class="bg-card bg-gradient anim-scale" data-delay="5">
-          <span class="bg-usage">Premium sections, hero</span>
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;filter:brightness(10);">
-          <span class="wordmark" style="color:#fff;">ALLONE</span>
-          <span class="bg-label">Gradient</span>
-        </div>
-        <div class="bg-card bg-photo anim-scale" data-delay="6">
-          <span class="bg-usage">Photography, complex imagery</span>
-          <img class="logo-img" alt="ALLONE" style="width:80px;height:80px;object-fit:contain;filter:brightness(10);">
-          <span class="wordmark" style="color:#fff;">ALLONE</span>
-          <span class="bg-label">Complex BG</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="page-footer">
-    <img class="footer-logo logo-img" alt="ALLONE">
-    <p>ALLONE &mdash; Brand Strategy System &middot; 2026</p>
-  </footer>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:24px;padding:40px;">
+    <div style="font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">Full Page</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(32px,5vw,48px);font-weight:800;letter-spacing:-0.03em;color:var(--dark);text-align:center;">Logo Showcase</h2>
+    <p style="font-family:var(--font-body);font-size:16px;color:var(--muted);text-align:center;max-width:480px;line-height:1.7;">This section has been moved to its own dedicated page for the best experience.</p>
+    <a href="/brand-assets/logos/logo-showcase.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:14px 28px;background:var(--accent);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border-radius:100px;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(14,165,233,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      View Logo Showcase &rarr;</a>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════
      PAGE: TEMPLATES
      ═══════════════════════════════════════════════════════════════════ -->
 <div class="page" id="page-templates" style="display:none;">
-
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="container" style="text-align:center;">
-      <div class="anim-blur" data-delay="1"><span class="mono-label">BRAND TEMPLATES</span></div>
-      <h1 class="page-hero-title anim-blur" data-delay="2">
-        <span class="gradient-text">Brand Templates</span>
-      </h1>
-      <p class="page-hero-sub anim-blur" data-delay="3">Ready to use. Built to impress.</p>
-    </div>
-    <div class="scroll-indicator anim-blur" data-delay="5">
-      <span>Scroll</span>
-      <div class="scroll-line"></div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 1: Business Card -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">01 / Print</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Business Card</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Minimal. Memorable. The card that starts conversations.</p>
-      <div class="template-card anim-blur" data-delay="3">
-        <div class="biz-cards-scene">
-          <div class="biz-card anim-slide-left" data-delay="3">
-            <div class="biz-card-front">
-              <img class="logo-img" alt="ALLONE" style="width:48px;height:48px;object-fit:contain;margin-bottom:12px;">
-              <div class="wordmark" style="font-size:20px;font-weight:700;letter-spacing:0.08em;color:var(--dark);">ALLONE</div>
-              <div class="tagline-small" style="font-size:10px;letter-spacing:0.06em;color:var(--muted);margin-top:4px;">The Future Runs Itself</div>
-            </div>
-          </div>
-          <div class="biz-card anim-slide-right" data-delay="4">
-            <div class="biz-card-back">
-              <div class="back-top">
-                <div>
-                  <div class="back-name">Kutaisi Kutasidze</div>
-                  <div class="back-title">Founder &amp; CEO</div>
-                </div>
-              </div>
-              <div class="back-divider"></div>
-              <div class="back-info">
-                <span class="label">Email</span><span>hello@allone.ge</span>
-                <span class="label" style="margin-top:4px">Phone</span><span>+995 555 123 456</span>
-                <span class="label" style="margin-top:4px">Web</span><span>allone.ge</span>
-                <span class="label" style="margin-top:4px">Address</span><span>Tbilisi, Georgia</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 2: LinkedIn Post -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">02 / Social</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">LinkedIn Post</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Thought leadership that converts. Clean, branded, authoritative.</p>
-      <div class="template-card anim-blur" data-delay="3">
-        <div class="linkedin-mockup">
-          <div class="linkedin-header">
-            <div class="linkedin-avatar"><img class="logo-img" alt="A" style="width:100%;height:100%;object-fit:contain;border-radius:50%;"></div>
-            <div>
-              <div class="linkedin-name">ALLONE</div>
-              <div class="linkedin-sub">AI Convergence Agency</div>
-              <div class="linkedin-time">2h</div>
-            </div>
-          </div>
-          <div class="linkedin-body">
-            <p>Most agencies sell time. We sell outcomes.</p>
-            <div class="highlight"><p>We reduced client operational costs by 90% using AI-powered automation.</p></div>
-            <p>Here's what that actually means for your business: fewer manual processes, faster delivery, and a team that focuses on strategy instead of spreadsheets.</p>
-            <p style="color:var(--accent);font-weight:600;margin-top:4px;">#AI #Automation #FutureOfWork</p>
-          </div>
-          <div class="linkedin-image">
-            <div class="stat-big">90%</div>
-            <div class="stat-label">Cost Reduction</div>
-            <div class="stat-watermark">ALLONE</div>
-          </div>
-          <div class="linkedin-engagement">
-            <div class="linkedin-reactions">
-              <div class="emojis">&#128077;&#10084;&#65039;&#128293;</div>
-              <span>247 reactions</span>
-            </div>
-            <div class="linkedin-comments">43 comments</div>
-          </div>
-          <div class="linkedin-actions">
-            <div class="linkedin-action"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M7 22V11l-5 5V6l5 5V2l10 10L7 22z" fill="currentColor"/></svg> Like</div>
-            <div class="linkedin-action"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg> Comment</div>
-            <div class="linkedin-action"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="16 6 12 2 8 6" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="2" x2="12" y2="15" stroke="currentColor" stroke-width="2"/></svg> Share</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 3: Instagram Story -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">03 / Stories</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Instagram Story</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Bold data. Dark canvas. Stop the scroll.</p>
-      <div class="template-card anim-blur" data-delay="3" style="background:transparent;border:none;backdrop-filter:none;box-shadow:none;padding:0;">
-        <div class="story-phone anim-scale" data-delay="4">
-          <div class="story-notch"></div>
-          <div class="story-progress">
-            <div class="story-progress-bar done"></div>
-            <div class="story-progress-bar active"></div>
-            <div class="story-progress-bar"></div>
-          </div>
-          <div class="story-screen">
-            <div class="story-particles">
-              <div class="story-particle"></div>
-              <div class="story-particle"></div>
-              <div class="story-particle"></div>
-              <div class="story-particle"></div>
-            </div>
-            <div class="story-stat">90%</div>
-            <div class="story-stat-label">Cost Reduction</div>
-            <div class="story-watermark"><img class="logo-img" alt="ALLONE" style="width:24px;height:24px;object-fit:contain;filter:brightness(10);margin-right:6px;vertical-align:middle;"><span>ALLONE</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 4: Instagram Post -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">04 / Feed</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Instagram Post</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Clean grid. Bold statements. Every post on brand.</p>
-      <div class="template-card anim-blur" data-delay="3">
-        <div class="ig-post-mockup">
-          <div class="ig-post-header">
-            <div class="ig-post-avatar"><img class="logo-img" alt="A" style="width:100%;height:100%;object-fit:contain;border-radius:50%;"></div>
-            <div class="ig-post-username">allone.ge</div>
-          </div>
-          <div class="ig-post-image">
-            <div class="ig-post-image-content">
-              <div class="ig-accent-line"></div>
-              <div class="ig-post-headline">The Future<br>Runs Itself</div>
-              <div class="ig-post-subline">AI-Powered Business Automation</div>
-              <div class="ig-post-badge"><img class="logo-img" alt="ALLONE" style="width:16px;height:16px;object-fit:contain;filter:brightness(10);margin-right:4px;vertical-align:middle;"><span>ALLONE.GE</span></div>
-            </div>
-          </div>
-          <div class="ig-post-actions">
-            <div class="ig-post-icons">
-              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-              <svg viewBox="0 0 24 24" width="20" height="20"><line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="1.5"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-            </div>
-            <div class="ig-post-bookmark">
-              <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-            </div>
-          </div>
-          <div class="ig-post-likes">1,247 likes</div>
-          <div class="ig-post-caption"><strong>allone.ge</strong> We don't just build software. We build systems that think, adapt, and scale without you. Welcome to the convergence.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 5: Presentation Slide -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">05 / Presentation</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Slide Deck</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Pitch with presence. Every slide commands the room.</p>
-      <div class="template-card anim-blur" data-delay="3" style="background:transparent;border:none;backdrop-filter:none;box-shadow:none;padding:0;">
-        <div class="slide-device anim-scale" data-delay="4">
-          <div class="slide-device-dots"><div class="slide-device-dot"></div><div class="slide-device-dot"></div><div class="slide-device-dot"></div></div>
-          <div class="slide-mockup">
-            <div class="slide-top">
-              <div class="slide-brand-area">
-                <img class="logo-img" alt="ALLONE" style="width:28px;height:28px;object-fit:contain;margin-right:10px;">
-                <div>
-                  <div class="slide-brand-name">ALLONE</div>
-                  <div class="slide-brand-sub">AI Convergence Agency</div>
-                </div>
-              </div>
-              <div class="slide-date">March 2026</div>
-            </div>
-            <div class="slide-center">
-              <div class="slide-divider"></div>
-              <div class="slide-title">AI-Powered Transformation<br>for the Modern Enterprise</div>
-              <div class="slide-subtitle">Reducing operational costs by 90% through intelligent automation,<br>custom AI solutions, and strategic convergence.</div>
-            </div>
-            <div class="slide-bottom">
-              <div class="slide-page">Confidential</div>
-              <div class="slide-page">01 / 24</div>
-            </div>
-          </div>
-          <div class="slide-device-base"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 6: Email Signature -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">06 / Communication</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Email Signature</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Every email is a brand impression. Make it count.</p>
-      <div class="template-card anim-blur" data-delay="3">
-        <div class="sig-mockup">
-          <div class="sig-email-preview">
-            <div class="sig-email-line">Looking forward to our call on Thursday. Let me know if</div>
-            <div class="sig-email-line">you need anything beforehand.</div>
-            <div class="sig-email-line" style="margin-top:8px;">Best,</div>
-          </div>
-          <div class="sig-divider-accent"></div>
-          <div class="sig-content">
-            <img class="logo-img" alt="ALLONE" style="width:36px;height:36px;object-fit:contain;margin-right:12px;">
-            <div class="sig-sep"></div>
-            <div class="sig-info">
-              <div class="sig-name">Kutaisi Kutasidze</div>
-              <div class="sig-title">Founder &amp; CEO</div>
-            </div>
-            <div class="sig-sep-2"></div>
-            <div class="sig-contact">
-              <span>hello@allone.ge</span>
-              <span>allone.ge</span>
-              <span>Tbilisi, Georgia</span>
-            </div>
-          </div>
-          <div class="sig-tagline">"The Future Runs Itself"</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Section 7: Letterhead -->
-  <section>
-    <div class="container">
-      <span class="mono-label anim-blur">07 / Stationery</span>
-      <h2 class="section-title-lg anim-blur" data-delay="1">Letterhead</h2>
-      <p class="section-subtitle-sm anim-blur" data-delay="2">Professional correspondence. Every detail intentional.</p>
-      <div class="template-card anim-blur" data-delay="3" style="background:transparent;border:none;backdrop-filter:none;box-shadow:none;padding:0;">
-        <div class="letter-mockup anim-scale" data-delay="4">
-          <div class="letter-top">
-            <div class="letter-brand">
-              <img class="logo-img" alt="ALLONE" style="width:32px;height:32px;object-fit:contain;margin-right:10px;">
-              <div class="letter-brand-text">
-                <div class="letter-name">ALLONE</div>
-                <div class="letter-sub">AI Convergence Agency</div>
-              </div>
-            </div>
-            <div class="letter-date">March 9, 2026<br>Ref: ALL-2026-0312</div>
-          </div>
-          <div class="letter-body">
-            <div class="letter-recipient">Dear Mr. Anderson,<br><br>Global Industries Ltd.<br>Innovation Department</div>
-            <div class="letter-text">Thank you for your interest in our AI convergence solutions. Following our discussion, I am pleased to present our proposal for transforming your operational infrastructure through intelligent automation.</div>
-            <div class="letter-text">Our approach combines custom AI models, workflow automation, and strategic consulting to deliver measurable results. As demonstrated with our existing clients, we consistently achieve 85-90% cost reduction in operational processes while improving output quality.</div>
-            <div class="letter-text">I look forward to discussing the next steps at your earliest convenience.</div>
-            <div class="letter-sign">Kutaisi Kutasidze</div>
-            <div class="letter-sign-title">Founder &amp; CEO, ALLONE</div>
-          </div>
-          <div class="letter-footer">
-            <span>hello@allone.ge &nbsp;|&nbsp; allone.ge &nbsp;|&nbsp; Tbilisi, Georgia</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="page-footer">
-    <img class="footer-logo logo-img" alt="ALLONE">
-    <p>ALLONE &mdash; Brand Strategy System &middot; 2026</p>
-  </footer>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:24px;padding:40px;">
+    <div style="font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">Full Page</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(32px,5vw,48px);font-weight:800;letter-spacing:-0.03em;color:var(--dark);text-align:center;">Brand Templates</h2>
+    <p style="font-family:var(--font-body);font-size:16px;color:var(--muted);text-align:center;max-width:480px;line-height:1.7;">This section has been moved to its own dedicated page for the best experience.</p>
+    <a href="/brand-assets/templates/brand-templates.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:14px 28px;background:var(--accent);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border-radius:100px;text-decoration:none;transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(14,165,233,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      View Brand Templates &rarr;</a>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════
@@ -3911,16 +2639,32 @@ body {
 
   // ─── Page-Specific Initializers ───
   function initPageSpecific(page) {
-    switch(page) {
-      case 'colors': initColors(); break;
-      case 'typography': initTypography(); break;
-      case 'diagrams': initDiagrams(); break;
-      case 'logos': initLogos(); break;
-      case 'templates': initTemplates(); break;
+    // Pages now use iframes — resize them to fit content
+    const pageEl = document.getElementById('page-' + page);
+    if (!pageEl) return;
+    const iframe = pageEl.querySelector('iframe');
+    if (!iframe) return;
+    // Auto-resize iframe to content height
+    function resizeIframe() {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (doc && doc.body) {
+          iframe.style.height = doc.body.scrollHeight + 'px';
+        }
+      } catch(e) {}
     }
+    iframe.addEventListener('load', resizeIframe);
+    // Also try immediately in case already loaded
+    resizeIframe();
+    // Periodically check for dynamic content changes
+    let checks = 0;
+    const interval = setInterval(() => {
+      resizeIframe();
+      if (++checks > 10) clearInterval(interval);
+    }, 500);
   }
 
-  // ─── COLORS PAGE ───
+  // ─── Page init stubs (content now in iframes) ───
   function initColors() {
     // Color swatch copy
     // Color blocks + surface blocks + semantic pills — copy hex on click
@@ -3934,20 +2678,21 @@ body {
 
     // Ratio bar animation
     const ratioBar = document.querySelector('#page-colors .ratio-bar');
-    if (ratioBar) {
+    if (ratioBar && ratioBar.dataset.animated !== 'true') {
+      function animateRatio() {
+        if (ratioBar.dataset.animated === 'true') return;
+        ratioBar.dataset.animated = 'true';
+        ratioBar.closest('.ratio-visual').querySelectorAll('.ratio-pct[data-count-to]').forEach(el => {
+          countUp(el, parseInt(el.dataset.countTo), '%');
+        });
+      }
       const obs = new IntersectionObserver(entries => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            ratioBar.dataset.animated = 'true';
-            // Count up percentages
-            ratioBar.querySelectorAll('.ratio-pct[data-count-to]').forEach(el => {
-              countUp(el, parseInt(el.dataset.countTo), '%');
-            });
-            obs.unobserve(entry.target);
-          }
+          if (entry.isIntersecting) { animateRatio(); obs.unobserve(entry.target); }
         });
-      }, { threshold: 0.3 });
-      obs.observe(ratioBar);
+      }, { threshold: 0.1 });
+      // Re-observe after a delay to handle page transition timing
+      setTimeout(() => { obs.observe(ratioBar); }, 500);
     }
   }
 

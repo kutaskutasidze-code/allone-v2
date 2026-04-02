@@ -2,17 +2,24 @@ import { logger } from '../utils/logger.js';
 import { getSupabase, LeadSource, ScrapeJob } from '../database/client.js';
 import { bulkInsertLeads } from '../database/leads.repo.js';
 import { TwoGisScraper } from '../scrapers/2gis.scraper.js';
+import { GooglePlacesScraper } from '../scrapers/google-places.scraper.js';
 import { extractContactInfo } from '../extractors/email.extractor.js';
 import { categorizeCompany } from '../categorizer/rules.js';
 import { closeBrowser } from '../utils/browser.js';
-import { COUNTRIES, SEARCH_QUERIES, type CountryCode, type ServiceType } from '../config.js';
+import { BaseScraper } from '../scrapers/base.scraper.js';
+import { COUNTRIES, SEARCH_QUERIES, SEARCH_QUERIES_KA, TBILISI_EXTRA_QUERIES, type CountryCode, type ServiceType } from '../config.js';
+
+function createScraper(source: LeadSource): BaseScraper | null {
+  if (source.name.includes('2GIS')) return new TwoGisScraper(source);
+  if (source.name.includes('Google Places')) return new GooglePlacesScraper(source);
+  return null;
+}
 
 async function runScrapeCron() {
   logger.info('Starting scrape cron job...');
 
   const supabase = getSupabase();
 
-  // Get active sources
   const { data: sources, error: sourcesError } = await supabase
     .from('lead_sources')
     .select('*')
@@ -26,22 +33,47 @@ async function runScrapeCron() {
   logger.info(`Found ${sources.length} active sources`);
 
   for (const source of sources as LeadSource[]) {
-    // Only process 2GIS for now (can add more scrapers later)
     if (source.source_type !== 'maps') continue;
-    if (!source.name.includes('2GIS')) continue;
 
-    const scraper = new TwoGisScraper(source);
+    const scraper = createScraper(source);
+    if (!scraper) {
+      logger.debug(`No scraper for source: ${source.name}`);
+      continue;
+    }
+
+    const isGooglePlaces = source.name.includes('Google Places');
 
     for (const countryCode of source.countries as CountryCode[]) {
       const country = COUNTRIES[countryCode];
       if (!country) continue;
 
       for (const city of country.cities) {
-        for (const [serviceType, queries] of Object.entries(SEARCH_QUERIES)) {
-          // Pick a random query for this run
-          const query = queries[Math.floor(Math.random() * queries.length)];
+        // Build query list: English queries + Georgian queries for Google Places
+        const allQueries: { query: string; serviceType: string }[] = [];
 
-          // Create scrape job
+        for (const [serviceType, queries] of Object.entries(SEARCH_QUERIES)) {
+          const query = queries[Math.floor(Math.random() * queries.length)];
+          allQueries.push({ query, serviceType });
+        }
+
+        // Add Georgian-language queries for Google Places
+        if (isGooglePlaces && SEARCH_QUERIES_KA) {
+          for (const [serviceType, queries] of Object.entries(SEARCH_QUERIES_KA)) {
+            const query = queries[Math.floor(Math.random() * queries.length)];
+            allQueries.push({ query, serviceType });
+          }
+        }
+
+        // Tbilisi gets extra queries to cover more business types
+        if (isGooglePlaces && city === 'Tbilisi' && TBILISI_EXTRA_QUERIES) {
+          for (const [serviceType, queries] of Object.entries(TBILISI_EXTRA_QUERIES)) {
+            for (const query of queries) {
+              allQueries.push({ query, serviceType });
+            }
+          }
+        }
+
+        for (const { query, serviceType } of allQueries) {
           const { data: job, error: jobError } = await supabase
             .from('scrape_jobs')
             .insert({
@@ -63,50 +95,38 @@ async function runScrapeCron() {
           const jobId = (job as ScrapeJob).id;
 
           try {
-            logger.info(`Scraping ${source.name}: ${query} in ${city}, ${countryCode}`);
+            logger.info(`Scraping ${source.name}: "${query}" in ${city}, ${countryCode}`);
 
             const result = await scraper.scrape(query, city, countryCode);
 
-            // Enrich leads with contact info and categorization
-            for (const lead of result.leads) {
-              // Categorize
-              const { service, score } = categorizeCompany(
-                lead.name,
-                lead.description || '',
-                lead.industry || ''
-              );
-              lead.matched_service = service || serviceType;
-              lead.relevance_score = score;
+            // Enrich leads with contact info and categorization (skip for Google Places - already categorized)
+            if (!isGooglePlaces) {
+              for (const lead of result.leads) {
+                const { service, score } = categorizeCompany(
+                  lead.name,
+                  lead.description || '',
+                  lead.industry || ''
+                );
+                lead.matched_service = service || serviceType;
+                lead.relevance_score = score;
 
-              // Extract contact info if website available
-              if (lead.website) {
-                try {
-                  const contact = await extractContactInfo(lead.website);
-                  if (contact.emails.length > 0) {
-                    lead.email = contact.emails[0];
+                if (lead.website) {
+                  try {
+                    const contact = await extractContactInfo(lead.website);
+                    if (contact.emails.length > 0) lead.email = contact.emails[0];
+                    if (contact.phones.length > 0 && !lead.phone) lead.phone = contact.phones[0];
+                    if (contact.socialLinks.linkedin) lead.linkedin_url = contact.socialLinks.linkedin;
+                    if (contact.socialLinks.facebook) lead.facebook_url = contact.socialLinks.facebook;
+                    if (contact.socialLinks.instagram) lead.instagram_url = contact.socialLinks.instagram;
+                  } catch {
+                    logger.debug(`Contact extraction failed for ${lead.website}`);
                   }
-                  if (contact.phones.length > 0 && !lead.phone) {
-                    lead.phone = contact.phones[0];
-                  }
-                  if (contact.socialLinks.linkedin) {
-                    lead.linkedin_url = contact.socialLinks.linkedin;
-                  }
-                  if (contact.socialLinks.facebook) {
-                    lead.facebook_url = contact.socialLinks.facebook;
-                  }
-                  if (contact.socialLinks.instagram) {
-                    lead.instagram_url = contact.socialLinks.instagram;
-                  }
-                } catch (err) {
-                  logger.debug(`Contact extraction failed for ${lead.website}`);
                 }
               }
             }
 
-            // Insert leads
             const { inserted, duplicates } = await bulkInsertLeads(result.leads);
 
-            // Update job status
             await supabase
               .from('scrape_jobs')
               .update({
@@ -119,17 +139,7 @@ async function runScrapeCron() {
               })
               .eq('id', jobId);
 
-            // Update source stats
-            await supabase
-              .from('lead_sources')
-              .update({
-                last_scraped_at: new Date().toISOString(),
-                leads_count: supabase.rpc('increment', { x: inserted }),
-              })
-              .eq('id', source.id);
-
-            logger.info(`Job completed: ${inserted} new leads, ${duplicates} duplicates`);
-
+            logger.info(`Job completed: ${inserted} new, ${duplicates} duplicates out of ${result.leads.length} found`);
           } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Unknown error';
             logger.error(`Job failed: ${errorMsg}`);
@@ -154,7 +164,6 @@ async function runScrapeCron() {
   logger.info('Scrape cron job completed');
 }
 
-// Run immediately
 runScrapeCron().catch((err) => {
   logger.error(`Scrape cron failed: ${err}`);
   process.exit(1);

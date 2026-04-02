@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALLONE — Typography Specimen</title>
+<title>AllOne — Typography Specimen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   @font-face {
     font-family: 'General Sans';
@@ -34,9 +34,9 @@
 
   :root {
     --navy: #071D2F;
-    --accent: #0A68F5;
-    --accent-light: rgba(10,104,245,0.08);
-    --accent-glow: rgba(10,104,245,0.15);
+    --accent: #0EA5E9;
+    --accent-light: rgba(14,165,233,0.08);
+    --accent-glow: rgba(14,165,233,0.15);
     --white: #FFFFFF;
     --surface: #FFFFFF;
     --surface-2: #FFFFFF;
@@ -244,7 +244,7 @@
   .glass-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 40px rgba(7,29,47,0.08);
-    border-color: rgba(10,104,245,0.15);
+    border-color: rgba(14,165,233,0.15);
   }
   .glass-card h4 {
     font-family: var(--font-display);
@@ -596,6 +596,16 @@
     margin-bottom: 80px;
   }
 
+  .heading-giant {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--navy);
+    margin-bottom: 80px;
+  }
+
   /* ─── CODE BLOCK ─── */
   .code-block {
     background: var(--navy);
@@ -667,7 +677,7 @@
     padding-left: 48px;
   }
   .code-block .keyword { color: #7DD3FC; }
-  .code-block .function { color: #93C5FD; }
+  .code-block .function { color: #7DD3FC; }
   .code-block .string { color: #86EFAC; }
   .code-block .property { color: #FDE68A; }
   .code-block .bracket { color: #A5B4C4; }
@@ -725,7 +735,7 @@
   }
   .scale-row:hover {
     padding-left: 28px;
-    background: rgba(10,104,245,0.03);
+    background: rgba(14,165,233,0.03);
     border-left-color: var(--accent);
   }
   .scale-row:last-child { border-bottom: none; }
@@ -747,7 +757,7 @@
     margin-top: 12px;
   }
   .scale-row.expanded {
-    background: rgba(10,104,245,0.03);
+    background: rgba(14,165,233,0.03);
     border-left-color: var(--accent);
     padding: 24px 16px 24px 28px;
   }
@@ -865,6 +875,7 @@
     .display-giant { font-size: clamp(48px, 14vw, 80px); }
     .body-giant { font-size: clamp(36px, 10vw, 56px); }
     .mono-giant { font-size: clamp(28px, 8vw, 40px); }
+    .heading-giant { font-size: clamp(32px, 9vw, 48px); }
     .glass-card { padding: 24px; border-radius: 16px; }
     .weight-row { flex-direction: column; gap: 8px; }
   }
@@ -892,12 +903,13 @@
 
   /* ─── SELECTION ─── */
   ::selection {
-    background: rgba(10,104,245,0.12);
+    background: rgba(14,165,233,0.12);
     color: var(--navy);
   }
 </style>
 </head>
 <body>
+<a href="/brand-assets/index.html" class="back-to-hub" style="position:fixed;top:16px;left:16px;z-index:10001;font-family:system-ui,sans-serif;font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#7E8A97;text-decoration:none;background:rgba(255,255,255,0.8);backdrop-filter:blur(12px);padding:8px 16px;border-radius:100px;border:1px solid #DCE9F6;transition:all 0.2s;" onmouseover="this.style.color='#0EA5E9';this.style.borderColor='rgba(14,165,233,0.3)'" onmouseout="this.style.color='#7E8A97';this.style.borderColor='#DCE9F6'">&larr; Brand Book</a>
 
 <!-- SCROLL PROGRESS -->
 <div class="scroll-progress" id="scrollProgress"></div>
@@ -912,11 +924,12 @@
 
 <!-- NAV -->
 <nav id="mainNav">
-  <img src="data:image/png;base64,LOGO_PLACEHOLDER" alt="ALLONE" class="logo">
+  <img src="data:image/png;base64,LOGO_PLACEHOLDER" alt="AllOne" class="logo">
   <div class="nav-links">
     <a href="#display" tabindex="0">Display</a>
     <a href="#body" tabindex="0">Body</a>
     <a href="#mono" tabindex="0">Mono</a>
+    <a href="#heading" tabindex="0">Heading</a>
     <a href="#scale" tabindex="0">Scale</a>
   </div>
 </nav>
@@ -1181,7 +1194,79 @@
 
 <div class="section-divider"></div>
 
-<!-- ━━━ SECTION 4: TYPE SCALE ━━━ -->
+<!-- ━━━ SECTION 3.5: HEADING — SPACE GROTESK ━━━ -->
+<section id="heading">
+  <div class="container">
+    <span class="mono-label reveal">04 — Heading</span>
+    <div class="heading-giant reveal" style="transition-delay:0.1s">Space<br>Grotesk</div>
+
+    <div style="font-family:'Space Grotesk',system-ui,sans-serif; margin-bottom:64px; transition-delay:0.15s;" class="reveal">
+      <div style="font-size:48px;font-weight:700;letter-spacing:-0.03em;color:var(--navy);line-height:1.15;margin-bottom:24px;">Angular precision meets geometric clarity</div>
+      <div style="font-size:20px;font-weight:400;color:var(--muted);line-height:1.6;max-width:640px;">Used for section labels and angular headings that need a technical, geometric feel. The fourth voice in our type system.</div>
+    </div>
+
+    <div class="mono-label-showcase reveal" style="transition-delay:0.2s;font-family:'Space Grotesk',system-ui,sans-serif;font-weight:600;letter-spacing:0.08em;">AI CONVERGENCE AGENCY</div>
+
+    <div style="margin-top:64px;">
+      <div class="two-col-equal">
+        <div class="glass-card reveal-scale" style="transition-delay:0.25s">
+          <h4>Specifications</h4>
+          <div class="spec-row">
+            <span class="spec-label">Family</span>
+            <span class="spec-value">Space Grotesk</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Weights</span>
+            <span class="spec-value">400 · 500 · 600 · 700</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Heading Size</span>
+            <span class="spec-value">clamp(1.25rem, 3vw, 2rem)</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Tracking</span>
+            <span class="spec-value">0.08em (labels), -0.03em (headings)</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Line Height</span>
+            <span class="spec-value">1.15</span>
+          </div>
+        </div>
+        <div class="glass-card reveal-scale" style="transition-delay:0.35s">
+          <h4>Usage</h4>
+          <div class="spec-row">
+            <span class="spec-label">Primary</span>
+            <span class="spec-value">Section headings, angular titles</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Secondary</span>
+            <span class="spec-value">Uppercase labels, navigation</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Tertiary</span>
+            <span class="spec-value">Feature titles, card headers</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Source</span>
+            <span class="spec-value">Google Fonts</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">CSS Variable</span>
+            <span class="spec-value">--font-heading</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Fallback</span>
+            <span class="spec-value">system-ui, sans-serif</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ━━━ SECTION 5: TYPE SCALE ━━━ -->
 <section id="scale" class="scale-section">
   <div class="container">
     <span class="mono-label reveal">04 — Type Scale</span>
@@ -1262,8 +1347,8 @@
 
 <!-- FOOTER -->
 <footer>
-  <img src="data:image/png;base64,LOGO_PLACEHOLDER" alt="ALLONE" class="logo">
-  <p>ALLONE — Typography Specimen · 2026</p>
+  <img src="data:image/png;base64,LOGO_PLACEHOLDER" alt="AllOne" class="logo">
+  <p>AllOne — Typography Specimen · 2026</p>
 </footer>
 
 <script>

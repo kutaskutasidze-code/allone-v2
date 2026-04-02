@@ -5,7 +5,10 @@ import { logger } from '../utils/logger.js';
 // Email regex pattern
 const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 
-// Common contact page paths
+// Georgian phone regex: +995, 995, or 0 prefix followed by 8-9 digits
+const GEORGIAN_PHONE_REGEX = /(?:\+995|995|0)\s?(?:\d[\s\-]?){8,9}/g;
+
+// Common contact page paths (including Georgian)
 const CONTACT_PATHS = [
   '/contact',
   '/contacts',
@@ -17,6 +20,11 @@ const CONTACT_PATHS = [
   '/связаться',
   '/iletisim',
   '/haberlesme',
+  '/kontaqti',
+  '/kontakti',
+  '/კონტაქტი',
+  '/ჩვენს-შესახებ',
+  '/ჩვენ-შესახებ',
 ];
 
 export interface ExtractedContact {
@@ -51,8 +59,8 @@ export async function extractContactInfo(websiteUrl: string): Promise<ExtractedC
       logger.debug(`Failed to load main page: ${baseUrl}`);
     }
 
-    // Try contact pages if no email found
-    if (result.emails.length === 0) {
+    // Try contact pages if no email or phone found
+    if (result.emails.length === 0 && result.phones.length === 0) {
       for (const path of CONTACT_PATHS) {
         try {
           const contactUrl = new URL(path, baseUrl).toString();
@@ -60,7 +68,7 @@ export async function extractContactInfo(websiteUrl: string): Promise<ExtractedC
           const contactContent = await page.content();
           extractFromHtml(contactContent, result);
 
-          if (result.emails.length > 0) break;
+          if (result.emails.length > 0 || result.phones.length > 0) break;
 
           await delay(500);
         } catch {
@@ -112,7 +120,22 @@ function extractFromHtml(html: string, result: ExtractedContact): void {
     }
   });
 
-  // Extract phone numbers (common formats)
+  // Extract phone numbers from tel: links first (most reliable)
+  $('a[href^="tel:"]').each((_, el) => {
+    const href = $(el).attr('href');
+    if (href) {
+      const phone = href.replace('tel:', '').trim();
+      if (phone.length >= 9 && !result.phones.includes(phone)) {
+        result.phones.push(phone);
+      }
+    }
+  });
+
+  // Extract Georgian phone numbers specifically
+  const georgianPhones = text.match(GEORGIAN_PHONE_REGEX) || [];
+  result.phones.push(...georgianPhones.map(p => p.trim()));
+
+  // Extract other phone numbers (generic formats)
   const phoneRegex = /[\+]?[(]?[0-9]{1,3}[)]?[-\s\.]?[(]?[0-9]{1,3}[)]?[-\s\.]?[0-9]{3,4}[-\s\.]?[0-9]{3,4}/g;
   const phoneMatches = text.match(phoneRegex) || [];
   result.phones.push(...phoneMatches.filter(p => p.length >= 9));

@@ -25,6 +25,11 @@ export const config = {
     dailyLimit: parseInt(process.env.DAILY_EMAIL_LIMIT || '100', 10),
     minRelevanceScore: parseInt(process.env.MIN_RELEVANCE_SCORE || '50', 10),
   },
+  googlePlaces: {
+    apiKey: process.env.GOOGLE_PLACES_API_KEY || '',
+    maxPagesPerSearch: parseInt(process.env.GOOGLE_PLACES_MAX_PAGES || '3', 10),
+    dailyBudgetRequests: parseInt(process.env.GOOGLE_PLACES_DAILY_BUDGET || '160', 10),
+  },
   logLevel: process.env.LOG_LEVEL || 'info',
 };
 
@@ -72,9 +77,28 @@ export const SEARCH_QUERIES = {
 } as const;
 
 // Target countries and cities — Georgia only
+// Tbilisi first, gets all queries. Other cities get English queries only.
 export const COUNTRIES = {
-  GE: { name: 'Georgia', cities: ['Tbilisi', 'Batumi', 'Kutaisi', 'Rustavi', 'Zugdidi'] },
+  GE: { name: 'Georgia', cities: ['Tbilisi', 'Batumi', 'Kutaisi'] },
 } as const;
+
+// Tbilisi gets extra search queries to use more of the budget
+export const TBILISI_EXTRA_QUERIES: Record<string, string[]> = {
+  chatbots: ['pharmacy', 'veterinary clinic', 'pet shop', 'electronics store'],
+  custom_ai: ['laboratory', 'radiology center', 'blood bank'],
+  automation: ['car dealership', 'auto parts', 'construction company', 'printing company'],
+  website: ['beauty salon', 'spa', 'gym', 'fitness center', 'bakery', 'bar', 'nightclub', 'coworking space', 'photography studio'],
+  consulting: ['accounting firm', 'notary', 'audit company'],
+};
+
+// Georgian-language search queries for better local coverage
+export const SEARCH_QUERIES_KA: Record<string, string[]> = {
+  chatbots: ['კლინიკა', 'აფთიაქი', 'ონლაინ მაღაზია', 'ინტერნეტ მაღაზია'],
+  custom_ai: ['ბანკი', 'სადაზღვევო', 'ფინანსური კომპანია', 'ლაბორატორია'],
+  automation: ['ლოჯისტიკა', 'საწყობი', 'ქარხანა', 'იმპორტი ექსპორტი'],
+  website: ['სასტუმრო', 'რესტორანი', 'კაფე', 'ტურისტული სააგენტო', 'უძრავი ქონება', 'სტომატოლოგია'],
+  consulting: ['კორპორაცია', 'ჰოლდინგი', 'საწარმო'],
+};
 
 export type CountryCode = keyof typeof COUNTRIES;
 export type ServiceType = keyof typeof SEARCH_QUERIES;

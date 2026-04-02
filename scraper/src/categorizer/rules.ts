@@ -97,3 +97,52 @@ export function categorizeCompany(
 
   return { service: bestService, score: normalizedScore };
 }
+
+// Google Places type -> service mapping
+const GOOGLE_TYPE_MAP: Record<string, ServiceType> = {
+  // chatbots (high customer interaction)
+  hospital: 'chatbots',
+  doctor: 'chatbots',
+  dentist: 'chatbots',
+  pharmacy: 'chatbots',
+  physiotherapist: 'chatbots',
+  veterinary_care: 'chatbots',
+  store: 'chatbots',
+  shopping_mall: 'chatbots',
+  supermarket: 'chatbots',
+  // consulting (professional services)
+  bank: 'consulting',
+  insurance_agency: 'consulting',
+  accounting: 'consulting',
+  finance: 'consulting',
+  lawyer: 'consulting',
+  real_estate_agency: 'consulting',
+  university: 'consulting',
+  // automation (operations-heavy)
+  moving_company: 'automation',
+  car_repair: 'automation',
+  car_dealer: 'automation',
+  gas_station: 'automation',
+  // website (hospitality/local businesses)
+  restaurant: 'website',
+  cafe: 'website',
+  bar: 'website',
+  bakery: 'website',
+  hotel: 'website',
+  lodging: 'website',
+  travel_agency: 'website',
+  gym: 'website',
+  spa: 'website',
+  beauty_salon: 'website',
+  hair_care: 'website',
+};
+
+export function categorizeFromGoogleTypes(types: string[]): { service: ServiceType | null; score: number } {
+  for (const type of types) {
+    const service = GOOGLE_TYPE_MAP[type];
+    if (service) {
+      return { service, score: 70 };
+    }
+  }
+  return { service: null, score: 0 };
+}
