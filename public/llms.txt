@@ -29,7 +29,7 @@ Frontend: Next.js, React, TypeScript, Tailwind CSS | AI/ML: Custom models, LLM i
 
 ## Contact
 - Website: https://allone.ge
-- Email: hello@allone.ge
+- Email: info@allonelabs.com
 - Locations: Tbilisi, Georgia | Brussels, Belgium
 
 ## Links

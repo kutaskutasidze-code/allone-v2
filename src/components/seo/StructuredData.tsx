@@ -14,7 +14,7 @@ export function OrganizationSchema({
   url = 'https://allone.ge',
   logo = 'https://allone.ge/images/allone-logo.png',
   description = 'AI automation agency that converges all your systems into one intelligent layer. Custom AI solutions, workflow automation, intelligent chatbots, and modern website development for businesses worldwide.',
-  email = 'hello@allone.ge',
+  email = 'info@allonelabs.com',
   sameAs = [],
 }: OrganizationSchemaProps) {
   const schema = {
@@ -115,7 +115,7 @@ export function LocalBusinessSchema() {
       '@type': 'ProfessionalService',
       name: 'ALLONE — AI Automation Agency',
       url: 'https://allone.ge',
-      email: 'hello@allone.ge',
+      email: 'info@allonelabs.com',
       description: 'AI automation agency offering custom chatbots, workflow automation, and web development services in Tbilisi, Georgia.',
       image: 'https://allone.ge/images/allone-logo.png',
       priceRange: '$$',
@@ -138,7 +138,7 @@ export function LocalBusinessSchema() {
       '@type': 'ProfessionalService',
       name: 'ALLONE — AI Automation Agency',
       url: 'https://allone.ge',
-      email: 'hello@allone.ge',
+      email: 'info@allonelabs.com',
       description: 'AI automation agency offering custom chatbots, workflow automation, and web development services in Brussels, Belgium.',
       image: 'https://allone.ge/images/allone-logo.png',
       priceRange: '$$',

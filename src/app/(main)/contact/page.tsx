@@ -4,7 +4,7 @@ import { getCachedContactInfo } from '@/lib/cache';
 
 export const metadata: Metadata = {
   title: 'Contact ALLONE — AI Automation Agency in Georgia & Belgium',
-  description: 'Contact ALLONE for AI chatbot development, workflow automation, and web development. Offices in Tbilisi, Georgia and Brussels, Belgium. Email hello@allone.ge for a free consultation.',
+  description: 'Contact ALLONE for AI chatbot development, workflow automation, and web development. Offices in Tbilisi, Georgia and Brussels, Belgium. Email info@allonelabs.com for a free consultation.',
   alternates: {
     canonical: '/contact',
   },

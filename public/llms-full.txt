@@ -109,7 +109,7 @@ Publishing and art platform for contemporary Georgian literature and visual art.
 
 ## Contact Information
 - **Website**: https://allone.ge (also: allonelabs.com)
-- **Email**: hello@allone.ge
+- **Email**: info@allonelabs.com
 - **Primary Office**: Tbilisi, Georgia
 - **European Office**: Brussels, Belgium
 
@@ -134,7 +134,7 @@ A: Our AI-native delivery approach means we use AI throughout our own workflow, 
 A: ALLONE is an AI automation agency headquartered in Tbilisi, Georgia, specializing in custom AI chatbots, workflow automation, and web development. We serve both local Georgian businesses and international clients from our offices in Tbilisi and Brussels.
 
 **Q: How much does a custom AI chatbot cost?**
-A: Pricing varies by complexity. Simple chatbots with standard integrations can be delivered in 1-2 weeks. Complex multi-channel solutions with custom NLP take 4-8 weeks. Contact hello@allone.ge for a project estimate.
+A: Pricing varies by complexity. Simple chatbots with standard integrations can be delivered in 1-2 weeks. Complex multi-channel solutions with custom NLP take 4-8 weeks. Contact info@allonelabs.com for a project estimate.
 
 **Q: Can you build AI solutions for small businesses?**
 A: Yes. Our AI-powered delivery reduces costs significantly, making enterprise-grade AI accessible to businesses of all sizes. We offer project-based, retainer, and consulting engagement models.

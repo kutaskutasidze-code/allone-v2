@@ -8,6 +8,7 @@ import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion
 import { ChatPlaybackGlassy as ChatPlayback } from './ChatPlaybackGlassy';
 import { WebDevFloatingElements } from './WebDevFloatingElements';
 import { LeadFlowVisual } from './LeadFlowVisual';
+import { FAQSchema } from '@/components/seo';
 
 function useViewportDims() {
   const [dims, setDims] = useState({ vw: 1200, vh: 800, ready: false });
@@ -387,9 +388,9 @@ function Hero() {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-3">
               {[
-                { num: '01', title: 'AI Chatbots', desc: 'Deploy intelligent conversational AI across every channel your customers use.', details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
-                { num: '02', title: 'Web Development', desc: 'Modern, fast websites and apps engineered to convert and scale.', details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
-                { num: '03', title: 'Workflow Automation', desc: 'Eliminate manual work with intelligent pipelines that handle your operations.', details: ['Invoice & document processing', 'Lead scoring & enrichment', 'Custom trigger & action logic', 'Data sync across platforms', 'Real-time monitoring dashboard'] },
+                { num: '01', title: 'AI Chatbots', desc: 'Custom AI chatbots deployed on WhatsApp, Telegram, Instagram, and web. 24/7 support with CRM integration. Delivered in 1-2 weeks.', details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
+                { num: '02', title: 'Web Development', desc: 'High-performance Next.js websites and web apps. SEO-optimized, Lighthouse 90+, mobile-first. Delivered in 4-8 weeks.', details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
+                { num: '03', title: 'Workflow Automation', desc: 'Automate lead scoring, invoices, and data sync across platforms. Custom pipelines with n8n and Zapier. Delivered in 2-4 weeks.', details: ['Invoice & document processing', 'Lead scoring & enrichment', 'Custom trigger & action logic', 'Data sync across platforms', 'Real-time monitoring dashboard'] },
               ].map((service) => (
                 <div
                   key={service.title}
@@ -745,12 +746,72 @@ function WorkflowSection() {
   );
 }
 
+const faqItems = [
+  { question: 'What does ALLONE do?', answer: 'ALLONE is an AI automation agency with offices in Tbilisi, Georgia and Brussels, Belgium. We build three things: custom AI chatbots that deploy on WhatsApp, Telegram, Instagram and web; workflow automation that connects your CRM, invoicing, and internal tools; and high-performance websites built with Next.js. Our AI-native approach means we deliver in weeks, not months.' },
+  { question: 'How quickly can you deliver a project?', answer: 'It depends on complexity. A multi-channel AI chatbot with CRM integration typically goes live in 1-2 weeks. Workflow automation pipelines take 2-4 weeks. A full website or web application takes 4-8 weeks. We move fast because we use AI throughout our own delivery process — the same tools we build for clients.' },
+  { question: 'How much do your services cost?', answer: 'Our AI-powered delivery reduces costs by up to 90% compared to traditional agencies. We offer three engagement models: project-based (fixed scope with milestone payments), monthly retainer (ongoing development), and consulting (hourly advisory). Reach out to info@allonelabs.com for a tailored estimate.' },
+  { question: 'Which industries do you work with?', answer: 'We work across e-commerce, real estate, finance, hospitality, manufacturing, fashion, and publishing. Past projects include platforms for Equivalenza Georgia (perfume e-commerce), DataRooms (AI-powered investor data rooms), HostWise (property management SaaS), and KaoTenders (B2B industrial tenders).' },
+  { question: 'Can you work with clients outside Georgia?', answer: 'Yes — we serve clients globally from our offices in Tbilisi and Brussels. Our team works in English and Georgian. We handle everything remotely: discovery calls, design reviews, development sprints, and ongoing support.' },
+  { question: 'What technologies do you use?', answer: 'Frontend: Next.js, React, TypeScript, Tailwind CSS. Backend: Node.js, Python, Supabase, PostgreSQL. AI: OpenAI and Anthropic LLM integration, RAG systems, custom ML models. Automation: n8n, Zapier, and custom workflow engines. Cloud: Vercel, AWS, Cloudflare.' },
+  { question: 'What makes ALLONE different from other agencies?', answer: 'We use AI in our own workflow — not just in what we deliver. This means a 3-person team at ALLONE outputs what typically requires 10-15 people at a traditional agency. The result: faster delivery, lower cost, and a team that deeply understands the AI tools we build for you.' },
+];
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-[#E0EEFB] rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-[#f8fbff] transition-colors"
+      >
+        <h3 className="font-display text-sm lg:text-base font-semibold text-[#071D2F] pr-4">{question}</h3>
+        <motion.svg
+          width="20" height="20" viewBox="0 0 20 20" fill="none"
+          className="flex-shrink-0 text-[#0ea5e9]"
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </motion.svg>
+      </button>
+      <motion.div
+        initial={false}
+        animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="overflow-hidden"
+      >
+        <p className="px-5 pb-5 text-sm text-[#4D4D4D] leading-relaxed">{answer}</p>
+      </motion.div>
+    </div>
+  );
+}
+
+function FAQSection() {
+  return (
+    <section className="py-16 lg:py-24 bg-white">
+      <FAQSchema questions={faqItems} />
+      <div className="max-w-3xl mx-auto px-6">
+        <div className="text-center mb-10">
+          <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 block">Common Questions</span>
+          <h2 className="font-display text-2xl lg:text-3xl font-semibold text-[#071D2F] tracking-[-0.03em]">Frequently Asked Questions</h2>
+        </div>
+        <div className="space-y-2">
+          {faqItems.map((faq, i) => (
+            <FAQItem key={i} question={faq.question} answer={faq.answer} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function HeroExperiment() {
   return (
     <div className="bg-white text-[#071D2F] font-body antialiased">
       <Hero />
       <ChatbotSection />
       <WorkflowSection />
+      <FAQSection />
     </div>
   );
 }

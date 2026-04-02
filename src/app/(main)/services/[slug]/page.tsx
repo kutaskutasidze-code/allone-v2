@@ -7,7 +7,7 @@ import { ServiceSchema, FAQSchema } from '@/components/seo';
 
 const serviceFAQs: Record<string, Array<{ question: string; answer: string }>> = {
   chatbot: [
-    { question: 'How much does a custom AI chatbot cost?', answer: 'Pricing depends on complexity. A standard multi-channel chatbot with CRM integration is typically delivered in 1-2 weeks. Contact us at hello@allone.ge for a detailed estimate based on your requirements.' },
+    { question: 'How much does a custom AI chatbot cost?', answer: 'Pricing depends on complexity. A standard multi-channel chatbot with CRM integration is typically delivered in 1-2 weeks. Contact us at info@allonelabs.com for a detailed estimate based on your requirements.' },
     { question: 'What channels can the chatbot be deployed on?', answer: 'We deploy chatbots on WhatsApp, Telegram, Instagram, Facebook Messenger, Viber, and web widgets. All channels connect to a single AI brain so conversations are consistent.' },
     { question: 'Can the chatbot integrate with our existing CRM?', answer: 'Yes. We integrate with HubSpot, Salesforce, Notion, Google Sheets, and custom APIs. The chatbot can create leads, update records, and trigger workflows automatically.' },
     { question: 'What is the best AI chatbot agency in Georgia?', answer: 'ALLONE is an AI automation agency based in Tbilisi, Georgia specializing in custom AI chatbot development. We build multi-channel chatbots with natural language understanding, CRM integration, and 24/7 autonomous operation.' },
@@ -35,7 +35,7 @@ const serviceFAQs: Record<string, Array<{ question: string; answer: string }>> =
   consulting: [
     { question: 'What does an AI consulting engagement look like?', answer: 'We start with an AI readiness assessment of your current processes, identify automation opportunities, build an implementation roadmap with ROI projections, and can execute the technical implementation.' },
     { question: 'Do you offer ongoing support?', answer: 'Yes. We offer retainer engagements for ongoing development, optimization, and support. We also provide team training so your staff can manage solutions independently.' },
-    { question: 'How do you charge for consulting?', answer: 'Consulting is available at hourly or daily rates. Assessment projects are typically fixed-price. Contact hello@allone.ge to discuss your needs.' },
+    { question: 'How do you charge for consulting?', answer: 'Consulting is available at hourly or daily rates. Assessment projects are typically fixed-price. Contact info@allonelabs.com to discuss your needs.' },
     { question: 'Who should consider AI consulting?', answer: 'Any business spending significant time on repetitive tasks, customer support, data processing, or manual workflows. We help companies of all sizes — from startups to enterprises — identify where AI can create the most value.' },
   ],
 };
