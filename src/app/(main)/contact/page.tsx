@@ -3,19 +3,14 @@ import { ContactContent } from './ContactContent';
 import { getCachedContactInfo } from '@/lib/cache';
 
 export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Get in touch with ALLONE for AI automation solutions. We help businesses streamline workflows and boost efficiency.',
+  title: 'Contact ALLONE — AI Automation Agency in Georgia & Belgium',
+  description: 'Contact ALLONE for AI chatbot development, workflow automation, and web development. Offices in Tbilisi, Georgia and Brussels, Belgium. Email hello@allone.ge for a free consultation.',
   alternates: {
     canonical: '/contact',
-    languages: {
-      'en': '/contact',
-      'ka': '/contact',
-      'x-default': '/contact',
-    },
   },
   openGraph: {
-    title: 'Contact ALLONE',
-    description: 'Get in touch with ALLONE for AI automation solutions.',
+    title: 'Contact ALLONE — AI Automation Agency',
+    description: 'Get in touch with ALLONE. Offices in Tbilisi, Georgia and Brussels, Belgium. AI chatbots, workflow automation, web development.',
     url: '/contact',
     images: [{ url: '/images/allone-logo.png', width: 500, height: 500, alt: 'ALLONE' }],
   },

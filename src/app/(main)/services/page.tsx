@@ -23,12 +23,12 @@ const ConsultationCTA = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: 'Services',
-  description: 'AI automation services: chatbots, workflow automation, custom AI solutions, web development, and strategic consulting.',
+  title: 'AI Automation Services — Chatbots, Web Development, Workflow Automation',
+  description: 'ALLONE offers AI chatbot development, workflow automation, web development, and consulting services from Tbilisi, Georgia and Brussels, Belgium. Custom AI solutions delivered in 1-8 weeks at 90% lower cost than traditional agencies.',
   alternates: { canonical: '/services' },
   openGraph: {
-    title: 'Services | ALLONE',
-    description: 'AI automation services for modern businesses.',
+    title: 'AI Automation Services | ALLONE',
+    description: 'Custom AI chatbots, workflow automation, and web development. Based in Georgia and Belgium, serving clients worldwide.',
     url: '/services',
   },
 };

@@ -174,7 +174,7 @@ const translations: Record<Lang, Record<string, string>> = {
     // Landing page
     'landing.hero.h1a': 'All systems.',
     'landing.hero.h1b': 'One intelligence.',
-    'landing.hero.desc': 'Replace expensive manual processes with autonomous AI agents. Customer support, data processing, content, code — agents handle it at a fraction of the cost.',
+    'landing.hero.desc': 'ALLONE is an AI automation agency in Tbilisi, Georgia and Brussels, Belgium. We build custom AI chatbots, workflow automation, and high-performance websites — reducing implementation costs by up to 90%.',
     'landing.hero.cta1': 'Start Building',
     'landing.hero.cta2': 'Book a Demo',
     'landing.video.title': 'Meet AllOne automations.',
@@ -433,7 +433,7 @@ const translations: Record<Lang, Record<string, string>> = {
     // Landing page
     'landing.hero.h1a': 'ყველა სისტემა.',
     'landing.hero.h1b': 'ერთი ინტელექტი.',
-    'landing.hero.desc': 'შეცვალეთ ძვირადღირებული ხელით პროცესები ავტონომიური AI აგენტებით. კლიენტთა მხარდაჭერა, მონაცემების დამუშავება, კონტენტი, კოდი — აგენტები ამას ხარჯების მცირე ნაწილად აკეთებენ.',
+    'landing.hero.desc': 'ALLONE არის AI ავტომატიზაციის სააგენტო თბილისში, საქართველო და ბრიუსელში, ბელგია. ჩვენ ვქმნით AI ჩატბოტებს, სამუშაო პროცესების ავტომატიზაციას და მაღალი ხარისხის ვებსაიტებს — განხორციელების ხარჯების 90%-მდე შემცირებით.',
     'landing.hero.cta1': 'დაიწყე შენება',
     'landing.hero.cta2': 'დემოს დაჯავშნა',
     'landing.video.title': 'გაიცანით AllOne ავტომატიზაცია.',
