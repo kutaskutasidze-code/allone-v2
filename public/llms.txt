@@ -1,24 +1,31 @@
 # ALLONE — All Systems. One Intelligence.
-> AI automation agency based in Tbilisi, Georgia and Brussels, Belgium. We build custom AI solutions, intelligent chatbots, workflow automation, and modern websites for businesses worldwide.
+> AI automation agency in Tbilisi, Georgia and Brussels, Belgium. Founded in 2025, we build custom AI chatbots, workflow automation, and high-performance websites. Our AI-native delivery reduces implementation costs by up to 90%.
 
 ## About ALLONE
-ALLONE is an AI automation agency that converges all business systems into one intelligent layer. Founded in 2025, we deliver enterprise-grade AI solutions at startup speed. Our AI-powered delivery stack reduces implementation costs by up to 90% compared to traditional agencies.
+ALLONE is an AI automation agency that converges all business systems into one intelligent layer. We serve clients across e-commerce, real estate, finance, manufacturing, fashion, and hospitality worldwide. Team operates in English and Georgian from two offices.
 
 ## Services
-- **AI Chatbots**: Custom conversational AI with natural language understanding, multi-language support, and seamless integration into existing platforms. 24/7 automated customer support.
-- **Custom AI Solutions**: Bespoke machine learning models, computer vision systems, NLP pipelines, and AI agents tailored to specific business needs.
-- **Workflow Automation**: End-to-end process automation using AI — from data extraction to decision-making. Integrate with CRMs, ERPs, and internal tools.
-- **Website Development**: High-performance Next.js websites with AI-powered features, optimized for speed, SEO, and conversion.
-- **Strategy & Consulting**: AI readiness assessment, implementation roadmaps, and ongoing optimization for businesses at any stage of AI adoption.
+- **AI Chatbots**: Multi-channel deployment (WhatsApp, Telegram, Instagram, web). Natural language understanding, CRM integration, 24/7 support. Typical delivery: 1-2 weeks.
+- **Custom AI Solutions**: Machine learning models, computer vision, NLP pipelines, AI agents. Typical delivery: 4-8 weeks.
+- **Workflow Automation**: Document processing, lead scoring, invoice automation, CRM/ERP integration using n8n and custom pipelines. Typical delivery: 2-4 weeks.
+- **Website Development**: Next.js, React, TypeScript. SEO-optimized, Core Web Vitals compliant, e-commerce capable. Typical delivery: 4-8 weeks.
+- **Strategy & Consulting**: AI readiness assessment, implementation roadmaps, ROI analysis, team training.
 
-## Portfolio
-- Equivalenza Georgia — E-Commerce platform
-- DataRooms — AI-powered investor data rooms
-- FIFTY — Community innovation space
-- HostWise — Property management SaaS
-- KaoTenders — B2B industrial tender platform
-- Chaos Concept — Fashion & art concept store
-- INNRBURIAL — Publishing & art platform
+## Engagement Models
+- **Project-based**: Fixed scope and timeline with milestone payments
+- **Retainer**: Ongoing development and optimization at monthly rate
+- **Consulting**: Hourly or daily rate for advisory and assessment
+
+## Portfolio (Selected Projects)
+- Equivalenza Georgia — E-commerce platform for international perfume brand
+- DataRooms — AI-powered investor data rooms with intelligent document search
+- HostWise — Property management SaaS with automated guest communication
+- KaoTenders — B2B industrial tender platform with AI matching
+- FIFTY — Community innovation space digital platform
+- Chaos Concept — Fashion and art concept store e-commerce
+
+## Technology Stack
+Frontend: Next.js, React, TypeScript, Tailwind CSS | AI/ML: Custom models, LLM integration, RAG | Backend: Node.js, Python, Supabase, PostgreSQL | Cloud: Vercel, AWS | Automation: n8n, Zapier
 
 ## Contact
 - Website: https://allone.ge
@@ -28,6 +35,5 @@ ALLONE is an AI automation agency that converges all business systems into one i
 ## Links
 - Homepage: https://allone.ge
 - Services: https://allone.ge/services
-- About: https://allone.ge/about
 - Contact: https://allone.ge/contact
-- Projects: https://allone.ge/projects
+- Work: https://allone.ge/work

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import { Plus_Jakarta_Sans, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
-import { OrganizationSchema, WebsiteSchema } from '@/components/seo';
+import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from '@/components/seo';
 import './globals.css';
 
 const generalSans = localFont({
@@ -112,6 +112,7 @@ export default function RootLayout({
       <body className="antialiased bg-white">
         <OrganizationSchema />
         <WebsiteSchema />
+        <LocalBusinessSchema />
         {children}
       </body>
     </html>

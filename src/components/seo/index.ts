@@ -4,4 +4,5 @@ export {
   WebsiteSchema,
   BreadcrumbSchema,
   FAQSchema,
+  LocalBusinessSchema,
 } from './StructuredData';

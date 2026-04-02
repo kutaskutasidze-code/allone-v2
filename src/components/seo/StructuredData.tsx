@@ -108,6 +108,69 @@ export function OrganizationSchema({
   );
 }
 
+export function LocalBusinessSchema() {
+  const locations = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ProfessionalService',
+      name: 'ALLONE — AI Automation Agency',
+      url: 'https://allone.ge',
+      email: 'hello@allone.ge',
+      description: 'AI automation agency offering custom chatbots, workflow automation, and web development services in Tbilisi, Georgia.',
+      image: 'https://allone.ge/images/allone-logo.png',
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Tbilisi',
+        addressCountry: 'GE',
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: 41.7151,
+        longitude: 44.8271,
+      },
+      areaServed: ['Georgia', 'Europe', 'Worldwide'],
+      knowsLanguage: ['en', 'ka'],
+      serviceType: ['AI Chatbot Development', 'Workflow Automation', 'Web Development', 'AI Consulting'],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ProfessionalService',
+      name: 'ALLONE — AI Automation Agency',
+      url: 'https://allone.ge',
+      email: 'hello@allone.ge',
+      description: 'AI automation agency offering custom chatbots, workflow automation, and web development services in Brussels, Belgium.',
+      image: 'https://allone.ge/images/allone-logo.png',
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Brussels',
+        addressCountry: 'BE',
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: 50.8503,
+        longitude: 4.3517,
+      },
+      areaServed: ['Belgium', 'Europe', 'Worldwide'],
+      knowsLanguage: ['en', 'fr', 'nl'],
+      serviceType: ['AI Chatbot Development', 'Workflow Automation', 'Web Development', 'AI Consulting'],
+    },
+  ];
+
+  return (
+    <>
+      {locations.map((loc, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(loc) }}
+        />
+      ))}
+    </>
+  );
+}
+
 interface ServiceSchemaProps {
   name: string;
   description: string;
