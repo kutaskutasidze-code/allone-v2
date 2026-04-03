@@ -41,6 +41,12 @@ export async function middleware(request: NextRequest) {
 
   const isAuthenticated = !!user && !error;
 
+  const ADMIN_EMAILS = [
+    'luka.tsulukidze@allonelabs.com',
+    'luka.adamia@allonelabs.com',
+    'levan.shavliashvili@allonelabs.com',
+  ];
+
   // Protect admin routes (except login)
   if (
     request.nextUrl.pathname.startsWith('/admin') &&
@@ -49,6 +55,16 @@ export async function middleware(request: NextRequest) {
   ) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+    if (!ADMIN_EMAILS.includes(user!.email || '')) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  }
+
+  // Protect admin API routes
+  if (request.nextUrl.pathname.startsWith('/api/admin')) {
+    if (!isAuthenticated || !ADMIN_EMAILS.includes(user!.email || '')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
   }
 
