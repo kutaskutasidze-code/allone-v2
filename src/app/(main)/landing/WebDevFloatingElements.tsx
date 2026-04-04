@@ -228,9 +228,9 @@ const elements = [
         {/* Product image */}
         <div className="h-[100px] relative overflow-hidden flex-shrink-0">
           <img
-            src="https://images.unsplash.com/photo-1534105615256-13940a56ff44?auto=format&fit=crop&w=400&h=250&q=80"
+            src="https://images.unsplash.com/photo-1534105615256-13940a56ff44?auto=format&fit=crop&w=400&h=400&q=80"
             alt="Minimal desk lamp"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain bg-gradient-to-br from-gray-50 to-gray-100"
           />
           {/* Overlay gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
