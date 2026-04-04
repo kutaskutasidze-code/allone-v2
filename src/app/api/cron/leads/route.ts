@@ -22,22 +22,10 @@ function escapeHtml(text: string): string {
     .replace(/"/g, '&quot;');
 }
 
-async function sendResendEmail(to: string, subject: string, html: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return false;
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      from: process.env.SMTP_FROM || 'ALLONE Website <onboarding@resend.dev>',
-      to: [to],
-      subject,
-      html,
-    }),
-  });
-
-  return res.ok;
+// Email sending disabled — leads now come from Google Places scraper on Hetzner VPS
+// and are viewed directly in the admin panel at /admin/leads
+async function sendResendEmail(_to: string, _subject: string, _html: string) {
+  return false;
 }
 
 // ========== ADDITIONAL SOURCES (for future scraping) ==========
