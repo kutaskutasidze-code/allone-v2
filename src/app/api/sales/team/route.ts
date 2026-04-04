@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient as createServiceClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { requireSupervisorAuth } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
-import { getPeriod, calculateSupervisorCommission } from '@/lib/commissions';
-
-function getServiceClient() {
-  return createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
-}
+import { getPeriod, round2, COMMISSION_RATES } from '@/lib/commissions';
 
 interface TeamMember {
   id: string;
@@ -29,18 +22,16 @@ export async function GET(request: NextRequest) {
   try {
     const { salesUser: supervisor } = await requireSupervisorAuth();
     const period = getPeriod(request.nextUrl.searchParams.get('period') || 'month');
-    const supabase = getServiceClient();
+    const supabase = createAdminClient();
 
-    // Get all sales users
     const { data: salesUsers, error: usersErr } = await supabase
       .from('sales_users')
       .select('id, name, email, role');
     if (usersErr) throw new Error(usersErr.message);
 
-    // Get all leads in period (created or won)
     const { data: allLeads, error: leadsErr } = await supabase
       .from('leads')
-      .select('id, sales_user_id, status, value, won_at, created_at');
+      .select('id, sales_user_id, status, value, won_at');
     if (leadsErr) throw new Error(leadsErr.message);
 
     const periodStart = period.start.getTime();
@@ -51,7 +42,6 @@ export async function GET(request: NextRequest) {
       const userLeads = (allLeads || []).filter(l => l.sales_user_id === u.id);
       const leadCount = userLeads.length;
 
-      // Won in period (by won_at)
       const wonInPeriod = userLeads.filter(l => {
         if (l.status !== 'won' || !l.won_at) return false;
         const t = new Date(l.won_at).getTime();
@@ -66,7 +56,8 @@ export async function GET(request: NextRequest) {
         .reduce((sum, l) => sum + Number(l.value || 0), 0);
 
       const conversionRate = leadCount > 0 ? wonCount / leadCount : 0;
-      const overrideEarned = u.id === supervisor.id ? 0 : wonRevenue * 0.05;
+      const isOwn = u.id === supervisor.id;
+      const overrideEarned = isOwn ? 0 : wonRevenue * COMMISSION_RATES.supervisorOverride;
 
       members.push({
         id: u.id,
@@ -77,16 +68,18 @@ export async function GET(request: NextRequest) {
         wonCount,
         lostCount,
         conversionRate: Math.round(conversionRate * 1000) / 1000,
-        wonRevenue: Math.round(wonRevenue * 100) / 100,
-        pipelineValue: Math.round(pipelineValue * 100) / 100,
-        overrideEarned: Math.round(overrideEarned * 100) / 100,
+        wonRevenue: round2(wonRevenue),
+        pipelineValue: round2(pipelineValue),
+        overrideEarned: round2(overrideEarned),
       });
     }
 
     members.sort((a, b) => b.wonRevenue - a.wonRevenue);
 
-    // Also compute supervisor's full commission for header stats
-    const supervisorCommission = await calculateSupervisorCommission(supabase, supervisor.id, period);
+    const supervisorMember = members.find(m => m.id === supervisor.id);
+    const supervisorOwn = round2((supervisorMember?.wonRevenue || 0) * COMMISSION_RATES.supervisorOwn);
+    const supervisorOverride = round2(members.reduce((sum, m) => sum + m.overrideEarned, 0));
+    const supervisorTotal = round2(supervisorOwn + supervisorOverride);
 
     return NextResponse.json({
       period: { start: period.start.toISOString(), end: period.end.toISOString(), label: period.label },
@@ -94,10 +87,10 @@ export async function GET(request: NextRequest) {
       teamTotals: {
         leadCount: members.reduce((s, m) => s + m.leadCount, 0),
         wonCount: members.reduce((s, m) => s + m.wonCount, 0),
-        wonRevenue: Math.round(members.reduce((s, m) => s + m.wonRevenue, 0) * 100) / 100,
-        supervisorOwn: supervisorCommission.ownCommission,
-        supervisorOverride: supervisorCommission.overrideCommission,
-        supervisorTotal: supervisorCommission.totalCommission,
+        wonRevenue: round2(members.reduce((s, m) => s + m.wonRevenue, 0)),
+        supervisorOwn,
+        supervisorOverride,
+        supervisorTotal,
       },
     });
   } catch (err) {

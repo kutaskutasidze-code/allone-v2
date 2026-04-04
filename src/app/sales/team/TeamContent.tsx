@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 interface TeamMember {
   id: string;
@@ -38,28 +39,30 @@ const PERIODS = [
   { value: 'all', label: 'All Time' },
 ];
 
-const formatCurrency = (v: number) => {
-  if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
-  if (v >= 1000) return `$${(v / 1000).toFixed(1)}K`;
-  return `$${v.toFixed(0)}`;
-};
+function StatCard({ label, value, sublabel, highlight = false }: { label: string; value: string; sublabel: string; highlight?: boolean }) {
+  return (
+    <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+      <p className="text-xs text-gray-500 mb-2">{label}</p>
+      <p className={`text-2xl font-semibold ${highlight ? 'text-emerald-600' : 'text-gray-900'}`}>{value}</p>
+      <p className="text-xs text-gray-400 mt-1">{sublabel}</p>
+    </div>
+  );
+}
 
 export function TeamContent({ supervisorName }: { supervisorName: string }) {
   const [period, setPeriod] = useState('month');
   const [data, setData] = useState<TeamData | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
+    setData(null);
     fetch(`/api/sales/team?period=${period}`)
       .then(r => r.json())
-      .then(d => { setData(d); setLoading(false); })
-      .catch(() => setLoading(false));
+      .then(setData)
+      .catch(() => {});
   }, [period]);
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">
           Team Performance
@@ -69,7 +72,6 @@ export function TeamContent({ supervisorName }: { supervisorName: string }) {
         </p>
       </div>
 
-      {/* Period selector */}
       <div className="flex gap-2">
         {PERIODS.map(p => (
           <button
@@ -86,48 +88,27 @@ export function TeamContent({ supervisorName }: { supervisorName: string }) {
         ))}
       </div>
 
-      {loading || !data ? (
+      {!data ? (
         <div className="p-8 text-center text-sm text-gray-500">Loading...</div>
       ) : (
         <>
-          {/* Team Totals */}
           <div className="grid gap-4 md:grid-cols-4">
-            <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
-              <p className="text-xs text-gray-500 mb-2">Team Revenue</p>
-              <p className="text-2xl font-semibold text-gray-900">{formatCurrency(data.teamTotals.wonRevenue)}</p>
-              <p className="text-xs text-gray-400 mt-1">{data.teamTotals.wonCount} deals won</p>
+            <StatCard label="Team Revenue" value={formatCurrency(data.teamTotals.wonRevenue)} sublabel={`${data.teamTotals.wonCount} deals won`} />
+            <StatCard label="Total Leads" value={String(data.teamTotals.leadCount)} sublabel="across team" />
+            <StatCard label="Your Own (10%)" value={formatCurrency(data.teamTotals.supervisorOwn)} sublabel="from your deals" />
+            <StatCard label="Your Override (5%)" value={formatCurrency(data.teamTotals.supervisorOverride)} sublabel="from team deals" highlight />
+          </div>
+
+          <div className="p-5 bg-gray-900 text-white rounded-xl flex items-center justify-between">
+            <div>
+              <p className="text-xs text-gray-400 mb-1">Your Total Commission</p>
+              <p className="text-3xl font-semibold">{formatCurrency(data.teamTotals.supervisorTotal)}</p>
             </div>
-            <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
-              <p className="text-xs text-gray-500 mb-2">Total Leads</p>
-              <p className="text-2xl font-semibold text-gray-900">{data.teamTotals.leadCount}</p>
-              <p className="text-xs text-gray-400 mt-1">across team</p>
-            </div>
-            <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
-              <p className="text-xs text-gray-500 mb-2">Your Own (10%)</p>
-              <p className="text-2xl font-semibold text-gray-900">{formatCurrency(data.teamTotals.supervisorOwn)}</p>
-              <p className="text-xs text-gray-400 mt-1">from your deals</p>
-            </div>
-            <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
-              <p className="text-xs text-gray-500 mb-2">Your Override (5%)</p>
-              <p className="text-2xl font-semibold text-emerald-600">{formatCurrency(data.teamTotals.supervisorOverride)}</p>
-              <p className="text-xs text-gray-400 mt-1">from team deals</p>
+            <div className="text-xs text-gray-400">
+              {formatCurrency(data.teamTotals.supervisorOwn)} + {formatCurrency(data.teamTotals.supervisorOverride)}
             </div>
           </div>
 
-          {/* Supervisor total */}
-          <div className="p-5 bg-gray-900 text-white rounded-xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-400 mb-1">Your Total Commission</p>
-                <p className="text-3xl font-semibold">{formatCurrency(data.teamTotals.supervisorTotal)}</p>
-              </div>
-              <div className="text-xs text-gray-400">
-                {formatCurrency(data.teamTotals.supervisorOwn)} + {formatCurrency(data.teamTotals.supervisorOverride)}
-              </div>
-            </div>
-          </div>
-
-          {/* Salespeople Table */}
           <div className="bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] overflow-x-auto">
             <table className="w-full min-w-[800px]">
               <thead>

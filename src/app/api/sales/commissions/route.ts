@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient as createServiceClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { requireSalesAuth } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
 import {
@@ -8,18 +8,11 @@ import {
   getPeriod,
 } from '@/lib/commissions';
 
-function getServiceClient() {
-  return createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
-}
-
 export async function GET(request: NextRequest) {
   try {
     const { salesUser } = await requireSalesAuth();
     const period = getPeriod(request.nextUrl.searchParams.get('period') || 'month');
-    const supabase = getServiceClient();
+    const supabase = createAdminClient();
 
     const result = salesUser.role === 'supervisor'
       ? await calculateSupervisorCommission(supabase, salesUser.id, period)

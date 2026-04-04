@@ -72,7 +72,8 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       const { data } = await supabase.from('sales_users').select('role').eq('email', user.email).maybeSingle();
       if (data?.role === 'supervisor') setIsSupervisor(true);
     })();
-  }, [supabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const navigationSections = buildNavigationSections(isSupervisor);
 

@@ -57,6 +57,8 @@ export function getAllTime(): Period {
   return { start: new Date('2020-01-01'), end: new Date('2100-01-01'), label: 'All Time' };
 }
 
+export type PeriodName = 'month' | 'last-month' | 'quarter' | 'all';
+
 export function getPeriod(name: string): Period {
   switch (name) {
     case 'last-month': return getLastMonth();
@@ -133,7 +135,6 @@ export async function calculateSupervisorCommission(
 ): Promise<CommissionBreakdown> {
   const aggregates = await getWonLeadsBySalesperson(supabase, period);
 
-  // Get all salespeople names for the breakdown
   const { data: salesUsers } = await supabase
     .from('sales_users')
     .select('id, name');
