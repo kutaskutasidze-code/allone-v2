@@ -185,7 +185,7 @@ function MeshGradient() {
       time += 0.008;
 
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, w, h);
+      ctx.fillRect(-2, -2, w + 4, h + 4);
 
       const t = time;
       const dim = Math.max(w, h);

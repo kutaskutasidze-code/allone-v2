@@ -57,15 +57,15 @@ export function Footer() {
                 {t('footer.services')}
               </p>
               <nav className="space-y-2.5">
-                <Link href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                <a href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.chatbots')}
-                </Link>
-                <Link href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                </a>
+                <a href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.webdev')}
-                </Link>
-                <Link href="/#automation" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                </a>
+                <a href="/#automation" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.automation')}
-                </Link>
+                </a>
                 <Link href="/contact" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.consulting')}
                 </Link>

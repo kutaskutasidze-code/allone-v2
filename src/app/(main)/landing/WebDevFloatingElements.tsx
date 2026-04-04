@@ -263,7 +263,7 @@ const elements = [
       </div>
     ),
     w: 175, h: 240,
-    x: -420, y: 60,
+    x: -420, y: -20,
     rotate: -3,
     entryOffset: 0.025,
   },
