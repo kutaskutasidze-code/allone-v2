@@ -1,23 +1,24 @@
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { redirect } from 'next/navigation';
 import { SalesDashboardContent } from './SalesDashboardContent';
 
 async function getSalesUser() {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user?.email) {
     redirect('/sales/login');
   }
 
-  const { data: salesUser } = await supabase
+  const admin = createAdminClient();
+  const { data: salesUser } = await admin
     .from('sales_users')
     .select('*')
-    .eq('email', session.user.email)
-    .single();
+    .eq('email', user.email)
+    .maybeSingle();
 
   if (!salesUser) {
-    // User is authenticated but not a sales user - redirect to home
     redirect('/');
   }
 
