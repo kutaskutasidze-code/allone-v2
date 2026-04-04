@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
     const period = getPeriod(request.nextUrl.searchParams.get('period') || 'month');
     const supabase = createAdminClient();
 
-    const result = salesUser.role === 'supervisor'
+    const hasTeamView = salesUser.role === 'supervisor' || salesUser.role === 'admin';
+    const result = hasTeamView
       ? await calculateSupervisorCommission(supabase, salesUser.id, period)
       : await calculateSalespersonCommission(supabase, salesUser.id, period);
 

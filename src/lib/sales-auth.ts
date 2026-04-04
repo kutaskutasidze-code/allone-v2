@@ -52,12 +52,12 @@ export async function checkSalesAuth(): Promise<SalesAuthResult | null> {
  */
 export async function requireSupervisorAuth(): Promise<SalesAuthResult> {
   const res = await requireSalesAuth();
-  if (res.salesUser.role !== 'supervisor') {
+  if (res.salesUser.role !== 'supervisor' && res.salesUser.role !== 'admin') {
     throw new AuthError('Supervisor access required');
   }
   return res;
 }
 
 export function isSupervisor(salesUser: SalesUser): boolean {
-  return salesUser.role === 'supervisor';
+  return salesUser.role === 'supervisor' || salesUser.role === 'admin';
 }

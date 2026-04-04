@@ -291,7 +291,7 @@ export interface Database {
           id: string;
           email: string;
           name: string;
-          role: 'salesperson' | 'supervisor';
+          role: 'salesperson' | 'supervisor' | 'admin';
           created_at: string;
           updated_at: string;
         };
@@ -299,7 +299,7 @@ export interface Database {
           id?: string;
           email: string;
           name: string;
-          role?: 'salesperson' | 'supervisor';
+          role?: 'salesperson' | 'supervisor' | 'admin';
           created_at?: string;
           updated_at?: string;
         };
@@ -307,7 +307,7 @@ export interface Database {
           id?: string;
           email?: string;
           name?: string;
-          role?: 'salesperson' | 'supervisor';
+          role?: 'salesperson' | 'supervisor' | 'admin';
           created_at?: string;
           updated_at?: string;
         };

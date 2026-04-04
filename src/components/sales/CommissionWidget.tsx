@@ -5,7 +5,7 @@ import { DollarSign, Users } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface CommissionData {
-  role: 'salesperson' | 'supervisor';
+  role: 'salesperson' | 'supervisor' | 'admin';
   period: { start: string; end: string; label: string };
   wonCount: number;
   wonValue: number;
@@ -36,7 +36,7 @@ export function CommissionWidget() {
   }
 
   const { month, all } = periods;
-  const isSupervisor = month.role === 'supervisor';
+  const isSupervisor = month.role === 'supervisor' || month.role === 'admin';
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">

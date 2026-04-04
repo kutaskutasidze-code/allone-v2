@@ -70,7 +70,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       const { data: { user } } = await supabase.auth.getUser();
       if (!user?.email) return;
       const { data } = await supabase.from('sales_users').select('role').eq('email', user.email).maybeSingle();
-      if (data?.role === 'supervisor') setIsSupervisor(true);
+      if (data?.role === 'supervisor' || data?.role === 'admin') setIsSupervisor(true);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
