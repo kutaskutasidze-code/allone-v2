@@ -22,7 +22,10 @@ export function CommissionWidget() {
       fetch('/api/sales/commissions?period=month').then(r => r.json()),
       fetch('/api/sales/commissions?period=all').then(r => r.json()),
     ])
-      .then(([month, all]) => setPeriods({ month, all }))
+      .then(([month, all]) => {
+        if (month?.wonCount === undefined || all?.wonCount === undefined) return;
+        setPeriods({ month, all });
+      })
       .catch(() => {});
   }, []);
 
