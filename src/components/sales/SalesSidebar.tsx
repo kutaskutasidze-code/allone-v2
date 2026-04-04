@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -18,31 +19,38 @@ import {
   BarChart3,
   Database,
   FileText,
+  UserCog,
 } from 'lucide-react';
 
-const navigationSections = [
-  {
-    label: 'Overview',
-    items: [
-      { name: 'Dashboard', href: '/sales', icon: LayoutDashboard },
-      { name: 'Analytics', href: '/sales/analytics', icon: BarChart3 },
-    ],
-  },
-  {
-    label: 'Sales',
-    items: [
-      { name: 'Leads', href: '/sales/leads', icon: Users },
-      { name: 'Campaigns', href: '/sales/campaigns', icon: Mail },
-    ],
-  },
-  {
-    label: 'System',
-    items: [
-      { name: 'Sources', href: '/sales/sources', icon: Database },
-      { name: 'Templates', href: '/sales/templates', icon: FileText },
-    ],
-  },
-];
+function buildNavigationSections(isSupervisor: boolean) {
+  const sections = [
+    {
+      label: 'Overview',
+      items: [
+        { name: 'Dashboard', href: '/sales', icon: LayoutDashboard },
+        { name: 'Analytics', href: '/sales/analytics', icon: BarChart3 },
+      ],
+    },
+    {
+      label: 'Sales',
+      items: [
+        { name: 'Leads', href: '/sales/leads', icon: Users },
+        { name: 'Campaigns', href: '/sales/campaigns', icon: Mail },
+      ],
+    },
+    {
+      label: 'System',
+      items: [
+        { name: 'Sources', href: '/sales/sources', icon: Database },
+        { name: 'Templates', href: '/sales/templates', icon: FileText },
+      ],
+    },
+  ];
+  if (isSupervisor) {
+    sections[1].items.push({ name: 'Team', href: '/sales/team', icon: UserCog });
+  }
+  return sections;
+}
 
 interface SalesSidebarProps {
   isCollapsed: boolean;
@@ -55,6 +63,18 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const [isSupervisor, setIsSupervisor] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) return;
+      const { data } = await supabase.from('sales_users').select('role').eq('email', user.email).maybeSingle();
+      if (data?.role === 'supervisor') setIsSupervisor(true);
+    })();
+  }, [supabase]);
+
+  const navigationSections = buildNavigationSections(isSupervisor);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

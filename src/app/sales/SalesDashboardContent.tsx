@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Plus, Users, Phone, CheckCircle, XCircle, TrendingUp, DollarSign, ArrowRight, Target } from 'lucide-react';
 import type { Lead, SalesUser } from '@/types/database';
-import { LeadStatusBadge } from '@/components/sales';
+import { LeadStatusBadge, CommissionWidget } from '@/components/sales';
 
 interface SalesDashboardContentProps {
   salesUser: SalesUser;
@@ -140,6 +140,9 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads }: SalesDa
           <p className="text-2xl font-semibold text-[var(--black)]">{conversionRate}%</p>
         </motion.div>
       </div>
+
+      {/* Commission */}
+      <CommissionWidget />
 
       {/* Quick Actions */}
       <motion.div

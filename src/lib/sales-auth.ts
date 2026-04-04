@@ -46,3 +46,18 @@ export async function checkSalesAuth(): Promise<SalesAuthResult | null> {
     return null;
   }
 }
+
+/**
+ * Requires the current user to be a supervisor. Throws AuthError otherwise.
+ */
+export async function requireSupervisorAuth(): Promise<SalesAuthResult> {
+  const res = await requireSalesAuth();
+  if (res.salesUser.role !== 'supervisor') {
+    throw new AuthError('Supervisor access required');
+  }
+  return res;
+}
+
+export function isSupervisor(salesUser: SalesUser): boolean {
+  return salesUser.role === 'supervisor';
+}
