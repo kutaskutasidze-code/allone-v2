@@ -147,11 +147,9 @@ export async function GET(request: NextRequest) {
         },
       },
     });
-  } catch (error) {
-    console.error('Analytics GET error:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch analytics' },
-      { status: 500 }
-    );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('Analytics GET error:', err);
+    return NextResponse.json({ error: `Analytics failed: ${msg}` }, { status: 500 });
   }
 }
