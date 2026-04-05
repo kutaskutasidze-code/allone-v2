@@ -8,12 +8,10 @@ export function SalesLayoutContent({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const isLoginPage = pathname === '/sales/login';
 
-  // Sidebar state
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // Track desktop vs mobile
   useEffect(() => {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
@@ -23,12 +21,10 @@ export function SalesLayoutContent({ children }: { children: React.ReactNode }) 
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileOpen(false);
   }, [pathname]);
 
-  // Close mobile menu on window resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -43,11 +39,10 @@ export function SalesLayoutContent({ children }: { children: React.ReactNode }) 
     return <>{children}</>;
   }
 
-  // Calculate margin for desktop only
   const desktopMargin = isDesktop ? (isCollapsed ? 72 : 256) : 0;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <SalesSidebar
         isCollapsed={isCollapsed}
         onToggle={() => {
@@ -64,7 +59,9 @@ export function SalesLayoutContent({ children }: { children: React.ReactNode }) 
         className="min-h-screen transition-[margin-left] duration-200 ease-out"
         style={{ marginLeft: desktopMargin }}
       >
-        <div className="p-4 pt-16 lg:pt-6 lg:p-8">{children}</div>
+        <div className="p-5 pt-16 lg:pt-8 lg:px-10 lg:pb-10">
+          <div className="max-w-7xl mx-auto">{children}</div>
+        </div>
       </main>
     </div>
   );
