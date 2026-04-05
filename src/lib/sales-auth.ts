@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { AuthError } from '@/lib/auth';
 import type { SalesUser } from '@/types/database';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
@@ -17,18 +18,18 @@ export async function requireSalesAuth(): Promise<SalesAuthResult> {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
 
-  if (error || !user) {
+  if (error || !user?.email) {
     throw new AuthError('Unauthorized');
   }
 
-  // Check if user exists in sales_users table
-  const { data: salesUser, error: salesError } = await supabase
+  const admin = createAdminClient();
+  const { data: salesUser } = await admin
     .from('sales_users')
     .select('*')
     .eq('email', user.email)
-    .single();
+    .maybeSingle();
 
-  if (salesError || !salesUser) {
+  if (!salesUser) {
     throw new AuthError('Not authorized as sales user');
   }
 
