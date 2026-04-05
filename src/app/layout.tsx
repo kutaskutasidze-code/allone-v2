@@ -46,10 +46,10 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   description:
-    'AI automation agency building custom AI chatbots, workflow automation, and intelligent software. Based in Tbilisi, Georgia & Brussels, Belgium. All systems converge into one.',
+    'AI automation company building custom AI chatbots, workflow automation, and intelligent software. Based in Tbilisi, Georgia & Brussels, Belgium. All systems converge into one.',
   keywords: [
-    'AI automation agency',
-    'AI agency Georgia',
+    'AI automation company',
+    'AI company Georgia',
     'AI chatbot development',
     'custom AI solutions',
     'workflow automation',
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     'NLP chatbot',
     'AI web development',
     'Tbilisi AI company',
-    'Belgium AI agency',
+    'Belgium AI company',
     'artificial intelligence services',
     'enterprise AI',
     'AI integration',
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     siteName: 'ALLONE',
     title: 'ALLONE — All Systems. One Intelligence.',
     description:
-      'AI automation agency that converges all your systems into one intelligent layer.',
+      'AI automation company that converges all your systems into one intelligent layer.',
     images: [
       {
         url: '/og-image.png',
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'ALLONE — All Systems. One Intelligence.',
-    description: 'AI automation agency. All systems converge into one.',
+    description: 'AI automation company. All systems converge into one.',
     creator: '@allone_ai',
   },
   robots: { index: true, follow: true },

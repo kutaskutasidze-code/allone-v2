@@ -1,8 +1,8 @@
 # ALLONE — All Systems. One Intelligence.
-> AI automation agency in Tbilisi, Georgia and Brussels, Belgium. Founded in 2025, we build custom AI chatbots, workflow automation, and high-performance websites. Our AI-native delivery reduces implementation costs by up to 90%.
+> AI automation company in Tbilisi, Georgia and Brussels, Belgium. Founded in 2025, we build custom AI chatbots, workflow automation, and high-performance websites. Our AI-native delivery reduces implementation costs by up to 90%.
 
 ## About ALLONE
-ALLONE is an AI automation agency that converges all business systems into one intelligent layer. We serve clients across e-commerce, real estate, finance, manufacturing, fashion, and hospitality worldwide. Team operates in English and Georgian from two offices.
+ALLONE is an AI automation company that converges all business systems into one intelligent layer. We serve clients across e-commerce, real estate, finance, manufacturing, fashion, and hospitality worldwide. Team operates in English and Georgian from two offices.
 
 ## Services
 - **AI Chatbots**: Multi-channel deployment (WhatsApp, Telegram, Instagram, web). Natural language understanding, CRM integration, 24/7 support. Typical delivery: 1-2 weeks.
