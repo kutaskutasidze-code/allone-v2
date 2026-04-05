@@ -196,7 +196,8 @@
       "Bash(openssl rand:*)",
       "Bash(gh workflow:*)",
       "Bash(mkdir -p ~/Desktop/allone-sky-light-logos)",
-      "Bash(cp /Users/wulu/Desktop/Projects/allone-website/public/logos-sky-light/* ~/Desktop/allone-sky-light-logos/)"
+      "Bash(cp /Users/wulu/Desktop/Projects/allone-website/public/logos-sky-light/* ~/Desktop/allone-sky-light-logos/)",
+      "Bash(tail:*)"
     ]
   }
 }
