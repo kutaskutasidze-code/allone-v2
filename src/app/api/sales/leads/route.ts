@@ -43,7 +43,7 @@ export async function GET(request: Request) {
 
     if (dbError) {
       logger.error('Failed to fetch leads', { error: dbError.message, userId: salesUser.id });
-      return error('Failed to fetch leads');
+      return error(`Failed to fetch leads: ${dbError.message}`);
     }
 
     return successWithPagination(data || [], createPaginationMeta(page, limit, count));
