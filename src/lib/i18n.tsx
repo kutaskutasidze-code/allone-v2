@@ -229,6 +229,61 @@ const translations: Record<Lang, Record<string, string>> = {
     'landing.final.h2': 'Start Building',
     'landing.final.cta2': 'Talk to an Expert',
 
+    // Landing — Hero tagline (3 lines)
+    'landing.tagline.l1': 'We build AI-powered systems',
+    'landing.tagline.l2': 'that automate your business',
+    'landing.tagline.l3': 'and let you focus on what matters.',
+
+    // Landing — Services cards section
+    'landing.svc.label': 'What we build',
+    'landing.svc.heading': 'Solutions that work for you',
+    'landing.svc.card1.title': 'AI Chatbots',
+    'landing.svc.card1.desc': 'Custom AI chatbots deployed on WhatsApp, Telegram, Instagram, and web. 24/7 support with CRM integration. Delivered in 1-2 weeks.',
+    'landing.svc.card2.title': 'Web Development',
+    'landing.svc.card2.desc': 'High-performance Next.js websites and web apps. SEO-optimized, Lighthouse 90+, mobile-first. Delivered in 4-8 weeks.',
+    'landing.svc.card3.title': 'Workflow Automation',
+    'landing.svc.card3.desc': 'Automate lead scoring, invoices, and data sync across platforms. Custom pipelines with n8n and Zapier. Delivered in 2-4 weeks.',
+
+    // Landing — Chatbot section
+    'landing.chatbot.subtitle': 'Deploy on every channel, one brain behind it all',
+
+    // Landing — Web dev section
+    'landing.webdev.heading.l1': 'Websites',
+    'landing.webdev.heading.l2': 'Engineered',
+    'landing.webdev.heading.l3': 'to',
+    'landing.webdev.heading.l4': 'Perform.',
+    'landing.webdev.frame.desc': 'High-performance websites and web apps that convert visitors into customers. Built for speed, designed for impact.',
+    'landing.webdev.tag1': 'Blazing fast',
+    'landing.webdev.tag2': 'SEO optimized',
+    'landing.webdev.tag3': 'Fully responsive',
+
+    // Landing — Workflow automation section
+    'landing.workflow.label': 'Workflow Automation',
+    'landing.workflow.heading': 'Automate the work that slows you down',
+    'landing.workflow.desc': 'From lead scoring to invoice processing, we build custom workflows that run 24/7 — so your team focuses on what matters.',
+    'landing.workflow.step1': 'New lead captured',
+    'landing.workflow.step2': 'Personalized outreach sent',
+    'landing.workflow.step3': 'Meeting auto-booked',
+    'landing.workflow.step4': 'Team notified instantly',
+
+    // Landing — FAQ section
+    'landing.faq.label': 'Common Questions',
+    'landing.faq.heading': 'Frequently Asked Questions',
+    'landing.faq.q1.q': 'What does ALLONE do?',
+    'landing.faq.q1.a': 'ALLONE is an AI automation company with offices in Tbilisi, Georgia and Brussels, Belgium. We build three things: custom AI chatbots that deploy on WhatsApp, Telegram, Instagram and web; workflow automation that connects your CRM, invoicing, and internal tools; and high-performance websites. Our AI-native approach means we deliver in weeks, not months.',
+    'landing.faq.q2.q': 'How quickly can you deliver a project?',
+    'landing.faq.q2.a': 'It depends on complexity. A multi-channel AI chatbot with CRM integration typically goes live in 1-2 weeks. Workflow automation pipelines take 2-4 weeks. A full website or web application takes 4-8 weeks. We move fast because we use AI throughout our own delivery process — the same tools we build for clients.',
+    'landing.faq.q3.q': 'How much do your services cost?',
+    'landing.faq.q3.a': 'Our AI-powered delivery reduces costs by up to 90% compared to traditional providers. We offer three engagement models: project-based (fixed scope with milestone payments), monthly retainer (ongoing development), and consulting (hourly advisory). Reach out to info@allonelabs.com for a tailored estimate.',
+    'landing.faq.q4.q': 'Which industries do you work with?',
+    'landing.faq.q4.a': 'We work across e-commerce, real estate, finance, hospitality, manufacturing, fashion, and publishing. Past projects include platforms for Equivalenza Georgia (perfume e-commerce), DataRooms (AI-powered investor data rooms), HostWise (property management SaaS), and KaoTenders (B2B industrial tenders).',
+    'landing.faq.q5.q': 'Can you work with clients outside Georgia?',
+    'landing.faq.q5.a': 'Yes — we serve clients globally from our offices in Tbilisi and Brussels. Our team works in English and Georgian. We handle everything remotely: discovery calls, design reviews, development sprints, and ongoing support.',
+    'landing.faq.q6.q': 'What technologies do you use?',
+    'landing.faq.q6.a': 'We use the latest and most appropriate technologies based on each project\'s needs. Whether it\'s web, mobile, AI, automation, or infrastructure — we pick the right tools for the job and handle every part of the build end-to-end.',
+    'landing.faq.q7.q': 'What makes ALLONE different?',
+    'landing.faq.q7.a': 'We use AI in our own workflow — not just in what we deliver. This means a 3-person team at ALLONE outputs what typically requires 10-15 people elsewhere. The result: faster delivery, lower cost, and a team that deeply understands the AI tools we build for you.',
+
     // Services sections
     'services.chatbot.label': 'AI Chatbots',
     'services.chatbot.h2a': 'AI chatbots for every channel',
@@ -487,6 +542,61 @@ const translations: Record<Lang, Record<string, string>> = {
     'landing.cta.c4': 'გადაიხადეთ მხოლოდ შედეგისთვის',
     'landing.final.h2': 'დაიწყე შენება',
     'landing.final.cta2': 'ესაუბრე ექსპერტს',
+
+    // Landing — Hero tagline (3 lines)
+    'landing.tagline.l1': 'ჩვენ ვქმნით AI სისტემებს,',
+    'landing.tagline.l2': 'რომლებიც თქვენს ბიზნესს აავტომატიზებს',
+    'landing.tagline.l3': 'და საშუალებას გაძლევთ ფოკუსი მთავარზე გქონდეთ.',
+
+    // Landing — Services cards section
+    'landing.svc.label': 'რას ვაკეთებთ',
+    'landing.svc.heading': 'გადაწყვეტები, რომლებიც მუშაობს',
+    'landing.svc.card1.title': 'AI ჩატბოტები',
+    'landing.svc.card1.desc': 'AI ჩატბოტები WhatsApp-ზე, Telegram-ზე, Instagram-სა და ვებსაიტზე. 24/7 მხარდაჭერა CRM ინტეგრაციით. ვაწვდით 1-2 კვირაში.',
+    'landing.svc.card2.title': 'ვებ განვითარება',
+    'landing.svc.card2.desc': 'Next.js-ზე აგებული სწრაფი ვებსაიტები და აპლიკაციები. SEO-ოპტიმიზირებული, Lighthouse 90+, მობილურისთვის გაწყობილი. ვაწვდით 4-8 კვირაში.',
+    'landing.svc.card3.title': 'სამუშაო პროცესების ავტომატიზაცია',
+    'landing.svc.card3.desc': 'ლიდების შეფასების, ინვოისებისა და მონაცემთა სინქრონიზაციის ავტომატიზაცია. ინდივიდუალური პაიპლაინები n8n-სა და Zapier-ზე. ვაწვდით 2-4 კვირაში.',
+
+    // Landing — Chatbot section
+    'landing.chatbot.subtitle': 'განათავსე ყველა არხზე — ერთი ტვინი ყველაფრის უკან',
+
+    // Landing — Web dev section
+    'landing.webdev.heading.l1': 'ვებსაიტები',
+    'landing.webdev.heading.l2': 'შექმნილი',
+    'landing.webdev.heading.l3': 'შესრულებისთვის.',
+    'landing.webdev.heading.l4': '',
+    'landing.webdev.frame.desc': 'მაღალი წარმადობის ვებსაიტები და აპლიკაციები, რომლებიც მნახველებს მომხმარებლებად აქცევს. შექმნილი სისწრაფისთვის, დიზაინი — შთაბეჭდილებისთვის.',
+    'landing.webdev.tag1': 'სწრაფი',
+    'landing.webdev.tag2': 'SEO ოპტიმიზაცია',
+    'landing.webdev.tag3': 'სრულად რესპონსიული',
+
+    // Landing — Workflow automation section
+    'landing.workflow.label': 'სამუშაო პროცესების ავტომატიზაცია',
+    'landing.workflow.heading': 'მოხსენი დატვირთვა ხელით სამუშაოსგან',
+    'landing.workflow.desc': 'ლიდების შეფასებიდან ინვოისების დამუშავებამდე — ვქმნით სამუშაო პროცესებს, რომლებიც 24/7 მუშაობს, რომ თქვენი გუნდი მთავარზე იყოს ფოკუსირებული.',
+    'landing.workflow.step1': 'ახალი ლიდი დაფიქსირდა',
+    'landing.workflow.step2': 'პერსონალიზებული მიმართვა გაიგზავნა',
+    'landing.workflow.step3': 'შეხვედრა ავტომატურად დაჯავშნილია',
+    'landing.workflow.step4': 'გუნდი მყისიერად გაფრთხილდა',
+
+    // Landing — FAQ section
+    'landing.faq.label': 'ხშირი კითხვები',
+    'landing.faq.heading': 'ხშირად დასმული კითხვები',
+    'landing.faq.q1.q': 'რას აკეთებს ALLONE?',
+    'landing.faq.q1.a': 'ALLONE არის AI ავტომატიზაციის სააგენტო თბილისსა (საქართველო) და ბრიუსელში (ბელგია) ოფისებით. ვქმნით სამ მთავარ პროდუქტს: AI ჩატბოტებს WhatsApp-ზე, Telegram-ზე, Instagram-სა და ვებზე; სამუშაო პროცესების ავტომატიზაციას, რომელიც აკავშირებს თქვენს CRM-ს, ინვოისინგსა და შიდა ხელსაწყოებს; და მაღალი წარმადობის ვებსაიტებს Next.js-ზე. AI-ზე დაფუძნებული მიდგომის წყალობით, ვაწვდით კვირებში და არა თვეებში.',
+    'landing.faq.q2.q': 'რამდენ ხანში აწვდით პროექტს?',
+    'landing.faq.q2.a': 'დამოკიდებულია სირთულეზე. მრავალ არხიანი AI ჩატბოტი CRM ინტეგრაციით ჩვეულებრივ 1-2 კვირაში მუშაობს. სამუშაო პროცესების ავტომატიზაცია — 2-4 კვირა. სრული ვებსაიტი ან ვებ აპლიკაცია — 4-8 კვირა. სწრაფად ვმუშაობთ, რადგან AI-ს ვიყენებთ ჩვენს საკუთარ პროცესში — იმავე ხელსაწყოებს, რომლებსაც კლიენტებისთვის ვქმნით.',
+    'landing.faq.q3.q': 'რა ღირს თქვენი სერვისები?',
+    'landing.faq.q3.a': 'AI-ზე დაფუძნებული მიწოდება ამცირებს ხარჯებს ტრადიციულ სააგენტოებთან შედარებით 90%-მდე. ვთავაზობთ სამ თანამშრომლობის მოდელს: პროექტული (ფიქსირებული მოცულობით, ეტაპობრივი გადახდებით), თვიური რეტეინერი (მიმდინარე განვითარება) და კონსალტინგი (საათობრივი საკონსულტაციო). დაგვიკავშირდით info@allonelabs.com-ზე ინდივიდუალური შეთავაზებისთვის.',
+    'landing.faq.q4.q': 'რომელ ინდუსტრიებში მუშაობთ?',
+    'landing.faq.q4.a': 'ვმუშაობთ ელ-კომერციაში, უძრავ ქონებაში, ფინანსებში, სტუმართმოყვარეობაში, წარმოებაში, მოდასა და გამომცემლობაში. წინა პროექტები მოიცავს პლატფორმებს Equivalenza Georgia-სთვის (პარფიუმერიის ელ-კომერცია), DataRooms-ისთვის (AI-ზე დაფუძნებული ინვესტორთა მონაცემთა ოთახები), HostWise-ისთვის (უძრავი ქონების მართვის SaaS) და KaoTenders-ისთვის (B2B სატენდერო პლატფორმა).',
+    'landing.faq.q5.q': 'ვმუშაობთ თუ არა საქართველოს გარეთ კლიენტებთან?',
+    'landing.faq.q5.a': 'დიახ — ვემსახურებით კლიენტებს გლობალურად ჩვენი თბილისისა და ბრიუსელის ოფისებიდან. გუნდი მუშაობს ინგლისურად და ქართულად. ყველაფერს დისტანციურად ვახერხებთ: შეცნობითი ზარები, დიზაინის განხილვები, განვითარების სპრინტები და მხარდაჭერა.',
+    'landing.faq.q6.q': 'რა ტექნოლოგიებს იყენებთ?',
+    'landing.faq.q6.a': 'Frontend: Next.js, React, TypeScript, Tailwind CSS. Backend: Node.js, Python, Supabase, PostgreSQL. AI: OpenAI-ისა და Anthropic-ის LLM-ების ინტეგრაცია, RAG სისტემები, მორგებული ML მოდელები. ავტომატიზაცია: n8n, Zapier და მორგებული სამუშაო ძრავები. Cloud: Vercel, AWS, Cloudflare.',
+    'landing.faq.q7.q': 'რით განსხვავდება ALLONE სხვა სააგენტოებისგან?',
+    'landing.faq.q7.a': 'AI-ს ვიყენებთ ჩვენს საკუთარ სამუშაო პროცესში — არა მხოლოდ იმაში, რასაც ვაწვდით. ეს ნიშნავს, რომ 3-კაციანი გუნდი ALLONE-ში აკეთებს იმას, რაც ტრადიციულ სააგენტოში 10-15 ადამიანს სჭირდება. შედეგი: უფრო სწრაფი მიწოდება, ნაკლები ხარჯი და გუნდი, რომელიც ღრმად იცნობს იმ AI ხელსაწყოებს, რომლებსაც თქვენთვის ვქმნით.',
 
     // Services sections
     'services.chatbot.label': 'AI ჩატბოტები',

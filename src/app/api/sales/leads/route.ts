@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache';
 import { requireSalesAuth } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
+import { createAdminClient } from '@/lib/supabase/admin';
 import {
   success,
   successWithPagination,
@@ -15,26 +16,31 @@ import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
   try {
-    const { supabase, salesUser } = await requireSalesAuth();
+    const { salesUser } = await requireSalesAuth();
     const { page, limit, offset } = getPaginationParams(request.url);
     const url = new URL(request.url);
     const status = url.searchParams.get('status');
     const search = url.searchParams.get('search');
+    const salesUserIdFilter = url.searchParams.get('sales_user_id');
 
-    logger.db('select', 'leads', { userId: salesUser.id });
+    const canSeeAll = salesUser.role === 'supervisor' || salesUser.role === 'admin';
+    const supabase = createAdminClient();
 
     let query = supabase
       .from('leads')
       .select('*', { count: 'exact' })
-      .eq('sales_user_id', salesUser.id)
       .order('created_at', { ascending: false });
 
-    // Filter by status if provided
+    if (canSeeAll) {
+      if (salesUserIdFilter) query = query.eq('sales_user_id', salesUserIdFilter);
+    } else {
+      query = query.eq('sales_user_id', salesUser.id);
+    }
+
     if (status && status !== 'all') {
       query = query.eq('status', status);
     }
 
-    // Search by name, email, or company
     if (search) {
       query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,company.ilike.%${search}%`);
     }
@@ -59,15 +65,12 @@ export async function POST(request: Request) {
     const { supabase, salesUser } = await requireSalesAuth();
     const body = await request.json();
 
-    // Validate input
     const result = createLeadSchema.safeParse(body);
     if (!result.success) {
       return validationError(result.error);
     }
 
     const validated = result.data;
-
-    logger.db('insert', 'leads', { userId: salesUser.id });
 
     const { data, error: dbError } = await supabase
       .from('leads')

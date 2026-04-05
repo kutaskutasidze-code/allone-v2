@@ -370,9 +370,9 @@ function Hero() {
         {/* Tagline — line by line blur-deblur reveal */}
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none px-8">
           <div className="flex flex-col items-center gap-2 max-w-[700px]">
-            <AnimatedLine text="We build AI-powered systems" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.28, 0.35]} />
-            <AnimatedLine text="that automate your business" scrollYProgress={scrollYProgress} delay={0.04} exitRange={[0.28, 0.35]} />
-            <AnimatedLine text="and let you focus on what matters." scrollYProgress={scrollYProgress} delay={0.08} exitRange={[0.28, 0.35]} />
+            <AnimatedLine text={t('landing.tagline.l1')} scrollYProgress={scrollYProgress} delay={0} exitRange={[0.28, 0.35]} />
+            <AnimatedLine text={t('landing.tagline.l2')} scrollYProgress={scrollYProgress} delay={0.04} exitRange={[0.28, 0.35]} />
+            <AnimatedLine text={t('landing.tagline.l3')} scrollYProgress={scrollYProgress} delay={0.08} exitRange={[0.28, 0.35]} />
           </div>
         </div>
 
@@ -383,14 +383,14 @@ function Hero() {
         >
           <div className="max-w-[1100px] mx-auto px-6">
             <div className="text-center mb-4 lg:mb-10">
-              <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 lg:mb-3 block">What we build</span>
-              <h2 className="font-mono text-[clamp(18px,4vw,48px)] font-medium uppercase tracking-wider lg:tracking-widest leading-none text-[#071D2F]">Solutions that work for you</h2>
+              <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 lg:mb-3 block">{t('landing.svc.label')}</span>
+              <h2 className="font-mono text-[clamp(18px,4vw,48px)] font-medium uppercase tracking-wider lg:tracking-widest leading-none text-[#071D2F]">{t('landing.svc.heading')}</h2>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-3">
               {[
-                { num: '01', title: 'AI Chatbots', desc: 'Custom AI chatbots deployed on WhatsApp, Telegram, Instagram, and web. 24/7 support with CRM integration. Delivered in 1-2 weeks.', details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
-                { num: '02', title: 'Web Development', desc: 'High-performance Next.js websites and web apps. SEO-optimized, Lighthouse 90+, mobile-first. Delivered in 4-8 weeks.', details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
-                { num: '03', title: 'Workflow Automation', desc: 'Automate lead scoring, invoices, and data sync across platforms. Custom pipelines with n8n and Zapier. Delivered in 2-4 weeks.', details: ['Invoice & document processing', 'Lead scoring & enrichment', 'Custom trigger & action logic', 'Data sync across platforms', 'Real-time monitoring dashboard'] },
+                { num: '01', title: t('landing.svc.card1.title'), desc: t('landing.svc.card1.desc'), details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
+                { num: '02', title: t('landing.svc.card2.title'), desc: t('landing.svc.card2.desc'), details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
+                { num: '03', title: t('landing.svc.card3.title'), desc: t('landing.svc.card3.desc'), details: ['Invoice & document processing', 'Lead scoring & enrichment', 'Custom trigger & action logic', 'Data sync across platforms', 'Real-time monitoring dashboard'] },
               ].map((service) => (
                 <div
                   key={service.title}
@@ -527,14 +527,14 @@ function ChatbotSection() {
               <div className="absolute -inset-6 -z-10 rounded-full bg-[#0ea5e9]/15 blur-[40px]" />
               <CornerBrackets size="lg" />
               <p className="text-center text-[15px] text-[#071D2F] leading-relaxed mb-6">
-                High-performance websites and web apps that convert visitors into customers. Built for speed, designed for impact.
+                {t('landing.webdev.frame.desc')}
               </p>
               <div className="flex justify-center gap-6 text-[12px] text-[#4D4D4D]/80 font-mono">
-                <span>Blazing fast</span>
+                <span>{t('landing.webdev.tag1')}</span>
                 <span className="text-[#0ea5e9]/30">|</span>
-                <span>SEO optimized</span>
+                <span>{t('landing.webdev.tag2')}</span>
                 <span className="text-[#0ea5e9]/30">|</span>
-                <span>Fully responsive</span>
+                <span>{t('landing.webdev.tag3')}</span>
               </div>
             </div>
           </motion.div>
@@ -564,7 +564,7 @@ function ChatbotSection() {
                     <div className="relative flex flex-col items-center justify-center px-4 py-5 overflow-hidden border-b border-[#0ea5e9]/25">
                       <div className="relative z-10 text-center mb-3">
                         <h2 className="font-mono text-lg font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>AI Chatbots</h2>
-                        <p className="text-[11px] text-[#4D4D4D]/60 mt-1">Deploy on every channel, one brain behind it all</p>
+                        <p className="text-[11px] text-[#4D4D4D]/60 mt-1">{t('landing.chatbot.subtitle')}</p>
                       </div>
                       <div className="relative z-10 w-full max-w-[280px]">
                         <div className="absolute inset-6 -z-10 rounded-full bg-[#38bdf8]/35 blur-[15px]" />
@@ -627,7 +627,7 @@ function ChatbotSection() {
                   >
                     <div className="relative z-10 text-center mb-4">
                       <h2 className="font-mono text-lg sm:text-xl font-medium uppercase tracking-widest" style={{ color: '#0ea5e9' }}>AI Chatbots</h2>
-                      <p className="text-[12px] text-[#4D4D4D]/60 mt-1.5">Deploy on every channel, one brain behind it all</p>
+                      <p className="text-[12px] text-[#4D4D4D]/60 mt-1.5">{t('landing.chatbot.subtitle')}</p>
                     </div>
                     <div className="relative z-10 w-full max-w-[360px]">
                       <div className="absolute inset-6 -z-10 rounded-full bg-[#38bdf8]/35 blur-[15px]" />
@@ -645,6 +645,7 @@ function ChatbotSection() {
 }
 
 function WorkflowSection() {
+  const { t } = useI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -697,7 +698,7 @@ function WorkflowSection() {
                   transition={{ duration: 0.5, delay: 0.1 }}
                 >
                   <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">03</span>
-                  <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">Workflow Automation</span>
+                  <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('landing.workflow.label')}</span>
                 </motion.div>
                 <motion.h3
                   className="font-display text-xl lg:text-2xl font-semibold text-[#071D2F] mb-3 tracking-[-0.02em] leading-[1.2]"
@@ -706,7 +707,7 @@ function WorkflowSection() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  Automate the work that slows you down
+                  {t('landing.workflow.heading')}
                 </motion.h3>
                 <motion.p
                   className="text-[13px] text-[#4D4D4D]/70 leading-[1.7] mb-6"
@@ -715,14 +716,14 @@ function WorkflowSection() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  From lead scoring to invoice processing, we build custom workflows that run 24/7 — so your team focuses on what matters.
+                  {t('landing.workflow.desc')}
                 </motion.p>
                 <div className="space-y-3">
                   {[
-                    'New lead captured',
-                    'Personalized outreach sent',
-                    'Meeting auto-booked',
-                    'Team notified instantly',
+                    t('landing.workflow.step1'),
+                    t('landing.workflow.step2'),
+                    t('landing.workflow.step3'),
+                    t('landing.workflow.step4'),
                   ].map((step, i) => (
                     <motion.div
                       key={i}
@@ -746,15 +747,7 @@ function WorkflowSection() {
   );
 }
 
-const faqItems = [
-  { question: 'What does ALLONE do?', answer: 'ALLONE is an AI automation agency with offices in Tbilisi, Georgia and Brussels, Belgium. We build three things: custom AI chatbots that deploy on WhatsApp, Telegram, Instagram and web; workflow automation that connects your CRM, invoicing, and internal tools; and high-performance websites built with Next.js. Our AI-native approach means we deliver in weeks, not months.' },
-  { question: 'How quickly can you deliver a project?', answer: 'It depends on complexity. A multi-channel AI chatbot with CRM integration typically goes live in 1-2 weeks. Workflow automation pipelines take 2-4 weeks. A full website or web application takes 4-8 weeks. We move fast because we use AI throughout our own delivery process — the same tools we build for clients.' },
-  { question: 'How much do your services cost?', answer: 'Our AI-powered delivery reduces costs by up to 90% compared to traditional agencies. We offer three engagement models: project-based (fixed scope with milestone payments), monthly retainer (ongoing development), and consulting (hourly advisory). Reach out to info@allonelabs.com for a tailored estimate.' },
-  { question: 'Which industries do you work with?', answer: 'We work across e-commerce, real estate, finance, hospitality, manufacturing, fashion, and publishing. Past projects include platforms for Equivalenza Georgia (perfume e-commerce), DataRooms (AI-powered investor data rooms), HostWise (property management SaaS), and KaoTenders (B2B industrial tenders).' },
-  { question: 'Can you work with clients outside Georgia?', answer: 'Yes — we serve clients globally from our offices in Tbilisi and Brussels. Our team works in English and Georgian. We handle everything remotely: discovery calls, design reviews, development sprints, and ongoing support.' },
-  { question: 'What technologies do you use?', answer: 'Frontend: Next.js, React, TypeScript, Tailwind CSS. Backend: Node.js, Python, Supabase, PostgreSQL. AI: OpenAI and Anthropic LLM integration, RAG systems, custom ML models. Automation: n8n, Zapier, and custom workflow engines. Cloud: Vercel, AWS, Cloudflare.' },
-  { question: 'What makes ALLONE different from other agencies?', answer: 'We use AI in our own workflow — not just in what we deliver. This means a 3-person team at ALLONE outputs what typically requires 10-15 people at a traditional agency. The result: faster delivery, lower cost, and a team that deeply understands the AI tools we build for you.' },
-];
+const faqKeys = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'] as const;
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
@@ -787,16 +780,18 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 }
 
 function FAQSection() {
+  const { t } = useI18n();
+  const items = faqKeys.map(k => ({ question: t(`landing.faq.${k}.q`), answer: t(`landing.faq.${k}.a`) }));
   return (
     <section className="py-16 lg:py-24 bg-white">
-      <FAQSchema questions={faqItems} />
+      <FAQSchema questions={items} />
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center mb-10">
-          <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 block">Common Questions</span>
-          <h2 className="font-display text-2xl lg:text-3xl font-semibold text-[#071D2F] tracking-[-0.03em]">Frequently Asked Questions</h2>
+          <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 block">{t('landing.faq.label')}</span>
+          <h2 className="font-display text-2xl lg:text-3xl font-semibold text-[#071D2F] tracking-[-0.03em]">{t('landing.faq.heading')}</h2>
         </div>
         <div className="space-y-2">
-          {faqItems.map((faq, i) => (
+          {items.map((faq, i) => (
             <FAQItem key={i} question={faq.question} answer={faq.answer} />
           ))}
         </div>

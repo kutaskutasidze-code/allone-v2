@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { requireSalesAuth } from '@/lib/sales-auth';
 
 export async function GET(request: NextRequest) {
   try {
     await requireSalesAuth();
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     const searchParams = request.nextUrl.searchParams;
     const days = parseInt(searchParams.get('days') || '30', 10);
