@@ -312,7 +312,7 @@ function Hero() {
   const bgOpacity = useTransform(scrollYProgress, [0.85, 1], [1, 0]);
 
   return (
-    <div ref={sectionRef} className="relative" style={{ height: isMobile ? '115vh' : '160vh' }}>
+    <div ref={sectionRef} className="relative" style={{ height: isMobile ? '160vh' : '160vh' }}>
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
@@ -529,10 +529,11 @@ const expRow4 = expAllTiles.slice(5, 13).concat(expAllTiles.slice(0, 4));
 function ExpLogoTile({ tile }: { tile: ExpTile }) {
   return (
     <div
-      className="w-[80px] h-[80px] flex items-center justify-center rounded-[18px] bg-white border border-gray-200 shadow-[0_1px_2px_rgba(0,0,0,0.03),0_6px_16px_rgba(0,0,0,0.04)] flex-shrink-0"
+      className="w-[80px] h-[80px] flex items-center justify-center rounded-[18px] bg-white border border-gray-200 shadow-[0_1px_2px_rgba(0,0,0,0.03),0_6px_16px_rgba(0,0,0,0.04)] flex-shrink-0 [&_svg]:!fill-[#87CEEB] [&_svg_path]:!fill-[#87CEEB] [&_svg_circle]:!stroke-[#87CEEB] [&_svg]:!text-[#87CEEB]"
       title={tile.name}
+      style={{ color: '#87CEEB' }}
     >
-      <div style={tile.color ? { color: tile.color } : undefined}>{tile.icon}</div>
+      <div>{tile.icon}</div>
     </div>
   );
 }
@@ -572,13 +573,13 @@ function ChatbotSection() {
   const cardContainerOpacity = useTransform(scrollYProgress, [0.2, 0.28], [1, 0]);
 
   // Title moves up + shrinks
-  const titleY = useTransform(scrollYProgress, [0.35, 0.45], [0, -(dims.vh * 0.3)]);
-  const titleScale2 = useTransform(scrollYProgress, [0.35, 0.45], [1, 0.85]);
+  const titleY = useTransform(scrollYProgress, isMobile ? [0.30, 0.40] : [0.35, 0.45], [0, -(dims.vh * 0.3)]);
+  const titleScale2 = useTransform(scrollYProgress, isMobile ? [0.30, 0.40] : [0.35, 0.45], [1, 0.85]);
 
   // Glassy text frame — stays visible while elements collapse behind it
-  const frameOpacity = useTransform(scrollYProgress, [0.42, 0.5, 0.85, 0.92], [0, 1, 1, 0]);
-  const frameY2 = useTransform(scrollYProgress, [0.42, 0.5, 0.85, 0.92], [40, 0, 0, -30]);
-  const frameScale = useTransform(scrollYProgress, [0.85, 0.92], [1, 0.9]);
+  const frameOpacity = useTransform(scrollYProgress, isMobile ? [0.35, 0.42, 0.80, 0.88] : [0.42, 0.5, 0.85, 0.92], [0, 1, 1, 0]);
+  const frameY2 = useTransform(scrollYProgress, isMobile ? [0.35, 0.42, 0.80, 0.88] : [0.42, 0.5, 0.85, 0.92], [40, 0, 0, -30]);
+  const frameScale = useTransform(scrollYProgress, isMobile ? [0.80, 0.88] : [0.85, 0.92], [1, 0.9]);
 
 
 
