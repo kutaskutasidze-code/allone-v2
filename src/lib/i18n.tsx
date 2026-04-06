@@ -244,8 +244,41 @@ const translations: Record<Lang, Record<string, string>> = {
     'landing.svc.card3.title': 'Workflow Automation',
     'landing.svc.card3.desc': 'Automate lead scoring, invoices, and data sync across platforms. Custom pipelines with n8n and Zapier. Delivered in 2-4 weeks.',
 
+    // Landing — Service card details
+    'landing.svc.card1.d1': 'Multi-channel deployment',
+    'landing.svc.card1.d2': 'Natural language understanding',
+    'landing.svc.card1.d3': 'CRM & tool integrations',
+    'landing.svc.card1.d4': 'Lead qualification & routing',
+    'landing.svc.card1.d5': '24/7 autonomous operation',
+    'landing.svc.card2.d1': 'High-performance web apps',
+    'landing.svc.card2.d2': 'SEO & Core Web Vitals',
+    'landing.svc.card2.d3': 'Admin panels & dashboards',
+    'landing.svc.card2.d4': 'Payment & auth integration',
+    'landing.svc.card2.d5': 'Mobile-first responsive design',
+    'landing.svc.card3.d1': 'Invoice & document processing',
+    'landing.svc.card3.d2': 'Lead scoring & enrichment',
+    'landing.svc.card3.d3': 'Custom trigger & action logic',
+    'landing.svc.card3.d4': 'Data sync across platforms',
+    'landing.svc.card3.d5': 'Real-time monitoring dashboard',
+
     // Landing — Chatbot section
     'landing.chatbot.subtitle': 'Deploy on every channel, one brain behind it all',
+    'landing.chatbot.h.1': 'AI chatbots',
+    'landing.chatbot.h.2': 'across',
+    'landing.chatbot.h.3': 'every channel,',
+    'landing.chatbot.h.4': 'connected to',
+    'landing.chatbot.h.5': 'every tool.',
+    'landing.chatbot.desc': 'One AI brain on WhatsApp, Telegram, Instagram, and your website. Integrated with the tools you already use — Google Sheets, Gmail, Stripe, Notion, and more.',
+    'landing.chatbot.cta': 'Book a Demo',
+
+    // Landing — Quote banner
+    'landing.quote.1': 'Stop losing customers to slow replies. Let ',
+    'landing.quote.ai': 'AI',
+    'landing.quote.2': ' handle it in seconds.',
+
+    // Landing — FAQ heading
+    'landing.faq.title.1': 'Frequently Asked',
+    'landing.faq.title.2': 'Questions',
 
     // Landing — Web dev section
     'landing.webdev.heading.l1': 'Websites',
@@ -553,13 +586,46 @@ const translations: Record<Lang, Record<string, string>> = {
     'landing.svc.heading': 'გადაწყვეტები, რომლებიც მუშაობს',
     'landing.svc.card1.title': 'AI ჩატბოტები',
     'landing.svc.card1.desc': 'AI ჩატბოტები WhatsApp-ზე, Telegram-ზე, Instagram-სა და ვებსაიტზე. 24/7 მხარდაჭერა CRM ინტეგრაციით. ვაწვდით 1-2 კვირაში.',
-    'landing.svc.card2.title': 'ვებ განვითარება',
+    'landing.svc.card2.title': 'ვებსაიტების შექმნა',
     'landing.svc.card2.desc': 'Next.js-ზე აგებული სწრაფი ვებსაიტები და აპლიკაციები. SEO-ოპტიმიზირებული, Lighthouse 90+, მობილურისთვის გაწყობილი. ვაწვდით 4-8 კვირაში.',
     'landing.svc.card3.title': 'სამუშაო პროცესების ავტომატიზაცია',
     'landing.svc.card3.desc': 'ლიდების შეფასების, ინვოისებისა და მონაცემთა სინქრონიზაციის ავტომატიზაცია. ინდივიდუალური პაიპლაინები n8n-სა და Zapier-ზე. ვაწვდით 2-4 კვირაში.',
 
+    // Landing — Service card details
+    'landing.svc.card1.d1': 'მრავალარხიანი განთავსება',
+    'landing.svc.card1.d2': 'ბუნებრივი ენის გაგება',
+    'landing.svc.card1.d3': 'CRM და ინსტრუმენტების ინტეგრაცია',
+    'landing.svc.card1.d4': 'ლიდების კვალიფიკაცია და მარშრუტიზაცია',
+    'landing.svc.card1.d5': '24/7 ავტონომიური მუშაობა',
+    'landing.svc.card2.d1': 'მაღალი წარმადობის ვებ აპლიკაციები',
+    'landing.svc.card2.d2': 'SEO და Core Web Vitals',
+    'landing.svc.card2.d3': 'ადმინ პანელები და დეშბორდები',
+    'landing.svc.card2.d4': 'გადახდისა და ავტორიზაციის ინტეგრაცია',
+    'landing.svc.card2.d5': 'მობილურზე ორიენტირებული დიზაინი',
+    'landing.svc.card3.d1': 'ინვოისებისა და დოკუმენტების დამუშავება',
+    'landing.svc.card3.d2': 'ლიდების სკორინგი და გამდიდრება',
+    'landing.svc.card3.d3': 'ინდივიდუალური ტრიგერებისა და ქმედებების ლოგიკა',
+    'landing.svc.card3.d4': 'მონაცემთა სინქრონიზაცია პლატფორმებს შორის',
+    'landing.svc.card3.d5': 'რეალურ დროში მონიტორინგის დეშბორდი',
+
     // Landing — Chatbot section
     'landing.chatbot.subtitle': 'განათავსე ყველა არხზე — ერთი ტვინი ყველაფრის უკან',
+    'landing.chatbot.h.1': 'AI ჩატბოტები',
+    'landing.chatbot.h.2': 'ყველა',
+    'landing.chatbot.h.3': 'არხზე,',
+    'landing.chatbot.h.4': 'დაკავშირებული',
+    'landing.chatbot.h.5': 'ყველა ინსტრუმენტთან.',
+    'landing.chatbot.desc': 'ერთი AI ტვინი WhatsApp-ზე, Telegram-ზე, Instagram-სა და თქვენს ვებსაიტზე. ინტეგრირებული იმ ინსტრუმენტებთან, რომლებსაც უკვე იყენებთ — Google Sheets, Gmail, Stripe, Notion და სხვა.',
+    'landing.chatbot.cta': 'დემოს დაჯავშნა',
+
+    // Landing — Quote banner
+    'landing.quote.1': 'შეწყვიტეთ მომხმარებლების დაკარგვა ნელი პასუხების გამო. მიეცით ',
+    'landing.quote.ai': 'AI',
+    'landing.quote.2': '-ს საშუალება წამებში მოაგვაროს.',
+
+    // Landing — FAQ heading
+    'landing.faq.title.1': 'ხშირად დასმული',
+    'landing.faq.title.2': 'კითხვები',
 
     // Landing — Web dev section
     'landing.webdev.heading.l1': 'ვებსაიტები',

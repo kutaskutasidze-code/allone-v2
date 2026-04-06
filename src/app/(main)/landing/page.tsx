@@ -280,6 +280,7 @@ function Hero() {
   const { t } = useI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
   const dims = useViewportDims();
+  const isMobile = dims.vw < 1024;
 
   const headline1 = t('landing.hero.h1a');
   const headline2 = t('landing.hero.h1b');
@@ -311,7 +312,7 @@ function Hero() {
   const bgOpacity = useTransform(scrollYProgress, [0.85, 1], [1, 0]);
 
   return (
-    <div ref={sectionRef} className="relative h-[160vh]">
+    <div ref={sectionRef} className="relative" style={{ height: isMobile ? '115vh' : '160vh' }}>
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
@@ -395,15 +396,15 @@ function Hero() {
               <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-1 lg:mb-3 block">{t('landing.svc.label')}</span>
               <h2 className="font-instrument text-[clamp(18px,4vw,48px)] font-medium tracking-[-0.02em] leading-[1.1] text-[#071D2F]">{t('landing.svc.heading')}</h2>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-3">
               {[
-                { num: '01', title: t('landing.svc.card1.title'), desc: t('landing.svc.card1.desc'), details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
-                { num: '02', title: t('landing.svc.card2.title'), desc: t('landing.svc.card2.desc'), details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
-                { num: '03', title: t('landing.svc.card3.title'), desc: t('landing.svc.card3.desc'), details: ['Invoice & document processing', 'Lead scoring & enrichment', 'Custom trigger & action logic', 'Data sync across platforms', 'Real-time monitoring dashboard'] },
+                { num: '01', title: t('landing.svc.card1.title'), desc: t('landing.svc.card1.desc'), details: [t('landing.svc.card1.d1'), t('landing.svc.card1.d2'), t('landing.svc.card1.d3'), t('landing.svc.card1.d4'), t('landing.svc.card1.d5')] },
+                { num: '02', title: t('landing.svc.card2.title'), desc: t('landing.svc.card2.desc'), details: [t('landing.svc.card2.d1'), t('landing.svc.card2.d2'), t('landing.svc.card2.d3'), t('landing.svc.card2.d4'), t('landing.svc.card2.d5')] },
+                { num: '03', title: t('landing.svc.card3.title'), desc: t('landing.svc.card3.desc'), details: [t('landing.svc.card3.d1'), t('landing.svc.card3.d2'), t('landing.svc.card3.d3'), t('landing.svc.card3.d4'), t('landing.svc.card3.d5')] },
               ].map((service) => (
                 <div
                   key={service.title}
-                  className="p-4 lg:p-6 rounded-2xl backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-col group"
+                  className="p-3 lg:p-6 rounded-2xl backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-col group"
                   style={{
                     background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
                     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
@@ -415,8 +416,8 @@ function Hero() {
                     <h3 className="font-display text-base lg:text-2xl font-semibold text-[#071D2F] mb-0.5 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
                     <p className="text-[12px] lg:text-[13px] text-[#4D4D4D] leading-snug lg:leading-relaxed">{service.desc}</p>
                   </div>
-                  <ul className="flex flex-col gap-1.5 lg:gap-2.5 mt-auto">
-                    {service.details.map((detail) => (
+                  <ul className="flex flex-col gap-1 lg:gap-2.5 mt-auto">
+                    {service.details.slice(0, isMobile ? 3 : 5).map((detail) => (
                       <li key={detail} className="flex items-start gap-1.5 lg:gap-2.5 text-[11px] lg:text-[12px] text-[#555] leading-snug">
                         <span className="w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
                         {detail}
@@ -434,10 +435,11 @@ function Hero() {
   );
 }
 function AnimatedChatbotHeading({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
+  const { t } = useI18n();
   const lines: Array<Array<{ text: string; accent?: boolean }>> = [
-    [{ text: 'AI chatbots' }, { text: 'across' }],
-    [{ text: 'every channel,', accent: true }],
-    [{ text: 'connected to' }, { text: 'every tool.', accent: true }],
+    [{ text: t('landing.chatbot.h.1') }, { text: t('landing.chatbot.h.2') }],
+    [{ text: t('landing.chatbot.h.3'), accent: true }],
+    [{ text: t('landing.chatbot.h.4') }, { text: t('landing.chatbot.h.5'), accent: true }],
   ];
   let wordIdx = 0;
   return (
@@ -457,16 +459,18 @@ function AnimatedChatbotHeading({ scrollYProgress }: { scrollYProgress: MotionVa
 }
 
 function AnimatedChatbotParagraph({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
+  const { t } = useI18n();
   const opacity = useTransform(scrollYProgress, [0.70, 0.85], [0, 1]);
   const y = useTransform(scrollYProgress, [0.70, 0.85], [16, 0]);
   return (
     <motion.p className="text-[18px] text-gray-500 leading-[1.6] max-w-md mb-6" style={{ opacity, y }}>
-      One AI brain on WhatsApp, Telegram, Instagram, and your website. Integrated with the tools you already use — Google Sheets, Gmail, Stripe, Notion, and more.
+      {t('landing.chatbot.desc')}
     </motion.p>
   );
 }
 
 function AnimatedChatbotCTA({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
+  const { t } = useI18n();
   const opacity = useTransform(scrollYProgress, [0.78, 0.92], [0, 1]);
   const y = useTransform(scrollYProgress, [0.78, 0.92], [16, 0]);
   return (
@@ -476,7 +480,7 @@ function AnimatedChatbotCTA({ scrollYProgress }: { scrollYProgress: MotionValue<
         className="inline-flex items-center h-9 px-4 text-[13px] font-medium text-black rounded-md hover:opacity-90 transition-opacity duration-150"
         style={{ backgroundColor: '#87CEEB' }}
       >
-        Book a Demo
+        {t('landing.chatbot.cta')}
       </Link>
     </motion.div>
   );
@@ -580,7 +584,7 @@ function ChatbotSection() {
 
   return (
     <div id="services" ref={sectionRef} className="relative z-10 bg-white -mt-8">
-      <div className="relative h-[400vh]">
+      <div className="relative" style={{ height: isMobile ? '250vh' : '400vh' }}>
         <div className="sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden">
           {/* "Your Vision, Deployed." reveal — each word staggers in */}
           <motion.div
@@ -592,7 +596,7 @@ function ChatbotSection() {
               style={{ scale: titleScale2 }}
             >
               <div className="flex items-center justify-center gap-[0.5em] flex-wrap px-4">
-                {(() => { const d = isMobile ? 0.16 : 0; return (<>
+                {(() => { const d = isMobile ? 0.04 : 0; return (<>
                   <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={d} exitRange={[0.75, 0.82]} />
                   <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={d + 0.03} exitRange={[0.75, 0.82]} />
                   <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={d + 0.06} exitRange={[0.75, 0.82]} />
@@ -676,9 +680,9 @@ function ChatbotSection() {
             </div>
             <div className="mt-10 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen border-t border-b border-gray-200 bg-gray-50 py-16 px-6">
               <p className="font-instrument text-[30px] lg:text-[42px] font-medium leading-[1.1] tracking-[-0.02em] text-center max-w-4xl mx-auto">
-                <span className="text-black">Stop losing customers to slow replies. Let </span>
-                <span style={{ color: '#87CEEB' }}>AI</span>
-                <span className="text-black"> handle it in seconds.</span>
+                <span className="text-black">{t('landing.quote.1')}</span>
+                <span style={{ color: '#87CEEB' }}>{t('landing.quote.ai')}</span>
+                <span className="text-black">{t('landing.quote.2')}</span>
               </p>
             </div>
           </motion.div>
@@ -833,7 +837,7 @@ function FAQSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           <div>
             <h2 className="font-instrument text-[40px] lg:text-[56px] font-medium leading-[1.1] tracking-[-0.02em] mb-8" style={{ color: '#87CEEB' }}>
-              Frequently Asked<br />Questions
+              {t('landing.faq.title.1')}<br />{t('landing.faq.title.2')}
             </h2>
             <div>
               {items.map((faq, i) => (
