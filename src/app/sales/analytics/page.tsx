@@ -1,69 +1,32 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import {
-  Users,
-  Mail,
-  MousePointer,
-  MessageSquare,
-  Database,
-  TrendingUp,
-  Globe,
-  Target,
-} from 'lucide-react';
-import { PageHeader } from '@/components/admin';
+import { Users, Phone, Mail, TrendingUp, Target, Globe } from 'lucide-react';
 
 interface AnalyticsData {
   overview: {
     totalLeads: number;
-    scrapedLeads: number;
-    leadsWithEmail: number;
-    leadsWithPhone: number;
-    emailRate: number;
+    newInPeriod: number;
+    withPhone: number;
+    withEmail: number;
     phoneRate: number;
+    emailRate: number;
   };
   leads: {
     byStatus: Record<string, number>;
     byService: Record<string, number>;
-    byCountry: Record<string, number>;
     dailyTrend: Record<string, number>;
   };
-  campaigns: {
-    totalSent: number;
-    totalOpened: number;
-    totalReplied: number;
-    activeCampaigns: number;
-    openRate: number;
-    replyRate: number;
-  };
-  sources: {
-    activeCount: number;
-    totalCount: number;
-    totalLeads: number;
-  };
-  period: {
-    days: number;
-  };
+  period: { days: number };
 }
 
 const SERVICE_NAMES: Record<string, string> = {
-  chatbots: 'AI Chatbots',
+  chatbots: 'Chatbots',
   custom_ai: 'Custom AI',
   automation: 'Automation',
   website: 'Website',
   consulting: 'Consulting',
   unclassified: 'Unclassified',
-};
-
-const COUNTRY_NAMES: Record<string, string> = {
-  KZ: 'Kazakhstan',
-  UZ: 'Uzbekistan',
-  GE: 'Georgia',
-  TR: 'Turkey',
-  AM: 'Armenia',
-  AZ: 'Azerbaijan',
-  unknown: 'Unknown',
 };
 
 const STATUS_NAMES: Record<string, string> = {
@@ -74,76 +37,33 @@ const STATUS_NAMES: Record<string, string> = {
   lost: 'Lost',
 };
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  subValue,
-  color = 'gray',
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string | number;
-  subValue?: string;
-  color?: 'gray' | 'green' | 'blue' | 'purple';
-}) {
-  const colorClasses: Record<string, string> = {
-    gray: 'bg-[var(--gray-100)] text-[var(--gray-600)]',
-    green: 'bg-green-100 text-green-600',
-    blue: 'bg-blue-100 text-blue-600',
-    purple: 'bg-purple-100 text-purple-600',
-  };
+const STATUS_COLORS: Record<string, string> = {
+  new: '#3b82f6',
+  contacted: '#f59e0b',
+  qualified: '#8b5cf6',
+  won: '#10b981',
+  lost: '#6b7280',
+};
 
-  return (
-    <div className="bg-white border border-[var(--gray-200)] rounded-xl p-5">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm text-[var(--gray-500)] mb-1">{label}</p>
-          <p className="text-2xl font-semibold text-[var(--black)]">{value}</p>
-          {subValue && <p className="text-xs text-[var(--gray-400)] mt-1">{subValue}</p>}
-        </div>
-        <div className={`p-2.5 rounded-lg ${colorClasses[color]}`}>
-          <Icon className="w-5 h-5" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DistributionBar({
-  data,
-  names,
-  colors,
-}: {
-  data: Record<string, number>;
-  names: Record<string, string>;
-  colors: string[];
-}) {
+function DistributionBar({ data, names, colors }: { data: Record<string, number>; names: Record<string, string>; colors?: Record<string, string> }) {
   const total = Object.values(data).reduce((sum, val) => sum + val, 0);
-  if (total === 0) return <p className="text-sm text-[var(--gray-400)]">No data</p>;
-
+  if (total === 0) return <p className="text-sm text-gray-400">No data</p>;
   const entries = Object.entries(data).sort((a, b) => b[1] - a[1]);
+  const palette = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6b7280'];
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       {entries.map(([key, value], index) => {
-        const percentage = Math.round((value / total) * 100);
+        const pct = Math.round((value / total) * 100);
+        const color = colors?.[key] || palette[index % palette.length];
         return (
           <div key={key}>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="text-[var(--gray-600)]">{names[key] || key}</span>
-              <span className="text-[var(--gray-400)]">
-                {value} ({percentage}%)
-              </span>
+              <span className="text-gray-600">{names[key] || key}</span>
+              <span className="text-gray-400">{value} ({pct}%)</span>
             </div>
-            <div className="h-2 bg-[var(--gray-100)] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{
-                  width: `${percentage}%`,
-                  backgroundColor: colors[index % colors.length],
-                }}
-              />
+            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
             </div>
           </div>
         );
@@ -159,28 +79,18 @@ export default function AnalyticsPage() {
   const [days, setDays] = useState(30);
 
   useEffect(() => {
-    fetchAnalytics();
+    setIsLoading(true);
+    fetch(`/api/sales/analytics?days=${days}`)
+      .then(r => r.json())
+      .then(result => { setData(result.data); setError(''); })
+      .catch(() => setError('Failed to load analytics'))
+      .finally(() => setIsLoading(false));
   }, [days]);
-
-  const fetchAnalytics = async () => {
-    try {
-      setIsLoading(true);
-      const res = await fetch(`/api/sales/analytics?days=${days}`);
-      if (!res.ok) throw new Error('Failed to fetch analytics');
-      const result = await res.json();
-      setData(result.data);
-    } catch (err) {
-      setError('Failed to load analytics');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -188,27 +98,38 @@ export default function AnalyticsPage() {
   if (error || !data) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Analytics" description="Lead generation and campaign performance" />
-        <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
-          {error || 'Failed to load analytics data'}
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">Analytics</h1>
+          <p className="mt-1.5 text-sm text-gray-500">Lead performance overview</p>
         </div>
+        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">{error || 'Failed to load'}</div>
       </div>
     );
   }
 
+  const statCards = [
+    { label: 'Total Leads', value: data.overview.totalLeads.toLocaleString(), sub: `${data.overview.newInPeriod} new in last ${data.period.days}d`, icon: Users },
+    { label: 'With Phone', value: data.overview.withPhone.toLocaleString(), sub: `${data.overview.phoneRate}% of all leads`, icon: Phone },
+    { label: 'With Email', value: data.overview.withEmail.toLocaleString(), sub: `${data.overview.emailRate}% of all leads`, icon: Mail },
+    { label: 'New This Period', value: data.overview.newInPeriod.toLocaleString(), sub: `Last ${data.period.days} days`, icon: TrendingUp },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <PageHeader title="Analytics" description="Lead generation and campaign performance" />
-        <div className="flex rounded-lg bg-[var(--gray-100)] p-0.5">
-          {[7, 30, 90].map((d) => (
+    <div className="space-y-8">
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">Analytics</h1>
+          <p className="mt-1.5 text-sm text-gray-500">Lead performance overview</p>
+        </div>
+        <div className="flex gap-1">
+          {[7, 30, 90].map(d => (
             <button
               key={d}
               onClick={() => setDays(d)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 days === d
-                  ? 'bg-white text-[var(--black)] shadow-sm'
-                  : 'text-[var(--gray-500)] hover:text-[var(--black)]'
+                  ? 'bg-gray-900 text-white shadow-sm'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
               }`}
             >
               {d}d
@@ -217,159 +138,85 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Overview Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-      >
-        <StatCard
-          icon={Users}
-          label="Total Leads"
-          value={data.overview.totalLeads.toLocaleString()}
-          subValue={`${data.overview.scrapedLeads} scraped`}
-        />
-        <StatCard
-          icon={Mail}
-          label="Emails Sent"
-          value={data.campaigns.totalSent.toLocaleString()}
-          subValue={`${data.campaigns.openRate}% open rate`}
-          color="blue"
-        />
-        <StatCard
-          icon={MousePointer}
-          label="Email Opens"
-          value={data.campaigns.totalOpened.toLocaleString()}
-          subValue={`${data.campaigns.activeCampaigns} active campaigns`}
-          color="green"
-        />
-        <StatCard
-          icon={MessageSquare}
-          label="Replies"
-          value={data.campaigns.totalReplied.toLocaleString()}
-          subValue={`${data.campaigns.replyRate}% reply rate`}
-          color="purple"
-        />
-      </motion.div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map(card => {
+          const Icon = card.icon;
+          return (
+            <div key={card.label} className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-gray-500">{card.label}</span>
+                <Icon className="h-4 w-4 text-gray-400" />
+              </div>
+              <p className="text-2xl font-semibold text-gray-900">{card.value}</p>
+              <p className="text-xs text-gray-400 mt-1">{card.sub}</p>
+            </div>
+          );
+        })}
+      </div>
 
-      {/* Data Quality */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
-      >
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-5">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
           <div className="flex items-center gap-2 mb-4">
-            <Database className="w-4 h-4 text-[var(--gray-400)]" />
-            <h3 className="font-medium text-[var(--black)]">Data Quality</h3>
+            <Target className="w-4 h-4 text-gray-400" />
+            <h3 className="text-sm font-semibold text-gray-900">By Status</h3>
           </div>
+          <DistributionBar data={data.leads.byStatus} names={STATUS_NAMES} colors={STATUS_COLORS} />
+        </div>
+
+        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+          <div className="flex items-center gap-2 mb-4">
+            <Globe className="w-4 h-4 text-gray-400" />
+            <h3 className="text-sm font-semibold text-gray-900">By Service</h3>
+          </div>
+          <DistributionBar data={data.leads.byService} names={SERVICE_NAMES} />
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+          <h3 className="text-sm font-semibold text-gray-900 mb-2">Data Quality</h3>
+          <p className="text-xs text-gray-500 mb-4">Contact information availability</p>
           <div className="space-y-3">
             <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-[var(--gray-500)]">Has Email</span>
-                <span className="font-medium">{data.overview.emailRate}%</span>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-gray-600">Has Phone</span>
+                <span className="text-gray-900 font-medium">{data.overview.phoneRate}%</span>
               </div>
-              <div className="h-2 bg-[var(--gray-100)] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-blue-500 rounded-full"
-                  style={{ width: `${data.overview.emailRate}%` }}
-                />
+              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${data.overview.phoneRate}%` }} />
               </div>
             </div>
             <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-[var(--gray-500)]">Has Phone</span>
-                <span className="font-medium">{data.overview.phoneRate}%</span>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-gray-600">Has Email</span>
+                <span className="text-gray-900 font-medium">{data.overview.emailRate}%</span>
               </div>
-              <div className="h-2 bg-[var(--gray-100)] rounded-full overflow-hidden">
+              <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${data.overview.emailRate}%` }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+          <h3 className="text-sm font-semibold text-gray-900 mb-2">Daily Activity</h3>
+          <p className="text-xs text-gray-500 mb-4">New leads per day (last {data.period.days} days)</p>
+          <div className="flex items-end gap-0.5 h-24">
+            {(() => {
+              const entries = Object.entries(data.leads.dailyTrend).sort((a, b) => a[0].localeCompare(b[0]));
+              const max = Math.max(...entries.map(([, v]) => v), 1);
+              return entries.slice(-Math.min(entries.length, 30)).map(([date, count]) => (
                 <div
-                  className="h-full bg-green-500 rounded-full"
-                  style={{ width: `${data.overview.phoneRate}%` }}
+                  key={date}
+                  className="flex-1 bg-gray-900 rounded-t-sm min-w-[3px] hover:bg-gray-700 transition-colors"
+                  style={{ height: `${(count / max) * 100}%` }}
+                  title={`${date}: ${count} leads`}
                 />
-              </div>
-            </div>
+              ));
+            })()}
           </div>
         </div>
-
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-4 h-4 text-[var(--gray-400)]" />
-            <h3 className="font-medium text-[var(--black)]">Sources</h3>
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-[var(--gray-500)]">Active Sources</span>
-              <span className="text-sm font-medium">{data.sources.activeCount} / {data.sources.totalCount}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-[var(--gray-500)]">Total from Sources</span>
-              <span className="text-sm font-medium">{data.sources.totalLeads.toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Mail className="w-4 h-4 text-[var(--gray-400)]" />
-            <h3 className="font-medium text-[var(--black)]">Email Performance</h3>
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-[var(--gray-500)]">Open Rate</span>
-              <span className="text-sm font-medium text-green-600">{data.campaigns.openRate}%</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-[var(--gray-500)]">Reply Rate</span>
-              <span className="text-sm font-medium text-blue-600">{data.campaigns.replyRate}%</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Distributions */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4"
-      >
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="w-4 h-4 text-[var(--gray-400)]" />
-            <h3 className="font-medium text-[var(--black)]">By Service</h3>
-          </div>
-          <DistributionBar
-            data={data.leads.byService}
-            names={SERVICE_NAMES}
-            colors={['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6b7280']}
-          />
-        </div>
-
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Globe className="w-4 h-4 text-[var(--gray-400)]" />
-            <h3 className="font-medium text-[var(--black)]">By Country</h3>
-          </div>
-          <DistributionBar
-            data={data.leads.byCountry}
-            names={COUNTRY_NAMES}
-            colors={['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#ef4444']}
-          />
-        </div>
-
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Users className="w-4 h-4 text-[var(--gray-400)]" />
-            <h3 className="font-medium text-[var(--black)]">By Status</h3>
-          </div>
-          <DistributionBar
-            data={data.leads.byStatus}
-            names={STATUS_NAMES}
-            colors={['#6b7280', '#3b82f6', '#f59e0b', '#10b981', '#ef4444']}
-          />
-        </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

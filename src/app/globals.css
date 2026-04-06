@@ -57,6 +57,7 @@ html.lenis, html.lenis body { height: auto; }
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-heading: 'Space Grotesk', system-ui, sans-serif;
+  --font-instrument: 'Instrument Sans', system-ui, sans-serif;
 
   /* Easing */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -199,6 +200,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
+.font-instrument {
+  font-family: var(--font-instrument);
+}
+
 .font-body {
   font-family: var(--font-body);
 }
@@ -295,8 +300,15 @@ h1, h2, h3, h4, h5, h6 {
 
 @keyframes logo-scroll {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-33.333%); }
 }
+
+.animate-logo-scroll {
+  animation: logo-scroll linear infinite;
+  width: max-content;
+}
+
+
 
 @keyframes count-up {
   from { opacity: 0; transform: translateY(10px); }

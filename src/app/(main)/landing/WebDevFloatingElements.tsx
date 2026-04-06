@@ -5,6 +5,7 @@ import { motion, useTransform, type MotionValue } from 'framer-motion';
 
 interface FloatingElementProps {
   scrollYProgress: MotionValue<number>;
+  entryDelay?: number;
 }
 
 // Lighthouse gauge ring helper
@@ -303,7 +304,7 @@ const elements = [
 ];
 
 
-export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps) {
+export function WebDevFloatingElements({ scrollYProgress, entryDelay = 0 }: FloatingElementProps) {
   const [scale, setScale] = useState(1);
   const [maxElements, setMaxElements] = useState(8);
   useEffect(() => {
@@ -327,7 +328,7 @@ export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps
           <FloatingElement
             key={i}
             scrollYProgress={scrollYProgress}
-            baseEntry={0.4 + el.entryOffset}
+            baseEntry={0.4 + el.entryOffset + entryDelay}
             x={el.x}
             y={el.y}
             w={el.w}

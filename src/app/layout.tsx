@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import { Plus_Jakarta_Sans, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import { Plus_Jakarta_Sans, JetBrains_Mono, Space_Grotesk, Instrument_Sans } from 'next/font/google';
 import { OrganizationSchema, WebsiteSchema, LocalBusinessSchema } from '@/components/seo';
 import './globals.css';
 
@@ -33,6 +33,13 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-heading',
+  weight: ['400', '500', '600', '700'],
+});
+
+const instrumentSans = Instrument_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-instrument',
   weight: ['400', '500', '600', '700'],
 });
 
@@ -108,7 +115,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${generalSans.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${generalSans.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${instrumentSans.variable}`}>
       <body className="antialiased bg-white">
         <OrganizationSchema />
         <WebsiteSchema />
