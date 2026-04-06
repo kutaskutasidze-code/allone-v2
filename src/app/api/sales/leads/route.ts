@@ -41,6 +41,11 @@ export async function GET(request: Request) {
       query = query.eq('status', status);
     }
 
+    const service = url.searchParams.get('service');
+    if (service && service !== 'all') {
+      query = query.eq('matched_service', service);
+    }
+
     if (search) {
       query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,company.ilike.%${search}%`);
     }
