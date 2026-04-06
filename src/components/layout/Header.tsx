@@ -180,7 +180,6 @@ export function Header() {
     { name: 'Home', i18nKey: 'nav.home', href: '/', icon: IconHome },
     { name: 'Services', i18nKey: 'nav.services', href: '/#services', icon: IconServices },
     { name: 'Work', i18nKey: 'nav.work', href: '/work', icon: IconWork },
-    { name: 'Lab', i18nKey: 'nav.lab', href: '/lab', icon: IconLab },
   ];
 
   const dockWidth = isMobile ? 'auto' : chatMode === 'closed' ? 780 : 400;
