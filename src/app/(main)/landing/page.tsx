@@ -367,7 +367,7 @@ function Hero() {
               transition={{ duration: 0.8, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
             >
               <Link href="/contact" className="flex items-center gap-1.5 lg:gap-2 h-10 lg:h-12 px-4 lg:px-6 text-sm lg:text-base font-medium text-white bg-[#0369a1] rounded-full hover:bg-[#0284c7] transition-all duration-150">
-                <Image src="/images/allone-logo-transparent.png" alt="" width={22} height={22} className="brightness-0 invert w-[18px] h-[18px] lg:w-[22px] lg:h-[22px]" />
+                <Image src="/images/allone-logo-transparent.png" alt="" width={22} height={22} className="w-[18px] h-[18px] lg:w-[22px] lg:h-[22px]" style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(18%) saturate(531%) hue-rotate(166deg) brightness(99%) contrast(87%)' }} />
                 {t('landing.hero.cta1')}
               </Link>
               <Link href="/contact" className="relative flex items-center h-10 lg:h-12 px-4 lg:px-6 text-sm lg:text-base font-medium text-[#071D2F] rounded-full backdrop-blur-xl transition-all duration-200 hover:shadow-lg overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.25) 100%)', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 1px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.3)' }}>
@@ -529,11 +529,10 @@ const expRow4 = expAllTiles.slice(5, 13).concat(expAllTiles.slice(0, 4));
 function ExpLogoTile({ tile }: { tile: ExpTile }) {
   return (
     <div
-      className="w-[80px] h-[80px] flex items-center justify-center rounded-[18px] bg-white border border-gray-200 shadow-[0_1px_2px_rgba(0,0,0,0.03),0_6px_16px_rgba(0,0,0,0.04)] flex-shrink-0 [&_svg]:!fill-[#87CEEB] [&_svg_path]:!fill-[#87CEEB] [&_svg_circle]:!stroke-[#87CEEB] [&_svg]:!text-[#87CEEB]"
+      className="w-[80px] h-[80px] flex items-center justify-center rounded-[18px] bg-white border border-gray-200 shadow-[0_1px_2px_rgba(0,0,0,0.03),0_6px_16px_rgba(0,0,0,0.04)] flex-shrink-0"
       title={tile.name}
-      style={{ color: '#87CEEB' }}
     >
-      <div>{tile.icon}</div>
+      <div style={tile.color ? { color: tile.color } : undefined}>{tile.icon}</div>
     </div>
   );
 }

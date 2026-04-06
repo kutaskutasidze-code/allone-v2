@@ -24,6 +24,7 @@ export function Footer() {
                   width={28}
                   height={28}
                   className="object-contain"
+                  style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(18%) saturate(531%) hue-rotate(166deg) brightness(99%) contrast(87%)' }}
                 />
                 <span className="text-sm font-semibold text-[#071D2F] tracking-[-0.02em] font-[family-name:var(--font-display)]">
                   {t('footer.brand')}

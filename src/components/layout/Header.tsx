@@ -320,7 +320,7 @@ export function Header() {
                 <>
                   {/* Desktop: logo + text nav */}
                   <Link href="/" className="flex items-center gap-2 pl-1 pr-2">
-                    <Image src="/images/allone-logo-transparent.png" alt="allone" width={26} height={26} className="object-contain" />
+                    <Image src="/images/allone-logo-transparent.png" alt="allone" width={26} height={26} className="object-contain" style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(18%) saturate(531%) hue-rotate(166deg) brightness(99%) contrast(87%)' }} />
                     <span className="font-display font-semibold text-[15px] tracking-tight text-[#071D2F]">AllOne</span>
                   </Link>
 
