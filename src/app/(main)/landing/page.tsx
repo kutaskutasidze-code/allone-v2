@@ -387,7 +387,7 @@ function Hero() {
 
         {/* Services — scrolls up from below */}
         <motion.div
-          className="absolute left-0 right-0 top-0 z-10 flex items-center justify-center h-full"
+          className="absolute left-0 right-0 top-0 z-10 flex items-start lg:items-center justify-center h-full overflow-y-auto pt-4 lg:pt-0"
           style={{ y: servicesY }}
         >
           <div className="max-w-[1100px] mx-auto px-6">
@@ -395,7 +395,7 @@ function Hero() {
               <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 lg:mb-3 block">{t('landing.svc.label')}</span>
               <h2 className="font-instrument text-[clamp(18px,4vw,48px)] font-medium tracking-[-0.02em] leading-[1.1] text-[#071D2F]">{t('landing.svc.heading')}</h2>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3">
               {[
                 { num: '01', title: t('landing.svc.card1.title'), desc: t('landing.svc.card1.desc'), details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
                 { num: '02', title: t('landing.svc.card2.title'), desc: t('landing.svc.card2.desc'), details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
@@ -403,22 +403,22 @@ function Hero() {
               ].map((service) => (
                 <div
                   key={service.title}
-                  className="p-3 lg:p-6 rounded-2xl backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-col group"
+                  className="p-5 lg:p-6 rounded-2xl backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-col group"
                   style={{
                     background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
                     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
                   }}
                 >
-                  <span className="font-mono text-[8px] lg:text-[10px] text-[#0ea5e9]/60 mb-1 lg:mb-3">{service.num}</span>
-                  <div className="relative px-2.5 py-1.5 lg:px-4 lg:py-3 mb-2 lg:mb-5">
-                    <CornerBrackets />
-                    <h3 className="font-display text-sm lg:text-2xl font-semibold text-[#071D2F] mb-0.5 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
-                    <p className="text-[10px] lg:text-[13px] text-[#4D4D4D] leading-snug lg:leading-relaxed">{service.desc}</p>
+                  <span className="font-mono text-[10px] lg:text-[10px] text-[#0ea5e9]/60 mb-2 lg:mb-3">{service.num}</span>
+                  <div className="relative px-0 py-0 lg:px-4 lg:py-3 mb-3 lg:mb-5">
+                    <div className="hidden lg:block"><CornerBrackets /></div>
+                    <h3 className="font-display text-lg lg:text-2xl font-semibold text-[#071D2F] mb-1 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
+                    <p className="text-[13px] lg:text-[13px] text-[#4D4D4D] leading-relaxed">{service.desc}</p>
                   </div>
-                  <ul className="flex flex-col gap-1 lg:gap-2.5 mt-auto">
+                  <ul className="flex flex-col gap-2 lg:gap-2.5 mt-auto">
                     {service.details.map((detail) => (
-                      <li key={detail} className="flex items-start gap-1.5 lg:gap-2.5 text-[10px] lg:text-[12px] text-[#555] leading-snug">
-                        <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
+                      <li key={detail} className="flex items-start gap-2 lg:gap-2.5 text-[13px] lg:text-[12px] text-[#555] leading-snug">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9] shrink-0 mt-1.5" />
                         {detail}
                       </li>
                     ))}
@@ -461,7 +461,7 @@ function AnimatedChatbotParagraph({ scrollYProgress }: { scrollYProgress: Motion
   const y = useTransform(scrollYProgress, [0.70, 0.85], [16, 0]);
   return (
     <motion.p className="text-[18px] text-gray-500 leading-[1.6] max-w-md mb-6" style={{ opacity, y }}>
-      One AI brain on WhatsApp, Telegram, Instagram, and your website. Integrated with the tools you already use — Google Sheets, Shopify, WordPress, Stripe, and more.
+      One AI brain on WhatsApp, Telegram, Instagram, and your website. Integrated with the tools you already use — Google Sheets, Gmail, Stripe, Notion, and more.
     </motion.p>
   );
 }
@@ -592,7 +592,7 @@ function ChatbotSection() {
               style={{ scale: titleScale2 }}
             >
               <div className="flex items-center justify-center gap-[0.5em] flex-wrap px-4">
-                {(() => { const d = isMobile ? 0.08 : 0; return (<>
+                {(() => { const d = isMobile ? 0.16 : 0; return (<>
                   <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={d} exitRange={[0.75, 0.82]} />
                   <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={d + 0.03} exitRange={[0.75, 0.82]} />
                   <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={d + 0.06} exitRange={[0.75, 0.82]} />
@@ -647,7 +647,7 @@ function ChatbotSection() {
               </div>
 
               {/* Scrolling logos with chatbot floating in center */}
-              <div className="relative w-full h-[480px]">
+              <div className="relative w-full h-[360px] lg:h-[480px]">
                 <div
                   className="absolute inset-0 flex flex-col justify-center gap-3"
                   style={{
@@ -661,7 +661,7 @@ function ChatbotSection() {
                   <ExpLogoRow tiles={expRow4} reverse={true} duration={48} />
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-full max-w-[360px] chatbot-transparent rounded-[20px] overflow-hidden">
+                  <div className="relative w-full max-w-[280px] lg:max-w-[360px] chatbot-transparent rounded-[20px] overflow-hidden">
                     <motion.div
                       className="absolute -inset-12 -z-10 rounded-full bg-[#38bdf8]/40 blur-[60px]"
                       initial={{ opacity: 0 }}
