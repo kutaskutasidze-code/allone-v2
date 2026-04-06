@@ -61,6 +61,15 @@ function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; c
 function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNotes: string; onSave: (id: string, notes: string) => void }) {
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState(initialNotes);
+  const [saved, setSaved] = useState(true);
+
+  const handleSave = () => {
+    if (notes !== initialNotes) {
+      onSave(leadId, notes);
+      setSaved(true);
+    }
+  };
+
   return (
     <>
       <button onClick={() => setOpen(!open)} className="p-1 rounded hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-colors" title="Notes">
@@ -77,18 +86,19 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
             <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
               <textarea
                 value={notes}
-                onChange={e => setNotes(e.target.value)}
+                onChange={e => { setNotes(e.target.value); setSaved(false); }}
+                onBlur={handleSave}
                 placeholder="Add notes about this lead..."
                 rows={2}
                 className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none resize-none"
               />
               <div className="flex justify-end gap-2 mt-2">
-                <button onClick={() => setOpen(false)} className="px-3 py-1 text-xs text-gray-500 hover:text-gray-900">Cancel</button>
+                <button onClick={() => setOpen(false)} className="px-3 py-1 text-xs text-gray-500 hover:text-gray-900">Close</button>
                 <button
-                  onClick={() => { onSave(leadId, notes); setOpen(false); }}
-                  className="px-3 py-1 text-xs bg-gray-900 text-white rounded-md hover:bg-gray-800"
+                  onClick={() => { handleSave(); setOpen(false); }}
+                  className={`px-3 py-1 text-xs rounded-md ${saved ? 'bg-gray-200 text-gray-500' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
                 >
-                  Save
+                  {saved ? 'Saved' : 'Save'}
                 </button>
               </div>
             </div>

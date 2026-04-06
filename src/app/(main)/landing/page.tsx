@@ -9,6 +9,7 @@ import { ChatPlaybackGlassy as ChatPlayback } from './ChatPlaybackGlassy';
 import { WebDevFloatingElements } from './WebDevFloatingElements';
 import { LeadFlowVisual } from './LeadFlowVisual';
 import { FAQSchema } from '@/components/seo';
+import { ContactForm } from '@/components/forms/ContactForm';
 
 function useViewportDims() {
   const [dims, setDims] = useState({ vw: 1200, vh: 800, ready: false });
@@ -460,7 +461,7 @@ function AnimatedChatbotParagraph({ scrollYProgress }: { scrollYProgress: Motion
   const y = useTransform(scrollYProgress, [0.70, 0.85], [16, 0]);
   return (
     <motion.p className="text-[18px] text-gray-500 leading-[1.6] max-w-md mb-6" style={{ opacity, y }}>
-      One AI brain on WhatsApp, Telegram, Instagram, and your website. Integrated with the tools you already use — HubSpot, Stripe, Notion, and 50+ more.
+      One AI brain on WhatsApp, Telegram, Instagram, and your website. Integrated with the tools you already use — Google Sheets, Shopify, WordPress, Stripe, and more.
     </motion.p>
   );
 }
@@ -506,14 +507,14 @@ const expChannels: ExpTile[] = [
   { name: 'Website', color: '#0A68F5', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-9 h-9"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg> },
 ];
 const expIntegrations: ExpTile[] = [
-  { name: 'Google Calendar', icon: <svg viewBox="0 0 24 24" className="w-9 h-9"><path d="M18.316 5.684H24v12.632h-5.684V5.684z" fill="#1967D2"/><path d="M5.684 24v-5.684h12.632V24H5.684z" fill="#188038"/><path d="M18.316 5.684V0H5.684v5.684h12.632z" fill="#4285F4"/><path d="M5.684 18.316H0V5.684h5.684v12.632z" fill="#FBBC04"/><path d="M18.316 18.316H5.684V5.684h12.632v12.632z" fill="#fff"/></svg> },
-  { name: 'HubSpot', icon: <svg viewBox="0 0 24 24" fill="#FF7A59" className="w-9 h-9"><path d="M18.164 7.93V5.084a2.198 2.198 0 001.267-1.984v-.066A2.2 2.2 0 0017.238.84h-.066a2.2 2.2 0 00-2.193 2.193v.066a2.198 2.198 0 001.267 1.984V7.93a6.152 6.152 0 00-2.932 1.458l-7.73-6.014a2.636 2.636 0 00.096-.695A2.637 2.637 0 003.043.042 2.637 2.637 0 00.406 2.679 2.637 2.637 0 003.043 5.316c.5 0 .963-.142 1.362-.383l7.6 5.913a6.168 6.168 0 00-.932 3.263c0 1.227.365 2.37.986 3.334l-2.834 2.834a2.133 2.133 0 00-.632-.104 2.147 2.147 0 00-2.145 2.145A2.147 2.147 0 008.593 24.46a2.147 2.147 0 002.145-2.145c0-.224-.036-.44-.1-.643l2.797-2.797a6.198 6.198 0 103.87-3.34l.858-7.605z"/></svg> },
-  { name: 'Notion', icon: <svg viewBox="0 0 24 24" fill="#000" className="w-9 h-9"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L18.11 2.1c-.42-.326-.98-.7-2.055-.607L3.01 2.64c-.466.046-.56.28-.374.466l1.823 1.1zM5.252 7.617v13.916c0 .747.373 1.027 1.214.98l14.523-.84c.84-.046.933-.56.933-1.167V6.824c0-.606-.233-.933-.746-.886l-15.177.84c-.56.047-.747.327-.747.84z"/></svg> },
+  { name: 'Google Sheets', icon: <svg viewBox="0 0 24 24" className="w-9 h-9"><path d="M14.727 6.727H14V0H4.91c-.905 0-1.637.732-1.637 1.636v20.728c0 .904.732 1.636 1.636 1.636h14.182c.904 0 1.636-.732 1.636-1.636V6.727h-6.727z" fill="#0F9D58"/><path d="M14 0l6.727 6.727H14V0z" fill="#87CEAB"/><path d="M7.364 12.545h9.272v1.091H7.364v-1.09zm0 2.182h9.272v1.091H7.364v-1.09zm0 2.182h9.272v1.091H7.364V16.91zm0-6.546h9.272V11.454H7.364v-1.09z" fill="#F1F1F1"/></svg> },
+  { name: 'Facebook', color: '#1877F2', icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> },
+  { name: 'Gmail', icon: <svg viewBox="0 0 24 24" className="w-9 h-9"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 010 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z" fill="#EA4335"/></svg> },
+  { name: 'Shopify', color: '#96BF48', icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9"><path d="M15.337 23.979l7.216-1.561s-2.604-17.613-2.625-17.73c-.018-.116-.114-.192-.2-.192s-1.738-.126-1.738-.126-1.148-1.16-1.29-1.291a.39.39 0 00-.2-.1l-.776 17.236-.387 3.764zm-2.882-18.56s-.663-.347-1.47-.347c-1.197 0-1.244.752-1.244.94 0 1.032 2.689 1.428 2.689 3.851 0 1.905-1.208 3.132-2.838 3.132-1.955 0-2.953-1.217-2.953-1.217l.524-1.73s1.028.884 1.896.884c.568 0 .8-.448.8-.776 0-1.349-2.206-1.408-2.206-3.627 0-1.865 1.34-3.67 4.04-3.67.862 0 1.426.25 1.426.25l-.664 2.31z"/></svg> },
+  { name: 'WordPress', color: '#21759B', icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9"><path d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.051-.18 2.986-.51-.024-.038-.046-.079-.065-.122l-2.763-7.573zM3.009 12c0 3.56 2.07 6.634 5.068 8.092L3.788 8.341A8.951 8.951 0 003.009 12zm17.159-1.096c0-1.112-.399-1.881-.741-2.48-.456-.741-.883-1.368-.883-2.109 0-.826.626-1.596 1.51-1.596.04 0 .078.005.116.007A8.963 8.963 0 0012 3.009 8.98 8.98 0 004.87 6.244c.337.01.654.017.923.017 1.497 0 3.816-.183 3.816-.183.771-.046.862 1.088.092 1.18 0 0-.776.091-1.639.137l5.216 15.513 3.135-9.4-2.231-6.113c-.771-.046-1.502-.137-1.502-.137-.772-.046-.681-1.226.09-1.18 0 0 2.366.183 3.77.183 1.497 0 3.816-.183 3.816-.183.772-.046.863 1.088.091 1.18 0 0-.776.091-1.638.137l5.176 15.388 1.43-4.78c.618-1.978.928-3.47.928-4.713zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm8.984 12c0 1.635-.271 3.196-.768 4.662l-3.101-8.992a8.961 8.961 0 00.877-8.674A8.96 8.96 0 0020.984 12z"/></svg> },
+  { name: 'Google Analytics', icon: <svg viewBox="0 0 24 24" className="w-9 h-9"><path d="M22.844 20.862c0 1.614-1.238 2.862-2.737 2.862-1.5 0-2.738-1.248-2.738-2.862V3.138C17.37 1.524 18.607.276 20.107.276c1.5 0 2.737 1.248 2.737 2.862v17.724z" fill="#F9AB00"/><path d="M13.37 20.862c0 1.614-1.24 2.862-2.738 2.862-1.5 0-2.738-1.248-2.738-2.862v-8.724c0-1.614 1.238-2.862 2.738-2.862 1.5 0 2.737 1.248 2.737 2.862v8.724z" fill="#E37400"/><path d="M3.894 23.724c1.5 0 2.738-1.248 2.738-2.862s-1.238-2.862-2.738-2.862c-1.5 0-2.737 1.248-2.737 2.862s1.237 2.862 2.737 2.862z" fill="#E37400"/></svg> },
   { name: 'Stripe', icon: <svg viewBox="0 0 24 24" fill="#635BFF" className="w-9 h-9"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/></svg> },
-  { name: 'Salesforce', icon: <svg viewBox="0 0 24 24" fill="#00A1E0" className="w-9 h-9"><path d="M10.006 5.87a4.387 4.387 0 013.137-1.324 4.376 4.376 0 014.133 2.94 5.326 5.326 0 011.344-.172C21.09 7.314 23.3 9.52 23.3 12.257c0 2.737-2.21 4.943-4.68 4.943a4.63 4.63 0 01-1.05-.114 3.94 3.94 0 01-3.44 2.044 3.93 3.93 0 01-2.04-.57A4.68 4.68 0 018 20.468a4.66 4.66 0 01-2.537-.748A4.297 4.297 0 01.7 15.638a4.29 4.29 0 012.09-3.682 5.08 5.08 0 01-.22-1.49C2.57 7.14 5.39 4.32 8.86 4.32c1.42 0 2.74.45 3.814 1.22l-2.668.33z"/></svg> },
-  { name: 'Zapier', icon: <svg viewBox="0 0 24 24" fill="#FF4A00" className="w-9 h-9"><path d="M15.557 12.007l4.213-4.213a1.2 1.2 0 000-1.698l-1.87-1.869a1.2 1.2 0 00-1.697 0l-4.213 4.213-4.213-4.213a1.2 1.2 0 00-1.698 0l-1.869 1.87a1.2 1.2 0 000 1.697l4.213 4.213-4.213 4.213a1.2 1.2 0 000 1.698l1.87 1.869a1.2 1.2 0 001.697 0l4.213-4.213 4.213 4.213a1.2 1.2 0 001.698 0l1.869-1.87a1.2 1.2 0 000-1.697l-4.213-4.213zM12 14.4a2.4 2.4 0 110-4.8 2.4 2.4 0 010 4.8z"/></svg> },
-  { name: 'Slack', icon: <svg viewBox="0 0 24 24" className="w-9 h-9"><path d="M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313z" fill="#E01E5A"/><path d="M8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312z" fill="#36C5F0"/><path d="M18.956 8.834a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zm-1.272 0a2.528 2.528 0 01-2.522 2.521 2.527 2.527 0 01-2.52-2.521V2.522A2.527 2.527 0 0115.162 0a2.528 2.528 0 012.522 2.522v6.312z" fill="#2EB67D"/><path d="M15.162 18.956a2.528 2.528 0 012.522 2.522A2.528 2.528 0 0115.162 24a2.527 2.527 0 01-2.52-2.522v-2.522h2.52zm0-1.272a2.527 2.527 0 01-2.52-2.522 2.527 2.527 0 012.52-2.52h6.316A2.528 2.528 0 0124 15.162a2.528 2.528 0 01-2.522 2.522h-6.316z" fill="#ECB22E"/></svg> },
-  { name: 'Calendly', icon: <svg viewBox="0 0 24 24" fill="#006BFF" className="w-9 h-9"><path d="M19.655 14.262c.281-.775.433-1.611.433-2.48 0-.874-.154-1.715-.438-2.493-.012-.033-.025-.065-.038-.098.23-.69.354-1.42.354-2.175 0-.802-.14-1.582-.41-2.316-.007-.02-.014-.04-.022-.06h-.001C18.473 1.858 15.504 0 12.094 0c-3.41 0-6.38 1.858-7.44 4.64H4.65c-.008.02-.015.04-.022.06-.27.734-.41 1.514-.41 2.316 0 .755.124 1.485.354 2.175-.013.033-.026.065-.038.098C4.25 10.067 4.094 10.908 4.094 11.782s.154 1.715.438 2.493c.012.033.025.065.038.098-.23.69-.354 1.42-.354 2.175 0 .802.14 1.582.41 2.316.007.02.014.04.022.06h.001C5.715 21.706 8.684 23.564 12.094 23.564c3.41 0 6.38-1.858 7.44-4.64h.003c.008-.02.015-.04.022-.06.27-.734.41-1.514.41-2.316 0-.755-.124-1.485-.354-2.175.013-.033.026-.065.038-.098z"/></svg> },
+  { name: 'Notion', icon: <svg viewBox="0 0 24 24" fill="#000" className="w-9 h-9"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L18.11 2.1c-.42-.326-.98-.7-2.055-.607L3.01 2.64c-.466.046-.56.28-.374.466l1.823 1.1zM5.252 7.617v13.916c0 .747.373 1.027 1.214.98l14.523-.84c.84-.046.933-.56.933-1.167V6.824c0-.606-.233-.933-.746-.886l-15.177.84c-.56.047-.747.327-.747.84z"/></svg> },
 ];
 const expAllTiles = [...expChannels, ...expIntegrations];
 const expRow1 = expAllTiles.slice(0, 9);
@@ -591,10 +592,12 @@ function ChatbotSection() {
               style={{ scale: titleScale2 }}
             >
               <div className="flex items-center justify-center gap-[0.5em] flex-wrap px-4">
-                <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={0} exitRange={[0.75, 0.82]} />
-                <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={0.03} exitRange={[0.75, 0.82]} />
-                <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.75, 0.82]} />
-                <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={0.09} exitRange={[0.75, 0.82]} accent />
+                {(() => { const d = isMobile ? 0.08 : 0; return (<>
+                  <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={d} exitRange={[0.75, 0.82]} />
+                  <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={d + 0.03} exitRange={[0.75, 0.82]} />
+                  <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={d + 0.06} exitRange={[0.75, 0.82]} />
+                  <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={d + 0.09} exitRange={[0.75, 0.82]} accent />
+                </>); })()}
               </div>
             </motion.div>
           </motion.div>
@@ -658,7 +661,7 @@ function ChatbotSection() {
                   <ExpLogoRow tiles={expRow4} reverse={true} duration={48} />
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-full max-w-[360px] chatbot-transparent">
+                  <div className="relative w-full max-w-[360px] chatbot-transparent rounded-[20px] overflow-hidden">
                     <motion.div
                       className="absolute -inset-12 -z-10 rounded-full bg-[#38bdf8]/40 blur-[60px]"
                       initial={{ opacity: 0 }}
@@ -670,6 +673,13 @@ function ChatbotSection() {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="mt-10 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen border-t border-b border-gray-200 bg-gray-50 py-16 px-6">
+              <p className="font-instrument text-[30px] lg:text-[42px] font-medium leading-[1.1] tracking-[-0.02em] text-center max-w-4xl mx-auto">
+                <span className="text-black">Stop losing customers to slow replies. Let </span>
+                <span style={{ color: '#87CEEB' }}>AI</span>
+                <span className="text-black"> handle it in seconds.</span>
+              </p>
             </div>
           </motion.div>
         </div>
@@ -786,12 +796,12 @@ const faqKeys = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'] as const;
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border border-[#E0EEFB] rounded-lg overflow-hidden">
+    <div className="border-b border-gray-200">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-[#f8fbff] transition-colors"
+        className="w-full flex items-center justify-between py-5 text-left cursor-pointer hover:opacity-80 transition-opacity"
       >
-        <h3 className="font-display text-sm lg:text-base font-semibold text-[#071D2F] pr-4">{question}</h3>
+        <h3 className="font-display text-base lg:text-lg font-semibold text-[#071D2F] pr-4">{question}</h3>
         <motion.svg
           width="20" height="20" viewBox="0 0 20 20" fill="none"
           className="flex-shrink-0 text-[#0ea5e9]"
@@ -807,7 +817,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
         className="overflow-hidden"
       >
-        <p className="px-5 pb-5 text-sm text-[#4D4D4D] leading-relaxed">{answer}</p>
+        <p className="pb-5 text-sm text-[#4D4D4D] leading-relaxed">{answer}</p>
       </motion.div>
     </div>
   );
@@ -817,17 +827,23 @@ function FAQSection() {
   const { t } = useI18n();
   const items = faqKeys.map(k => ({ question: t(`landing.faq.${k}.q`), answer: t(`landing.faq.${k}.a`) }));
   return (
-    <section className="py-16 lg:py-24 bg-white">
+    <section id="faq" className="py-16 lg:py-24 bg-white">
       <FAQSchema questions={items} />
-      <div className="max-w-3xl mx-auto px-6">
-        <div className="text-center mb-10">
-          <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 block">{t('landing.faq.label')}</span>
-          <h2 className="font-display text-2xl lg:text-3xl font-semibold text-[#071D2F] tracking-[-0.03em]">{t('landing.faq.heading')}</h2>
-        </div>
-        <div className="space-y-2">
-          {items.map((faq, i) => (
-            <FAQItem key={i} question={faq.question} answer={faq.answer} />
-          ))}
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+          <div>
+            <h2 className="font-instrument text-[40px] lg:text-[56px] font-medium leading-[1.1] tracking-[-0.02em] mb-8" style={{ color: '#87CEEB' }}>
+              Frequently Asked<br />Questions
+            </h2>
+            <div>
+              {items.map((faq, i) => (
+                <FAQItem key={i} question={faq.question} answer={faq.answer} />
+              ))}
+            </div>
+          </div>
+          <div>
+            <ContactForm />
+          </div>
         </div>
       </div>
     </section>
