@@ -390,12 +390,12 @@ function Hero() {
           className="absolute left-0 right-0 top-0 z-10 flex items-start lg:items-center justify-center h-full overflow-y-auto pt-4 lg:pt-0"
           style={{ y: servicesY }}
         >
-          <div className="max-w-[1100px] mx-auto px-6">
-            <div className="text-center mb-4 lg:mb-10">
-              <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-2 lg:mb-3 block">{t('landing.svc.label')}</span>
+          <div className="max-w-[1100px] mx-auto px-6 pb-8 lg:pb-0">
+            <div className="text-center mb-2 lg:mb-10">
+              <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-1 lg:mb-3 block">{t('landing.svc.label')}</span>
               <h2 className="font-instrument text-[clamp(18px,4vw,48px)] font-medium tracking-[-0.02em] leading-[1.1] text-[#071D2F]">{t('landing.svc.heading')}</h2>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-3">
               {[
                 { num: '01', title: t('landing.svc.card1.title'), desc: t('landing.svc.card1.desc'), details: ['Multi-channel deployment', 'Natural language understanding', 'CRM & tool integrations', 'Lead qualification & routing', '24/7 autonomous operation'] },
                 { num: '02', title: t('landing.svc.card2.title'), desc: t('landing.svc.card2.desc'), details: ['High-performance web apps', 'SEO & Core Web Vitals', 'Admin panels & dashboards', 'Payment & auth integration', 'Mobile-first responsive design'] },
@@ -403,22 +403,22 @@ function Hero() {
               ].map((service) => (
                 <div
                   key={service.title}
-                  className="p-5 lg:p-6 rounded-2xl backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-col group"
+                  className="p-4 lg:p-6 rounded-2xl backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-col group"
                   style={{
                     background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
                     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
                   }}
                 >
-                  <span className="font-mono text-[10px] lg:text-[10px] text-[#0ea5e9]/60 mb-2 lg:mb-3">{service.num}</span>
-                  <div className="relative px-0 py-0 lg:px-4 lg:py-3 mb-3 lg:mb-5">
+                  <span className="font-mono text-[10px] text-[#0ea5e9]/60 mb-1 lg:mb-3">{service.num}</span>
+                  <div className="relative px-0 py-0 lg:px-4 lg:py-3 mb-2 lg:mb-5">
                     <div className="hidden lg:block"><CornerBrackets /></div>
-                    <h3 className="font-display text-lg lg:text-2xl font-semibold text-[#071D2F] mb-1 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
-                    <p className="text-[13px] lg:text-[13px] text-[#4D4D4D] leading-relaxed">{service.desc}</p>
+                    <h3 className="font-display text-base lg:text-2xl font-semibold text-[#071D2F] mb-0.5 lg:mb-2 tracking-[-0.03em]">{service.title}</h3>
+                    <p className="text-[12px] lg:text-[13px] text-[#4D4D4D] leading-snug lg:leading-relaxed">{service.desc}</p>
                   </div>
-                  <ul className="flex flex-col gap-2 lg:gap-2.5 mt-auto">
+                  <ul className="flex flex-col gap-1.5 lg:gap-2.5 mt-auto">
                     {service.details.map((detail) => (
-                      <li key={detail} className="flex items-start gap-2 lg:gap-2.5 text-[13px] lg:text-[12px] text-[#555] leading-snug">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9] shrink-0 mt-1.5" />
+                      <li key={detail} className="flex items-start gap-1.5 lg:gap-2.5 text-[11px] lg:text-[12px] text-[#555] leading-snug">
+                        <span className="w-1 h-1 lg:w-1.5 lg:h-1.5 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
                         {detail}
                       </li>
                     ))}
