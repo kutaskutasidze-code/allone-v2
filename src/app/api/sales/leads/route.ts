@@ -31,10 +31,8 @@ export async function GET(request: Request) {
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false });
 
-    if (canSeeAll) {
-      if (salesUserIdFilter) query = query.eq('sales_user_id', salesUserIdFilter);
-    } else {
-      query = query.eq('sales_user_id', salesUser.id);
+    if (salesUserIdFilter) {
+      query = query.eq('sales_user_id', salesUserIdFilter);
     }
 
     if (status && status !== 'all') {
