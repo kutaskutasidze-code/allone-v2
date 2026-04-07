@@ -198,7 +198,18 @@
       "Bash(mkdir -p ~/Desktop/allone-sky-light-logos)",
       "Bash(cp /Users/wulu/Desktop/Projects/allone-website/public/logos-sky-light/* ~/Desktop/allone-sky-light-logos/)",
       "Bash(tail:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(ls -la /Users/wulu/Desktop/Projects/allone-website/src/app/\\\\\\(main\\\\\\)/)",
+      "Bash(head:*)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(npx:*)",
+      "Bash(sips -s format webp /tmp/walkby.png --out walkby.webp)",
+      "Bash(sips -s format webp /tmp/equivalenza.png --out equivalenza.webp)",
+      "Bash(sips -s format webp /tmp/innrburial.png --out innrburial.webp)",
+      "Bash(sips -s format png /tmp/walkby.png --out walkby.png)",
+      "Bash(sips -s format png /tmp/equivalenza.png --out equivalenza-new.png)",
+      "Bash(sips -s format png /tmp/innrburial.png --out innrburial-new.png)",
+      "Bash(pip3 install:*)"
     ]
   }
 }

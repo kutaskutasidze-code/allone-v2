@@ -27,13 +27,9 @@ export default function SalesLoginPage() {
         return;
       }
 
-      const { data: salesUser, error: salesError } = await supabase
-        .from('sales_users')
-        .select('id')
-        .eq('email', email)
-        .single();
-
-      if (salesError || !salesUser) {
+      // Verify via API (bypasses RLS)
+      const checkRes = await fetch('/api/sales/leads?limit=1');
+      if (checkRes.status === 401) {
         await supabase.auth.signOut();
         setError('You are not authorized to access the sales portal');
         return;
