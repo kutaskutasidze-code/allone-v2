@@ -27,14 +27,6 @@ export default function SalesLoginPage() {
         return;
       }
 
-      // Verify via API (bypasses RLS)
-      const checkRes = await fetch('/api/sales/leads?limit=1');
-      if (checkRes.status === 401) {
-        await supabase.auth.signOut();
-        setError('You are not authorized to access the sales portal');
-        return;
-      }
-
       router.push('/sales');
       router.refresh();
     } catch {
