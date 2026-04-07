@@ -25,46 +25,42 @@ async function getSalesUser() {
   return salesUser;
 }
 
-async function getLeadStats(salesUserId: string) {
-  const supabase = await createClient();
+async function getLeadStats() {
+  const supabase = createAdminClient();
 
-  const { data: leads } = await supabase
+  const statuses = ['new', 'contacted', 'qualified', 'won', 'lost'];
+  const results = await Promise.all(
+    statuses.map(s => supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', s))
+  );
+
+  const { data: pipelineData } = await supabase
     .from('leads')
-    .select('status, value')
-    .eq('sales_user_id', salesUserId);
+    .select('value')
+    .in('status', ['contacted', 'qualified']);
 
-  const stats = {
-    new: 0,
-    contacted: 0,
-    qualified: 0,
-    won: 0,
-    lost: 0,
-    pipelineValue: 0,
-    wonValue: 0,
+  const { data: wonData } = await supabase
+    .from('leads')
+    .select('value')
+    .eq('status', 'won');
+
+  const stats: Record<string, number> = {
+    new: 0, contacted: 0, qualified: 0, won: 0, lost: 0,
+    pipelineValue: 0, wonValue: 0,
   };
 
-  if (leads) {
-    leads.forEach(lead => {
-      stats[lead.status as keyof typeof stats]++;
-      if (lead.status === 'qualified' || lead.status === 'contacted') {
-        stats.pipelineValue += lead.value || 0;
-      }
-      if (lead.status === 'won') {
-        stats.wonValue += lead.value || 0;
-      }
-    });
-  }
+  statuses.forEach((s, i) => { stats[s] = results[i].count || 0; });
+  stats.pipelineValue = (pipelineData || []).reduce((sum, l) => sum + (l.value || 0), 0);
+  stats.wonValue = (wonData || []).reduce((sum, l) => sum + (l.value || 0), 0);
 
   return stats;
 }
 
-async function getRecentLeads(salesUserId: string) {
-  const supabase = await createClient();
+async function getRecentLeads() {
+  const supabase = createAdminClient();
 
   const { data: leads } = await supabase
     .from('leads')
     .select('*')
-    .eq('sales_user_id', salesUserId)
     .order('created_at', { ascending: false })
     .limit(5);
 
@@ -74,8 +70,8 @@ async function getRecentLeads(salesUserId: string) {
 export default async function SalesDashboard() {
   const salesUser = await getSalesUser();
   const [stats, recentLeads] = await Promise.all([
-    getLeadStats(salesUser.id),
-    getRecentLeads(salesUser.id),
+    getLeadStats(),
+    getRecentLeads(),
   ]);
 
   return (
