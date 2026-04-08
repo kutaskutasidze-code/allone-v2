@@ -110,6 +110,110 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
   );
 }
 
+function AddLeadModal({ onClose, onAdded }: { onClose: () => void; onAdded: () => void }) {
+  const [form, setForm] = useState({ name: '', phone: '', email: '', company: '', city: '', website: '', matched_service: '', notes: '' });
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handleEsc);
+    return () => { document.body.style.overflow = ''; document.removeEventListener('keydown', handleEsc); };
+  }, [onClose]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name) return;
+    setSaving(true);
+    setFormError('');
+    try {
+      const res = await fetch('/api/admin/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, country: 'GE' }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      onAdded();
+      onClose();
+    } catch {
+      setFormError('Failed to create lead');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputClass = "w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-lg bg-white rounded-xl shadow-xl shadow-black/[0.08] p-6 mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-base font-semibold text-gray-900">Add Lead</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-900"><X className="h-5 w-5" /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {formError && (
+            <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">{formError}</div>
+          )}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Name *</label>
+              <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className={inputClass} placeholder="Business name" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Phone</label>
+              <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className={inputClass} placeholder="+995..." />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
+              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className={inputClass} placeholder="email@company.com" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Company</label>
+              <input value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} className={inputClass} placeholder="Company name" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">City</label>
+              <input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} className={inputClass} placeholder="Tbilisi" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Service</label>
+              <select value={form.matched_service} onChange={e => setForm({ ...form, matched_service: e.target.value })} className={inputClass}>
+                <option value="">Select...</option>
+                <option value="website">Website</option>
+                <option value="chatbots">Chatbots</option>
+                <option value="automation">Automation</option>
+                <option value="consulting">Consulting</option>
+                <option value="custom_ai">Custom AI</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Website</label>
+            <input value={form.website} onChange={e => setForm({ ...form, website: e.target.value })} className={inputClass} placeholder="https://..." />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Notes</label>
+            <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inputClass} resize-none`} placeholder="Additional notes..." />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">Cancel</button>
+            <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 active:scale-[0.98] transition-all disabled:opacity-50">
+              {saving ? 'Adding...' : 'Add Lead'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function AdminLeadsPageContent() {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get('status') || 'all';
@@ -122,25 +226,21 @@ function AdminLeadsPageContent() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
+  const [showAddLead, setShowAddLead] = useState(false);
   const [error, setError] = useState('');
   const limit = 50;
 
   // Fetch status counts separately (always unfiltered)
   const fetchStatusCounts = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/leads?limit=1');
-      if (!res.ok) return;
-      const result = await res.json();
-      const allTotal = result.meta?.total || 0;
+      const statuses = ['new', 'contacted', 'qualified', 'won', 'lost'];
+      const [allRes, ...statusResults] = await Promise.all([
+        fetch('/api/admin/leads?limit=1').then(r => r.ok ? r.json() : null),
+        ...statuses.map(s => fetch(`/api/admin/leads?status=${s}&limit=1`).then(r => r.ok ? r.json() : null)),
+      ]);
 
-      const counts: Record<string, number> = { all: allTotal };
-      for (const status of ['new', 'contacted', 'qualified', 'won', 'lost']) {
-        const r = await fetch(`/api/admin/leads?status=${status}&limit=1`);
-        if (r.ok) {
-          const d = await r.json();
-          counts[status] = d.meta?.total || 0;
-        }
-      }
+      const counts: Record<string, number> = { all: allRes?.meta?.total || 0 };
+      statuses.forEach((s, i) => { counts[s] = statusResults[i]?.meta?.total || 0; });
       setStatusCounts(counts);
     } catch { /* ignore */ }
   }, []);
@@ -207,7 +307,15 @@ function AdminLeadsPageContent() {
       <PageHeader
         title="Sales Leads"
         description={`${total} total leads`}
+        action={{ label: 'Add Lead', onClick: () => setShowAddLead(true) }}
       />
+
+      {showAddLead && (
+        <AddLeadModal
+          onClose={() => setShowAddLead(false)}
+          onAdded={() => { fetchLeads(); fetchStatusCounts(); }}
+        />
+      )}
 
       {error && (
         <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">

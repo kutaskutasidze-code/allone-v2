@@ -8,6 +8,7 @@ import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion
 import { ChatPlaybackGlassy as ChatPlayback } from './ChatPlaybackGlassy';
 import { WebDevFloatingElements } from './WebDevFloatingElements';
 import { LeadFlowVisual } from './LeadFlowVisual';
+import { WorkflowVisualV2 } from './WorkflowVisualV2';
 import { FAQSchema } from '@/components/seo';
 import { ContactForm } from '@/components/forms/ContactForm';
 
@@ -692,6 +693,67 @@ function ChatbotSection() {
   );
 }
 
+function DotGrid() {
+  return (
+    <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="dot-grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.5" fill="#e8e8eb" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#dot-grid)" />
+    </svg>
+  );
+}
+
+function WebDevDetailSection() {
+  const { t } = useI18n();
+
+  return (
+    <section className="relative py-24 lg:py-32 overflow-hidden bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12 lg:gap-16 items-start">
+          {/* Left — dot grid with workflow cards */}
+          <div className="relative h-[520px] lg:h-[700px] rounded-2xl overflow-hidden order-last lg:order-first" style={{ backgroundColor: '#fafafa' }}>
+            <DotGrid />
+            <div className="relative z-10 h-full overflow-hidden">
+              <WorkflowVisualV2 />
+            </div>
+          </div>
+
+          {/* Right — chatbot-style text */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="font-instrument text-[40px] lg:text-[56px] font-medium text-black leading-[1.1] tracking-[-0.02em] mb-6">
+              <span style={{ color: '#87CEEB' }}>{t('landing.workflow.heading').split(' ')[0]}</span> {t('landing.workflow.heading').split(' ').slice(1).join(' ')}
+            </h2>
+            <p className="text-[18px] text-gray-500 leading-[1.6] max-w-md mb-10">
+              {t('landing.workflow.desc')}
+            </p>
+            <div className="grid grid-cols-2 gap-4 max-w-md">
+              {[
+                { num: '90%', desc: t('landing.workflow.stat1') },
+                { num: '24/7', desc: t('landing.workflow.stat2') },
+                { num: '50+', desc: t('landing.workflow.stat3') },
+                { num: '2-4', desc: t('landing.workflow.stat4') },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col">
+                  <span className="font-instrument text-[28px] font-medium text-[#2563eb] leading-none mb-1">{stat.num}</span>
+                  <span className="text-[12px] text-gray-400 leading-snug">{stat.desc}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function WorkflowSection() {
   const { t } = useI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -890,6 +952,7 @@ export default function HeroExperiment() {
       `}</style>
       <Hero />
       <ChatbotSection />
+      <WebDevDetailSection />
       <WorkflowSection />
       <FAQSection />
     </div>

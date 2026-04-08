@@ -75,3 +75,45 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const admin = getAdminClient();
+
+    const { data, error } = await admin
+      .from('leads')
+      .insert({
+        name: body.name,
+        email: body.email || null,
+        phone: body.phone || null,
+        company: body.company || null,
+        city: body.city || null,
+        country: body.country || 'GE',
+        website: body.website || null,
+        matched_service: body.matched_service || null,
+        notes: body.notes || null,
+        source: 'manual',
+        status: 'new',
+        value: 0,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      logger.error('Failed to create lead', { error: error.message });
+      return NextResponse.json({ error: 'Failed to create lead' }, { status: 500 });
+    }
+
+    return NextResponse.json({ data }, { status: 201 });
+  } catch (error) {
+    logger.error('Lead create error', { error: String(error) });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

@@ -35,6 +35,14 @@ export const LEAD_STATUSES = [
   { value: 'lost', label: 'Lost' },
 ] as const;
 
+export const LEAD_SERVICES = [
+  { value: 'website', label: 'Website' },
+  { value: 'chatbots', label: 'Chatbots' },
+  { value: 'automation', label: 'Automation' },
+  { value: 'consulting', label: 'Consulting' },
+  { value: 'custom_ai', label: 'Custom AI' },
+] as const;
+
 export const LEAD_SOURCES = [
   'Website',
   'Referral',

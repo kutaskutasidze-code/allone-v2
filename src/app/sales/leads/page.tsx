@@ -111,7 +111,7 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
 
 function LeadsPageContent() {
   const searchParams = useSearchParams();
-  const initialStatus = searchParams.get('status') || 'all';
+  const initialStatus = searchParams.get('status') || 'new';
   const salesUserIdFilter = searchParams.get('sales_user_id');
 
   const [leads, setLeads] = useState<Record<string, unknown>[]>([]);

@@ -298,6 +298,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'landing.workflow.step2': 'Personalized outreach sent',
     'landing.workflow.step3': 'Meeting auto-booked',
     'landing.workflow.step4': 'Team notified instantly',
+    'landing.workflow.stat1': 'Cost reduction vs manual work',
+    'landing.workflow.stat2': 'Autonomous operation',
+    'landing.workflow.stat3': 'Integrations supported',
+    'landing.workflow.stat4': 'Weeks to deliver',
 
     // Landing — FAQ section
     'landing.faq.label': 'Common Questions',
@@ -645,6 +649,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'landing.workflow.step2': 'პერსონალიზებული მიმართვა გაიგზავნა',
     'landing.workflow.step3': 'შეხვედრა ავტომატურად დაჯავშნილია',
     'landing.workflow.step4': 'გუნდი მყისიერად გაფრთხილდა',
+    'landing.workflow.stat1': 'ხარჯების შემცირება ხელით სამუშაოსთან შედარებით',
+    'landing.workflow.stat2': 'ავტონომიური მუშაობა',
+    'landing.workflow.stat3': 'მხარდაჭერილი ინტეგრაცია',
+    'landing.workflow.stat4': 'კვირა მიწოდებამდე',
 
     // Landing — FAQ section
     'landing.faq.label': 'ხშირი კითხვები',

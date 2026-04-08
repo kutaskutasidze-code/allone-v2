@@ -209,7 +209,8 @@
       "Bash(sips -s format png /tmp/walkby.png --out walkby.png)",
       "Bash(sips -s format png /tmp/equivalenza.png --out equivalenza-new.png)",
       "Bash(sips -s format png /tmp/innrburial.png --out innrburial-new.png)",
-      "Bash(pip3 install:*)"
+      "Bash(pip3 install:*)",
+      "Bash(cat src/app/\\\\\\(main\\\\\\)/landing/WorkflowVisualV2.tsx)"
     ]
   }
 }

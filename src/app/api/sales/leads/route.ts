@@ -29,6 +29,7 @@ export async function GET(request: Request) {
     let query = supabase
       .from('leads')
       .select('*', { count: 'exact' })
+      .order('relevance_score', { ascending: false })
       .order('created_at', { ascending: false });
 
     if (salesUserIdFilter) {
