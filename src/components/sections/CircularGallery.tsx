@@ -17,6 +17,7 @@ export interface GalleryItem {
     pos?: string;
     by: string;
   };
+  altPhotos?: { url: string; pos?: string }[];
 }
 
 interface CircularGalleryProps extends HTMLAttributes<HTMLDivElement> {
@@ -154,18 +155,51 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
               window.open(item.href, '_blank', 'noopener,noreferrer');
             };
 
+            const alts = item.altPhotos ?? [];
             const card = (
-              <div className="relative w-full h-full rounded-xl shadow-2xl overflow-hidden border border-white/10">
-                <Image
-                  src={item.photo.url}
-                  alt={item.photo.text}
-                  fill
-                  sizes="420px"
-                  className="object-cover"
-                  style={{ objectPosition: item.photo.pos || 'top' }}
-                  quality={90}
-                  priority={i < 3}
-                />
+              <div className="relative w-full h-full">
+                {alts.map((alt, idx) => {
+                  const isLeft = idx % 2 === 0;
+                  const baseRot = isLeft ? -8 : 8;
+                  const baseX = isLeft ? -28 : 28;
+                  const depth = idx * 4;
+                  return (
+                    <div
+                      key={`${alt.url}-${idx}`}
+                      className="absolute inset-0 rounded-xl shadow-2xl overflow-hidden border border-white/10"
+                      style={{
+                        transform: isHovered
+                          ? `translate3d(${isLeft ? -110 : 110}px, ${idx * -6}px, ${-30 - depth}px) rotate(${baseRot * 1.6}deg)`
+                          : `translate3d(${baseX / 4}px, 0, ${-10 - depth}px) rotate(${baseRot / 3}deg)`,
+                        opacity: isHovered ? 1 : 0,
+                        transition: 'transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease',
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <Image
+                        src={alt.url}
+                        alt=""
+                        fill
+                        sizes="420px"
+                        className="object-cover"
+                        style={{ objectPosition: alt.pos || 'top' }}
+                        quality={85}
+                      />
+                    </div>
+                  );
+                })}
+                <div className="relative w-full h-full rounded-xl shadow-2xl overflow-hidden border border-white/10">
+                  <Image
+                    src={item.photo.url}
+                    alt={item.photo.text}
+                    fill
+                    sizes="420px"
+                    className="object-cover"
+                    style={{ objectPosition: item.photo.pos || 'top' }}
+                    quality={90}
+                    priority={i < 3}
+                  />
+                </div>
               </div>
             );
 

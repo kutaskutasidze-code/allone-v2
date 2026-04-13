@@ -6,7 +6,7 @@ export const galleryItems: GalleryItem[] = [
     binomial: 'E-Commerce Platform',
     href: 'https://equivalenza-geo.vercel.app',
     photo: {
-      url: '/images/work/equivalenza-new.png',
+      url: '/images/work/equivalenza-2026.webp',
       text: 'Equivalenza Georgia',
       pos: 'top',
       by: 'equivalenza.ge',
@@ -28,7 +28,7 @@ export const galleryItems: GalleryItem[] = [
     binomial: 'Fashion & Art Concept Store',
     href: 'https://chaos-concept.vercel.app',
     photo: {
-      url: '/images/work/chaos-concept.webp',
+      url: '/images/work/chaos-concept-2026.webp',
       text: 'Chaos Concept Store',
       pos: 'top',
       by: 'chaosconcept.ge',
@@ -39,11 +39,15 @@ export const galleryItems: GalleryItem[] = [
     binomial: 'Creative Projects Platform',
     href: 'https://innrburial.com',
     photo: {
-      url: '/images/work/innrburial-new.png',
+      url: '/images/work/innrburial-alt-1.webp',
       text: 'INNRBURIAL',
       pos: 'top',
       by: 'innrburial.com',
     },
+    altPhotos: [
+      { url: '/images/work/innrburial-hero.webp', pos: 'top' },
+      { url: '/images/work/innrburial-alt-2.webp', pos: 'top' },
+    ],
   },
   {
     common: 'DataRooms',
