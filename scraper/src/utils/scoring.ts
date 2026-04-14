@@ -11,6 +11,7 @@ interface ScorableLeadData {
   instagram_url?: string;
   linkedin_url?: string;
   matched_service?: string;
+  tags?: string[];
 }
 
 /**
@@ -53,5 +54,8 @@ export function calculateRelevanceScore(lead: ScorableLeadData): number {
   // No website = definitely needs one
   if (!lead.website && lead.phone) score += 2;
 
-  return Math.min(score, 25);
+  // Newly registered company = highest priority
+  if (lead.tags?.includes('newly_registered')) score += 5;
+
+  return Math.min(score, 30);
 }

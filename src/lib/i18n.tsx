@@ -290,6 +290,19 @@ const translations: Record<Lang, Record<string, string>> = {
     'landing.webdev.tag2': 'SEO optimized',
     'landing.webdev.tag3': 'Fully responsive',
 
+    // Landing — Web dev bento cards
+    'landing.webdev.bento.subtitle': 'From responsive design to backend architecture — everything your website needs to perform.',
+    'landing.webdev.bento.ui.title': 'Interfaces that convert',
+    'landing.webdev.bento.ui.desc': 'Custom responsive designs built with Figma precision. Every pixel optimized for engagement and conversion.',
+    'landing.webdev.bento.backend.title': 'APIs that scale',
+    'landing.webdev.bento.backend.desc': 'Server-side rendering, database integration, and custom API routes. Built with Next.js and TypeScript.',
+    'landing.webdev.bento.seo.title': 'Rank where it matters',
+    'landing.webdev.bento.seo.desc': 'Automated audits, structured data, and Core Web Vitals tuning. Every page optimized for search.',
+    'landing.webdev.bento.perf.title': 'Sub-second loads',
+    'landing.webdev.bento.perf.desc': 'Lighthouse 90+ guaranteed. Optimized rendering, caching, and asset delivery.',
+    'landing.webdev.bento.analytics.title': 'Know your numbers',
+    'landing.webdev.bento.analytics.desc': 'Real-time dashboards for traffic, conversions, and user behavior. Data-driven decisions.',
+
     // Landing — Workflow automation section
     'landing.workflow.label': 'Workflow Automation',
     'landing.workflow.heading': 'Automate the work that slows you down',
@@ -640,6 +653,19 @@ const translations: Record<Lang, Record<string, string>> = {
     'landing.webdev.tag1': 'სწრაფი',
     'landing.webdev.tag2': 'SEO ოპტიმიზაცია',
     'landing.webdev.tag3': 'სრულად რესპონსიული',
+
+    // Landing — Web dev bento cards
+    'landing.webdev.bento.subtitle': 'რესპონსიული დიზაინიდან სერვერულ არქიტექტურამდე — ყველაფერი, რაც თქვენს ვებსაიტს სჭირდება.',
+    'landing.webdev.bento.ui.title': 'ინტერფეისები, რომლებიც კონვერტაციას ზრდის',
+    'landing.webdev.bento.ui.desc': 'ინდივიდუალური რესპონსიული დიზაინი Figma-ს სიზუსტით. ყველა პიქსელი ოპტიმიზირებულია ჩართულობისა და კონვერტაციისთვის.',
+    'landing.webdev.bento.backend.title': 'API-ები, რომლებიც სკალირდება',
+    'landing.webdev.bento.backend.desc': 'სერვერული რენდერინგი, მონაცემთა ბაზის ინტეგრაცია და ინდივიდუალური API მარშრუტები. აგებული Next.js-ითა და TypeScript-ით.',
+    'landing.webdev.bento.seo.title': 'რეიტინგი იქ, სადაც მნიშვნელოვანია',
+    'landing.webdev.bento.seo.desc': 'ავტომატიზებული აუდიტები, სტრუქტურირებული მონაცემები და Core Web Vitals ტიუნინგი.',
+    'landing.webdev.bento.perf.title': 'წამზე ნაკლები ჩატვირთვა',
+    'landing.webdev.bento.perf.desc': 'Lighthouse 90+ გარანტირებული. ოპტიმიზირებული რენდერინგი, ქეშირება და კონტენტის მიწოდება.',
+    'landing.webdev.bento.analytics.title': 'იცოდე შენი რიცხვები',
+    'landing.webdev.bento.analytics.desc': 'რეალურ დროში დეშბორდები ტრაფიკის, კონვერტაციებისა და მომხმარებლის ქცევის მონიტორინგისთვის.',
 
     // Landing — Workflow automation section
     'landing.workflow.label': 'სამუშაო პროცესების ავტომატიზაცია',

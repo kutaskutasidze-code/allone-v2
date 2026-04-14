@@ -210,7 +210,23 @@
       "Bash(sips -s format png /tmp/equivalenza.png --out equivalenza-new.png)",
       "Bash(sips -s format png /tmp/innrburial.png --out innrburial-new.png)",
       "Bash(pip3 install:*)",
-      "Bash(cat src/app/\\\\\\(main\\\\\\)/landing/WorkflowVisualV2.tsx)"
+      "Bash(cat src/app/\\\\\\(main\\\\\\)/landing/WorkflowVisualV2.tsx)",
+      "Bash(textutil:*)",
+      "WebFetch(domain:www.gccc.ge)",
+      "WebFetch(domain:faolex.fao.org)",
+      "WebFetch(domain:www.myadvokat.ge)",
+      "Bash(rm -rf \"src/app/[locale]/\\(fullwidth\\)/generate/generate\")",
+      "Bash(mv \"src/app/[locale]/\\(fullwidth\\)/generate/[templateSlug]\" /tmp/templateSlug_bak)",
+      "Bash(rm -rf \"src/app/[locale]/\\(fullwidth\\)/generate\")",
+      "Bash(mkdir -p \"src/app/[locale]/\\(fullwidth\\)/generate\")",
+      "Bash(mv /tmp/templateSlug_bak \"src/app/[locale]/\\(fullwidth\\)/generate/[templateSlug]\")",
+      "WebFetch(domain:www.my.gov.ge)",
+      "WebFetch(domain:bs.napr.gov.ge)",
+      "WebFetch(domain:data.gov.ge)",
+      "WebFetch(domain:api.napr.gov.ge)",
+      "Bash(scp /Users/wulu/Desktop/Projects/allone-website/scraper/src/scrapers/registry.scraper.ts root@178.104.47.126:/opt/allone-scraper/src/scrapers/)",
+      "Bash(scp /Users/wulu/Desktop/Projects/allone-website/scraper/src/scheduler/registry.cron.ts root@178.104.47.126:/opt/allone-scraper/src/scheduler/)",
+      "Bash(scp /Users/wulu/Desktop/Projects/allone-website/scraper/ecosystem.config.cjs root@178.104.47.126:/opt/allone-scraper/)"
     ]
   }
 }

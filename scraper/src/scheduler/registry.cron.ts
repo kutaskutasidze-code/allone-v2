@@ -1,0 +1,226 @@
+import { logger } from '../utils/logger.js';
+import { getSupabase, LeadData } from '../database/client.js';
+import { insertLead } from '../database/leads.repo.js';
+import { scrapeRegistry } from '../scrapers/registry.scraper.js';
+import { normalizeGeorgianPhone } from '../utils/phone.js';
+import { calculateRelevanceScore } from '../utils/scoring.js';
+import { closeBrowser } from '../utils/browser.js';
+import { config } from '../config.js';
+
+const GOOGLE_PLACES_URL = 'https://places.googleapis.com/v1/places:searchText';
+const FIELD_MASK = 'places.displayName,places.nationalPhoneNumber,places.internationalPhoneNumber,places.formattedAddress,places.websiteUri,places.rating,places.userRatingCount,places.types,places.googleMapsUri';
+
+interface GooglePlace {
+  displayName?: { text?: string };
+  nationalPhoneNumber?: string;
+  internationalPhoneNumber?: string;
+  formattedAddress?: string;
+  websiteUri?: string;
+  rating?: number;
+  userRatingCount?: number;
+  types?: string[];
+  googleMapsUri?: string;
+}
+
+async function lookupOnGooglePlaces(companyName: string): Promise<GooglePlace | null> {
+  const apiKey = config.googlePlaces.apiKey;
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetch(GOOGLE_PLACES_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': FIELD_MASK,
+      },
+      body: JSON.stringify({
+        textQuery: `${companyName} Georgia`,
+        languageCode: 'en',
+        maxResultCount: 1,
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.places?.[0] || null;
+  } catch {
+    return null;
+  }
+}
+
+function formatDateForRegistry(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const yyyy = date.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+async function getLastProcessedDate(supabase: ReturnType<typeof getSupabase>): Promise<Date> {
+  // Check the most recent registry scrape job
+  const { data } = await supabase
+    .from('scrape_jobs')
+    .select('search_query, completed_at')
+    .ilike('search_query', 'Registry:%')
+    .eq('status', 'completed')
+    .order('completed_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (data?.search_query) {
+    // Parse "Registry: DD/MM/YYYY to DD/MM/YYYY"
+    const match = data.search_query.match(/to (\d{2})\/(\d{2})\/(\d{4})/);
+    if (match) {
+      const [, dd, mm, yyyy] = match;
+      return new Date(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd));
+    }
+  }
+
+  // Default: 3 months ago
+  const d = new Date();
+  d.setMonth(d.getMonth() - 3);
+  return d;
+}
+
+async function runRegistryCron() {
+  logger.info('Starting registry scraper cron...');
+  const supabase = getSupabase();
+
+  const lastDate = await getLastProcessedDate(supabase);
+  const today = new Date();
+
+  // Scrape in 7-day chunks to avoid overwhelming the registry
+  const chunkDays = 7;
+  let from = new Date(lastDate);
+  from.setDate(from.getDate() + 1); // Start from day after last processed
+
+  if (from >= today) {
+    logger.info('Registry: already up to date, nothing to scrape');
+    await closeBrowser();
+    return;
+  }
+
+  let to = new Date(from);
+  to.setDate(to.getDate() + chunkDays - 1);
+  if (to > today) to = new Date(today);
+
+  const dateFrom = formatDateForRegistry(from);
+  const dateTo = formatDateForRegistry(to);
+
+  // Create scrape job
+  const { data: job } = await supabase
+    .from('scrape_jobs')
+    .insert({
+      source_id: null,
+      status: 'running',
+      search_query: `Registry: ${dateFrom} to ${dateTo}`,
+      country: 'GE',
+      city: 'Tbilisi',
+      started_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  const jobId = job?.id;
+
+  try {
+    // Step 1: Scrape registry (free, no API cost)
+    const companies = await scrapeRegistry(dateFrom, dateTo);
+    logger.info(`Registry: found ${companies.length} new registrations from ${dateFrom} to ${dateTo}`);
+
+    // Step 2: Look up each company on Google Places (costs 1 request each)
+    const dailyBudget = config.googlePlaces.dailyBudgetRequests;
+    let googleLookups = 0;
+    let inserted = 0;
+    let withPhone = 0;
+    let duplicates = 0;
+
+    for (const company of companies) {
+      if (googleLookups >= dailyBudget) {
+        logger.info(`Registry: hit daily Google Places budget (${dailyBudget}). Remaining companies saved for next run.`);
+        break;
+      }
+
+      // Clean company name: remove შპს/სს prefix for better Google search
+      let searchName = company.name;
+      searchName = searchName.replace(/^შპს\s+/i, '').replace(/^სს\s+/i, '');
+
+      const place = await lookupOnGooglePlaces(searchName);
+      googleLookups++;
+
+      const rawPhone = place?.internationalPhoneNumber || place?.nationalPhoneNumber;
+      const phone = rawPhone ? normalizeGeorgianPhone(rawPhone) : null;
+
+      const tags: string[] = ['newly_registered'];
+      if (!place?.websiteUri) tags.push('no_website');
+      if (!place?.rating) tags.push('new_business');
+
+      const lead: LeadData = {
+        name: company.name,
+        company: company.name,
+        phone: phone || undefined,
+        website: place?.websiteUri || undefined,
+        address: place?.formattedAddress || undefined,
+        city: 'Tbilisi',
+        country: 'GE',
+        source_url: place?.googleMapsUri || undefined,
+        matched_service: !place?.websiteUri ? 'website' : undefined,
+        tags,
+        description: `Registered: ${company.registrationDate}. Reg#: ${company.registrationNumber}`,
+        is_scraped: true,
+      };
+
+      lead.relevance_score = calculateRelevanceScore({
+        ...lead,
+        rating: place?.rating,
+        userRatingCount: place?.userRatingCount,
+      });
+
+      const result = await insertLead(lead);
+      if (result.success) {
+        inserted++;
+        if (phone) withPhone++;
+      }
+      if (result.isDuplicate) duplicates++;
+
+      // Small delay between Google Places requests
+      await new Promise(r => setTimeout(r, 200));
+    }
+
+    // Update job
+    if (jobId) {
+      await supabase
+        .from('scrape_jobs')
+        .update({
+          status: 'completed',
+          leads_found: companies.length,
+          leads_new: inserted,
+          leads_duplicate: duplicates,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', jobId);
+    }
+
+    logger.info(`Registry cron done: ${inserted} new leads (${withPhone} with phone), ${duplicates} duplicates, ${googleLookups} Google lookups`);
+  } catch (err) {
+    logger.error(`Registry cron failed: ${err}`);
+    if (jobId) {
+      await supabase
+        .from('scrape_jobs')
+        .update({
+          status: 'failed',
+          error_message: String(err),
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', jobId);
+    }
+  }
+
+  await closeBrowser();
+}
+
+runRegistryCron().catch((err) => {
+  logger.error(`Registry cron fatal: ${err}`);
+  process.exit(1);
+});

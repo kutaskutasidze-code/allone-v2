@@ -22,6 +22,7 @@ const PITCH_LABELS: Record<string, string> = {
   slow_website: 'Slow website',
   basic_website_builder: 'Wix/Tilda site',
   new_business: 'New business',
+  newly_registered: 'Newly registered',
 };
 
 const HIDDEN_TAGS = new Set(['enrich_attempted', 'website_audited']);

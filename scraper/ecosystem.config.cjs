@@ -1,9 +1,9 @@
 module.exports = {
   apps: [
     {
-      name: 'scrape-google-places',
-      script: 'dist/scheduler/scrape.cron.js',
-      cron_restart: '0 */4 * * *', // every 4 hours
+      name: 'registry-scraper',
+      script: 'dist/scheduler/registry.cron.js',
+      cron_restart: '0 6 * * *', // daily at 6 AM UTC
       autorestart: false,
       env: { NODE_ENV: 'production' },
     },

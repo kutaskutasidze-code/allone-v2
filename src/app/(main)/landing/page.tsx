@@ -7,7 +7,6 @@ import { useI18n } from '@/lib/i18n';
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { ChatPlaybackGlassy as ChatPlayback } from './ChatPlaybackGlassy';
 import { WebDevFloatingElements } from './WebDevFloatingElements';
-import { LeadFlowVisual } from './LeadFlowVisual';
 import { WorkflowVisualV2 } from './WorkflowVisualV2';
 import { FAQSchema } from '@/components/seo';
 import { ContactForm } from '@/components/forms/ContactForm';
@@ -693,6 +692,502 @@ function ChatbotSection() {
   );
 }
 
+function BentoCard({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  return (
+    <motion.div
+      className={`rounded-2xl overflow-hidden bg-white ${className}`}
+      style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.07), 0 8px 20px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.02), 0 0 40px rgba(37,99,235,0.03)', border: '1px solid rgba(0,0,0,0.06)' }}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function useInViewOnce(threshold = 0.3) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    if (!ref.current) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold });
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
+
+function useAnimatedNumber(target: number, duration = 2000, decimals = 0) {
+  const [value, setValue] = useState(0);
+  const { ref, inView } = useInViewOnce(0.3);
+  useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setValue(Number((eased * target).toFixed(decimals)));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [inView, target, duration, decimals]);
+  return { value, ref };
+}
+
+function useCyclingIndex(count: number, interval = 3000) {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setIndex(i => (i + 1) % count), interval);
+    return () => clearInterval(id);
+  }, [count, interval]);
+  return index;
+}
+
+function TrafficLightDots() {
+  return (
+    <div className="flex gap-1">
+      <span className="w-[6px] h-[6px] rounded-full bg-gray-300" />
+      <span className="w-[6px] h-[6px] rounded-full bg-gray-300" />
+      <span className="w-[6px] h-[6px] rounded-full bg-gray-300" />
+    </div>
+  );
+}
+
+function UIDesignCard() {
+  const { t } = useI18n();
+  const [activeTab, setActiveTab] = useState(0);
+  const configs = [
+    { label: 'Desktop', icon: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" className="w-3.5 h-3.5"><rect x="1.5" y="2" width="13" height="9" rx="1.5"/><path d="M5.5 14h5M8 11v3"/></svg>, width: '100%', height: 155, radius: 12, cols: 3, showImage: true, showNav: true },
+    { label: 'Tablet', icon: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" className="w-3.5 h-3.5"><rect x="3" y="1" width="10" height="14" rx="1.5"/><circle cx="8" cy="13" r="0.5" fill="currentColor"/></svg>, width: '68%', height: 165, radius: 16, cols: 2, showImage: false, showNav: false },
+    { label: 'Mobile', icon: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" className="w-3.5 h-3.5"><rect x="4" y="1" width="8" height="14" rx="1.5"/><path d="M7 13h2"/></svg>, width: '40%', height: 180, radius: 20, cols: 1, showImage: false, showNav: false },
+  ];
+  useEffect(() => {
+    const id = setInterval(() => setActiveTab(i => (i + 1) % 3), 3000);
+    return () => clearInterval(id);
+  }, []);
+  const cfg = configs[activeTab];
+  return (
+    <BentoCard className="h-full" delay={0.05}>
+      <div className="p-5 h-full flex flex-col">
+        <div className="flex items-center justify-center mb-4">
+          <div className="flex bg-gray-100 rounded-lg p-0.5">
+            {configs.map((c, i) => (
+              <button key={c.label} onClick={() => setActiveTab(i)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[8px] font-medium transition-all duration-300 ${i === activeTab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>
+                {c.icon}
+                {c.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex-1 flex justify-center items-start">
+          <motion.div
+            className="overflow-hidden bg-[#f8f9fa] border border-gray-200"
+            animate={{ width: cfg.width, height: cfg.height, borderRadius: cfg.radius }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="flex items-center gap-1.5 px-3 py-1.5 border-b border-gray-100">
+              <TrafficLightDots />
+              <motion.div className="flex-1 mx-3" animate={{ opacity: cfg.showNav ? 1 : 0 }} transition={{ duration: 0.3 }}>
+                <div className="bg-white rounded px-2 py-0.5 text-[7px] text-gray-400 text-center border border-gray-200/60">allone.ge</div>
+              </motion.div>
+              {!cfg.showNav && <svg viewBox="0 0 16 16" fill="none" stroke="#ccc" strokeWidth="1.2" className="w-3 h-3 ml-auto"><path d="M2 5h12M2 8h12M2 11h8"/></svg>}
+            </div>
+            <div className="p-3 overflow-hidden">
+              <div className="flex gap-2 mb-2">
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-2.5 w-2/3 rounded bg-gray-300" />
+                  <div className="h-1.5 w-full rounded bg-gray-200/70" />
+                  <motion.div className="h-1.5 rounded bg-gray-200/70" animate={{ width: activeTab === 2 ? '60%' : '80%' }} transition={{ duration: 0.4 }} />
+                  <div className="flex gap-1.5 mt-2">
+                    <div className="h-5 w-14 rounded-md bg-[#2563eb]" />
+                    <motion.div className="h-5 w-10 rounded-md bg-gray-200" animate={{ opacity: activeTab === 2 ? 0 : 1 }} transition={{ duration: 0.3 }} />
+                  </div>
+                </div>
+                <motion.div className="rounded-lg bg-gradient-to-br from-[#2563eb]/8 to-transparent border border-[#2563eb]/10"
+                  animate={{ width: cfg.showImage ? 64 : 0, height: cfg.showImage ? 56 : 0, opacity: cfg.showImage ? 1 : 0 }}
+                  transition={{ duration: 0.4 }} />
+              </div>
+              <div className="flex gap-1.5 mt-2">
+                {[0, 1, 2].map(i => (
+                  <motion.div key={i} className="h-8 rounded-lg bg-gray-100 border border-gray-200/40"
+                    animate={{ flex: i < cfg.cols ? 1 : 0, opacity: i < cfg.cols ? 1 : 0, width: i < cfg.cols ? 'auto' : 0 }}
+                    transition={{ duration: 0.35, delay: i * 0.04 }}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+        <h3 className="font-display text-[15px] font-semibold text-gray-900 mb-1 mt-4">{t('landing.webdev.bento.ui.title')}</h3>
+        <p className="text-[12px] text-gray-400 leading-relaxed">{t('landing.webdev.bento.ui.desc')}</p>
+      </div>
+    </BentoCard>
+  );
+}
+
+const CODE_LINES = [
+  { tokens: [{ t: 'export', c: '#2563eb' }, { t: ' async ', c: '#2563eb' }, { t: 'function ', c: '#2563eb' }, { t: 'GET', c: '#111' }, { t: '(req) {', c: '#999' }] },
+  { tokens: [{ t: '  const ', c: '#2563eb' }, { t: 'data', c: '#333' }, { t: ' = ', c: '#999' }, { t: 'await ', c: '#2563eb' }, { t: 'db', c: '#111' }, { t: '.', c: '#999' }, { t: 'query', c: '#111' }, { t: '()', c: '#999' }] },
+  { tokens: [{ t: '  const ', c: '#2563eb' }, { t: 'enriched', c: '#333' }, { t: ' = ', c: '#999' }, { t: 'ai', c: '#111' }, { t: '.', c: '#999' }, { t: 'process', c: '#111' }, { t: '(data)', c: '#999' }] },
+  { tokens: [{ t: '  return ', c: '#2563eb' }, { t: 'Response', c: '#111' }, { t: '.', c: '#999' }, { t: 'json', c: '#111' }, { t: '(enriched)', c: '#999' }] },
+  { tokens: [{ t: '}', c: '#999' }] },
+];
+const CODE_CHAR_MAP = CODE_LINES.flatMap((line, li) => line.tokens.flatMap(tk => Array.from(tk.t, () => ({ lineIdx: li }))));
+const CODE_TOTAL = CODE_CHAR_MAP.length;
+
+function BackendCard() {
+  const { t } = useI18n();
+  const [visibleChars, setVisibleChars] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
+  const { ref, inView } = useInViewOnce(0.3);
+
+  useEffect(() => {
+    if (!inView) return;
+    let pos = 0;
+    let prevLine = 0;
+    let timeout: ReturnType<typeof setTimeout>;
+    setIsTyping(true);
+    const type = () => {
+      if (pos >= CODE_TOTAL) {
+        setIsTyping(false);
+        timeout = setTimeout(() => { setVisibleChars(0); pos = 0; prevLine = 0; setIsTyping(true); timeout = setTimeout(type, 600); }, 3500);
+        return;
+      }
+      const entry = CODE_CHAR_MAP[pos];
+      const isNewLine = entry.lineIdx !== prevLine;
+      prevLine = entry.lineIdx;
+      pos++;
+      setVisibleChars(pos);
+      const baseDelay = 30 + Math.random() * 30;
+      timeout = setTimeout(type, isNewLine ? baseDelay + 200 : baseDelay);
+    };
+    timeout = setTimeout(type, 500);
+    return () => clearTimeout(timeout);
+  }, [inView]);
+
+  let charCount = 0;
+  const showCursor = isTyping || visibleChars >= CODE_TOTAL;
+  return (
+    <BentoCard className="h-full" delay={0.1}>
+      <div className="p-5 h-full flex flex-col" ref={ref}>
+        <div className="rounded-xl overflow-hidden bg-[#f8f9fa] border border-gray-100 mb-5 flex-1">
+          <div className="flex items-center border-b border-gray-100">
+            <div className="px-3 py-2"><TrafficLightDots /></div>
+            <div className="flex">
+              <div className="px-3 py-1.5 text-[8px] font-mono text-gray-800 bg-white border-b-2 border-[#2563eb]">route.ts</div>
+              <div className="px-3 py-1.5 text-[8px] font-mono text-gray-400">schema.ts</div>
+            </div>
+          </div>
+          <div className="p-3 font-mono text-[9px] leading-[2]">
+            {CODE_LINES.map((line, li) => {
+              const lineStart = charCount;
+              const lineChars = line.tokens.reduce((s, tk) => s + tk.t.length, 0);
+              const lineEnd = lineStart + lineChars;
+              const cursorHere = showCursor && ((visibleChars >= lineStart && visibleChars < lineEnd) || (visibleChars >= CODE_TOTAL && li === CODE_LINES.length - 1));
+              return (
+                <div key={li} className="flex">
+                  <span className="w-5 text-right mr-3 text-gray-300 select-none text-[8px]">{li + 1}</span>
+                  <div>
+                    {line.tokens.map((tk, ti) => {
+                      const chars = tk.t.split('').map((ch, ci) => {
+                        const idx = charCount++;
+                        return <span key={ci} style={{ color: tk.c, opacity: idx < visibleChars ? 1 : 0, transition: 'opacity 0.04s' }}>{ch}</span>;
+                      });
+                      return <span key={ti}>{chars}</span>;
+                    })}
+                    {cursorHere && <span className={`inline-block w-[5px] h-[11px] bg-[#2563eb] align-middle ${isTyping ? '' : 'animate-pulse'}`} />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <h3 className="font-display text-[15px] font-semibold text-gray-900 mb-1">{t('landing.webdev.bento.backend.title')}</h3>
+        <p className="text-[12px] text-gray-400 leading-relaxed">{t('landing.webdev.bento.backend.desc')}</p>
+      </div>
+    </BentoCard>
+  );
+}
+
+function SEOCard() {
+  const { t } = useI18n();
+  const rankIdx = useCyclingIndex(3, 2200);
+  const { value: seoScore, ref } = useAnimatedNumber(98, 1500, 0);
+  const [scanStep, setScanStep] = useState(-1);
+  const keywords = [
+    { term: 'AI automation company', pos: '#1', change: '+2' },
+    { term: 'AI chatbot Georgia', pos: '#1', change: '+5' },
+    { term: 'workflow automation', pos: '#2', change: '+3' },
+  ];
+  const checks = ['Meta tags', 'Structured data', 'Core Web Vitals', 'Sitemap', 'Open Graph', 'robots.txt'];
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let scanId: ReturnType<typeof setInterval>;
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        let step = 0;
+        scanId = setInterval(() => {
+          setScanStep(step);
+          step++;
+          if (step >= checks.length) clearInterval(scanId);
+        }, 300);
+        obs.disconnect();
+      }
+    }, { threshold: 0.3 });
+    obs.observe(el);
+    return () => { obs.disconnect(); clearInterval(scanId); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <BentoCard className="h-full" delay={0.15}>
+      <div className="p-5 h-full flex flex-col" ref={ref}>
+        <div className="rounded-xl bg-[#f8f9fa] border border-gray-100 p-4 mb-5 flex-1">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[8px] text-gray-400 font-mono uppercase">Search Rankings</span>
+            <motion.span className="font-mono text-[11px] font-semibold text-[#2563eb]"
+              animate={seoScore === 98 ? { scale: [1, 1.2, 1] } : {}} transition={{ duration: 0.3 }}
+            >{seoScore}/100</motion.span>
+          </div>
+          <div className="space-y-1.5 mb-3">
+            {keywords.map((kw, i) => (
+              <div key={kw.term} className={`flex items-center justify-between p-1.5 rounded-md transition-all duration-500 ${i === rankIdx ? 'bg-white shadow-sm' : ''}`}>
+                <span className={`text-[9px] transition-colors duration-300 ${i === rankIdx ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>{kw.term}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[8px] text-emerald-500">{kw.change}</span>
+                  <span className={`text-[9px] font-semibold transition-colors duration-300 ${i === rankIdx ? 'text-[#2563eb]' : 'text-gray-400'}`}>{kw.pos}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1.5">
+            {checks.map((label, i) => (
+              <div key={label} className="flex items-center gap-1.5">
+                <div className={`w-3 h-3 rounded-full flex items-center justify-center transition-all duration-300 ${i <= scanStep ? 'bg-emerald-500/15' : 'bg-gray-200'}`}>
+                  {i <= scanStep && <svg viewBox="0 0 12 12" className="w-2 h-2 text-emerald-500"><path d="M3 6l2 2L9 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
+                <span className={`text-[8px] transition-colors duration-300 ${i <= scanStep ? 'text-gray-700' : 'text-gray-300'}`}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <h3 className="font-display text-[15px] font-semibold text-gray-900 mb-1">{t('landing.webdev.bento.seo.title')}</h3>
+        <p className="text-[12px] text-gray-400 leading-relaxed">{t('landing.webdev.bento.seo.desc')}</p>
+      </div>
+    </BentoCard>
+  );
+}
+
+const DOT_OPACITIES = Array.from({ length: 28 }, (_, i) => i === 19 ? 0.4 : 0.15 + (((i * 7 + 3) % 10) / 10) * 0.85);
+
+function PerformanceCard() {
+  const { t } = useI18n();
+  const { ref, inView } = useInViewOnce(0.3);
+  const activeIdx = useCyclingIndex(3, 3200);
+
+  const views = [
+    {
+      label: 'Lighthouse',
+      render: () => (
+        <div className="space-y-2.5 w-full">
+          {[
+            { label: 'Performance', value: 98, color: '#2563eb' },
+            { label: 'Accessibility', value: 100, color: '#10b981' },
+            { label: 'Best Practices', value: 95, color: '#f59e0b' },
+            { label: 'SEO', value: 100, color: '#8b5cf6' },
+          ].map((m, i) => (
+            <div key={m.label}>
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[8px] text-gray-500">{m.label}</span>
+                <span className="text-[8px] font-mono font-semibold" style={{ color: m.color }}>{m.value}</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                <motion.div className="h-full rounded-full" style={{ backgroundColor: m.color }}
+                  key={`bar-${activeIdx}-${i}`}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${m.value}%` }}
+                  transition={{ duration: 0.8, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+      items: [{ k: 'LCP', v: '1.2s' }, { k: 'FID', v: '12ms' }, { k: 'CLS', v: '0.003' }],
+    },
+    {
+      label: 'Load Speed',
+      render: () => (
+        <div className="flex items-end gap-2 h-[80px] w-full px-1">
+          {[0.25, 0.55, 0.85, 0.45, 0.95, 0.65, 1.0].map((h, i) => (
+            <motion.div key={`load-${activeIdx}-${i}`} className="flex-1 rounded-t bg-[#10b981]"
+              initial={{ height: 0 }}
+              animate={{ height: `${h * 100}%` }}
+              transition={{ duration: 0.6, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }} />
+          ))}
+        </div>
+      ),
+      items: [{ k: 'TTFB', v: '120ms' }, { k: 'FCP', v: '0.6s' }, { k: 'TTI', v: '1.1s' }],
+    },
+    {
+      label: 'Uptime',
+      render: () => (
+        <div className="grid grid-cols-7 gap-1 w-full">
+          {DOT_OPACITIES.map((op, i) => (
+            <motion.div key={`dot-${activeIdx}-${i}`} className="aspect-square rounded-sm"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: op, scale: 1 }}
+              transition={{ duration: 0.15, delay: i * 0.02 }}
+              style={{ backgroundColor: i === 19 ? '#e5e7eb' : '#8b5cf6' }} />
+          ))}
+        </div>
+      ),
+      items: [{ k: 'Avg', v: '99.9%' }, { k: 'Incidents', v: '0' }, { k: 'Resp', v: '45ms' }],
+    },
+  ];
+
+  const view = views[activeIdx];
+
+  return (
+    <BentoCard className="h-full" delay={0.2}>
+      <div className="p-5 h-full flex flex-col" ref={ref}>
+        <div className="rounded-xl bg-[#f8f9fa] border border-gray-100 p-4 mb-5 flex-1 flex flex-col">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[8px] text-gray-400 font-mono uppercase">{view.label}</span>
+            <div className="flex gap-1">
+              {views.map((_, i) => (
+                <div key={i} className={`w-1 h-1 rounded-full transition-all duration-300 ${i === activeIdx ? 'bg-[#2563eb] scale-125' : 'bg-gray-300'}`} />
+              ))}
+            </div>
+          </div>
+          <div className="flex-1 flex items-center justify-center">
+            {inView && view.render()}
+          </div>
+          <div className="flex gap-3 mt-3 pt-3 border-t border-gray-100">
+            {view.items.map(m => (
+              <div key={m.k} className="text-center flex-1">
+                <div className="text-[9px] font-mono font-semibold text-emerald-500">{m.v}</div>
+                <div className="text-[7px] text-gray-400 uppercase">{m.k}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <h3 className="font-display text-[15px] font-semibold text-gray-900 mb-1">{t('landing.webdev.bento.perf.title')}</h3>
+        <p className="text-[12px] text-gray-400 leading-relaxed">{t('landing.webdev.bento.perf.desc')}</p>
+      </div>
+    </BentoCard>
+  );
+}
+
+function MiniSparkline({ data, color = '#2563eb' }: { data: number[]; color?: string }) {
+  const max = Math.max(...data);
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * 60},${20 - (v / max) * 16}`).join(' ');
+  return (
+    <svg viewBox="0 0 60 20" className="w-12 h-4">
+      <polyline fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" points={pts} />
+    </svg>
+  );
+}
+
+function AnalyticsCard() {
+  const { t } = useI18n();
+  const { value: visitors, ref } = useAnimatedNumber(12847, 2000, 0);
+  const [bars, setBars] = useState([40, 55, 50, 65, 60, 75, 70, 85, 80, 90, 45, 60]);
+  const convIdx = useCyclingIndex(3, 3000);
+  const convRates = ['3.2%', '4.1%', '3.8%'];
+  useEffect(() => {
+    const id = setInterval(() => {
+      setBars(prev => prev.map(() => 25 + Math.random() * 75));
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <BentoCard className="h-full" delay={0.25}>
+      <div className="p-5 h-full flex flex-col" ref={ref}>
+        <div className="rounded-xl bg-[#f8f9fa] border border-gray-100 p-4 mb-5 flex-1">
+          <div className="flex gap-6 mb-4">
+            <div>
+              <div className="text-[8px] text-gray-400 font-mono uppercase mb-1">Visitors</div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[18px] font-semibold text-gray-900">{visitors.toLocaleString()}</span>
+                <MiniSparkline data={[30, 35, 28, 42, 38, 50, 45, 55]} />
+              </div>
+              <div className="flex items-center gap-1 mt-0.5">
+                <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 text-emerald-500"><path d="M6 2v8M3 5l3-3 3 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span className="text-[8px] text-emerald-500 font-medium">+24.3%</span>
+              </div>
+            </div>
+            <div>
+              <div className="text-[8px] text-gray-400 font-mono uppercase mb-1">Conversion</div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[18px] font-semibold text-gray-900 transition-all duration-500">{convRates[convIdx]}</span>
+                <MiniSparkline data={[20, 25, 22, 30, 28, 35, 32, 38]} color="#10b981" />
+              </div>
+              <div className="flex items-center gap-1 mt-0.5">
+                <svg viewBox="0 0 12 12" className="w-2.5 h-2.5 text-emerald-500"><path d="M6 2v8M3 5l3-3 3 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span className="text-[8px] text-emerald-500 font-medium">+0.8%</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-end gap-1 h-20">
+            {bars.map((h, i) => (
+              <div key={i} className="flex-1 rounded-t transition-all duration-1000 ease-out" style={{ height: `${h}%`, backgroundColor: i >= 4 && i <= 8 ? '#2563eb' : '#e2e5ea' }} />
+            ))}
+          </div>
+        </div>
+        <h3 className="font-display text-[15px] font-semibold text-gray-900 mb-1">{t('landing.webdev.bento.analytics.title')}</h3>
+        <p className="text-[12px] text-gray-400 leading-relaxed">{t('landing.webdev.bento.analytics.desc')}</p>
+      </div>
+    </BentoCard>
+  );
+}
+
+function WebDevBentoSection() {
+  const { t } = useI18n();
+  return (
+    <section className="relative py-20 lg:py-28 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="mb-12">
+          <h2 className="font-instrument text-[40px] lg:text-[56px] font-medium text-black leading-[1.1] tracking-[-0.02em]">
+            {t('landing.svc.card2.title').split(' ').map((word, i) => (
+              <motion.span
+                key={i}
+                className="inline-block mr-[0.25em]"
+                style={i === 0 ? { color: '#2563eb' } : undefined}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-100px' }}
+                transition={{ duration: 0.4, delay: 0.05 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </h2>
+          <motion.p
+            className="text-[18px] text-gray-500 leading-[1.6] max-w-xl mt-4"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {t('landing.webdev.bento.subtitle')}
+          </motion.p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div className="lg:col-span-5"><UIDesignCard /></div>
+          <div className="lg:col-span-4"><BackendCard /></div>
+          <div className="lg:col-span-3"><PerformanceCard /></div>
+          <div className="lg:col-span-5"><SEOCard /></div>
+          <div className="lg:col-span-7"><AnalyticsCard /></div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function DotGrid() {
   return (
     <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -714,148 +1209,48 @@ function WebDevDetailSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12 lg:gap-16 items-start">
           {/* Left — dot grid with workflow cards */}
-          <div className="relative h-[520px] lg:h-[700px] rounded-2xl overflow-hidden order-last lg:order-first" style={{ backgroundColor: '#fafafa' }}>
-            <DotGrid />
+          <div className="relative h-[520px] lg:h-[700px] rounded-2xl overflow-hidden order-last lg:order-first" style={{ backgroundColor: '#fafafa', boxShadow: '0 20px 60px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.03)' }}>
+            <div className="absolute inset-0" style={{ maskImage: 'radial-gradient(ellipse 70% 60% at center, black 40%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at center, black 40%, transparent 100%)' }}>
+              <DotGrid />
+            </div>
             <div className="relative z-10 h-full overflow-hidden">
               <WorkflowVisualV2 />
             </div>
           </div>
 
           {/* Right — chatbot-style text */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <div>
             <h2 className="font-instrument text-[40px] lg:text-[56px] font-medium text-black leading-[1.1] tracking-[-0.02em] mb-6">
-              <span style={{ color: '#87CEEB' }}>{t('landing.workflow.heading').split(' ')[0]}</span> {t('landing.workflow.heading').split(' ').slice(1).join(' ')}
-            </h2>
-            <p className="text-[18px] text-gray-500 leading-[1.6] max-w-md mb-10">
-              {t('landing.workflow.desc')}
-            </p>
-            <div className="grid grid-cols-2 gap-4 max-w-md">
-              {[
-                { num: '90%', desc: t('landing.workflow.stat1') },
-                { num: '24/7', desc: t('landing.workflow.stat2') },
-                { num: '50+', desc: t('landing.workflow.stat3') },
-                { num: '2-4', desc: t('landing.workflow.stat4') },
-              ].map((stat, i) => (
-                <div key={i} className="flex flex-col">
-                  <span className="font-instrument text-[28px] font-medium text-[#2563eb] leading-none mb-1">{stat.num}</span>
-                  <span className="text-[12px] text-gray-400 leading-snug">{stat.desc}</span>
-                </div>
+              {t('landing.workflow.heading').split(' ').map((word, i) => (
+                <motion.span
+                  key={i}
+                  className="inline-block mr-[0.25em]"
+                  style={i === 0 ? { color: '#87CEEB' } : undefined}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-100px' }}
+                  transition={{ duration: 0.4, delay: 0.05 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {word}
+                </motion.span>
               ))}
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function WorkflowSection() {
-  const { t } = useI18n();
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const cardOpacity = useTransform(scrollYProgress, [0.06, 0.18], [0, 1]);
-  const cardY = useTransform(scrollYProgress, [0.06, 0.22], [80, 0]);
-  const textOpacity = useTransform(scrollYProgress, [0.10, 0.20], [0, 1]);
-  const textX = useTransform(scrollYProgress, [0.10, 0.22], [40, 0]);
-  const glowOpacity = useTransform(scrollYProgress, [0.05, 0.2], [0, 1]);
-
-  return (
-    <section id="automation" ref={sectionRef} className="relative pt-0 pb-24 lg:pb-32 overflow-hidden bg-white">
-      {/* Blue glow — scales in, smaller + less blur on mobile */}
-      <motion.div
-        className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 pointer-events-none will-change-[opacity]"
-        style={{ opacity: glowOpacity }}
-      >
-        <div className="relative w-[400px] h-[300px] lg:w-[800px] lg:h-[600px]" style={{ transform: 'translate3d(0,0,0)' }}>
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-sky-300/15 to-blue-500/10 rounded-full blur-[50px] lg:blur-[100px]" />
-        </div>
-      </motion.div>
-
-      <div className="relative max-w-7xl mx-auto px-6">
-        <motion.div style={{ opacity: cardOpacity, y: cardY }}>
-          <div
-            className="border border-[#0ea5e9]/25"
-            style={{
-              boxShadow: '0 25px 80px rgba(14,165,233,0.06), 0 8px 24px rgba(0,0,0,0.03)',
-              background: 'linear-gradient(160deg, #f0f9ff 0%, #e8f4fd 30%, #ffffff 60%, #f0f9ff 100%)',
-            }}
-          >
-            <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr]">
-              {/* Lead Flow Visual — second on mobile, first on desktop */}
-              <div className="relative p-7 overflow-hidden order-last lg:order-first">
-                <LeadFlowVisual />
-              </div>
-
-              {/* Title + Description — first on mobile, second on desktop */}
-              <motion.div
-                className="relative flex flex-col justify-center p-7 lg:p-10 order-first lg:order-last border-b lg:border-b-0 lg:border-t-0 lg:border-l border-[#0ea5e9]/25"
-                style={{ opacity: textOpacity, x: textX }}
-              >
-                <motion.div
-                  className="flex items-baseline gap-3 mb-3"
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                  <span className="font-mono text-[10px] text-[#0ea5e9]/30 font-medium">03</span>
-                  <span className="font-mono text-[11px] font-medium text-[#0ea5e9] uppercase tracking-widest">{t('landing.workflow.label')}</span>
-                </motion.div>
-                <motion.h3
-                  className="font-display text-xl lg:text-2xl font-semibold text-[#071D2F] mb-3 tracking-[-0.02em] leading-[1.2]"
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  {t('landing.workflow.heading')}
-                </motion.h3>
-                <motion.p
-                  className="text-[13px] text-[#4D4D4D]/70 leading-[1.7] mb-6"
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  {t('landing.workflow.desc')}
-                </motion.p>
-                <div className="space-y-3">
-                  {[
-                    t('landing.workflow.step1'),
-                    t('landing.workflow.step2'),
-                    t('landing.workflow.step3'),
-                    t('landing.workflow.step4'),
-                  ].map((step, i) => (
-                    <motion.div
-                      key={i}
-                      className="flex items-center gap-2.5"
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
-                    >
-                      <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0" />
-                      <span className="text-[12px] text-[#555] leading-snug">{step}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
+            </h2>
+            <motion.p
+              className="text-[18px] text-gray-500 leading-[1.6] max-w-md"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.5, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {t('landing.workflow.desc')}
+            </motion.p>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 }
+
 
 const faqKeys = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'] as const;
 
@@ -952,8 +1347,8 @@ export default function HeroExperiment() {
       `}</style>
       <Hero />
       <ChatbotSection />
+      <WebDevBentoSection />
       <WebDevDetailSection />
-      <WorkflowSection />
       <FAQSection />
     </div>
   );

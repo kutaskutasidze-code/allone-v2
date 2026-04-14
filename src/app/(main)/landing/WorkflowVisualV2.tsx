@@ -136,7 +136,6 @@ function MeetingCard({ isInView, mobile }: { isInView: boolean; mobile?: boolean
   );
 }
 
-// Card 4 — Team Notification (right center)
 function NotifyCard({ isInView, mobile }: { isInView: boolean; mobile?: boolean }) {
   return (
     <Card delay={0.6} isInView={isInView} mobile={mobile} style={{ left: 340, top: 535, width: 245 }}>
@@ -283,8 +282,8 @@ export function WorkflowVisualV2() {
             d={line.d}
             fill="none"
             stroke="#2563eb"
-            strokeWidth="1.5"
-            strokeOpacity="0.3"
+            strokeWidth="2"
+            strokeOpacity="1"
             initial={{ pathLength: 0 }}
             animate={isInView ? { pathLength: 1 } : {}}
             transition={{ delay: 0.8 + i * 0.2, duration: 0.6, ease: 'easeOut' }}
