@@ -132,12 +132,11 @@ function MeshGradient() {
     const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 3);
     let curW = 0, curH = 0;
 
-    // Pause animation when off-screen
-    const observer = new IntersectionObserver(([entry]) => {
+    const observer = isMobile ? null : new IntersectionObserver(([entry]) => {
       isVisible = entry.isIntersecting;
       if (isVisible) animId = requestAnimationFrame(draw);
     }, { threshold: 0 });
-    if (containerRef.current) observer.observe(containerRef.current);
+    if (observer && containerRef.current) observer.observe(containerRef.current);
 
     const resize = () => {
       const w = canvas.offsetWidth;
@@ -258,14 +257,14 @@ function MeshGradient() {
         ctx.fillRect(0, 0, w, h);
       }
 
-      animId = requestAnimationFrame(draw);
+      if (!isMobile) animId = requestAnimationFrame(draw);
     };
 
     animId = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
-      observer.disconnect();
+      observer?.disconnect();
     };
   }, []);
 
@@ -346,13 +345,13 @@ function Hero() {
           style={{ y: textY, opacity: textOpacity }}
         >
           <div className="flex flex-col items-center text-center gap-8 px-4">
-            <h1 className="font-instrument text-[clamp(34px,5.5vw,54px)] font-medium leading-[1.1] tracking-[-0.047em] text-[#071D2F]">
+            <h1 className="font-instrument text-[clamp(26px,4.5vw,44px)] font-medium leading-[1.1] tracking-[-0.047em] text-[#071D2F]">
               <TypeWriter text={headline1} delay={0.3} />
               <TypeWriter text={headline2} delay={0.3 + headline1.length * 0.08 + 0.3} />
             </h1>
 
             <motion.p
-              className="max-w-[540px] text-base text-[#4D4D4D] leading-relaxed"
+              className="hidden lg:block max-w-[540px] text-base text-[#4D4D4D] leading-relaxed"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
@@ -404,7 +403,7 @@ function Hero() {
               ].map((service) => (
                 <div
                   key={service.title}
-                  className="p-3 lg:p-6 rounded-2xl backdrop-blur-sm lg:backdrop-blur-xl border border-white/30 flex flex-col group"
+                  className="p-3 lg:p-6 rounded-2xl lg:backdrop-blur-xl border border-white/30 flex flex-col group"
                   style={{
                     background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
                     boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
@@ -1177,8 +1176,8 @@ function WebDevBentoSection() {
           </motion.p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div className="lg:col-span-5"><UIDesignCard /></div>
           <div className="lg:col-span-4"><BackendCard /></div>
+          <div className="lg:col-span-5"><UIDesignCard /></div>
           <div className="lg:col-span-3"><PerformanceCard /></div>
           <div className="lg:col-span-5"><SEOCard /></div>
           <div className="lg:col-span-7"><AnalyticsCard /></div>
@@ -1209,7 +1208,7 @@ function WebDevDetailSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12 lg:gap-16 items-start">
           {/* Left — dot grid with workflow cards */}
-          <div className="relative h-[520px] lg:h-[700px] rounded-2xl overflow-hidden order-last lg:order-first" style={{ backgroundColor: '#fafafa', boxShadow: '0 20px 60px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.03)' }}>
+          <div className="relative h-[1150px] lg:h-[700px] rounded-2xl overflow-hidden order-last lg:order-first" style={{ backgroundColor: '#fafafa', boxShadow: '0 20px 60px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.03)' }}>
             <div className="absolute inset-0" style={{ maskImage: 'radial-gradient(ellipse 70% 60% at center, black 40%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at center, black 40%, transparent 100%)' }}>
               <DotGrid />
             </div>
@@ -1347,7 +1346,6 @@ export default function HeroExperiment() {
       `}</style>
       <Hero />
       <ChatbotSection />
-      <WebDevBentoSection />
       <WebDevDetailSection />
       <FAQSection />
     </div>
