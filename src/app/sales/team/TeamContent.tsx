@@ -52,13 +52,15 @@ function StatCard({ label, value, sublabel, highlight = false }: { label: string
 export function TeamContent({ supervisorName }: { supervisorName: string }) {
   const [period, setPeriod] = useState('month');
   const [data, setData] = useState<TeamData | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     setData(null);
+    setError('');
     fetch(`/api/sales/team?period=${period}`)
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
       .then(setData)
-      .catch(() => {});
+      .catch(() => setError('Failed to load team data'));
   }, [period]);
 
   return (
@@ -88,7 +90,9 @@ export function TeamContent({ supervisorName }: { supervisorName: string }) {
         ))}
       </div>
 
-      {!data ? (
+      {error ? (
+        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">{error}</div>
+      ) : !data ? (
         <div className="p-8 text-center text-sm text-gray-500">Loading...</div>
       ) : (
         <>

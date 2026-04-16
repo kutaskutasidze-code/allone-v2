@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: `Analytics failed: ${msg}` }, { status: 500 });
+    console.error('Analytics error:', err);
+    return NextResponse.json({ error: 'Analytics failed' }, { status: 500 });
   }
 }

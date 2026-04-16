@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { createClient as createServiceClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { createLeadSchema } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
-
-function getAdminClient() {
-  return createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +21,7 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     // Use service role to bypass RLS
-    const admin = getAdminClient();
+    const admin = createAdminClient();
     let query = admin
       .from('leads')
       .select(`
@@ -66,9 +60,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch leads' }, { status: 500 });
     }
 
+    const total = count || 0;
     return NextResponse.json({
       data: leads,
-      meta: { total: count || 0, page, limit },
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     });
   } catch (error) {
     logger.error('Leads API error', { error: String(error) });
@@ -85,23 +80,29 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const admin = getAdminClient();
+    const parsed = createLeadSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid data', details: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const v = parsed.data;
+    const admin = createAdminClient();
 
     const { data, error } = await admin
       .from('leads')
       .insert({
-        name: body.name,
-        email: body.email || null,
-        phone: body.phone || null,
-        company: body.company || null,
-        city: body.city || null,
-        country: body.country || 'GE',
-        website: body.website || null,
-        matched_service: body.matched_service || null,
-        notes: body.notes || null,
-        source: 'manual',
-        status: 'new',
-        value: 0,
+        name: v.name,
+        email: v.email,
+        phone: v.phone,
+        company: v.company,
+        city: v.city,
+        country: v.country,
+        website: v.website,
+        matched_service: v.matched_service,
+        notes: v.notes,
+        source: v.source || 'manual',
+        status: v.status,
+        value: v.value,
       })
       .select()
       .single();

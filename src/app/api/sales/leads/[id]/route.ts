@@ -93,17 +93,26 @@ export async function PUT(request: Request, { params }: RouteParams) {
     if (validated.source !== undefined) updateData.source = validated.source;
     if (validated.notes !== undefined) updateData.notes = validated.notes;
 
-    // Auto-assign lead to the salesperson who interacts with it
+    // Atomic auto-assign: only set sales_user_id if lead is still unassigned at write time.
+    // Uses .is('sales_user_id', null) in the WHERE clause so two concurrent claims can't both win.
+    let updateQuery = supabase.from('leads').update(updateData).eq('id', id);
     if (isUnassigned && salesUser.role === 'salesperson') {
       updateData.sales_user_id = salesUser.id;
+      updateQuery = supabase.from('leads').update(updateData).eq('id', id).is('sales_user_id', null);
     }
 
-    const { data, error: dbError } = await supabase
-      .from('leads')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
+    const { data, error: dbError } = await updateQuery.select().maybeSingle();
+
+    // If row didn't match (another user claimed it first), re-update without the assignment
+    if (!dbError && !data && isUnassigned && salesUser.role === 'salesperson') {
+      delete updateData.sales_user_id;
+      const retry = await supabase.from('leads').update(updateData).eq('id', id).select().single();
+      if (retry.error) {
+        logger.error('Failed to update lead after claim race', { error: retry.error.message, id });
+        return error('Failed to update lead');
+      }
+      return success(retry.data);
+    }
 
     if (dbError) {
       logger.error('Failed to update lead', { error: dbError.message, userId: salesUser.id, resourceId: id });

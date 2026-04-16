@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 export const leadStatusSchema = z.enum(['new', 'contacted', 'qualified', 'won', 'lost']);
 
+export const leadServiceSchema = z.enum(['chatbots', 'custom_ai', 'automation', 'website', 'consulting']);
+
 export const createLeadSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255, 'Name too long'),
   email: z.string().email('Invalid email').optional().or(z.literal('')).transform(val => val || null),
@@ -11,6 +13,10 @@ export const createLeadSchema = z.object({
   value: z.number().min(0, 'Value cannot be negative').default(0),
   source: z.string().max(100).optional().transform(val => val || null),
   notes: z.string().optional().transform(val => val || null),
+  city: z.string().max(100).optional().transform(val => val || null),
+  country: z.string().max(2).optional().transform(val => val || 'GE'),
+  website: z.string().url('Invalid URL').max(500).optional().or(z.literal('')).transform(val => val || null),
+  matched_service: leadServiceSchema.optional().or(z.literal('')).transform(val => val || null),
 });
 
 export const updateLeadSchema = z.object({

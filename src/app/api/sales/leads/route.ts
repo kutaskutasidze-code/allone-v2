@@ -46,14 +46,17 @@ export async function GET(request: Request) {
     }
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,company.ilike.%${search}%`);
+      const sanitized = search.replace(/[%_,()]/g, '').slice(0, 100);
+      if (sanitized.length > 0) {
+        query = query.or(`name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company.ilike.%${sanitized}%`);
+      }
     }
 
     const { data, error: dbError, count } = await query.range(offset, offset + limit - 1);
 
     if (dbError) {
       logger.error('Failed to fetch leads', { error: dbError.message, userId: salesUser.id });
-      return error(`Failed to fetch leads: ${dbError.message}`);
+      return error('Failed to fetch leads');
     }
 
     return successWithPagination(data || [], createPaginationMeta(page, limit, count));

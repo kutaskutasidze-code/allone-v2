@@ -16,18 +16,30 @@ interface CommissionData {
 
 export function CommissionWidget() {
   const [periods, setPeriods] = useState<{ month: CommissionData; all: CommissionData } | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/sales/commissions?period=month').then(r => r.json()),
-      fetch('/api/sales/commissions?period=all').then(r => r.json()),
+      fetch('/api/sales/commissions?period=month').then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))),
+      fetch('/api/sales/commissions?period=all').then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))),
     ])
       .then(([month, all]) => {
-        if (month?.wonCount === undefined || all?.wonCount === undefined) return;
+        if (month?.wonCount === undefined || all?.wonCount === undefined) {
+          setError('Invalid commission data received');
+          return;
+        }
         setPeriods({ month, all });
       })
-      .catch(() => {});
+      .catch(() => setError('Failed to load commission data'));
   }, []);
+
+  if (error) {
+    return (
+      <div className="p-5 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        {error}
+      </div>
+    );
+  }
 
   if (!periods) {
     return (

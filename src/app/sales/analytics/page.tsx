@@ -81,7 +81,7 @@ export default function AnalyticsPage() {
   useEffect(() => {
     setIsLoading(true);
     fetch(`/api/sales/analytics?days=${days}`)
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
       .then(result => { setData(result.data); setError(''); })
       .catch(() => setError('Failed to load analytics'))
       .finally(() => setIsLoading(false));

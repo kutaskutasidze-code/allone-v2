@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES } from '@/lib/validations/leads';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -125,13 +126,15 @@ function LeadsPageContent() {
   const [error, setError] = useState('');
   const limit = 50;
 
+  const debouncedSearch = useDebounce(search, 350);
+
   const fetchLeads = useCallback(async () => {
     try {
       setIsLoading(true);
       const params = new URLSearchParams();
       if (statusFilter !== 'all') params.set('status', statusFilter);
       if (serviceFilter !== 'all') params.set('service', serviceFilter);
-      if (search) params.set('search', search);
+      if (debouncedSearch) params.set('search', debouncedSearch);
       if (salesUserIdFilter) params.set('sales_user_id', salesUserIdFilter);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
@@ -146,7 +149,7 @@ function LeadsPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, serviceFilter, search, page, salesUserIdFilter]);
+  }, [statusFilter, serviceFilter, debouncedSearch, page, salesUserIdFilter]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 

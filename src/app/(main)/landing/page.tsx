@@ -40,8 +40,8 @@ function AnimatedLine({ text, scrollYProgress, delay, exitRange }: { text: strin
 }
 
 function AnimatedWord({ word, scrollYProgress, delay, exitRange, accent }: { word: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number]; accent?: boolean }) {
-  const wordOpacity = useTransform(scrollYProgress, [0.20 + delay, 0.26 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
-  const wordY = useTransform(scrollYProgress, [0.20 + delay, 0.26 + delay], [120, 0]);
+  const wordOpacity = useTransform(scrollYProgress, [0.45 + delay, 0.52 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
+  const wordY = useTransform(scrollYProgress, [0.45 + delay, 0.52 + delay], [120, 0]);
   return (
     <motion.span
       className="font-instrument text-[clamp(22px,6vw,72px)] font-medium tracking-[-0.02em] leading-none inline-block mr-[0.25em]"
@@ -307,8 +307,8 @@ function Hero() {
   // Services section — scrolls up from below and stays
   const servicesY = useTransform(scrollYProgress, [0.18, 0.33], [dims.vh, 0]);
 
-  // Fade out mesh gradient as hero section ends (chatbot section covers with bg-white)
-  const bgOpacity = useTransform(scrollYProgress, [0.85, 1], [1, 0]);
+  // Keep gradient visible, fade at end as chatbot section takes over
+  const bgOpacity = useTransform(scrollYProgress, [0.92, 0.98], [1, 0]);
 
   return (
     <div ref={sectionRef} className="relative" style={{ height: isMobile ? '160vh' : '160vh' }}>
@@ -567,17 +567,17 @@ function ChatbotSection() {
   const isMobile = dims.vw < 1024;
 
   // Desktop: left/right split
-  const cardContainerY = useTransform(scrollYProgress, [0.15, 0.3], [0, -dims.vh]);
-  const cardContainerOpacity = useTransform(scrollYProgress, [0.2, 0.28], [1, 0]);
+  const cardContainerY = useTransform(scrollYProgress, [0.35, 0.5], [0, -dims.vh]);
+  const cardContainerOpacity = useTransform(scrollYProgress, [0.4, 0.48], [1, 0]);
 
   // Title moves up + shrinks
-  const titleY = useTransform(scrollYProgress, isMobile ? [0.30, 0.40] : [0.35, 0.45], [0, -(dims.vh * 0.3)]);
-  const titleScale2 = useTransform(scrollYProgress, isMobile ? [0.30, 0.40] : [0.35, 0.45], [1, 0.85]);
+  const titleY = useTransform(scrollYProgress, isMobile ? [0.55, 0.65] : [0.6, 0.7], [0, -(dims.vh * 0.3)]);
+  const titleScale2 = useTransform(scrollYProgress, isMobile ? [0.55, 0.65] : [0.6, 0.7], [1, 0.85]);
 
   // Glassy text frame — stays visible while elements collapse behind it
-  const frameOpacity = useTransform(scrollYProgress, isMobile ? [0.35, 0.42, 0.80, 0.88] : [0.42, 0.5, 0.85, 0.92], [0, 1, 1, 0]);
-  const frameY2 = useTransform(scrollYProgress, isMobile ? [0.35, 0.42, 0.80, 0.88] : [0.42, 0.5, 0.85, 0.92], [40, 0, 0, -30]);
-  const frameScale = useTransform(scrollYProgress, isMobile ? [0.80, 0.88] : [0.85, 0.92], [1, 0.9]);
+  const frameOpacity = useTransform(scrollYProgress, isMobile ? [0.6, 0.67, 0.88, 0.94] : [0.67, 0.75, 0.9, 0.96], [0, 1, 1, 0]);
+  const frameY2 = useTransform(scrollYProgress, isMobile ? [0.6, 0.67, 0.88, 0.94] : [0.67, 0.75, 0.9, 0.96], [40, 0, 0, -30]);
+  const frameScale = useTransform(scrollYProgress, isMobile ? [0.88, 0.94] : [0.9, 0.96], [1, 0.9]);
 
 
 
@@ -596,10 +596,10 @@ function ChatbotSection() {
             >
               <div className="flex items-center justify-center gap-[0.5em] flex-wrap px-4">
                 {(() => { const d = isMobile ? 0.04 : 0; return (<>
-                  <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={d} exitRange={[0.75, 0.82]} />
-                  <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={d + 0.03} exitRange={[0.75, 0.82]} />
-                  <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={d + 0.06} exitRange={[0.75, 0.82]} />
-                  <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={d + 0.09} exitRange={[0.75, 0.82]} accent />
+                  <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={d} exitRange={[0.95, 1]} />
+                  <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={d + 0.03} exitRange={[0.95, 1]} />
+                  <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={d + 0.06} exitRange={[0.95, 1]} />
+                  <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={d + 0.09} exitRange={[0.95, 1]} accent />
                 </>); })()}
               </div>
             </motion.div>
@@ -1219,7 +1219,7 @@ function WebDevDetailSection() {
 
           {/* Right — chatbot-style text */}
           <div>
-            <h2 className="font-instrument text-[40px] lg:text-[56px] font-medium text-black leading-[1.1] tracking-[-0.02em] mb-6">
+            <h2 className="font-instrument text-[32px] lg:text-[56px] font-medium text-black leading-[1.1] tracking-[-0.02em] mb-6">
               {t('landing.workflow.heading').split(' ').map((word, i) => (
                 <motion.span
                   key={i}

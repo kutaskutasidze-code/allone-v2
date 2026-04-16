@@ -345,6 +345,7 @@ export interface Database {
           email_opened_at: string | null;
           email_replied_at: string | null;
           is_scraped: boolean;
+          won_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -379,6 +380,7 @@ export interface Database {
           email_opened_at?: string | null;
           email_replied_at?: string | null;
           is_scraped?: boolean;
+          won_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -413,6 +415,7 @@ export interface Database {
           email_opened_at?: string | null;
           email_replied_at?: string | null;
           is_scraped?: boolean;
+          won_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

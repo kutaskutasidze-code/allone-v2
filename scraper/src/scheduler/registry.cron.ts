@@ -142,9 +142,9 @@ async function runRegistryCron() {
         break;
       }
 
-      // Clean company name: remove შპს/სს prefix for better Google search
+      // Clean company name for Google search
       let searchName = company.name;
-      searchName = searchName.replace(/^შპს\s+/i, '').replace(/^სს\s+/i, '');
+      searchName = searchName.replace(/^შპს\s*/i, '').replace(/^სს\s*/i, '').replace(/^ი\/მ\s*/i, '');
 
       const place = await lookupOnGooglePlaces(searchName);
       googleLookups++;
@@ -156,16 +156,31 @@ async function runRegistryCron() {
       if (!place?.websiteUri) tags.push('no_website');
       if (!place?.rating) tags.push('new_business');
 
+      // Build source URL from registration number
+      const sourceUrl = company.registrationNumber
+        ? `https://enreg.reestri.gov.ge/main.php?m=new_index&s=find_legal_person&reg_code=${company.registrationNumber}`
+        : (place?.googleMapsUri || undefined);
+
+      // Use Google Places name if found (usually better formatted), fall back to registry name
+      const displayName = place?.displayName?.text || company.name;
+
+      // Only insert if Google Places found a match with phone
+      // Individual names without a Google business listing are not useful leads
+      if (!place || !phone) {
+        logger.debug(`Registry: no Google match for "${company.name}", skipping`);
+        continue;
+      }
+
       const lead: LeadData = {
-        name: company.name,
+        name: displayName,
         company: company.name,
-        phone: phone || undefined,
-        website: place?.websiteUri || undefined,
-        address: place?.formattedAddress || undefined,
+        phone,
+        website: place.websiteUri || undefined,
+        address: place.formattedAddress || undefined,
         city: 'Tbilisi',
         country: 'GE',
-        source_url: place?.googleMapsUri || undefined,
-        matched_service: !place?.websiteUri ? 'website' : undefined,
+        source_url: sourceUrl,
+        matched_service: !place.websiteUri ? 'website' : undefined,
         tags,
         description: `Registered: ${company.registrationDate}. Reg#: ${company.registrationNumber}`,
         is_scraped: true,
