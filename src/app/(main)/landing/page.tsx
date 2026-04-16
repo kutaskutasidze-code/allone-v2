@@ -307,8 +307,8 @@ function Hero() {
   // Services section — scrolls up from below and stays
   const servicesY = useTransform(scrollYProgress, [0.18, 0.33], [dims.vh, 0]);
 
-  // Keep gradient visible, fade at end as chatbot section takes over
-  const bgOpacity = useTransform(scrollYProgress, [0.92, 0.98], [1, 0]);
+  // Keep gradient fully visible through hero, fade only at the very end when chatbot section covers
+  const bgOpacity = useTransform(scrollYProgress, [0.97, 1], [1, 0]);
 
   return (
     <div ref={sectionRef} className="relative" style={{ height: isMobile ? '160vh' : '160vh' }}>
@@ -566,77 +566,15 @@ function ChatbotSection() {
 
   const isMobile = dims.vw < 1024;
 
-  // Desktop: left/right split
-  const cardContainerY = useTransform(scrollYProgress, [0.35, 0.5], [0, -dims.vh]);
-  const cardContainerOpacity = useTransform(scrollYProgress, [0.4, 0.48], [1, 0]);
-
-  // Title moves up + shrinks
-  const titleY = useTransform(scrollYProgress, isMobile ? [0.55, 0.65] : [0.6, 0.7], [0, -(dims.vh * 0.3)]);
-  const titleScale2 = useTransform(scrollYProgress, isMobile ? [0.55, 0.65] : [0.6, 0.7], [1, 0.85]);
-
-  // Glassy text frame — stays visible while elements collapse behind it
-  const frameOpacity = useTransform(scrollYProgress, isMobile ? [0.6, 0.67, 0.88, 0.94] : [0.67, 0.75, 0.9, 0.96], [0, 1, 1, 0]);
-  const frameY2 = useTransform(scrollYProgress, isMobile ? [0.6, 0.67, 0.88, 0.94] : [0.67, 0.75, 0.9, 0.96], [40, 0, 0, -30]);
-  const frameScale = useTransform(scrollYProgress, isMobile ? [0.88, 0.94] : [0.9, 0.96], [1, 0.9]);
+  const cardContainerY = useTransform(scrollYProgress, [0.5, 0.9], [0, -dims.vh * 0.3]);
+  const cardContainerOpacity = useTransform(scrollYProgress, [0.7, 0.95], [1, 0]);
 
 
 
   return (
     <div id="services" ref={sectionRef} className="relative z-10 bg-white -mt-8">
-      <div className="relative" style={{ height: isMobile ? '250vh' : '400vh' }}>
+      <div className="relative" style={{ height: isMobile ? '150vh' : '180vh' }}>
         <div className="sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden">
-          {/* "Your Vision, Deployed." reveal — each word staggers in */}
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center z-0"
-            style={{ y: titleY }}
-          >
-            <motion.div
-              className="flex flex-col items-center"
-              style={{ scale: titleScale2 }}
-            >
-              <div className="flex items-center justify-center gap-[0.5em] flex-wrap px-4">
-                {(() => { const d = isMobile ? 0.04 : 0; return (<>
-                  <AnimatedWord word="Websites" scrollYProgress={scrollYProgress} delay={d} exitRange={[0.95, 1]} />
-                  <AnimatedWord word="Engineered" scrollYProgress={scrollYProgress} delay={d + 0.03} exitRange={[0.95, 1]} />
-                  <AnimatedWord word="to" scrollYProgress={scrollYProgress} delay={d + 0.06} exitRange={[0.95, 1]} />
-                  <AnimatedWord word="Perform." scrollYProgress={scrollYProgress} delay={d + 0.09} exitRange={[0.95, 1]} accent />
-                </>); })()}
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Glassy text frame — appears first, fades before folder */}
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center z-[5] pointer-events-none"
-            style={{ opacity: frameOpacity, y: frameY2, scale: frameScale }}
-          >
-            <div
-              className="max-w-[600px] w-full mx-6 p-8 rounded-2xl backdrop-blur-xl border border-white/30 relative"
-              style={{
-                background: 'linear-gradient(160deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 40px rgba(0,0,0,0.04)',
-                marginTop: dims.vh * 0.15,
-              }}
-            >
-              <div className="absolute -inset-6 -z-10 rounded-full bg-[#0ea5e9]/15 blur-[40px]" />
-              <p className="text-center text-[15px] text-[#071D2F] leading-relaxed mb-6">
-                {t('landing.webdev.frame.desc')}
-              </p>
-              <div className="flex justify-center gap-6 text-[12px] text-[#4D4D4D]/80 font-mono">
-                <span>{t('landing.webdev.tag1')}</span>
-                <span className="text-[#0ea5e9]/30">|</span>
-                <span>{t('landing.webdev.tag2')}</span>
-                <span className="text-[#0ea5e9]/30">|</span>
-                <span>{t('landing.webdev.tag3')}</span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Floating UI elements — behind the textbox (lower z) */}
-          <div className="absolute inset-0 z-[3] flex items-center justify-center" style={{ pointerEvents: 'none' }}>
-            <WebDevFloatingElements scrollYProgress={scrollYProgress} entryDelay={0.14} />
-          </div>
-
           <motion.div
             className="relative z-10 max-w-7xl mx-auto px-6"
             style={{ opacity: cardContainerOpacity, y: cardContainerY }}
@@ -1200,6 +1138,22 @@ function DotGrid() {
   );
 }
 
+function WebDevMobileHeading() {
+  const { t } = useI18n();
+  return (
+    <section className="lg:hidden bg-white py-12 px-6">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="font-instrument text-[32px] font-medium text-black leading-[1.1] tracking-[-0.02em]">
+          {t('landing.webdev.heading.l1')} {t('landing.webdev.heading.l2')} {t('landing.webdev.heading.l3')} <span style={{ color: '#87CEEB' }}>{t('landing.webdev.heading.l4')}</span>
+        </h2>
+        <p className="mt-4 text-[16px] text-gray-500 leading-[1.6]">
+          {t('landing.webdev.frame.desc')}
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function WebDevDetailSection() {
   const { t } = useI18n();
 
@@ -1346,6 +1300,7 @@ export default function HeroExperiment() {
       `}</style>
       <Hero />
       <ChatbotSection />
+      <WebDevMobileHeading />
       <WebDevDetailSection />
       <FAQSection />
     </div>
