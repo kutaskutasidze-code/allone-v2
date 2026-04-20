@@ -9,6 +9,8 @@ const STATUS_STYLES: Record<LeadStatus, string> = {
   qualified: 'bg-purple-100 text-purple-700',
   won: 'bg-green-100 text-green-700',
   lost: 'bg-gray-100 text-gray-500',
+  not_interested: 'bg-red-100 text-red-700',
+  unavailable: 'bg-orange-100 text-orange-700',
 };
 
 const STATUS_LABELS: Record<LeadStatus, string> = {
@@ -17,6 +19,8 @@ const STATUS_LABELS: Record<LeadStatus, string> = {
   qualified: 'Qualified',
   won: 'Won',
   lost: 'Lost',
+  not_interested: 'Not Interested',
+  unavailable: 'Unavailable',
 };
 
 interface LeadStatusBadgeProps {

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const leadStatusSchema = z.enum(['new', 'contacted', 'qualified', 'won', 'lost']);
+export const leadStatusSchema = z.enum(['new', 'contacted', 'qualified', 'won', 'lost', 'not_interested', 'unavailable']);
 
 export const leadServiceSchema = z.enum(['chatbots', 'custom_ai', 'automation', 'website', 'consulting']);
 
@@ -39,6 +39,8 @@ export const LEAD_STATUSES = [
   { value: 'qualified', label: 'Qualified' },
   { value: 'won', label: 'Won' },
   { value: 'lost', label: 'Lost' },
+  { value: 'not_interested', label: 'Not Interested' },
+  { value: 'unavailable', label: 'Unavailable' },
 ] as const;
 
 export const LEAD_SERVICES = [
@@ -65,6 +67,8 @@ export const LEAD_STATUS_STYLES: Record<string, string> = {
   qualified: 'bg-purple-100 text-purple-700',
   won: 'bg-green-100 text-green-700',
   lost: 'bg-gray-100 text-gray-500',
+  not_interested: 'bg-red-100 text-red-700',
+  unavailable: 'bg-orange-100 text-orange-700',
 };
 
 export const LEAD_STATUS_LABELS: Record<string, string> = {
@@ -73,4 +77,6 @@ export const LEAD_STATUS_LABELS: Record<string, string> = {
   qualified: 'Qualified',
   won: 'Won',
   lost: 'Lost',
+  not_interested: 'Not Interested',
+  unavailable: 'Unavailable',
 };

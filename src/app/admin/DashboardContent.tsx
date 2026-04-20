@@ -45,6 +45,8 @@ interface DashboardContentProps {
       qualified: number;
       won: number;
       lost: number;
+      not_interested: number;
+      unavailable: number;
       totalValue: number;
     };
   };
@@ -375,7 +377,7 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
 
           {/* Lead Status Summary */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mb-4">
-            {(['new', 'contacted', 'qualified', 'won', 'lost'] as const).map((status) => (
+            {(['new', 'contacted', 'qualified', 'won', 'lost', 'not_interested', 'unavailable'] as const).map((status) => (
               <div
                 key={status}
                 className="p-3 bg-white border border-gray-100 rounded-lg text-center shadow-sm shadow-black/[0.02]"

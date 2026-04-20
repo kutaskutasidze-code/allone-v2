@@ -120,6 +120,8 @@ async function getLeadsData() {
     qualified: 0,
     won: 0,
     lost: 0,
+    not_interested: 0,
+    unavailable: 0,
     totalValue: 0,
   };
 

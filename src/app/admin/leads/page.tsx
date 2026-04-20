@@ -235,7 +235,7 @@ function AdminLeadsPageContent() {
   // Fetch status counts separately (always unfiltered)
   const fetchStatusCounts = useCallback(async () => {
     try {
-      const statuses = ['new', 'contacted', 'qualified', 'won', 'lost'];
+      const statuses = ['new', 'contacted', 'qualified', 'won', 'lost', 'not_interested', 'unavailable'];
       const [allRes, ...statusResults] = await Promise.all([
         fetch('/api/admin/leads?limit=1').then(r => r.ok ? r.json() : null),
         ...statuses.map(s => fetch(`/api/admin/leads?status=${s}&limit=1`).then(r => r.ok ? r.json() : null)),
