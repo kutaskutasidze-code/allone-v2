@@ -341,13 +341,14 @@ function Hero() {
         />
       </motion.div>
 
-      {/* Mobile hero card with blue gradient */}
+      {/* Mobile — single blue gradient card with hero + chatbot content */}
       {mobile && (
         <div className="relative mx-4 mt-16 rounded-2xl overflow-hidden" style={{
           background: 'linear-gradient(160deg, rgba(70,190,248,0.5) 0%, rgba(40,160,235,0.45) 25%, rgba(85,200,250,0.4) 50%, rgba(180,220,250,0.35) 75%, rgba(220,240,255,0.3) 100%)',
           boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.3), 0 8px 32px rgba(40,160,235,0.1)',
         }}>
-          <div className="flex flex-col items-center justify-center text-center gap-6 px-6 py-24">
+          {/* Hero */}
+          <div className="flex flex-col items-center justify-center text-center gap-6 px-6 pt-24 pb-16">
             <h1 className="font-instrument text-[26px] font-medium leading-[1.1] tracking-[-0.047em] text-[#071D2F]">
               <TypeWriter text={headline1} delay={0.3} />
               <TypeWriter text={headline2} delay={0.3 + headline1.length * 0.08 + 0.3} />
@@ -366,6 +367,28 @@ function Hero() {
                 {t('landing.hero.cta2')}
               </Link>
             </motion.div>
+          </div>
+
+          {/* Divider */}
+          <div className="mx-6 border-t border-white/30" />
+
+          {/* Chatbot */}
+          <div className="px-5 py-16 text-center">
+            <h2 className="font-instrument text-[28px] font-medium leading-[1.1] tracking-[-0.02em] text-[#071D2F] mb-4">
+              {t('landing.chatbot.h.1')} {t('landing.chatbot.h.2')}<br />
+              <span style={{ color: '#0369a1' }}>{t('landing.chatbot.h.3')}</span><br />
+              {t('landing.chatbot.h.4')} <span style={{ color: '#0369a1' }}>{t('landing.chatbot.h.5')}</span>
+            </h2>
+            <p className="text-[15px] text-[#4D4D4D] leading-[1.6] max-w-sm mx-auto mb-6">
+              {t('landing.chatbot.desc')}
+            </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center h-9 px-4 text-[13px] font-medium text-white rounded-md hover:opacity-90 transition-opacity duration-150"
+              style={{ backgroundColor: '#0369a1' }}
+            >
+              {t('landing.chatbot.cta')}
+            </Link>
           </div>
         </div>
       )}
@@ -651,32 +674,6 @@ function ChatbotSection() {
 
   return (
     <div id="services" ref={sectionRef} className="relative z-10 bg-white -mt-8">
-      {/* Mobile blue gradient section */}
-      {mobile && (
-        <div className="relative overflow-hidden rounded-2xl mx-4 mt-6" style={{
-          background: 'linear-gradient(160deg, rgba(70,190,248,0.5) 0%, rgba(40,160,235,0.45) 25%, rgba(85,200,250,0.4) 50%, rgba(180,220,250,0.35) 75%, rgba(220,240,255,0.3) 100%)',
-          boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.3), 0 8px 32px rgba(40,160,235,0.1)',
-        }}>
-          <div className="px-5 py-16 text-center">
-            <h1 className="font-instrument text-[32px] font-medium leading-[1.1] tracking-[-0.02em] text-[#071D2F] mb-4">
-              {t('landing.chatbot.h.1')} {t('landing.chatbot.h.2')}<br />
-              <span style={{ color: '#0369a1' }}>{t('landing.chatbot.h.3')}</span><br />
-              {t('landing.chatbot.h.4')} <span style={{ color: '#0369a1' }}>{t('landing.chatbot.h.5')}</span>
-            </h1>
-            <p className="text-[15px] text-[#4D4D4D] leading-[1.6] max-w-sm mx-auto mb-6">
-              {t('landing.chatbot.desc')}
-            </p>
-            <Link
-              href="/contact"
-              className="inline-flex items-center h-9 px-4 text-[13px] font-medium text-white rounded-md hover:opacity-90 transition-opacity duration-150"
-              style={{ backgroundColor: '#0369a1' }}
-            >
-              {t('landing.chatbot.cta')}
-            </Link>
-          </div>
-        </div>
-      )}
-
       <div className={mobile ? 'hidden' : 'relative'} style={{ height: isMobile ? '150vh' : '180vh' }}>
         <div className="sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden">
           <motion.div
