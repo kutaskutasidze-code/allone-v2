@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { MacBookFrame } from './MacBookFrame';
 import { HeroPreview } from './HeroPreview';
 import { useI18n } from '@/lib/i18n';
@@ -11,13 +11,25 @@ const techStack: { name: string; color: string }[] = [];
 export function WebDevShowcase() {
   const { t } = useI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
 
-  const entryY = useTransform(scrollYProgress, [0.1, 0.3], [60, 0]);
-  const entryOpacity = useTransform(scrollYProgress, [0.1, 0.22], [0, 1]);
+  const entryY_animated = useTransform(scrollYProgress, [0.1, 0.3], [60, 0]);
+  const entryOpacity_animated = useTransform(scrollYProgress, [0.1, 0.22], [0, 1]);
+
+  const entryY = isMobile ? 0 : entryY_animated;
+  const entryOpacity = isMobile ? 1 : entryOpacity_animated;
 
   return (
     <section id="web-development" ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">

@@ -2,17 +2,29 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Container } from '@/components/layout';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export function ProjectsHero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const y_animated = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const opacity_animated = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  const y = isMobile ? 0 : y_animated;
+  const opacity = isMobile ? 1 : opacity_animated;
 
   return (
     <section ref={sectionRef} className="pt-28 pb-16 lg:pt-36 lg:pb-20 relative overflow-hidden">

@@ -113,9 +113,6 @@ function TypeWriter({ text, delay = 0 }: { text: string; delay?: number }) {
 }
 
 function MeshGradient() {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
-  if (isMobile) return null;
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -185,7 +182,7 @@ function MeshGradient() {
       if (!isVisible) return;
       const w = curW;
       const h = curH;
-      if (w === 0 || h === 0) { if (!isMobile) animId = requestAnimationFrame(draw); return; }
+      if (w === 0 || h === 0) { animId = requestAnimationFrame(draw); return; }
       const now = performance.now();
       const dt = Math.min(now - lastFrame, 50) / 1000; // cap at 50ms to avoid jumps
       lastFrame = now;
@@ -260,18 +257,10 @@ function MeshGradient() {
         ctx.fillRect(0, 0, w, h);
       }
 
-      if (!isMobile) {
-        animId = requestAnimationFrame(draw);
-      }
+      if (!isMobile) animId = requestAnimationFrame(draw);
     };
 
-    if (!isMobile) {
-      animId = requestAnimationFrame(draw);
-    } else {
-      // Mobile: render static gradient once
-      resize();
-      draw();
-    }
+    animId = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
@@ -305,33 +294,36 @@ function Hero() {
   const mxStart = (dims.vw - startW) / 2;
   const myStart = (dims.vh - startH) / 2;
   // Card expands → full screen (stays until next section covers it)
-  const marginX = useTransform(scrollYProgress, [0, 0.1], [mxStart, -2]);
-  const marginTop = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
-  const marginBottom = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
-  const bgRadius = useTransform(scrollYProgress, [0, 0.1], [16, 0]);
-  const borderOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+  const marginX_animated = useTransform(scrollYProgress, [0, 0.1], [mxStart, -2]);
+  const marginTop_animated = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
+  const marginBottom_animated = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
+  const bgRadius_animated = useTransform(scrollYProgress, [0, 0.1], [16, 0]);
+  const borderOpacity_animated = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
 
   // Hero text: moves up and fades
-  const textY = useTransform(scrollYProgress, [0, 0.12], [0, -120]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.08, 0.1, 1], [1, 0, 0, 0]);
+  const textY_animated = useTransform(scrollYProgress, [0, 0.12], [0, -120]);
+  const textOpacity_animated = useTransform(scrollYProgress, [0, 0.08, 0.1, 1], [1, 0, 0, 0]);
 
   // Services section — scrolls up from below and stays
-  const servicesY = useTransform(scrollYProgress, [0.18, 0.33], [dims.vh, 0]);
+  const servicesY_animated = useTransform(scrollYProgress, [0.18, 0.33], [dims.vh, 0]);
 
   // Keep gradient fully visible through hero, fade only at the very end when chatbot section covers
-  const bgOpacity = useTransform(scrollYProgress, [0.97, 1], [1, 0]);
+  const bgOpacity_animated = useTransform(scrollYProgress, [0.97, 1], [1, 0]);
+
+  // On mobile, use static values; on desktop, use animated values
+  const marginX = isMobile ? mxStart : marginX_animated;
+  const marginTop = isMobile ? myStart : marginTop_animated;
+  const marginBottom = isMobile ? myStart : marginBottom_animated;
+  const bgRadius = isMobile ? 16 : bgRadius_animated;
+  const borderOpacity = isMobile ? 1 : borderOpacity_animated;
+  const textY = isMobile ? 0 : textY_animated;
+  const textOpacity = isMobile ? 1 : textOpacity_animated;
+  const servicesY = isMobile ? dims.vh : servicesY_animated;
+  const bgOpacity = isMobile ? 1 : bgOpacity_animated;
 
   return (
     <div ref={sectionRef} className="relative" style={{ height: isMobile ? '160vh' : '160vh' }}>
       {/* Background layer — fixed to viewport, expands from card to full screen */}
-      {isMobile ? (
-        <div
-          className="fixed inset-0 z-0 pointer-events-none"
-          style={{
-            background: 'linear-gradient(135deg, #87CEEB 0%, #4A90E2 50%, #2563EB 100%)',
-          }}
-        />
-      ) : (
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
         style={{
@@ -349,18 +341,13 @@ function Hero() {
         {/* Premium border overlay */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
-          style={isMobile ? {
-            opacity: 0,
-            borderRadius: 16,
-            boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.4)',
-          } : {
+          style={{
             opacity: borderOpacity,
             borderRadius: bgRadius,
             boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.4)',
           }}
         />
       </motion.div>
-      )}
 
       <div className="sticky top-0 h-screen">
         {/* Hero text layer */}
