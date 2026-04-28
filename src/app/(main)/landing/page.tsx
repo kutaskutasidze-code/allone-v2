@@ -257,10 +257,18 @@ function MeshGradient() {
         ctx.fillRect(0, 0, w, h);
       }
 
-      if (!isMobile) animId = requestAnimationFrame(draw);
+      if (!isMobile) {
+        animId = requestAnimationFrame(draw);
+      }
     };
 
-    animId = requestAnimationFrame(draw);
+    if (!isMobile) {
+      animId = requestAnimationFrame(draw);
+    } else {
+      // Mobile: render static gradient once
+      resize();
+      draw();
+    }
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
