@@ -319,8 +319,8 @@ function Hero() {
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
         style={mobile ? {
-          top: 0, left: 0, right: 0, bottom: 0,
-          borderRadius: 0, opacity: 1,
+          top: myStart, left: mxStart, right: mxStart, bottom: myStart,
+          borderRadius: 16, opacity: 1,
           visibility: dims.ready ? 'visible' : 'hidden',
         } : {
           top: marginTop,
@@ -337,7 +337,11 @@ function Hero() {
         {/* Premium border overlay */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
-          style={mobile ? { opacity: 0 } : {
+          style={mobile ? {
+            opacity: 1,
+            borderRadius: 16,
+            boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.4)',
+          } : {
             opacity: borderOpacity,
             borderRadius: bgRadius,
             boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.4)',
