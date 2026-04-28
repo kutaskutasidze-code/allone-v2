@@ -330,7 +330,8 @@ function Hero() {
           bottom: myStart,
           borderRadius: 16,
           opacity: 1,
-          visibility: dims.ready ? 'visible' : 'hidden',
+          width: 'auto',
+          height: 'auto',
         } : {
           top: marginTop,
           left: marginX,
