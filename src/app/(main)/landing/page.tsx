@@ -585,7 +585,7 @@ function ChatbotSection() {
 
 
   return (
-    <div id="services" ref={sectionRef} className="relative z-10 -mt-8" style={{ background: 'linear-gradient(180deg, #d4ecfb 0%, #e8f4fc 40%, #ffffff 100%)' }}>
+    <div id="services" ref={sectionRef} className="relative z-10 bg-white -mt-8">
       <div className="relative" style={{ height: mobile ? 'auto' : (isMobile ? '150vh' : '180vh') }}>
         <div className={mobile ? 'relative py-12' : 'sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden'}>
           <motion.div
