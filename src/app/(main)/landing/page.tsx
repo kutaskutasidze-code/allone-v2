@@ -317,8 +317,12 @@ function Hero() {
     <div ref={sectionRef} className="relative" style={{ height: mobile ? 'auto' : '160vh' }}>
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       <motion.div
-        className={mobile ? 'hidden' : 'fixed z-0 overflow-hidden will-change-transform pointer-events-none'}
-        style={{
+        className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
+        style={mobile ? {
+          top: 0, left: 0, right: 0, bottom: 0,
+          borderRadius: 0, opacity: 1,
+          visibility: dims.ready ? 'visible' : 'hidden',
+        } : {
           top: marginTop,
           left: marginX,
           right: marginX,
@@ -333,7 +337,7 @@ function Hero() {
         {/* Premium border overlay */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
-          style={{
+          style={mobile ? { opacity: 0 } : {
             opacity: borderOpacity,
             borderRadius: bgRadius,
             boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.4)',
@@ -341,63 +345,11 @@ function Hero() {
         />
       </motion.div>
 
-      {/* Mobile — single blue gradient card with hero + chatbot content */}
-      {mobile && (
-        <div className="relative mx-4 mt-16 rounded-2xl overflow-hidden" style={{
-          background: 'linear-gradient(160deg, rgba(70,190,248,0.5) 0%, rgba(40,160,235,0.45) 25%, rgba(85,200,250,0.4) 50%, rgba(180,220,250,0.35) 75%, rgba(220,240,255,0.3) 100%)',
-          boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.3), 0 8px 32px rgba(40,160,235,0.1)',
-        }}>
-          {/* Hero */}
-          <div className="flex flex-col items-center justify-center text-center gap-6 px-6 pt-24 pb-16">
-            <h1 className="font-instrument text-[26px] font-medium leading-[1.1] tracking-[-0.047em] text-[#071D2F]">
-              <TypeWriter text={headline1} delay={0.3} />
-              <TypeWriter text={headline2} delay={0.3 + headline1.length * 0.08 + 0.3} />
-            </h1>
-            <motion.div
-              className="flex flex-wrap items-center justify-center gap-3"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <Link href="/contact" className="flex items-center gap-1.5 h-10 px-4 text-sm font-medium text-white bg-[#0369a1] rounded-full hover:bg-[#0284c7] transition-all duration-150">
-                <Image src="/images/allone-logo-transparent.png" alt="" width={22} height={22} className="w-[18px] h-[18px]" style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(18%) saturate(531%) hue-rotate(166deg) brightness(99%) contrast(87%)' }} />
-                {t('landing.hero.cta1')}
-              </Link>
-              <Link href="/contact" className="relative flex items-center h-10 px-4 text-sm font-medium text-[#071D2F] rounded-full backdrop-blur-xl transition-all duration-200" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.25) 100%)', boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 1px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.3)' }}>
-                {t('landing.hero.cta2')}
-              </Link>
-            </motion.div>
-          </div>
-
-          {/* Divider */}
-          <div className="mx-6 border-t border-white/30" />
-
-          {/* Chatbot */}
-          <div className="px-5 py-16 text-center">
-            <h2 className="font-instrument text-[28px] font-medium leading-[1.1] tracking-[-0.02em] text-[#071D2F] mb-4">
-              {t('landing.chatbot.h.1')} {t('landing.chatbot.h.2')}<br />
-              <span style={{ color: '#0369a1' }}>{t('landing.chatbot.h.3')}</span><br />
-              {t('landing.chatbot.h.4')} <span style={{ color: '#0369a1' }}>{t('landing.chatbot.h.5')}</span>
-            </h2>
-            <p className="text-[15px] text-[#4D4D4D] leading-[1.6] max-w-sm mx-auto mb-6">
-              {t('landing.chatbot.desc')}
-            </p>
-            <Link
-              href="/contact"
-              className="inline-flex items-center h-9 px-4 text-[13px] font-medium text-white rounded-md hover:opacity-90 transition-opacity duration-150"
-              style={{ backgroundColor: '#0369a1' }}
-            >
-              {t('landing.chatbot.cta')}
-            </Link>
-          </div>
-        </div>
-      )}
-
-      <div className={mobile ? 'hidden' : 'sticky top-0 h-screen'}>
+      <div className={mobile ? '' : 'sticky top-0 h-screen'}>
         {/* Hero text layer */}
         <motion.div
-          className="absolute inset-0 flex items-center justify-center z-10"
-          style={{ y: textY, opacity: textOpacity }}
+          className={mobile ? 'relative flex items-center justify-center z-10 min-h-[70vh]' : 'absolute inset-0 flex items-center justify-center z-10'}
+          style={mobile ? { y: 0, opacity: 1 } : { y: textY, opacity: textOpacity }}
         >
           <div className="flex flex-col items-center text-center gap-8 px-4">
             <h1 className="font-instrument text-[clamp(26px,4.5vw,44px)] font-medium leading-[1.1] tracking-[-0.047em] text-[#071D2F]">
@@ -442,10 +394,10 @@ function Hero() {
         </div>
         )}
 
-        {/* Services — scrolls up from below (desktop only inside sticky) */}
+        {/* Services — scrolls up from below */}
         <motion.div
-          className="absolute left-0 right-0 top-0 z-10 flex items-start lg:items-center justify-center h-full overflow-y-auto pt-4 lg:pt-0"
-          style={{ y: servicesY }}
+          className={mobile ? 'relative z-10 pt-8' : 'absolute left-0 right-0 top-0 z-10 flex items-start lg:items-center justify-center h-full overflow-y-auto pt-4 lg:pt-0'}
+          style={mobile ? { y: 0 } : { y: servicesY }}
         >
           <div className="max-w-[1100px] mx-auto px-6 pb-8 lg:pb-0">
             <div className="text-center mb-2 lg:mb-10">
@@ -487,46 +439,6 @@ function Hero() {
         </motion.div>
 
       </div>
-
-      {/* Mobile services — rendered in normal flow */}
-      {mobile && (
-        <div className="relative z-10 pt-8 px-6 pb-8">
-          <div className="max-w-[1100px] mx-auto">
-            <div className="text-center mb-2">
-              <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-1 block">{t('landing.svc.label')}</span>
-              <h2 className="font-instrument text-[clamp(18px,4vw,48px)] font-medium tracking-[-0.02em] leading-[1.1] text-[#071D2F]">{t('landing.svc.heading')}</h2>
-            </div>
-            <div className="grid grid-cols-1 gap-2">
-              {[
-                { num: '01', title: t('landing.svc.card1.title'), desc: t('landing.svc.card1.desc'), details: [t('landing.svc.card1.d1'), t('landing.svc.card1.d2'), t('landing.svc.card1.d3')] },
-                { num: '02', title: t('landing.svc.card2.title'), desc: t('landing.svc.card2.desc'), details: [t('landing.svc.card2.d1'), t('landing.svc.card2.d2'), t('landing.svc.card2.d3')] },
-                { num: '03', title: t('landing.svc.card3.title'), desc: t('landing.svc.card3.desc'), details: [t('landing.svc.card3.d1'), t('landing.svc.card3.d2'), t('landing.svc.card3.d3')] },
-              ].map((service) => (
-                <div
-                  key={service.title}
-                  className="p-3 rounded-2xl border border-white/30 flex flex-col"
-                  style={{
-                    background: 'linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 100%)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 24px rgba(0,0,0,0.03)',
-                  }}
-                >
-                  <span className="font-mono text-[10px] text-[#0ea5e9]/60 mb-1">{service.num}</span>
-                  <h3 className="font-display text-base font-semibold text-[#071D2F] mb-0.5 tracking-[-0.03em]">{service.title}</h3>
-                  <p className="text-[12px] text-[#4D4D4D] leading-snug">{service.desc}</p>
-                  <ul className="flex flex-col gap-1 mt-2">
-                    {service.details.map((detail) => (
-                      <li key={detail} className="flex items-start gap-1.5 text-[11px] text-[#555] leading-snug">
-                        <span className="w-1 h-1 rounded-full bg-[#0ea5e9] shrink-0 mt-1" />
-                        {detail}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -673,9 +585,9 @@ function ChatbotSection() {
 
 
   return (
-    <div id="services" ref={sectionRef} className="relative z-10 bg-white -mt-8">
-      <div className={mobile ? 'hidden' : 'relative'} style={{ height: isMobile ? '150vh' : '180vh' }}>
-        <div className="sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden">
+    <div id="services" ref={sectionRef} className="relative z-10 -mt-8" style={{ background: 'linear-gradient(180deg, #d4ecfb 0%, #e8f4fc 40%, #ffffff 100%)' }}>
+      <div className="relative" style={{ height: mobile ? 'auto' : (isMobile ? '150vh' : '180vh') }}>
+        <div className={mobile ? 'relative py-12' : 'sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden'}>
           <motion.div
             className="relative z-10 max-w-7xl mx-auto px-6"
             style={mobile ? { opacity: 1, y: 0 } : { opacity: cardContainerOpacity, y: cardContainerY }}
