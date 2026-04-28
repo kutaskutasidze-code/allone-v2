@@ -326,13 +326,8 @@ function Hero() {
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       {isMobile ? (
         <div
-          className="fixed z-0 overflow-hidden pointer-events-none"
+          className="fixed inset-0 z-0 pointer-events-none"
           style={{
-            top: myStart,
-            left: mxStart,
-            right: mxStart,
-            bottom: myStart,
-            borderRadius: 16,
             background: 'linear-gradient(135deg, #87CEEB 0%, #4A90E2 50%, #2563EB 100%)',
           }}
         />
