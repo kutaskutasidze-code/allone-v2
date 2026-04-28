@@ -2,34 +2,24 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Container } from '@/components/layout';
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
+import { useIsMobile } from '@/lib/hooks/useIsMobile';
 
 export function ProjectsHero() {
+  const mobile = useIsMobile();
   const sectionRef = useRef<HTMLElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
   });
 
-  const y_animated = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const opacity_animated = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
-  const y = isMobile ? 0 : y_animated;
-  const opacity = isMobile ? 1 : opacity_animated;
+  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
     <section ref={sectionRef} className="pt-28 pb-16 lg:pt-36 lg:pb-20 relative overflow-hidden">
       <Container>
-        <motion.div className="max-w-4xl" style={{ y, opacity }}>
+        <motion.div className="max-w-4xl" style={mobile ? { y: 0, opacity: 1 } : { y, opacity }}>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

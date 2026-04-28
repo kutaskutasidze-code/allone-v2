@@ -1,35 +1,25 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 import { MacBookFrame } from './MacBookFrame';
 import { HeroPreview } from './HeroPreview';
 import { useI18n } from '@/lib/i18n';
+import { useIsMobile } from '@/lib/hooks/useIsMobile';
 
 const techStack: { name: string; color: string }[] = [];
 
 export function WebDevShowcase() {
   const { t } = useI18n();
+  const mobile = useIsMobile();
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
 
-  const entryY_animated = useTransform(scrollYProgress, [0.1, 0.3], [60, 0]);
-  const entryOpacity_animated = useTransform(scrollYProgress, [0.1, 0.22], [0, 1]);
-
-  const entryY = isMobile ? 0 : entryY_animated;
-  const entryOpacity = isMobile ? 1 : entryOpacity_animated;
+  const entryY = useTransform(scrollYProgress, [0.1, 0.3], [60, 0]);
+  const entryOpacity = useTransform(scrollYProgress, [0.1, 0.22], [0, 1]);
 
   return (
     <section id="web-development" ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
@@ -49,7 +39,7 @@ export function WebDevShowcase() {
         <div className="grid grid-cols-1 lg:grid-cols-[0.68fr_0.32fr] gap-8 lg:gap-10 items-center">
           {/* MacBook — order-2 on mobile (below text), order-1 on desktop (left) */}
           <motion.div
-            style={{
+            style={mobile ? { y: 0, opacity: 1 } : {
               y: entryY,
               opacity: entryOpacity,
             }}

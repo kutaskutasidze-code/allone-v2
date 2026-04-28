@@ -1,30 +1,20 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { EmbeddableDashboard } from '@/components/sections/dashboard/DashboardShowcase';
+import { useIsMobile } from '@/lib/hooks/useIsMobile';
 
 export function DashboardShowcase() {
+  const mobile = useIsMobile();
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
 
-  const dashY_animated = useTransform(scrollYProgress, [0.1, 0.35], [60, 0]);
-  const dashOpacity_animated = useTransform(scrollYProgress, [0.1, 0.25], [0, 1]);
-
-  const dashY = isMobile ? 0 : dashY_animated;
-  const dashOpacity = isMobile ? 1 : dashOpacity_animated;
+  const dashY = useTransform(scrollYProgress, [0.1, 0.35], [60, 0]);
+  const dashOpacity = useTransform(scrollYProgress, [0.1, 0.25], [0, 1]);
 
   return (
     <section id="automation" ref={sectionRef} className="relative py-24 lg:py-32 overflow-x-clip">
@@ -63,7 +53,7 @@ export function DashboardShowcase() {
 
           {/* Right — Dashboard zoomed in, overflowing right */}
           <motion.div
-            style={{
+            style={mobile ? { y: 0, opacity: 1 } : {
               y: dashY,
               opacity: dashOpacity,
             }}

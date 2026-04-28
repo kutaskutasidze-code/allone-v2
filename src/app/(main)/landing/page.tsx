@@ -10,6 +10,7 @@ import { WebDevFloatingElements } from './WebDevFloatingElements';
 import { WorkflowVisualV2 } from './WorkflowVisualV2';
 import { FAQSchema } from '@/components/seo';
 import { ContactForm } from '@/components/forms/ContactForm';
+import { useIsMobile } from '@/lib/hooks/useIsMobile';
 
 function useViewportDims() {
   const [dims, setDims] = useState({ vw: 1200, vh: 800, ready: false });
@@ -27,12 +28,13 @@ function useViewportDims() {
 }
 
 function AnimatedLine({ text, scrollYProgress, delay, exitRange }: { text: string; scrollYProgress: MotionValue<number>; delay: number; exitRange: [number, number] }) {
+  const mobile = useIsMobile();
   const lineOpacity = useTransform(scrollYProgress, [0.05 + delay, 0.10 + delay, exitRange[0], exitRange[1]], [0, 1, 1, 0]);
   const lineY = useTransform(scrollYProgress, [0.05 + delay, 0.10 + delay, exitRange[0], exitRange[1]], [40, 0, 0, -30]);
   return (
     <motion.span
       className="font-instrument text-[clamp(28px,4vw,44px)] font-medium text-[#071D2F] text-center leading-[1.2] tracking-[-0.03em] block"
-      style={{ opacity: lineOpacity, y: lineY }}
+      style={mobile ? { opacity: 1, y: 0 } : { opacity: lineOpacity, y: lineY }}
     >
       {text}
     </motion.span>
@@ -280,6 +282,7 @@ function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const dims = useViewportDims();
   const isMobile = dims.vw < 1024;
+  const mobile = useIsMobile();
 
   const headline1 = t('landing.hero.h1a');
   const headline2 = t('landing.hero.h1b');
@@ -294,39 +297,32 @@ function Hero() {
   const mxStart = (dims.vw - startW) / 2;
   const myStart = (dims.vh - startH) / 2;
   // Card expands → full screen (stays until next section covers it)
-  const marginX_animated = useTransform(scrollYProgress, [0, 0.1], [mxStart, -2]);
-  const marginTop_animated = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
-  const marginBottom_animated = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
-  const bgRadius_animated = useTransform(scrollYProgress, [0, 0.1], [16, 0]);
-  const borderOpacity_animated = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+  const marginX = useTransform(scrollYProgress, [0, 0.1], [mxStart, -2]);
+  const marginTop = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
+  const marginBottom = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
+  const bgRadius = useTransform(scrollYProgress, [0, 0.1], [16, 0]);
+  const borderOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
 
   // Hero text: moves up and fades
-  const textY_animated = useTransform(scrollYProgress, [0, 0.12], [0, -120]);
-  const textOpacity_animated = useTransform(scrollYProgress, [0, 0.08, 0.1, 1], [1, 0, 0, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.12], [0, -120]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.08, 0.1, 1], [1, 0, 0, 0]);
 
   // Services section — scrolls up from below and stays
-  const servicesY_animated = useTransform(scrollYProgress, [0.18, 0.33], [dims.vh, 0]);
+  const servicesY = useTransform(scrollYProgress, [0.18, 0.33], [dims.vh, 0]);
 
   // Keep gradient fully visible through hero, fade only at the very end when chatbot section covers
-  const bgOpacity_animated = useTransform(scrollYProgress, [0.97, 1], [1, 0]);
-
-  // On mobile, use static values; on desktop, use animated values
-  const marginX = isMobile ? mxStart : marginX_animated;
-  const marginTop = isMobile ? myStart : marginTop_animated;
-  const marginBottom = isMobile ? myStart : marginBottom_animated;
-  const bgRadius = isMobile ? 16 : bgRadius_animated;
-  const borderOpacity = isMobile ? 1 : borderOpacity_animated;
-  const textY = isMobile ? 0 : textY_animated;
-  const textOpacity = isMobile ? 1 : textOpacity_animated;
-  const servicesY = isMobile ? dims.vh : servicesY_animated;
-  const bgOpacity = isMobile ? 1 : bgOpacity_animated;
+  const bgOpacity = useTransform(scrollYProgress, [0.97, 1], [1, 0]);
 
   return (
-    <div ref={sectionRef} className="relative" style={{ height: isMobile ? '160vh' : '160vh' }}>
+    <div ref={sectionRef} className="relative" style={{ height: mobile ? 'auto' : '160vh' }}>
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
-        style={{
+        style={mobile ? {
+          top: 0, left: 0, right: 0, bottom: 0,
+          borderRadius: 0, opacity: 1,
+          visibility: dims.ready ? 'visible' : 'hidden',
+        } : {
           top: marginTop,
           left: marginX,
           right: marginX,
@@ -341,7 +337,7 @@ function Hero() {
         {/* Premium border overlay */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
-          style={{
+          style={mobile ? { opacity: 0 } : {
             opacity: borderOpacity,
             borderRadius: bgRadius,
             boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.4)',
@@ -353,7 +349,7 @@ function Hero() {
         {/* Hero text layer */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center z-10"
-          style={{ y: textY, opacity: textOpacity }}
+          style={mobile ? { y: 0, opacity: 1 } : { y: textY, opacity: textOpacity }}
         >
           <div className="flex flex-col items-center text-center gap-8 px-4">
             <h1 className="font-instrument text-[clamp(26px,4.5vw,44px)] font-medium leading-[1.1] tracking-[-0.047em] text-[#071D2F]">
@@ -399,7 +395,7 @@ function Hero() {
         {/* Services — scrolls up from below */}
         <motion.div
           className="absolute left-0 right-0 top-0 z-10 flex items-start lg:items-center justify-center h-full overflow-y-auto pt-4 lg:pt-0"
-          style={{ y: servicesY }}
+          style={mobile ? { y: 0 } : { y: servicesY }}
         >
           <div className="max-w-[1100px] mx-auto px-6 pb-8 lg:pb-0">
             <div className="text-center mb-2 lg:mb-10">
@@ -470,10 +466,11 @@ function AnimatedChatbotHeading({ scrollYProgress }: { scrollYProgress: MotionVa
 
 function AnimatedChatbotParagraph({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
   const { t } = useI18n();
+  const mobile = useIsMobile();
   const opacity = useTransform(scrollYProgress, [0.70, 0.85], [0, 1]);
   const y = useTransform(scrollYProgress, [0.70, 0.85], [16, 0]);
   return (
-    <motion.p className="text-[18px] text-gray-500 leading-[1.6] max-w-md mb-6" style={{ opacity, y }}>
+    <motion.p className="text-[18px] text-gray-500 leading-[1.6] max-w-md mb-6" style={mobile ? { opacity: 1, y: 0 } : { opacity, y }}>
       {t('landing.chatbot.desc')}
     </motion.p>
   );
@@ -481,10 +478,11 @@ function AnimatedChatbotParagraph({ scrollYProgress }: { scrollYProgress: Motion
 
 function AnimatedChatbotCTA({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
   const { t } = useI18n();
+  const mobile = useIsMobile();
   const opacity = useTransform(scrollYProgress, [0.78, 0.92], [0, 1]);
   const y = useTransform(scrollYProgress, [0.78, 0.92], [16, 0]);
   return (
-    <motion.div style={{ opacity, y }}>
+    <motion.div style={mobile ? { opacity: 1, y: 0 } : { opacity, y }}>
       <Link
         href="/contact"
         className="inline-flex items-center h-9 px-4 text-[13px] font-medium text-black rounded-md hover:opacity-90 transition-opacity duration-150"
@@ -497,6 +495,7 @@ function AnimatedChatbotCTA({ scrollYProgress }: { scrollYProgress: MotionValue<
 }
 
 function AnimatedHeadingWord({ text, accent, scrollYProgress, index }: { text: string; accent?: boolean; scrollYProgress: MotionValue<number>; index: number }) {
+  const mobile = useIsMobile();
   const start = 0.45 + index * 0.03;
   const end = start + 0.12;
   const opacity = useTransform(scrollYProgress, [start, end], [0, 1]);
@@ -504,7 +503,7 @@ function AnimatedHeadingWord({ text, accent, scrollYProgress, index }: { text: s
   return (
     <motion.span
       className="inline-block mr-[0.25em]"
-      style={{ color: accent ? '#87CEEB' : undefined, opacity, y }}
+      style={mobile ? { color: accent ? '#87CEEB' : undefined, opacity: 1, y: 0 } : { color: accent ? '#87CEEB' : undefined, opacity, y }}
     >
       {text}
     </motion.span>
@@ -563,6 +562,7 @@ function ChatbotSection() {
   const { t } = useI18n();
   const sectionRef = useRef<HTMLDivElement>(null);
   const dims = useViewportDims();
+  const mobile = useIsMobile();
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -584,11 +584,11 @@ function ChatbotSection() {
 
   return (
     <div id="services" ref={sectionRef} className="relative z-10 bg-white -mt-8">
-      <div className="relative" style={{ height: isMobile ? '150vh' : '180vh' }}>
-        <div className="sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden">
+      <div className="relative" style={{ height: mobile ? 'auto' : (isMobile ? '150vh' : '180vh') }}>
+        <div className={mobile ? 'relative py-12' : 'sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden'}>
           <motion.div
             className="relative z-10 max-w-7xl mx-auto px-6"
-            style={{ opacity: cardContainerOpacity, y: cardContainerY }}
+            style={mobile ? { opacity: 1, y: 0 } : { opacity: cardContainerOpacity, y: cardContainerY }}
           >
             <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-center">
               {/* Text */}
