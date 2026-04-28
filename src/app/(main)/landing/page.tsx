@@ -113,6 +113,9 @@ function TypeWriter({ text, delay = 0 }: { text: string; delay?: number }) {
 }
 
 function MeshGradient() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  if (isMobile) return null;
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -343,7 +346,7 @@ function Hero() {
           visibility: dims.ready ? 'visible' : 'hidden',
         }}
       >
-        {!isMobile && <MeshGradient />}
+        <MeshGradient />
 
         {/* Premium border overlay */}
         <motion.div
