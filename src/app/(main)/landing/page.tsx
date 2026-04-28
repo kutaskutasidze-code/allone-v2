@@ -132,11 +132,11 @@ function MeshGradient() {
     const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 3);
     let curW = 0, curH = 0;
 
-    const observer = new IntersectionObserver(([entry]) => {
+    const observer = isMobile ? null : new IntersectionObserver(([entry]) => {
       isVisible = entry.isIntersecting;
       if (isVisible) animId = requestAnimationFrame(draw);
     }, { threshold: 0 });
-    if (containerRef.current) observer.observe(containerRef.current);
+    if (observer && containerRef.current) observer.observe(containerRef.current);
 
     const resize = () => {
       const w = canvas.offsetWidth;
@@ -182,7 +182,7 @@ function MeshGradient() {
       if (!isVisible) return;
       const w = curW;
       const h = curH;
-      if (w === 0 || h === 0) { animId = requestAnimationFrame(draw); return; }
+      if (w === 0 || h === 0) { if (!isMobile) animId = requestAnimationFrame(draw); return; }
       const now = performance.now();
       const dt = Math.min(now - lastFrame, 50) / 1000; // cap at 50ms to avoid jumps
       lastFrame = now;
@@ -257,7 +257,7 @@ function MeshGradient() {
         ctx.fillRect(0, 0, w, h);
       }
 
-      animId = requestAnimationFrame(draw);
+      if (!isMobile) animId = requestAnimationFrame(draw);
     };
 
     animId = requestAnimationFrame(draw);
