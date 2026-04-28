@@ -322,7 +322,6 @@ function Hero() {
           bottom: marginBottom,
           borderRadius: bgRadius,
           opacity: bgOpacity,
-          visibility: dims.ready ? 'visible' : 'hidden',
         }}
       >
         <MeshGradient />
