@@ -302,12 +302,11 @@ function Hero() {
   const mxStart = (dims.vw - startW) / 2;
   const myStart = (dims.vh - startH) / 2;
   // Card expands → full screen (stays until next section covers it)
-  // On mobile, keep it at full screen size (no expand animation)
-  const marginX = isMobile ? -2 : useTransform(scrollYProgress, [0, 0.1], [mxStart, -2]);
-  const marginTop = isMobile ? -2 : useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
-  const marginBottom = isMobile ? -2 : useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
-  const bgRadius = isMobile ? 0 : useTransform(scrollYProgress, [0, 0.1], [16, 0]);
-  const borderOpacity = isMobile ? 0 : useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+  const marginX = useTransform(scrollYProgress, [0, 0.1], [mxStart, -2]);
+  const marginTop = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
+  const marginBottom = useTransform(scrollYProgress, [0, 0.1], [myStart, -2]);
+  const bgRadius = useTransform(scrollYProgress, [0, 0.1], [16, 0]);
+  const borderOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
 
   // Hero text: moves up and fades
   const textY = useTransform(scrollYProgress, [0, 0.12], [0, -120]);
@@ -317,15 +316,22 @@ function Hero() {
   const servicesY = useTransform(scrollYProgress, [0.18, 0.33], [dims.vh, 0]);
 
   // Keep gradient fully visible through hero, fade only at the very end when chatbot section covers
-  // On mobile, keep it at 1 always (no fade)
-  const bgOpacity = isMobile ? 1 : useTransform(scrollYProgress, [0.97, 1], [1, 0]);
+  const bgOpacity = useTransform(scrollYProgress, [0.97, 1], [1, 0]);
 
   return (
     <div ref={sectionRef} className="relative" style={{ height: isMobile ? '160vh' : '160vh' }}>
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
-        style={{
+        style={isMobile ? {
+          top: myStart,
+          left: mxStart,
+          right: mxStart,
+          bottom: myStart,
+          borderRadius: 16,
+          opacity: 1,
+          visibility: dims.ready ? 'visible' : 'hidden',
+        } : {
           top: marginTop,
           left: marginX,
           right: marginX,
@@ -340,7 +346,11 @@ function Hero() {
         {/* Premium border overlay */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
-          style={{
+          style={isMobile ? {
+            opacity: 0,
+            borderRadius: 16,
+            boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.4)',
+          } : {
             opacity: borderOpacity,
             borderRadius: bgRadius,
             boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.4)',
