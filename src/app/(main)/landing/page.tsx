@@ -628,7 +628,7 @@ function ChatbotSection() {
                 </div>
               </div>
             </div>
-            <div className="mt-10 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen border-t border-b border-gray-200 bg-gray-50 py-16 px-6">
+            <div className="mt-10 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-[100vw] border-t border-b border-gray-200 bg-gray-50 py-16 px-6 overflow-hidden">
               <p className="font-instrument text-[30px] lg:text-[42px] font-medium leading-[1.1] tracking-[-0.02em] text-center max-w-4xl mx-auto">
                 <span className="text-black">{t('landing.quote.1')}</span>
                 <span style={{ color: '#87CEEB' }}>{t('landing.quote.ai')}</span>
