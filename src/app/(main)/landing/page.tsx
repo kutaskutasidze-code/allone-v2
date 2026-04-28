@@ -314,7 +314,7 @@ function Hero() {
   const bgOpacity = useTransform(scrollYProgress, [0.97, 1], [1, 0]);
 
   return (
-    <div ref={sectionRef} className="relative" style={{ height: mobile ? 'auto' : '160vh' }}>
+    <div ref={sectionRef} className="relative" style={{ height: mobile ? 'auto' : '160vh', background: mobile ? 'linear-gradient(180deg, #c5e4f7 0%, #d4ecfb 50%, #e8f4fc 100%)' : undefined }}>
       {/* Background layer — fixed to viewport, expands from card to full screen */}
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
