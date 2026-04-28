@@ -324,19 +324,22 @@ function Hero() {
   return (
     <div ref={sectionRef} className="relative" style={{ height: isMobile ? '160vh' : '160vh' }}>
       {/* Background layer — fixed to viewport, expands from card to full screen */}
+      {isMobile ? (
+        <div
+          className="fixed z-0 overflow-hidden pointer-events-none"
+          style={{
+            top: myStart,
+            left: mxStart,
+            right: mxStart,
+            bottom: myStart,
+            borderRadius: 16,
+            background: 'linear-gradient(135deg, #87CEEB 0%, #4A90E2 50%, #2563EB 100%)',
+          }}
+        />
+      ) : (
       <motion.div
         className="fixed z-0 overflow-hidden will-change-transform pointer-events-none"
-        style={isMobile ? {
-          top: myStart,
-          left: mxStart,
-          right: mxStart,
-          bottom: myStart,
-          borderRadius: 16,
-          opacity: 1,
-          width: 'auto',
-          height: 'auto',
-          background: 'linear-gradient(135deg, #87CEEB 0%, #4A90E2 50%, #2563EB 100%)',
-        } : {
+        style={{
           top: marginTop,
           left: marginX,
           right: marginX,
@@ -362,6 +365,7 @@ function Hero() {
           }}
         />
       </motion.div>
+      )}
 
       <div className="sticky top-0 h-screen">
         {/* Hero text layer */}
