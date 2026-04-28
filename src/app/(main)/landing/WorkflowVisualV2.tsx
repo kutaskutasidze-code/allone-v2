@@ -13,9 +13,9 @@ function Card({ children, className = '', delay = 0, isInView, style, mobile }: 
         border: '1px solid rgba(0,0,0,0.06)',
         ...(mobile ? {} : style),
       }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: delay * 0.2, duration: 1.0, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 30, scale: 0.92 }}
+      animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>
