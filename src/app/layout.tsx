@@ -116,7 +116,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${generalSans.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${instrumentSans.variable}`}>
-      <body className="antialiased bg-white">
+      <body className="antialiased bg-white overflow-x-hidden">
         <OrganizationSchema />
         <WebsiteSchema />
         <LocalBusinessSchema />
