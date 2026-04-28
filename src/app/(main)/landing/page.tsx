@@ -345,10 +345,10 @@ function Hero() {
         />
       </motion.div>
 
-      <div className="sticky top-0 h-screen">
+      <div className={mobile ? '' : 'sticky top-0 h-screen'}>
         {/* Hero text layer */}
         <motion.div
-          className="absolute inset-0 flex items-center justify-center z-10"
+          className={mobile ? 'relative flex items-center justify-center z-10 min-h-[70vh]' : 'absolute inset-0 flex items-center justify-center z-10'}
           style={mobile ? { y: 0, opacity: 1 } : { y: textY, opacity: textOpacity }}
         >
           <div className="flex flex-col items-center text-center gap-8 px-4">
@@ -383,7 +383,8 @@ function Hero() {
           </div>
         </motion.div>
 
-        {/* Tagline — line by line blur-deblur reveal */}
+        {/* Tagline — line by line blur-deblur reveal (hidden on mobile) */}
+        {!mobile && (
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none px-8">
           <div className="flex flex-col items-center gap-2 max-w-[700px]">
             <AnimatedLine text={t('landing.tagline.l1')} scrollYProgress={scrollYProgress} delay={0} exitRange={[0.18, 0.23]} />
@@ -391,10 +392,11 @@ function Hero() {
             <AnimatedLine text={t('landing.tagline.l3')} scrollYProgress={scrollYProgress} delay={0.06} exitRange={[0.18, 0.23]} />
           </div>
         </div>
+        )}
 
         {/* Services — scrolls up from below */}
         <motion.div
-          className="absolute left-0 right-0 top-0 z-10 flex items-start lg:items-center justify-center h-full overflow-y-auto pt-4 lg:pt-0"
+          className={mobile ? 'relative z-10 pt-8' : 'absolute left-0 right-0 top-0 z-10 flex items-start lg:items-center justify-center h-full overflow-y-auto pt-4 lg:pt-0'}
           style={mobile ? { y: 0 } : { y: servicesY }}
         >
           <div className="max-w-[1100px] mx-auto px-6 pb-8 lg:pb-0">
