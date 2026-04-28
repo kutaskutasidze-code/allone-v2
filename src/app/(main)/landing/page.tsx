@@ -332,6 +332,7 @@ function Hero() {
           opacity: 1,
           width: 'auto',
           height: 'auto',
+          background: 'linear-gradient(135deg, #87CEEB 0%, #4A90E2 50%, #2563EB 100%)',
         } : {
           top: marginTop,
           left: marginX,
@@ -342,7 +343,7 @@ function Hero() {
           visibility: dims.ready ? 'visible' : 'hidden',
         }}
       >
-        <MeshGradient />
+        {!isMobile && <MeshGradient />}
 
         {/* Premium border overlay */}
         <motion.div
