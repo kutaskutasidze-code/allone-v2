@@ -257,7 +257,7 @@ function MeshGradient() {
         ctx.fillRect(0, 0, w, h);
       }
 
-      if (!isMobile) animId = requestAnimationFrame(draw);
+      animId = requestAnimationFrame(draw);
     };
 
     animId = requestAnimationFrame(draw);
