@@ -651,8 +651,34 @@ function ChatbotSection() {
 
   return (
     <div id="services" ref={sectionRef} className="relative z-10 bg-white -mt-8">
-      <div className="relative" style={{ height: mobile ? 'auto' : (isMobile ? '150vh' : '180vh') }}>
-        <div className={mobile ? 'relative py-12' : 'sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden'}>
+      {/* Mobile blue gradient section */}
+      {mobile && (
+        <div className="relative overflow-hidden rounded-2xl mx-4 mt-6" style={{
+          background: 'linear-gradient(160deg, rgba(70,190,248,0.5) 0%, rgba(40,160,235,0.45) 25%, rgba(85,200,250,0.4) 50%, rgba(180,220,250,0.35) 75%, rgba(220,240,255,0.3) 100%)',
+          boxShadow: 'inset 0 0 0 1px rgba(56,189,248,0.3), 0 8px 32px rgba(40,160,235,0.1)',
+        }}>
+          <div className="px-5 py-16 text-center">
+            <h1 className="font-instrument text-[32px] font-medium leading-[1.1] tracking-[-0.02em] text-[#071D2F] mb-4">
+              {t('landing.chatbot.h.1')} {t('landing.chatbot.h.2')}<br />
+              <span style={{ color: '#0369a1' }}>{t('landing.chatbot.h.3')}</span><br />
+              {t('landing.chatbot.h.4')} <span style={{ color: '#0369a1' }}>{t('landing.chatbot.h.5')}</span>
+            </h1>
+            <p className="text-[15px] text-[#4D4D4D] leading-[1.6] max-w-sm mx-auto mb-6">
+              {t('landing.chatbot.desc')}
+            </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center h-9 px-4 text-[13px] font-medium text-white rounded-md hover:opacity-90 transition-opacity duration-150"
+              style={{ backgroundColor: '#0369a1' }}
+            >
+              {t('landing.chatbot.cta')}
+            </Link>
+          </div>
+        </div>
+      )}
+
+      <div className={mobile ? 'hidden' : 'relative'} style={{ height: isMobile ? '150vh' : '180vh' }}>
+        <div className="sticky top-0 h-screen flex items-start pt-2 lg:pt-[8vh] justify-center overflow-hidden">
           <motion.div
             className="relative z-10 max-w-7xl mx-auto px-6"
             style={mobile ? { opacity: 1, y: 0 } : { opacity: cardContainerOpacity, y: cardContainerY }}
