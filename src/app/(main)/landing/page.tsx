@@ -12,16 +12,14 @@ import { FAQSchema } from '@/components/seo';
 import { ContactForm } from '@/components/forms/ContactForm';
 
 function useViewportDims() {
-  const [dims, setDims] = useState({ vw: 1200, vh: 800, ready: false });
+  const [dims, setDims] = useState({ vw: typeof window !== 'undefined' ? window.innerWidth : 1200, vh: typeof window !== 'undefined' ? window.innerHeight : 800, ready: true });
   useEffect(() => {
-    let rafId: number;
     const update = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => setDims({ vw: window.innerWidth, vh: window.innerHeight, ready: true }));
+      setDims({ vw: window.innerWidth, vh: window.innerHeight, ready: true });
     };
     update();
     window.addEventListener('resize', update);
-    return () => { window.removeEventListener('resize', update); cancelAnimationFrame(rafId); };
+    return () => { window.removeEventListener('resize', update); };
   }, []);
   return dims;
 }
