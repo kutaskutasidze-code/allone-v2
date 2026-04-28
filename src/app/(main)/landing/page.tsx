@@ -132,11 +132,11 @@ function MeshGradient() {
     const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 3);
     let curW = 0, curH = 0;
 
-    const observer = isMobile ? null : new IntersectionObserver(([entry]) => {
+    const observer = new IntersectionObserver(([entry]) => {
       isVisible = entry.isIntersecting;
       if (isVisible) animId = requestAnimationFrame(draw);
     }, { threshold: 0 });
-    if (observer && containerRef.current) observer.observe(containerRef.current);
+    if (containerRef.current) observer.observe(containerRef.current);
 
     const resize = () => {
       const w = canvas.offsetWidth;
