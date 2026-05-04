@@ -117,6 +117,7 @@ async function getLeadsData() {
   const leadStats = {
     new: 0,
     contacted: 0,
+    callback: 0,
     qualified: 0,
     won: 0,
     lost: 0,

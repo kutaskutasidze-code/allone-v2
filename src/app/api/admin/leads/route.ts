@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { createLeadSchema } from '@/lib/validations/leads';
+import { createLeadSchema, leadStatusSchema } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
@@ -32,8 +32,7 @@ export async function GET(request: NextRequest) {
       .range(offset, offset + limit - 1);
 
     if (status && status !== 'all') {
-      const validStatuses = ['new', 'contacted', 'qualified', 'won', 'lost', 'not_interested', 'unavailable'];
-      if (validStatuses.includes(status)) {
+      if (leadStatusSchema.options.includes(status as never)) {
         query = query.eq('status', status);
       }
     }

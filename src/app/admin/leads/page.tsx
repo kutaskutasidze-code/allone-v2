@@ -1,10 +1,11 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
-import { PageHeader, EmptyState } from '@/components/admin';
+import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3 } from 'lucide-react';
+import { EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import type { LeadWithSalesUser } from '@/types/database';
@@ -235,7 +236,7 @@ function AdminLeadsPageContent() {
   // Fetch status counts separately (always unfiltered)
   const fetchStatusCounts = useCallback(async () => {
     try {
-      const statuses = ['new', 'contacted', 'qualified', 'won', 'lost', 'not_interested', 'unavailable'];
+      const statuses = LEAD_STATUSES.map(s => s.value);
       const [allRes, ...statusResults] = await Promise.all([
         fetch('/api/admin/leads?limit=1').then(r => r.ok ? r.json() : null),
         ...statuses.map(s => fetch(`/api/admin/leads?status=${s}&limit=1`).then(r => r.ok ? r.json() : null)),
@@ -308,11 +309,27 @@ function AdminLeadsPageContent() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Sales Leads"
-        description={`${total} total leads`}
-        action={{ label: 'Add Lead', onClick: () => setShowAddLead(true) }}
-      />
+      <div className="flex items-start justify-between mb-10">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">Sales Leads</h1>
+          <p className="mt-1.5 text-sm text-gray-500">{total} total leads</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/leads/analytics"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 active:scale-[0.98] transition-all duration-150"
+          >
+            <BarChart3 className="h-4 w-4" />
+            Analytics
+          </Link>
+          <button
+            onClick={() => setShowAddLead(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm hover:bg-gray-800 active:scale-[0.98] transition-all duration-150"
+          >
+            Add Lead
+          </button>
+        </div>
+      </div>
 
       {showAddLead && (
         <AddLeadModal

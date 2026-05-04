@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const leadStatusSchema = z.enum(['new', 'contacted', 'qualified', 'won', 'lost', 'not_interested', 'unavailable']);
+export const leadStatusSchema = z.enum(['new', 'contacted', 'callback', 'qualified', 'won', 'lost', 'not_interested', 'unavailable']);
 
 export const leadServiceSchema = z.enum(['chatbots', 'custom_ai', 'automation', 'website', 'consulting']);
 
@@ -36,6 +36,7 @@ export type UpdateLead = z.infer<typeof updateLeadSchema>;
 export const LEAD_STATUSES = [
   { value: 'new', label: 'New' },
   { value: 'contacted', label: 'Contacted' },
+  { value: 'callback', label: 'Callback' },
   { value: 'qualified', label: 'Qualified' },
   { value: 'won', label: 'Won' },
   { value: 'lost', label: 'Lost' },
@@ -64,6 +65,7 @@ export const LEAD_SOURCES = [
 export const LEAD_STATUS_STYLES: Record<string, string> = {
   new: 'bg-blue-100 text-blue-700',
   contacted: 'bg-yellow-100 text-yellow-700',
+  callback: 'bg-teal-100 text-teal-700',
   qualified: 'bg-purple-100 text-purple-700',
   won: 'bg-green-100 text-green-700',
   lost: 'bg-gray-100 text-gray-500',
@@ -74,9 +76,21 @@ export const LEAD_STATUS_STYLES: Record<string, string> = {
 export const LEAD_STATUS_LABELS: Record<string, string> = {
   new: 'New',
   contacted: 'Contacted',
+  callback: 'Callback',
   qualified: 'Qualified',
   won: 'Won',
   lost: 'Lost',
   not_interested: 'Not Interested',
   unavailable: 'Unavailable',
+};
+
+export const LEAD_STATUS_COLORS: Record<string, string> = {
+  new: '#3b82f6',
+  contacted: '#eab308',
+  callback: '#14b8a6',
+  qualified: '#a855f7',
+  won: '#22c55e',
+  lost: '#9ca3af',
+  not_interested: '#ef4444',
+  unavailable: '#f97316',
 };

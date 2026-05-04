@@ -6,6 +6,7 @@ import type { LeadStatus } from '@/types/database';
 const STATUS_STYLES: Record<LeadStatus, string> = {
   new: 'bg-blue-100 text-blue-700',
   contacted: 'bg-yellow-100 text-yellow-700',
+  callback: 'bg-teal-100 text-teal-700',
   qualified: 'bg-purple-100 text-purple-700',
   won: 'bg-green-100 text-green-700',
   lost: 'bg-gray-100 text-gray-500',
@@ -16,6 +17,7 @@ const STATUS_STYLES: Record<LeadStatus, string> = {
 const STATUS_LABELS: Record<LeadStatus, string> = {
   new: 'New',
   contacted: 'Contacted',
+  callback: 'Callback',
   qualified: 'Qualified',
   won: 'Won',
   lost: 'Lost',

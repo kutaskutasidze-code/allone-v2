@@ -10,7 +10,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 import type { LeadWithSalesUser } from '@/types/database';
-import { LEAD_STATUS_STYLES, LEAD_STATUS_LABELS } from '@/lib/validations/leads';
+import { LEAD_STATUS_STYLES, LEAD_STATUS_LABELS, LEAD_STATUSES } from '@/lib/validations/leads';
 import { useState, useMemo } from 'react';
 import {
   LineChart,
@@ -42,6 +42,7 @@ interface DashboardContentProps {
     stats: {
       new: number;
       contacted: number;
+      callback: number;
       qualified: number;
       won: number;
       lost: number;
@@ -377,15 +378,15 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
 
           {/* Lead Status Summary */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mb-4">
-            {(['new', 'contacted', 'qualified', 'won', 'lost', 'not_interested', 'unavailable'] as const).map((status) => (
+            {LEAD_STATUSES.map(({ value }) => (
               <div
-                key={status}
+                key={value}
                 className="p-3 bg-white border border-gray-100 rounded-lg text-center shadow-sm shadow-black/[0.02]"
               >
                 <div className="text-lg font-semibold text-gray-900">
-                  {leadsData.stats[status]}
+                  {leadsData.stats[value as keyof typeof leadsData.stats]}
                 </div>
-                <div className="text-xs text-gray-500">{LEAD_STATUS_LABELS[status]}</div>
+                <div className="text-xs text-gray-500">{LEAD_STATUS_LABELS[value]}</div>
               </div>
             ))}
           </div>

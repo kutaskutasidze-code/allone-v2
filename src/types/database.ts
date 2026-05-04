@@ -320,7 +320,7 @@ export interface Database {
           email: string | null;
           phone: string | null;
           company: string | null;
-          status: 'new' | 'contacted' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
+          status: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
           value: number;
           source: string | null;
           notes: string | null;
@@ -356,7 +356,7 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           company?: string | null;
-          status?: 'new' | 'contacted' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
+          status?: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
           value?: number;
           source?: string | null;
           notes?: string | null;
@@ -391,7 +391,7 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           company?: string | null;
-          status?: 'new' | 'contacted' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
+          status?: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
           value?: number;
           source?: string | null;
           notes?: string | null;
