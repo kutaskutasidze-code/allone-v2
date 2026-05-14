@@ -6,9 +6,8 @@ import { normalizeGeorgianPhone } from '../utils/phone.js';
 import { calculateRelevanceScore } from '../utils/scoring.js';
 import { closeBrowser } from '../utils/browser.js';
 import { config } from '../config.js';
-
-const GOOGLE_PLACES_URL = 'https://places.googleapis.com/v1/places:searchText';
-const FIELD_MASK = 'places.displayName,places.nationalPhoneNumber,places.internationalPhoneNumber,places.formattedAddress,places.websiteUri,places.rating,places.userRatingCount,places.types,places.googleMapsUri';
+import { getTodayUsage } from '../utils/api-usage.js';
+import { searchText, API_USAGE_KEY } from '../utils/google-places.js';
 
 interface GooglePlace {
   displayName?: { text?: string };
@@ -16,37 +15,28 @@ interface GooglePlace {
   internationalPhoneNumber?: string;
   formattedAddress?: string;
   websiteUri?: string;
-  rating?: number;
-  userRatingCount?: number;
   types?: string[];
   googleMapsUri?: string;
 }
 
-async function lookupOnGooglePlaces(companyName: string): Promise<GooglePlace | null> {
+interface LookupResult {
+  place: GooglePlace | null;
+  newCount: number | null;
+}
+
+async function lookupOnGooglePlaces(companyName: string): Promise<LookupResult> {
   const apiKey = config.googlePlaces.apiKey;
-  if (!apiKey) return null;
+  if (!apiKey) return { place: null, newCount: null };
 
   try {
-    const res = await fetch(GOOGLE_PLACES_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': FIELD_MASK,
-      },
-      body: JSON.stringify({
-        textQuery: `${companyName} Georgia`,
-        languageCode: 'en',
-        maxResultCount: 1,
-      }),
-      signal: AbortSignal.timeout(10000),
-    });
-
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.places?.[0] || null;
+    const { data, newCount } = await searchText<{ places?: GooglePlace[] }>(
+      apiKey,
+      { textQuery: `${companyName} Georgia`, languageCode: 'en', maxResultCount: 1 },
+      10000,
+    );
+    return { place: data.places?.[0] || null, newCount };
   } catch {
-    return null;
+    return { place: null, newCount: null };
   }
 }
 
@@ -131,14 +121,15 @@ async function runRegistryCron() {
 
     // Step 2: Look up each company on Google Places (costs 1 request each)
     const dailyBudget = config.googlePlaces.dailyBudgetRequests;
-    let googleLookups = 0;
     let inserted = 0;
     let withPhone = 0;
     let duplicates = 0;
+    let lookupsThisRun = 0;
+    let usage = await getTodayUsage(API_USAGE_KEY);
 
     for (const company of companies) {
-      if (googleLookups >= dailyBudget) {
-        logger.info(`Registry: hit daily Google Places budget (${dailyBudget}). Remaining companies saved for next run.`);
+      if (usage >= dailyBudget) {
+        logger.info(`Registry: hit daily Google Places budget (${usage}/${dailyBudget}). Remaining companies saved for next run.`);
         break;
       }
 
@@ -146,15 +137,15 @@ async function runRegistryCron() {
       let searchName = company.name;
       searchName = searchName.replace(/^შპს\s*/i, '').replace(/^სს\s*/i, '').replace(/^ი\/მ\s*/i, '');
 
-      const place = await lookupOnGooglePlaces(searchName);
-      googleLookups++;
+      const { place, newCount } = await lookupOnGooglePlaces(searchName);
+      if (newCount !== null) usage = newCount;
+      lookupsThisRun++;
 
       const rawPhone = place?.internationalPhoneNumber || place?.nationalPhoneNumber;
       const phone = rawPhone ? normalizeGeorgianPhone(rawPhone) : null;
 
       const tags: string[] = ['newly_registered'];
       if (!place?.websiteUri) tags.push('no_website');
-      if (!place?.rating) tags.push('new_business');
 
       // Build source URL from registration number
       const sourceUrl = company.registrationNumber
@@ -186,11 +177,7 @@ async function runRegistryCron() {
         is_scraped: true,
       };
 
-      lead.relevance_score = calculateRelevanceScore({
-        ...lead,
-        rating: place?.rating,
-        userRatingCount: place?.userRatingCount,
-      });
+      lead.relevance_score = calculateRelevanceScore(lead);
 
       const result = await insertLead(lead);
       if (result.success) {
@@ -217,7 +204,7 @@ async function runRegistryCron() {
         .eq('id', jobId);
     }
 
-    logger.info(`Registry cron done: ${inserted} new leads (${withPhone} with phone), ${duplicates} duplicates, ${googleLookups} Google lookups`);
+    logger.info(`Registry cron done: ${inserted} new leads (${withPhone} with phone), ${duplicates} duplicates, ${lookupsThisRun} Google lookups`);
   } catch (err) {
     logger.error(`Registry cron failed: ${err}`);
     if (jobId) {
