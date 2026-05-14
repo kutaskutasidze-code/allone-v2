@@ -20,6 +20,7 @@ import {
   Database,
   FileText,
   UserCog,
+  Flame,
 } from 'lucide-react';
 
 function buildNavigationSections(isSupervisor: boolean) {
@@ -35,6 +36,7 @@ function buildNavigationSections(isSupervisor: boolean) {
       label: 'Sales',
       items: [
         { name: 'Leads', href: '/sales/leads', icon: Users },
+        { name: 'Hot Lines', href: '/sales/leads/hotlines', icon: Flame },
         { name: 'Campaigns', href: '/sales/campaigns', icon: Mail },
       ],
     },
@@ -85,6 +87,10 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
 
   const isActive = (href: string) => {
     if (href === '/sales') return pathname === '/sales';
+    if (href === '/sales/leads') {
+      return pathname === '/sales/leads' ||
+        (pathname.startsWith('/sales/leads/') && !pathname.startsWith('/sales/leads/hotlines'));
+    }
     return pathname.startsWith(href);
   };
 

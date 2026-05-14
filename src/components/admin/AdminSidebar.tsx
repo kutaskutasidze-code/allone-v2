@@ -23,6 +23,7 @@ import {
   Menu,
   X,
   Bot,
+  Flame,
 } from 'lucide-react';
 
 const navigationSections = [
@@ -39,6 +40,7 @@ const navigationSections = [
       { name: 'Services', href: '/admin/services', icon: Briefcase },
       { name: 'Clients', href: '/admin/clients', icon: Users },
       { name: 'Leads', href: '/admin/leads', icon: UserCheck },
+      { name: 'Hot Lines', href: '/admin/leads/hotlines', icon: Flame },
     ],
   },
   {
@@ -82,6 +84,10 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
   const isActive = (href: string) => {
     if (href === '/admin') {
       return pathname === '/admin';
+    }
+    if (href === '/admin/leads') {
+      return pathname === '/admin/leads' ||
+        (pathname.startsWith('/admin/leads/') && !pathname.startsWith('/admin/leads/hotlines'));
     }
     return pathname.startsWith(href);
   };

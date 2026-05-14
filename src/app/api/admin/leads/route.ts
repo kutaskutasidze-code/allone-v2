@@ -45,6 +45,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const source = searchParams.get('source');
+    if (source) {
+      query = query.eq('source', source);
+    }
+
+    const industry = searchParams.get('industry');
+    if (industry && industry !== 'all') {
+      query = query.eq('industry', industry);
+    }
+
     if (search) {
       const sanitized = search.replace(/[%_]/g, '');
       if (sanitized.length > 0) {
