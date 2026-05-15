@@ -29,15 +29,6 @@ export async function GET() {
     since.setUTCHours(0, 0, 0, 0);
 
     const admin = createAdminClient();
-    const { data, error } = await admin
-      .from('lead_status_history')
-      .select('to_status, changed_at')
-      .gte('changed_at', since.toISOString());
-
-    if (error) {
-      logger.error('Failed to load lead status history', { error: error.message });
-      return NextResponse.json({ error: 'Failed to load analytics' }, { status: 500 });
-    }
 
     const buckets = new Map<string, DailyStatusRow>();
     for (let i = 0; i < DAYS; i++) {
@@ -47,12 +38,31 @@ export async function GET() {
       buckets.set(key, emptyRow(key));
     }
 
-    for (const row of data ?? []) {
-      const day = String(row.changed_at).slice(0, 10);
-      const bucket = buckets.get(day);
-      if (!bucket) continue;
-      const parsed = leadStatusSchema.safeParse(row.to_status);
-      if (parsed.success) bucket[parsed.data]++;
+    const PAGE = 1000;
+    for (let offset = 0; ; offset += PAGE) {
+      const { data, error } = await admin
+        .from('lead_status_history')
+        .select('to_status, changed_at')
+        .gte('changed_at', since.toISOString())
+        .order('changed_at', { ascending: true })
+        .range(offset, offset + PAGE - 1);
+
+      if (error) {
+        logger.error('Failed to load lead status history', { error: error.message });
+        return NextResponse.json({ error: 'Failed to load analytics' }, { status: 500 });
+      }
+
+      if (!data || data.length === 0) break;
+
+      for (const row of data) {
+        const day = String(row.changed_at).slice(0, 10);
+        const bucket = buckets.get(day);
+        if (!bucket) continue;
+        const parsed = leadStatusSchema.safeParse(row.to_status);
+        if (parsed.success) bucket[parsed.data]++;
+      }
+
+      if (data.length < PAGE) break;
     }
 
     return NextResponse.json({ data: Array.from(buckets.values()) });
