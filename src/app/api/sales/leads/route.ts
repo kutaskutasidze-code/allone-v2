@@ -55,6 +55,16 @@ export async function GET(request: Request) {
       query = query.eq('source', source);
     }
 
+    const phonePrefix = url.searchParams.get('phone_prefix');
+    if (phonePrefix) {
+      query = query.ilike('phone', `${phonePrefix}%`);
+    }
+
+    const excludePhonePrefix = url.searchParams.get('exclude_phone_prefix');
+    if (excludePhonePrefix) {
+      query = query.or(`phone.is.null,phone.not.ilike.${excludePhonePrefix}%`);
+    }
+
     if (search) {
       const sanitized = search.replace(/[%_,()]/g, '').slice(0, 100);
       if (sanitized.length > 0) {

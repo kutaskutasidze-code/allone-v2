@@ -52,6 +52,8 @@ export const LEAD_SERVICES = [
   { value: 'custom_ai', label: 'Custom AI' },
 ] as const;
 
+export const HOTLINE_PHONE_PREFIX = '+995322';
+
 export const LEAD_SOURCES = [
   'Website',
   'Referral',

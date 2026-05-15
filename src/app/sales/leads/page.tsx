@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
-import { LEAD_STATUSES, LEAD_STATUS_STYLES } from '@/lib/validations/leads';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 
 const formatDate = (dateString: string) =>
@@ -138,6 +138,7 @@ function LeadsPageContent() {
       if (salesUserIdFilter) params.set('sales_user_id', salesUserIdFilter);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
+      params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX);
 
       const res = await fetch(`/api/sales/leads?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch leads');

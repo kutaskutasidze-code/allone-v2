@@ -50,6 +50,16 @@ export async function GET(request: NextRequest) {
       query = query.eq('source', source);
     }
 
+    const phonePrefix = searchParams.get('phone_prefix');
+    if (phonePrefix) {
+      query = query.ilike('phone', `${phonePrefix}%`);
+    }
+
+    const excludePhonePrefix = searchParams.get('exclude_phone_prefix');
+    if (excludePhonePrefix) {
+      query = query.or(`phone.is.null,phone.not.ilike.${excludePhonePrefix}%`);
+    }
+
     const industry = searchParams.get('industry');
     if (industry && industry !== 'all') {
       query = query.eq('industry', industry);

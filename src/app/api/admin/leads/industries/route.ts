@@ -14,7 +14,9 @@ export async function GET(request: NextRequest) {
     }
 
     const admin = createAdminClient();
-    const sourceFilter = new URL(request.url).searchParams.get('source');
+    const url = new URL(request.url);
+    const sourceFilter = url.searchParams.get('source');
+    const phonePrefix = url.searchParams.get('phone_prefix');
 
     const PAGE = 1000;
     const counts = new Map<string, number>();
@@ -24,6 +26,7 @@ export async function GET(request: NextRequest) {
         .select('industry')
         .not('industry', 'is', null);
       if (sourceFilter) q = q.eq('source', sourceFilter);
+      if (phonePrefix) q = q.ilike('phone', `${phonePrefix}%`);
       const { data, error: dbError } = await q.range(offset, offset + PAGE - 1);
 
       if (dbError) {

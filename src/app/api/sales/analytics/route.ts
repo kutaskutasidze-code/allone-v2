@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireSalesAuth } from '@/lib/sales-auth';
+import { leadStatusSchema } from '@/lib/validations/leads';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    const statuses = ['new', 'contacted', 'qualified', 'won', 'lost'];
+    const statuses = [...leadStatusSchema.options];
     const services = ['chatbots', 'custom_ai', 'automation', 'website', 'consulting'];
 
     const [totalRes, phoneRes, emailRes, newInPeriodRes, ...statusAndServiceResults] = await Promise.all([

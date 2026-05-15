@@ -11,11 +11,11 @@ interface IndustryRow {
 interface HotLinesDropdownProps {
   selectedIndustry: string | null;
   onSelect: (industry: string | null) => void;
-  sourceFilter?: string;
+  phonePrefix?: string;
   endpoint?: string;
 }
 
-export function HotLinesDropdown({ selectedIndustry, onSelect, sourceFilter, endpoint = '/api/sales/leads/industries' }: HotLinesDropdownProps) {
+export function HotLinesDropdown({ selectedIndustry, onSelect, phonePrefix, endpoint = '/api/sales/leads/industries' }: HotLinesDropdownProps) {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<IndustryRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -25,7 +25,7 @@ export function HotLinesDropdown({ selectedIndustry, onSelect, sourceFilter, end
     let cancelled = false;
     (async () => {
       try {
-        const qs = sourceFilter ? `?source=${encodeURIComponent(sourceFilter)}` : '';
+        const qs = phonePrefix ? `?phone_prefix=${encodeURIComponent(phonePrefix)}` : '';
         const res = await fetch(`${endpoint}${qs}`);
         if (!res.ok) return;
         const json = await res.json();
@@ -42,7 +42,7 @@ export function HotLinesDropdown({ selectedIndustry, onSelect, sourceFilter, end
     return () => {
       cancelled = true;
     };
-  }, [sourceFilter, endpoint]);
+  }, [phonePrefix, endpoint]);
 
   const active = selectedIndustry !== null;
   const buttonLabel = selectedIndustry ?? 'Hot Lines';

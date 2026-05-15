@@ -5,11 +5,9 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Flame, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
-import { LEAD_STATUSES, LEAD_STATUS_STYLES } from '@/lib/validations/leads';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { HotLinesDropdown } from '@/app/sales/leads/HotLinesDropdown';
-
-const HOTLINE_SOURCE = 'infoshop.ge';
 
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -132,7 +130,7 @@ function AdminHotLinesPageContent() {
     try {
       setIsLoading(true);
       const params = new URLSearchParams();
-      params.set('source', HOTLINE_SOURCE);
+      params.set('phone_prefix', HOTLINE_PHONE_PREFIX);
       if (statusFilter !== 'all') params.set('status', statusFilter);
       if (industryFilter) params.set('industry', industryFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
@@ -200,7 +198,7 @@ function AdminHotLinesPageContent() {
         <HotLinesDropdown
           selectedIndustry={industryFilter}
           onSelect={handleIndustrySelect}
-          sourceFilter={HOTLINE_SOURCE}
+          phonePrefix={HOTLINE_PHONE_PREFIX}
           endpoint="/api/admin/leads/industries"
         />
         <button

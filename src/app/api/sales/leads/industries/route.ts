@@ -10,7 +10,9 @@ export async function GET(request: Request) {
   try {
     await requireSalesAuth();
     const supabase = createAdminClient();
-    const sourceFilter = new URL(request.url).searchParams.get('source');
+    const url = new URL(request.url);
+    const sourceFilter = url.searchParams.get('source');
+    const phonePrefix = url.searchParams.get('phone_prefix');
 
     // PostgREST caps single-request rows (default 1000). Page through all
     // industry-bearing rows and aggregate in JS.
@@ -22,6 +24,7 @@ export async function GET(request: Request) {
         .select('industry')
         .not('industry', 'is', null);
       if (sourceFilter) q = q.eq('source', sourceFilter);
+      if (phonePrefix) q = q.ilike('phone', `${phonePrefix}%`);
       const { data, error: dbError } = await q.range(offset, offset + PAGE - 1);
 
       if (dbError) {
