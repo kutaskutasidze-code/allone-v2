@@ -27,16 +27,9 @@ export async function GET(request: NextRequest) {
       .select(`
         id, name, email, phone, company, city, country, website, facebook_url, industry, matched_service, status, value, source, source_url, notes, tags, relevance_score, callback_date, created_at, updated_at,
         sales_user:sales_users(id, name, email)
-      `, { count: 'exact' });
-
-    const sortBy = searchParams.get('sort');
-    if (sortBy === 'score') {
-      query = query.order('relevance_score', { ascending: false }).order('created_at', { ascending: false });
-    } else {
-      query = query.order('created_at', { ascending: false });
-    }
-
-    query = query.range(offset, offset + limit - 1);
+      `, { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (status && status !== 'all') {
       if (leadStatusSchema.options.includes(status as never)) {

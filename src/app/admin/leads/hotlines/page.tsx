@@ -14,8 +14,10 @@ const formatDate = (dateString: string) =>
 
 const HIDDEN_TAGS = new Set(['enrich_attempted', 'website_audited']);
 
-function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; currentStatus: string; onUpdate: (id: string, status: string) => void }) {
+function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; currentStatus: string; onUpdate: (id: string, status: string, callbackDate?: string) => void }) {
   const [open, setOpen] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [callbackDate, setCallbackDate] = useState('');
   return (
     <div className="relative">
       <button
@@ -25,20 +27,56 @@ function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; c
         {LEAD_STATUSES.find(s => s.value === currentStatus)?.label}
         <ChevronDown className="w-3 h-3" />
       </button>
-      {open && (
+      {open && !showDatePicker && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg shadow-black/[0.08] py-1 min-w-[120px]">
             {LEAD_STATUSES.map(s => (
               <button
                 key={s.value}
-                onClick={() => { onUpdate(leadId, s.value); setOpen(false); }}
+                onClick={() => {
+                  if (s.value === 'callback') {
+                    setShowDatePicker(true);
+                  } else {
+                    onUpdate(leadId, s.value);
+                    setOpen(false);
+                  }
+                }}
                 className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors ${currentStatus === s.value ? 'font-semibold' : ''}`}
               >
                 <span className={`inline-block w-2 h-2 rounded-full mr-2 ${LEAD_STATUS_STYLES[s.value]?.split(' ')[0]}`} />
                 {s.label}
               </button>
             ))}
+          </div>
+        </>
+      )}
+      {open && showDatePicker && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => { setOpen(false); setShowDatePicker(false); }} />
+          <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg shadow-black/[0.08] p-3 min-w-[200px]">
+            <p className="text-xs font-medium text-gray-700 mb-2">Callback date & time</p>
+            <input
+              type="datetime-local"
+              value={callbackDate}
+              onChange={(e) => setCallbackDate(e.target.value)}
+              className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none"
+            />
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => { setShowDatePicker(false); }}
+                className="flex-1 px-2 py-1.5 text-xs text-gray-500 hover:text-gray-900"
+              >Cancel</button>
+              <button
+                onClick={() => {
+                  onUpdate(leadId, 'callback', callbackDate ? new Date(callbackDate).toISOString() : undefined);
+                  setOpen(false);
+                  setShowDatePicker(false);
+                  setCallbackDate('');
+                }}
+                className="flex-1 px-2 py-1.5 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800"
+              >Set Callback</button>
+            </div>
           </div>
         </>
       )}
@@ -110,7 +148,6 @@ function AdminHotLinesPageContent() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [industryFilter, setIndustryFilter] = useState<string | null>(initialIndustry);
   const [websiteFilter, setWebsiteFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('date');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState('');
@@ -137,7 +174,6 @@ function AdminHotLinesPageContent() {
       if (industryFilter) params.set('industry', industryFilter);
       if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
-      if (sortBy === 'score') params.set('sort', 'score');
       params.set('page', page.toString());
       params.set('limit', limit.toString());
 
@@ -151,7 +187,7 @@ function AdminHotLinesPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, industryFilter, websiteFilter, sortBy, debouncedSearch, page]);
+  }, [statusFilter, industryFilter, websiteFilter, debouncedSearch, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -207,14 +243,6 @@ function AdminHotLinesPageContent() {
           <option value="all">All Leads</option>
           <option value="yes">Has Website</option>
           <option value="no">No Website</option>
-        </select>
-        <select
-          value={sortBy}
-          onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-          className="px-3 py-2 text-xs rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer font-medium"
-        >
-          <option value="date">Newest First</option>
-          <option value="score">Best Score First</option>
         </select>
         <HotLinesDropdown
           selectedIndustry={industryFilter}
@@ -273,11 +301,6 @@ function AdminHotLinesPageContent() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-medium text-sm text-gray-900 truncate">{(l.company || l.name) as string}</h3>
                       {l.industry && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium">{l.industry as string}</span>}
-                      {typeof l.relevance_score === 'number' && l.relevance_score > 0 && (
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${(l.relevance_score as number) >= 12 ? 'bg-green-50 text-green-700' : (l.relevance_score as number) >= 8 ? 'bg-blue-50 text-blue-700' : 'bg-gray-50 text-gray-500'}`}>
-                          ★ {l.relevance_score}
-                        </span>
-                      )}
                     </div>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
                       {l.phone && (
@@ -332,7 +355,7 @@ function AdminHotLinesPageContent() {
                     <StatusDropdown
                       leadId={l.id as string}
                       currentStatus={l.status as string}
-                      onUpdate={(id, status) => updateLead(id, { status })}
+                      onUpdate={(id, status, callbackDate) => updateLead(id, { status, ...(callbackDate ? { callback_date: callbackDate } : {}) })}
                     />
                     <LeadNotes
                       leadId={l.id as string}

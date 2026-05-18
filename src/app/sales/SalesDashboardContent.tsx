@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Users, TrendingUp, CheckCircle, ArrowRight, Phone, AlertTriangle, Star } from 'lucide-react';
+import { Plus, Users, TrendingUp, CheckCircle, ArrowRight, Phone, AlertTriangle } from 'lucide-react';
 import type { Lead, SalesUser } from '@/types/database';
 import { LeadStatusBadge, CommissionWidget } from '@/components/sales';
 import { formatCurrency } from '@/lib/utils';
@@ -214,7 +214,6 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads, todaysCal
                   <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Lead</th>
                   <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Company</th>
                   <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
-                  <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Score</th>
                   <th className="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Value</th>
                 </tr>
               </thead>
@@ -233,12 +232,6 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads, todaysCal
                     <td className="px-4 py-3 text-sm text-gray-500">{lead.industry || '-'}</td>
                     <td className="px-4 py-3">
                       <LeadStatusBadge status={lead.status} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <Star className={`h-3 w-3 ${(lead.relevance_score || 0) >= 10 ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
-                        <span className="text-xs text-gray-500">{lead.relevance_score || 0}</span>
-                      </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{formatCurrency(lead.value)}</td>
                   </tr>

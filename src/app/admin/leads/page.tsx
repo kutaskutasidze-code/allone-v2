@@ -449,11 +449,6 @@ function AdminLeadsPageContent() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-medium text-sm text-gray-900 truncate">{lead.company || lead.name}</h3>
                     {lead.industry && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium">{lead.industry}</span>}
-                    {lead.relevance_score > 0 && (
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${lead.relevance_score >= 12 ? 'bg-green-50 text-green-700' : lead.relevance_score >= 8 ? 'bg-blue-50 text-blue-700' : 'bg-gray-50 text-gray-500'}`}>
-                        ★ {lead.relevance_score}
-                      </span>
-                    )}
                   </div>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
                     {lead.phone && (
