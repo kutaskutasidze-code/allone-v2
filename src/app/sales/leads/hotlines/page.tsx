@@ -245,10 +245,7 @@ function HotLinesPageContent() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-medium text-sm text-gray-900 truncate">{l.name as string}</h3>
-                      {l.company && l.company !== l.name && (
-                        <span className="text-xs text-gray-500">· {l.company as string}</span>
-                      )}
+                      <h3 className="font-medium text-sm text-gray-900 truncate">{(l.company || l.name) as string}</h3>
                     </div>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
                       {l.email && (

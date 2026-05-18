@@ -432,10 +432,7 @@ function AdminLeadsPageContent() {
                 {/* Lead info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-medium text-sm text-gray-900 truncate">{lead.name}</h3>
-                    {lead.company && lead.company !== lead.name && (
-                      <span className="text-xs text-gray-500">· {lead.company}</span>
-                    )}
+                    <h3 className="font-medium text-sm text-gray-900 truncate">{lead.company || lead.name}</h3>
                   </div>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
                     {lead.email && (
