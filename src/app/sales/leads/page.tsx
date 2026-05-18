@@ -288,6 +288,11 @@ function LeadsPageContent() {
                           <ExternalLink className="w-3 h-3" />Facebook
                         </a>
                       )}
+                      {l.source_url && (
+                        <a href={l.source_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
+                          <ExternalLink className="w-3 h-3" />Source
+                        </a>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                       {l.city && <span>{l.city as string}</span>}
