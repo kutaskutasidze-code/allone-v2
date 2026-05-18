@@ -275,12 +275,17 @@ function LeadsPageContent() {
                           <Phone className="w-3 h-3" />{l.phone as string}
                         </a>
                       )}
-                      {l.website && (
+                      {l.website && !/infoshop\.ge/i.test(l.website as string) && (
                         <a href={l.website as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
                           <Globe className="w-3 h-3" />Website
                         </a>
                       )}
-                      {l.source_url && (
+                      {l.facebook_url && (
+                        <a href={l.facebook_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
+                          <ExternalLink className="w-3 h-3" />Facebook
+                        </a>
+                      )}
+                      {l.source_url && !/infoshop\.ge/i.test(l.source_url as string) && (
                         <a href={l.source_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600">
                           <ExternalLink className="w-3 h-3" />Source
                         </a>

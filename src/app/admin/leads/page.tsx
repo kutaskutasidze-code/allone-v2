@@ -445,12 +445,17 @@ function AdminLeadsPageContent() {
                         <Phone className="w-3 h-3" />{lead.phone}
                       </a>
                     )}
-                    {lead.website && (
+                    {lead.website && !/infoshop\.ge/i.test(lead.website) && (
                       <a href={lead.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
                         <Globe className="w-3 h-3" />Website
                       </a>
                     )}
-                    {lead.source_url && (
+                    {lead.facebook_url && (
+                      <a href={lead.facebook_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
+                        <ExternalLink className="w-3 h-3" />Facebook
+                      </a>
+                    )}
+                    {lead.source_url && !/infoshop\.ge/i.test(lead.source_url) && (
                       <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600">
                         <ExternalLink className="w-3 h-3" />Source
                       </a>
@@ -459,7 +464,7 @@ function AdminLeadsPageContent() {
                   <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                     {lead.city && <span>{lead.city}</span>}
                     {lead.matched_service && <span>· {lead.matched_service}</span>}
-                    {lead.source && <span>· {lead.source}</span>}
+                    {lead.source && !/infoshop\.ge/i.test(lead.source) && <span>· {lead.source}</span>}
                     <span>· {formatDate(lead.created_at)}</span>
                   </div>
                   {/* Pitch reasons */}
