@@ -33,7 +33,7 @@ function formatDate(d: string) {
   return new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
-const CALL_STATUSES = ['contacted', 'callback'] as const;
+const CALL_STATUSES = ['contacted', 'callback', 'qualified', 'not_interested', 'unavailable'] as const;
 
 export default function LeadsAnalyticsPage() {
   const [data, setData] = useState<DailyRow[]>([]);
@@ -72,9 +72,11 @@ export default function LeadsAnalyticsPage() {
   const callActivityData = useMemo(() => {
     return data.map(row => ({
       date: row.date,
-      calls: (row.contacted ?? 0) + (row.callback ?? 0),
       contacted: row.contacted ?? 0,
       callback: row.callback ?? 0,
+      qualified: row.qualified ?? 0,
+      not_interested: row.not_interested ?? 0,
+      unavailable: row.unavailable ?? 0,
     }));
   }, [data]);
 
@@ -175,7 +177,10 @@ export default function LeadsAnalyticsPage() {
                 />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Bar dataKey="contacted" stackId="calls" fill={LEAD_STATUS_COLORS.contacted} name="Contacted" />
-                <Bar dataKey="callback" stackId="calls" fill={LEAD_STATUS_COLORS.callback} name="Callback" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="callback" stackId="calls" fill={LEAD_STATUS_COLORS.callback} name="Callback" />
+                <Bar dataKey="qualified" stackId="calls" fill={LEAD_STATUS_COLORS.qualified} name="Qualified" />
+                <Bar dataKey="not_interested" stackId="calls" fill={LEAD_STATUS_COLORS.not_interested} name="Not Interested" />
+                <Bar dataKey="unavailable" stackId="calls" fill={LEAD_STATUS_COLORS.unavailable} name="Unavailable" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
