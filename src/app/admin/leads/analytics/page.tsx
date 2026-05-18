@@ -69,17 +69,6 @@ export default function LeadsAnalyticsPage() {
     return { totalsByStatus: totals, grandTotal: total, totalCalls: calls };
   }, [data]);
 
-  const callActivityData = useMemo(() => {
-    return data.map(row => ({
-      date: row.date,
-      contacted: row.contacted ?? 0,
-      callback: row.callback ?? 0,
-      qualified: row.qualified ?? 0,
-      not_interested: row.not_interested ?? 0,
-      unavailable: row.unavailable ?? 0,
-    }));
-  }, [data]);
-
   const pieData = useMemo(() => {
     if (!overview) return [];
     return LEAD_STATUSES
@@ -94,7 +83,6 @@ export default function LeadsAnalyticsPage() {
   const dailyNewData = useMemo(() => {
     if (!overview) return [];
     return Object.entries(overview.dailyNew)
-      .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, count]) => ({ date, newLeads: count }));
   }, [overview]);
 
@@ -162,7 +150,7 @@ export default function LeadsAnalyticsPage() {
           </div>
           <div style={{ width: '100%', height: 280 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={callActivityData} margin={{ top: 5, right: 16, bottom: 0, left: 0 }}>
+              <BarChart data={data} margin={{ top: 5, right: 16, bottom: 0, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                 <XAxis
                   dataKey="date"

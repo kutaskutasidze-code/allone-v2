@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Flame, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
-import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX } from '@/lib/validations/leads';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { HotLinesDropdown } from '../HotLinesDropdown';
 
@@ -270,7 +270,7 @@ function HotLinesPageContent() {
                           <Mail className="w-3 h-3" />{l.email as string}
                         </a>
                       )}
-                      {l.website && !/infoshop\.ge/i.test(l.website as string) ? (
+                      {l.website && !INFOSHOP_PATTERN.test(l.website as string) ? (
                         <a href={l.website as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-green-600 hover:underline">
                           <Globe className="w-3 h-3" />Website
                         </a>
@@ -282,7 +282,7 @@ function HotLinesPageContent() {
                           <ExternalLink className="w-3 h-3" />Facebook
                         </a>
                       )}
-                      {l.source_url && !/infoshop\.ge/i.test(l.source_url as string) && (
+                      {l.source_url && !INFOSHOP_PATTERN.test(l.source_url as string) && (
                         <a href={l.source_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
                           <ExternalLink className="w-3 h-3" />Source
                         </a>

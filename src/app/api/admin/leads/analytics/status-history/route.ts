@@ -66,47 +66,38 @@ export async function GET() {
       if (data.length < PAGE) break;
     }
 
-    // --- Current status counts ---
+    // --- Run status counts, daily new leads, and total in parallel ---
     const statuses = [...leadStatusSchema.options] as string[];
-    const statusCountResults = await Promise.all(
-      statuses.map(s =>
-        admin.from('leads').select('id', { count: 'exact', head: true }).eq('status', s)
-      )
-    );
+
+    const [statusCountResults, totalLeadsRes, dailyNewRows] = await Promise.all([
+      // Status counts (8 parallel queries)
+      Promise.all(
+        statuses.map(s =>
+          admin.from('leads').select('id', { count: 'exact', head: true }).eq('status', s)
+        )
+      ),
+      // Total leads
+      admin.from('leads').select('id', { count: 'exact', head: true }),
+      // Daily new leads (single page — 30 days rarely exceeds 1000 new leads)
+      admin.from('leads').select('created_at')
+        .gte('created_at', since.toISOString())
+        .order('created_at', { ascending: true })
+        .limit(5000),
+    ]);
+
     const statusCounts: Record<string, number> = {};
     statuses.forEach((s, i) => {
       statusCounts[s] = statusCountResults[i].count || 0;
     });
 
-    // --- Daily new leads (created_at) ---
+    const totalLeads = totalLeadsRes.count || 0;
+
     const dailyNew: Record<string, number> = {};
-    for (const key of buckets.keys()) {
-      dailyNew[key] = 0;
+    for (const key of buckets.keys()) dailyNew[key] = 0;
+    for (const row of dailyNewRows.data || []) {
+      const day = String(row.created_at).slice(0, 10);
+      if (dailyNew[day] !== undefined) dailyNew[day]++;
     }
-
-    for (let offset = 0; ; offset += PAGE) {
-      const { data, error } = await admin
-        .from('leads')
-        .select('created_at')
-        .gte('created_at', since.toISOString())
-        .order('created_at', { ascending: true })
-        .range(offset, offset + PAGE - 1);
-
-      if (error) break;
-      if (!data || data.length === 0) break;
-
-      for (const row of data) {
-        const day = String(row.created_at).slice(0, 10);
-        if (dailyNew[day] !== undefined) dailyNew[day]++;
-      }
-
-      if (data.length < PAGE) break;
-    }
-
-    // --- Total leads ---
-    const { count: totalLeads } = await admin
-      .from('leads')
-      .select('id', { count: 'exact', head: true });
 
     return NextResponse.json({
       data: Array.from(buckets.values()),

@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Flame, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
-import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX } from '@/lib/validations/leads';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { HotLinesDropdown } from '@/app/sales/leads/HotLinesDropdown';
 
@@ -53,7 +53,7 @@ function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; c
       )}
       {open && showDatePicker && (
         <>
-          <div className="fixed inset-0 z-10" onClick={() => { setOpen(false); setShowDatePicker(false); }} />
+          <div className="fixed inset-0 z-10" onClick={() => { setOpen(false); setShowDatePicker(false); setCallbackDate(''); }} />
           <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg shadow-black/[0.08] p-3 min-w-[200px]">
             <p className="text-xs font-medium text-gray-700 mb-2">Callback date & time</p>
             <input
@@ -64,7 +64,7 @@ function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; c
             />
             <div className="flex gap-2 mt-2">
               <button
-                onClick={() => { setShowDatePicker(false); }}
+                onClick={() => { setOpen(false); setShowDatePicker(false); setCallbackDate(''); }}
                 className="flex-1 px-2 py-1.5 text-xs text-gray-500 hover:text-gray-900"
               >Cancel</button>
               <button
@@ -313,7 +313,7 @@ function AdminHotLinesPageContent() {
                           <Mail className="w-3 h-3" />{l.email as string}
                         </a>
                       )}
-                      {l.website && !/infoshop\.ge/i.test(l.website as string) ? (
+                      {l.website && !INFOSHOP_PATTERN.test(l.website as string) ? (
                         <a href={l.website as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-green-600 hover:underline">
                           <Globe className="w-3 h-3" />Website
                         </a>
@@ -325,7 +325,7 @@ function AdminHotLinesPageContent() {
                           <ExternalLink className="w-3 h-3" />Facebook
                         </a>
                       )}
-                      {l.source_url && !/infoshop\.ge/i.test(l.source_url as string) && (
+                      {l.source_url && !INFOSHOP_PATTERN.test(l.source_url as string) && (
                         <a href={l.source_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
                           <ExternalLink className="w-3 h-3" />Source
                         </a>

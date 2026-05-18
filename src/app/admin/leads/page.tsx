@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3 } from 'lucide-react';
 import { EmptyState } from '@/components/admin';
-import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX } from '@/lib/validations/leads';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import type { LeadWithSalesUser } from '@/types/database';
 
@@ -461,7 +461,7 @@ function AdminLeadsPageContent() {
                         <Mail className="w-3 h-3" />{lead.email}
                       </a>
                     )}
-                    {lead.website && !/infoshop\.ge/i.test(lead.website) ? (
+                    {lead.website && !INFOSHOP_PATTERN.test(lead.website) ? (
                       <a href={lead.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-green-600 hover:underline">
                         <Globe className="w-3 h-3" />Website
                       </a>
@@ -473,7 +473,7 @@ function AdminLeadsPageContent() {
                         <ExternalLink className="w-3 h-3" />Facebook
                       </a>
                     )}
-                    {lead.source_url && !/infoshop\.ge/i.test(lead.source_url) && (
+                    {lead.source_url && !INFOSHOP_PATTERN.test(lead.source_url) && (
                       <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
                         <ExternalLink className="w-3 h-3" />Source
                       </a>

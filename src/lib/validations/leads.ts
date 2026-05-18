@@ -55,6 +55,9 @@ export const LEAD_SERVICES = [
 
 export const HOTLINE_PHONE_PREFIX = '+995322';
 
+export const INFOSHOP_DOMAIN = 'infoshop.ge';
+export const INFOSHOP_PATTERN = /infoshop\.ge/i;
+
 export const LEAD_SOURCES = [
   'Website',
   'Referral',
