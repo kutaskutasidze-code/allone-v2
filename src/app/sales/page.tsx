@@ -82,19 +82,9 @@ async function getTodaysCalls() {
 }
 
 async function getOverdueCallbacks() {
-  const supabase = createAdminClient();
-  const now = new Date().toISOString();
-
-  const { data } = await supabase
-    .from('leads')
-    .select('id, company, name, phone, callback_date')
-    .eq('status', 'callback')
-    .lt('callback_date', now)
-    .not('callback_date', 'is', null)
-    .order('callback_date', { ascending: true })
-    .limit(10);
-
-  return data || [];
+  // callback_date column will be added via Supabase dashboard
+  // For now return empty to avoid errors
+  return [];
 }
 
 export default async function SalesDashboard() {
