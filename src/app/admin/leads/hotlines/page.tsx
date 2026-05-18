@@ -110,6 +110,7 @@ function AdminHotLinesPageContent() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [industryFilter, setIndustryFilter] = useState<string | null>(initialIndustry);
   const [websiteFilter, setWebsiteFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState('');
@@ -136,6 +137,7 @@ function AdminHotLinesPageContent() {
       if (industryFilter) params.set('industry', industryFilter);
       if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
+      if (sortBy === 'score') params.set('sort', 'score');
       params.set('page', page.toString());
       params.set('limit', limit.toString());
 
@@ -149,7 +151,7 @@ function AdminHotLinesPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, industryFilter, websiteFilter, debouncedSearch, page]);
+  }, [statusFilter, industryFilter, websiteFilter, sortBy, debouncedSearch, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -205,6 +207,14 @@ function AdminHotLinesPageContent() {
           <option value="all">All Leads</option>
           <option value="yes">Has Website</option>
           <option value="no">No Website</option>
+        </select>
+        <select
+          value={sortBy}
+          onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+          className="px-3 py-2 text-xs rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer font-medium"
+        >
+          <option value="date">Newest First</option>
+          <option value="score">Best Score First</option>
         </select>
         <HotLinesDropdown
           selectedIndustry={industryFilter}
@@ -263,6 +273,11 @@ function AdminHotLinesPageContent() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-medium text-sm text-gray-900 truncate">{(l.company || l.name) as string}</h3>
                       {l.industry && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium">{l.industry as string}</span>}
+                      {typeof l.relevance_score === 'number' && l.relevance_score > 0 && (
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${(l.relevance_score as number) >= 12 ? 'bg-green-50 text-green-700' : (l.relevance_score as number) >= 8 ? 'bg-blue-50 text-blue-700' : 'bg-gray-50 text-gray-500'}`}>
+                          ★ {l.relevance_score}
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
                       {l.phone && (

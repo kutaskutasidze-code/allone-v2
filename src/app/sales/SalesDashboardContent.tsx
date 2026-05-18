@@ -1,10 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Users, TrendingUp, CheckCircle, ArrowRight } from 'lucide-react';
+import { Plus, Users, TrendingUp, CheckCircle, ArrowRight, Phone, AlertTriangle, Star } from 'lucide-react';
 import type { Lead, SalesUser } from '@/types/database';
 import { LeadStatusBadge, CommissionWidget } from '@/components/sales';
 import { formatCurrency } from '@/lib/utils';
+
+const DAILY_CALL_TARGET = 50;
+
+interface OverdueCallback {
+  id: string;
+  company: string | null;
+  name: string;
+  phone: string | null;
+  callback_date: string;
+}
 
 interface SalesDashboardContentProps {
   salesUser: SalesUser;
@@ -18,11 +28,23 @@ interface SalesDashboardContentProps {
     wonValue: number;
   };
   recentLeads: Lead[];
+  todaysCalls: number;
+  overdueCallbacks: OverdueCallback[];
 }
 
-export function SalesDashboardContent({ salesUser, stats, recentLeads }: SalesDashboardContentProps) {
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const hours = Math.floor(diff / 3600000);
+  if (hours < 1) return 'just now';
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d overdue`;
+}
+
+export function SalesDashboardContent({ salesUser, stats, recentLeads, todaysCalls, overdueCallbacks }: SalesDashboardContentProps) {
   const totalLeads = stats.new + stats.contacted + stats.qualified + stats.won + stats.lost;
   const conversionRate = totalLeads > 0 ? ((stats.won / totalLeads) * 100).toFixed(1) : '0';
+  const callProgress = Math.min((todaysCalls / DAILY_CALL_TARGET) * 100, 100);
 
   const statsGrid = [
     { label: 'New', count: stats.new, href: '/sales/leads?status=new' },
@@ -42,6 +64,64 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads }: SalesDa
         <p className="mt-1.5 text-sm text-gray-500">
           Welcome back, {salesUser.name.split(' ')[0]}. Here&apos;s your pipeline overview.
         </p>
+      </div>
+
+      {/* Daily Calls + Overdue Callbacks */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* Today's Calls */}
+        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+          <div className="flex items-center gap-2 mb-3">
+            <Phone className="h-4 w-4 text-blue-500" />
+            <span className="text-sm font-semibold text-gray-900">Today&apos;s Calls</span>
+          </div>
+          <div className="flex items-end gap-3 mb-3">
+            <span className="text-4xl font-bold text-gray-900">{todaysCalls}</span>
+            <span className="text-sm text-gray-400 mb-1">/ {DAILY_CALL_TARGET} target</span>
+          </div>
+          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${
+                callProgress >= 100 ? 'bg-green-500' : callProgress >= 50 ? 'bg-blue-500' : 'bg-amber-500'
+              }`}
+              style={{ width: `${callProgress}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-400 mt-2">
+            {callProgress >= 100
+              ? 'Target reached! Great work!'
+              : `${DAILY_CALL_TARGET - todaysCalls} more calls to hit your target`}
+          </p>
+        </div>
+
+        {/* Overdue Callbacks */}
+        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className={`h-4 w-4 ${overdueCallbacks.length > 0 ? 'text-red-500' : 'text-green-500'}`} />
+            <span className="text-sm font-semibold text-gray-900">Overdue Callbacks</span>
+            {overdueCallbacks.length > 0 && (
+              <span className="ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-red-50 text-red-600">
+                {overdueCallbacks.length}
+              </span>
+            )}
+          </div>
+          {overdueCallbacks.length === 0 ? (
+            <p className="text-sm text-gray-400">No overdue callbacks. You&apos;re all caught up!</p>
+          ) : (
+            <div className="space-y-2 max-h-[140px] overflow-y-auto">
+              {overdueCallbacks.map(cb => (
+                <div key={cb.id} className="flex items-center justify-between gap-2 py-1.5 border-b border-gray-50 last:border-0">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{cb.company || cb.name}</p>
+                    {cb.phone && (
+                      <a href={`tel:${cb.phone}`} className="text-xs text-blue-600 hover:underline">{cb.phone}</a>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-red-500 font-medium whitespace-nowrap">{timeAgo(cb.callback_date)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -134,6 +214,7 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads }: SalesDa
                   <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Lead</th>
                   <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Company</th>
                   <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
+                  <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Score</th>
                   <th className="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Value</th>
                 </tr>
               </thead>
@@ -144,14 +225,20 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads }: SalesDa
                     className={`hover:bg-gray-50/50 transition-colors ${index !== recentLeads.length - 1 ? 'border-b border-gray-50' : ''}`}
                   >
                     <td className="px-4 py-3">
-                      <Link href={`/sales/leads/${lead.id}`} className="font-medium text-sm text-gray-900 hover:underline">
-                        {lead.name}
-                      </Link>
+                      <span className="font-medium text-sm text-gray-900">
+                        {lead.company || lead.name}
+                      </span>
                       {lead.email && <p className="text-xs text-gray-500">{lead.email}</p>}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{lead.company || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{lead.industry || '-'}</td>
                     <td className="px-4 py-3">
                       <LeadStatusBadge status={lead.status} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        <Star className={`h-3 w-3 ${(lead.relevance_score || 0) >= 10 ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
+                        <span className="text-xs text-gray-500">{lead.relevance_score || 0}</span>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">{formatCurrency(lead.value)}</td>
                   </tr>

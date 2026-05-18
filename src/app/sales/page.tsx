@@ -67,11 +67,43 @@ async function getRecentLeads() {
   return leads || [];
 }
 
+async function getTodaysCalls() {
+  const supabase = createAdminClient();
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+
+  const { count } = await supabase
+    .from('lead_status_history')
+    .select('id', { count: 'exact', head: true })
+    .in('to_status', ['contacted', 'callback', 'qualified', 'not_interested', 'unavailable'])
+    .gte('changed_at', today.toISOString());
+
+  return count || 0;
+}
+
+async function getOverdueCallbacks() {
+  const supabase = createAdminClient();
+  const now = new Date().toISOString();
+
+  const { data } = await supabase
+    .from('leads')
+    .select('id, company, name, phone, callback_date')
+    .eq('status', 'callback')
+    .lt('callback_date', now)
+    .not('callback_date', 'is', null)
+    .order('callback_date', { ascending: true })
+    .limit(10);
+
+  return data || [];
+}
+
 export default async function SalesDashboard() {
   const salesUser = await getSalesUser();
-  const [stats, recentLeads] = await Promise.all([
+  const [stats, recentLeads, todaysCalls, overdueCallbacks] = await Promise.all([
     getLeadStats(),
     getRecentLeads(),
+    getTodaysCalls(),
+    getOverdueCallbacks(),
   ]);
 
   return (
@@ -79,6 +111,8 @@ export default async function SalesDashboard() {
       salesUser={salesUser}
       stats={stats}
       recentLeads={recentLeads}
+      todaysCalls={todaysCalls}
+      overdueCallbacks={overdueCallbacks}
     />
   );
 }
