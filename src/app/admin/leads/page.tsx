@@ -433,38 +433,35 @@ function AdminLeadsPageContent() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-medium text-sm text-gray-900 truncate">{lead.company || lead.name}</h3>
+                    {lead.industry && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium">{lead.industry}</span>}
                   </div>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
-                    {lead.email && (
-                      <a href={`mailto:${lead.email}`} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
-                        <Mail className="w-3 h-3" />{lead.email}
-                      </a>
-                    )}
                     {lead.phone && (
                       <a href={`tel:${lead.phone}`} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
                         <Phone className="w-3 h-3" />{lead.phone}
                       </a>
                     )}
-                    {lead.website && !/infoshop\.ge/i.test(lead.website) && (
-                      <a href={lead.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
+                    {lead.email && (
+                      <a href={`mailto:${lead.email}`} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                        <Mail className="w-3 h-3" />{lead.email}
+                      </a>
+                    )}
+                    {lead.website && !/infoshop\.ge/i.test(lead.website) ? (
+                      <a href={lead.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-green-600 hover:underline">
                         <Globe className="w-3 h-3" />Website
                       </a>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-xs text-red-400"><Globe className="w-3 h-3" />No website</span>
                     )}
                     {lead.facebook_url && (
-                      <a href={lead.facebook_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
+                      <a href={lead.facebook_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline">
                         <ExternalLink className="w-3 h-3" />Facebook
-                      </a>
-                    )}
-                    {lead.source_url && !/infoshop\.ge/i.test(lead.source_url) && (
-                      <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600">
-                        <ExternalLink className="w-3 h-3" />Source
                       </a>
                     )}
                   </div>
                   <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                     {lead.city && <span>{lead.city}</span>}
                     {lead.matched_service && <span>· {lead.matched_service}</span>}
-                    {lead.source && !/infoshop\.ge/i.test(lead.source) && <span>· {lead.source}</span>}
                     <span>· {formatDate(lead.created_at)}</span>
                   </div>
                   {/* Pitch reasons */}

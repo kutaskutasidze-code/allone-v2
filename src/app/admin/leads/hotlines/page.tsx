@@ -251,37 +251,34 @@ function AdminHotLinesPageContent() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-medium text-sm text-gray-900 truncate">{(l.company || l.name) as string}</h3>
+                      {l.industry && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium">{l.industry as string}</span>}
                     </div>
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
-                      {l.email && (
-                        <a href={`mailto:${l.email}`} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
-                          <Mail className="w-3 h-3" />{l.email as string}
-                        </a>
-                      )}
                       {l.phone && (
                         <a href={`tel:${l.phone}`} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
                           <Phone className="w-3 h-3" />{l.phone as string}
                         </a>
                       )}
-                      {l.website && !/infoshop\.ge/i.test(l.website as string) && (
-                        <a href={l.website as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
+                      {l.email && (
+                        <a href={`mailto:${l.email}`} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                          <Mail className="w-3 h-3" />{l.email as string}
+                        </a>
+                      )}
+                      {l.website && !/infoshop\.ge/i.test(l.website as string) ? (
+                        <a href={l.website as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-green-600 hover:underline">
                           <Globe className="w-3 h-3" />Website
                         </a>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs text-red-400"><Globe className="w-3 h-3" />No website</span>
                       )}
                       {l.facebook_url && (
-                        <a href={l.facebook_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
+                        <a href={l.facebook_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline">
                           <ExternalLink className="w-3 h-3" />Facebook
-                        </a>
-                      )}
-                      {l.source_url && !/infoshop\.ge/i.test(l.source_url as string) && (
-                        <a href={l.source_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-blue-600">
-                          <ExternalLink className="w-3 h-3" />Source
                         </a>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                      {l.industry && <span>{l.industry as string}</span>}
-                      {l.city && <span>· {l.city as string}</span>}
+                      {l.city && <span>{l.city as string}</span>}
                       <span>· {formatDate(l.created_at as string)}</span>
                     </div>
                     {visibleTags.length > 0 && (
