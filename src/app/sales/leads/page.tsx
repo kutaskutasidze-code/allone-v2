@@ -121,6 +121,7 @@ function LeadsPageContent() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [serviceFilter, setServiceFilter] = useState('all');
+  const [websiteFilter, setWebsiteFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState('');
@@ -134,6 +135,7 @@ function LeadsPageContent() {
       const params = new URLSearchParams();
       if (statusFilter !== 'all') params.set('status', statusFilter);
       if (serviceFilter !== 'all') params.set('service', serviceFilter);
+      if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
       if (salesUserIdFilter) params.set('sales_user_id', salesUserIdFilter);
       params.set('page', page.toString());
@@ -150,7 +152,7 @@ function LeadsPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, serviceFilter, debouncedSearch, page, salesUserIdFilter]);
+  }, [statusFilter, serviceFilter, websiteFilter, debouncedSearch, page, salesUserIdFilter]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -208,6 +210,17 @@ function LeadsPageContent() {
         ))}
       </div>
 
+      <div className="flex items-center gap-2">
+        <select
+          value={websiteFilter}
+          onChange={(e) => { setWebsiteFilter(e.target.value); setPage(1); }}
+          className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+        >
+          <option value="all">All Leads</option>
+          <option value="yes">Has Website</option>
+          <option value="no">No Website</option>
+        </select>
+      </div>
       <div className="flex items-center gap-3">
         <select
           value={serviceFilter}

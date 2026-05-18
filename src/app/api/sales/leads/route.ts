@@ -55,6 +55,13 @@ export async function GET(request: Request) {
       query = query.eq('source', source);
     }
 
+    const hasWebsite = url.searchParams.get('has_website');
+    if (hasWebsite === 'yes') {
+      query = query.not('website', 'is', null).not('website', 'ilike', '%infoshop.ge%');
+    } else if (hasWebsite === 'no') {
+      query = query.or('website.is.null,website.ilike.%infoshop.ge%');
+    }
+
     const phonePrefix = url.searchParams.get('phone_prefix');
     if (phonePrefix) {
       query = query.ilike('phone', `${phonePrefix}%`);
