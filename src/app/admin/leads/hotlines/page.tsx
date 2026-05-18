@@ -287,7 +287,7 @@ function AdminHotLinesPageContent() {
                           <ExternalLink className="w-3 h-3" />Facebook
                         </a>
                       )}
-                      {l.source_url && (
+                      {l.source_url && !/infoshop\.ge/i.test(l.source_url as string) && (
                         <a href={l.source_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
                           <ExternalLink className="w-3 h-3" />Source
                         </a>

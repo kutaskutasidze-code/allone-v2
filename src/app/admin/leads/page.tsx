@@ -473,7 +473,7 @@ function AdminLeadsPageContent() {
                         <ExternalLink className="w-3 h-3" />Facebook
                       </a>
                     )}
-                    {lead.source_url && (
+                    {lead.source_url && !/infoshop\.ge/i.test(lead.source_url) && (
                       <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
                         <ExternalLink className="w-3 h-3" />Source
                       </a>
