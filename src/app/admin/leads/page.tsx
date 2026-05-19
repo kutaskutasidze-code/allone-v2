@@ -227,6 +227,7 @@ function AdminLeadsPageContent() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [serviceFilter, setServiceFilter] = useState('all');
   const [websiteFilter, setWebsiteFilter] = useState('all');
+  const [sourceFilter, setSourceFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
@@ -259,6 +260,7 @@ function AdminLeadsPageContent() {
       if (statusFilter !== 'all') params.set('status', statusFilter);
       if (serviceFilter !== 'all') params.set('service', serviceFilter);
       if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
+      if (sourceFilter !== 'all') params.set('has_source', sourceFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
@@ -274,7 +276,7 @@ function AdminLeadsPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, serviceFilter, websiteFilter, debouncedSearch, page]);
+  }, [statusFilter, serviceFilter, websiteFilter, sourceFilter, debouncedSearch, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
   useEffect(() => { fetchStatusCounts(); }, [fetchStatusCounts]);
@@ -388,6 +390,19 @@ function AdminLeadsPageContent() {
           <option value="all">All Leads</option>
           <option value="yes">Has Website</option>
           <option value="no">No Website</option>
+        </select>
+      </div>
+
+      {/* Source Filter */}
+      <div className="flex items-center gap-2">
+        <select
+          value={sourceFilter}
+          onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
+          className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+        >
+          <option value="all">All Sources</option>
+          <option value="yes">Has Source</option>
+          <option value="no">No Source</option>
         </select>
       </div>
 

@@ -110,6 +110,7 @@ function HotLinesPageContent() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [industryFilter, setIndustryFilter] = useState<string | null>(initialIndustry);
   const [websiteFilter, setWebsiteFilter] = useState('all');
+  const [sourceFilter, setSourceFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState('');
@@ -135,6 +136,7 @@ function HotLinesPageContent() {
       if (statusFilter !== 'all') params.set('status', statusFilter);
       if (industryFilter) params.set('industry', industryFilter);
       if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
+      if (sourceFilter !== 'all') params.set('has_source', sourceFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
@@ -149,7 +151,7 @@ function HotLinesPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, industryFilter, websiteFilter, debouncedSearch, page]);
+  }, [statusFilter, industryFilter, websiteFilter, sourceFilter, debouncedSearch, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -205,6 +207,15 @@ function HotLinesPageContent() {
           <option value="all">All Leads</option>
           <option value="yes">Has Website</option>
           <option value="no">No Website</option>
+        </select>
+        <select
+          value={sourceFilter}
+          onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
+          className="px-3 py-2 text-xs rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer font-medium"
+        >
+          <option value="all">All Sources</option>
+          <option value="yes">Has Source</option>
+          <option value="no">No Source</option>
         </select>
         <HotLinesDropdown selectedIndustry={industryFilter} onSelect={handleIndustrySelect} phonePrefix={HOTLINE_PHONE_PREFIX} />
         <button

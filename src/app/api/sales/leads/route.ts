@@ -62,6 +62,13 @@ export async function GET(request: Request) {
       query = query.or('website.is.null,website.ilike.%infoshop.ge%');
     }
 
+    const hasSource = url.searchParams.get('has_source');
+    if (hasSource === 'yes') {
+      query = query.not('source_url', 'is', null).not('source_url', 'ilike', '%infoshop.ge%');
+    } else if (hasSource === 'no') {
+      query = query.or('source_url.is.null,source_url.ilike.%infoshop.ge%');
+    }
+
     const phonePrefix = url.searchParams.get('phone_prefix');
     if (phonePrefix) {
       query = query.ilike('phone', `${phonePrefix}%`);
