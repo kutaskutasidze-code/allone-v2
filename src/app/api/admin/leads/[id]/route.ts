@@ -26,9 +26,12 @@ export async function PATCH(
 
     // Use service role to bypass RLS for the actual update
     const admin = createAdminClient();
+    const updates = Object.fromEntries(
+      Object.entries(result.data).filter(([, v]) => v !== undefined)
+    );
     const { data, error } = await admin
       .from('leads')
-      .update({ ...result.data, updated_at: new Date().toISOString() })
+      .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();

@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     let query = admin
       .from('leads')
       .select(`
-        id, name, email, phone, company, city, country, website, facebook_url, industry, matched_service, status, value, source, source_url, notes, tags, relevance_score, created_at, updated_at,
+        id, name, email, phone, company, city, country, website, facebook_url, industry, matched_service, status, value, source, source_url, notes, tags, relevance_score, callback_date, created_at, updated_at,
         sales_user:sales_users(id, name, email)
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
