@@ -45,4 +45,3 @@ nul
 
 # claude code (per-developer local state)
 .claude/settings.local.json
-.env*.local

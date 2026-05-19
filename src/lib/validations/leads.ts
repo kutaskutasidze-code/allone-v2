@@ -21,14 +21,13 @@ export const createLeadSchema = z.object({
 
 export const updateLeadSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255, 'Name too long').optional(),
-  email: z.string().email('Invalid email').max(255).nullable().optional(),
-  phone: z.string().max(50).nullable().optional(),
-  company: z.string().max(255).nullable().optional(),
+  email: z.string().email('Invalid email').optional().or(z.literal('')).transform(val => val || null),
+  phone: z.string().max(50).optional().transform(val => val || null),
+  company: z.string().max(255).optional().transform(val => val || null),
   status: leadStatusSchema.optional(),
   value: z.number().min(0, 'Value cannot be negative').optional(),
-  source: z.string().max(100).nullable().optional(),
-  notes: z.string().nullable().optional(),
-  callback_date: z.string().datetime().nullable().optional(),
+  source: z.string().max(100).optional().transform(val => val || null),
+  notes: z.string().optional().transform(val => val || null),
 });
 
 export type CreateLead = z.infer<typeof createLeadSchema>;

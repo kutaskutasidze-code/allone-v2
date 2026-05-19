@@ -4,10 +4,9 @@ import { Suspense, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, X, Users, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3, CalendarClock } from 'lucide-react';
-import { EmptyState, LeadStatusDropdown } from '@/components/admin';
-import { HOTLINE_PHONE_PREFIX, INFOSHOP_PATTERN } from '@/lib/validations/leads';
-import { formatCallbackLabel } from '@/lib/utils';
+import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3 } from 'lucide-react';
+import { EmptyState } from '@/components/admin';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import type { LeadWithSalesUser } from '@/types/database';
 
@@ -30,19 +29,36 @@ const PITCH_LABELS: Record<string, string> = {
 
 const HIDDEN_TAGS = new Set(['enrich_attempted', 'website_audited']);
 
-function CallbackBadge({ callbackDate }: { callbackDate: string }) {
-  const cb = formatCallbackLabel(callbackDate);
-  const tones: Record<string, string> = {
-    overdue: 'bg-red-50 text-red-600 border-red-200',
-    today: 'bg-amber-50 text-amber-700 border-amber-200',
-    tomorrow: 'bg-blue-50 text-blue-700 border-blue-200',
-    soon: 'bg-teal-50 text-teal-700 border-teal-200',
-    later: 'bg-gray-50 text-gray-600 border-gray-200',
-  };
+function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; currentStatus: string; onUpdate: (id: string, status: string) => void }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border ${tones[cb.tone]}`}>
-      <CalendarClock className="w-3 h-3" />{cb.label}
-    </span>
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer ${LEAD_STATUS_STYLES[currentStatus]}`}
+      >
+        {LEAD_STATUSES.find(s => s.value === currentStatus)?.label}
+        <ChevronDown className="w-3 h-3" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg shadow-black/[0.08] py-1 min-w-[120px]">
+            {LEAD_STATUSES.map(s => (
+              <button
+                key={s.value}
+                onClick={() => { onUpdate(leadId, s.value); setOpen(false); }}
+                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors ${currentStatus === s.value ? 'font-semibold' : ''}`}
+              >
+                <span className={`inline-block w-2 h-2 rounded-full mr-2 ${LEAD_STATUS_STYLES[s.value]?.split(' ')[0]}`} />
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -487,14 +503,10 @@ function AdminLeadsPageContent() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 shrink-0">
-                  {(lead as { callback_date?: string | null }).callback_date && lead.status === 'callback' && (
-                    <CallbackBadge callbackDate={(lead as { callback_date: string }).callback_date} />
-                  )}
-                  <LeadStatusDropdown
+                  <StatusDropdown
                     leadId={lead.id}
                     currentStatus={lead.status}
-                    currentCallbackDate={(lead as { callback_date?: string | null }).callback_date}
-                    onUpdate={(id, updates) => updateLead(id, updates)}
+                    onUpdate={(id, status) => updateLead(id, { status })}
                   />
                   <LeadNotes
                     leadId={lead.id}

@@ -6,5 +6,4 @@ export { EmptyState } from './EmptyState';
 export { FileUpload } from './FileUpload';
 export { PageHeader } from './PageHeader';
 export { StatusBadge, CountBadge } from './StatusBadge';
-export { LeadStatusDropdown } from './LeadStatusDropdown';
 export { StatsInput } from './StatsInput';
