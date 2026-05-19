@@ -11,7 +11,7 @@ import {
   getPaginationParams,
   createPaginationMeta,
 } from '@/lib/api-response';
-import { createLeadSchema } from '@/lib/validations/leads';
+import { createLeadSchema, INFOSHOP_DOMAIN } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
@@ -55,18 +55,19 @@ export async function GET(request: Request) {
       query = query.eq('source', source);
     }
 
+    const infoshopLike = `%${INFOSHOP_DOMAIN}%`;
     const hasWebsite = url.searchParams.get('has_website');
     if (hasWebsite === 'yes') {
-      query = query.not('website', 'is', null).not('website', 'ilike', '%infoshop.ge%');
+      query = query.not('website', 'is', null).not('website', 'ilike', infoshopLike);
     } else if (hasWebsite === 'no') {
-      query = query.or('website.is.null,website.ilike.%infoshop.ge%');
+      query = query.or(`website.is.null,website.ilike.${infoshopLike}`);
     }
 
     const hasSource = url.searchParams.get('has_source');
     if (hasSource === 'yes') {
-      query = query.not('source_url', 'is', null).not('source_url', 'ilike', '%infoshop.ge%');
+      query = query.not('source_url', 'is', null).not('source_url', 'ilike', infoshopLike);
     } else if (hasSource === 'no') {
-      query = query.or('source_url.is.null,source_url.ilike.%infoshop.ge%');
+      query = query.or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
     }
 
     const phonePrefix = url.searchParams.get('phone_prefix');

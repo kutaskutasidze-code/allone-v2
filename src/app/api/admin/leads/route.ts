@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { createLeadSchema, leadStatusSchema } from '@/lib/validations/leads';
+import { createLeadSchema, leadStatusSchema, INFOSHOP_DOMAIN } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
@@ -50,18 +50,19 @@ export async function GET(request: NextRequest) {
       query = query.eq('source', source);
     }
 
+    const infoshopLike = `%${INFOSHOP_DOMAIN}%`;
     const hasWebsite = searchParams.get('has_website');
     if (hasWebsite === 'yes') {
-      query = query.not('website', 'is', null).not('website', 'ilike', '%infoshop.ge%');
+      query = query.not('website', 'is', null).not('website', 'ilike', infoshopLike);
     } else if (hasWebsite === 'no') {
-      query = query.or('website.is.null,website.ilike.%infoshop.ge%');
+      query = query.or(`website.is.null,website.ilike.${infoshopLike}`);
     }
 
     const hasSource = searchParams.get('has_source');
     if (hasSource === 'yes') {
-      query = query.not('source_url', 'is', null).not('source_url', 'ilike', '%infoshop.ge%');
+      query = query.not('source_url', 'is', null).not('source_url', 'ilike', infoshopLike);
     } else if (hasSource === 'no') {
-      query = query.or('source_url.is.null,source_url.ilike.%infoshop.ge%');
+      query = query.or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
     }
 
     const phonePrefix = searchParams.get('phone_prefix');
