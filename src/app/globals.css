@@ -11,10 +11,12 @@
    class, so it stays unaffected.
    ============================================= */
 .dark {
-  /* Slate-themed blue dark palette — uses Tailwind slate hex values for cohesion. */
-  --admin-bg: #0f172a;          /* slate-900 — page background */
-  --admin-surface: #1e293b;     /* slate-800 — cards, sidebar, inputs */
-  --admin-surface-2: #334155;   /* slate-700 — secondary surfaces, gray-100 fill */
+  /* Flat slate-900 dark theme — every surface (page, sidebar, cards, inputs)
+     uses the same blue. Borders provide visual separation, not background
+     contrast. */
+  --admin-bg: #0f172a;          /* slate-900 — used everywhere */
+  --admin-surface: #0f172a;     /* same as bg — no card contrast */
+  --admin-surface-2: #1e293b;   /* slate-800 — used only for hover/active fills */
   --admin-border: #334155;      /* slate-700 — default border */
   --admin-border-strong: #475569; /* slate-600 — hover/focus borders */
   --admin-text: #f1f5f9;        /* slate-100 — primary text */
