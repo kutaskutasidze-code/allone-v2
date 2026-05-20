@@ -23,13 +23,27 @@
   --admin-text-muted: #94a3b8;  /* slate-400 — muted text */
   --admin-text-dim: #64748b;    /* slate-500 — dim text */
   color-scheme: dark;
+
+  /* Older admin pages reference --gray-* CSS variables that are otherwise
+     undefined. Provide dark-mode values so text-[var(--gray-600)] etc. are
+     readable on the slate-900 background. */
+  --gray-100: #1e293b;          /* slate-800 — subtle bg fill */
+  --gray-200: #334155;          /* slate-700 — borders */
+  --gray-300: #475569;          /* slate-600 — stronger borders */
+  --gray-500: #94a3b8;          /* slate-400 — muted text */
+  --gray-600: #cbd5e1;          /* slate-300 — body text */
 }
 
 /* When .dark is on <html>, the html + body backgrounds darken too so the
-   slate-900 fills the whole viewport, not just the admin wrapper. */
+   slate-900 fills the whole viewport, not just the admin wrapper.
+   Also repaint body text so elements without an explicit color (and
+   undefined CSS-var fallbacks) inherit a readable light slate. */
 html.dark,
 html.dark body {
   background-color: var(--admin-bg);
+}
+html.dark body {
+  color: var(--admin-text);
 }
 
 .dark .bg-white { background-color: var(--admin-surface); }
@@ -40,13 +54,18 @@ html.dark body {
 .dark .bg-gray-800 { background-color: #e2e8f0; color: var(--admin-bg); }
 .dark .bg-\[\#FAFAFA\] { background-color: var(--admin-bg); }
 
+.dark .text-black { color: var(--admin-text); }
 .dark .text-gray-900 { color: var(--admin-text); }
 .dark .text-gray-800 { color: var(--admin-text); }
 .dark .text-gray-700 { color: #cbd5e1; }   /* slate-300 */
 .dark .text-gray-600 { color: #94a3b8; }   /* slate-400 */
 .dark .text-gray-500 { color: var(--admin-text-muted); }
 .dark .text-gray-400 { color: var(--admin-text-dim); }
-.dark .text-gray-300 { color: #475569; }   /* slate-600 */
+.dark .text-gray-300 { color: #94a3b8; }   /* slate-400 — keep readable */
+.dark .hover\:text-black:hover { color: var(--admin-text); }
+.dark .focus\:ring-black:focus { --tw-ring-color: var(--admin-text); }
+/* Light-mode text-white means white on a dark button (e.g. bg-gray-900 button).
+   In dark mode those buttons become light-on-dark-text — invert text-white too. */
 .dark .text-white { color: var(--admin-bg); }
 
 .dark .border-gray-100 { border-color: var(--admin-border); }
