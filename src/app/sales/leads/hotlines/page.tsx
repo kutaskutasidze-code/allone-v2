@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Flame, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
-import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX, INFOSHOP_PATTERN } from '@/lib/validations/leads';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { HotLinesDropdown } from '../HotLinesDropdown';
 
@@ -132,7 +132,7 @@ function HotLinesPageContent() {
     try {
       setIsLoading(true);
       const params = new URLSearchParams();
-      params.set('phone_prefix', HOTLINE_PHONE_PREFIX);
+      params.set('phone_prefix', HOTLINE_PHONE_PREFIX_PARAM);
       if (statusFilter !== 'all') params.set('status', statusFilter);
       if (industryFilter) params.set('industry', industryFilter);
       if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
@@ -217,7 +217,7 @@ function HotLinesPageContent() {
           <option value="yes">Has Source</option>
           <option value="no">No Source</option>
         </select>
-        <HotLinesDropdown selectedIndustry={industryFilter} onSelect={handleIndustrySelect} phonePrefix={HOTLINE_PHONE_PREFIX} />
+        <HotLinesDropdown selectedIndustry={industryFilter} onSelect={handleIndustrySelect} phonePrefix={HOTLINE_PHONE_PREFIX_PARAM} />
         <button
           onClick={() => { setStatusFilter('all'); setPage(1); }}
           className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${statusFilter === 'all' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}

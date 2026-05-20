@@ -11,7 +11,7 @@ import {
   getPaginationParams,
   createPaginationMeta,
 } from '@/lib/api-response';
-import { createLeadSchema, INFOSHOP_DOMAIN } from '@/lib/validations/leads';
+import { createLeadSchema, INFOSHOP_DOMAIN, parsePhonePrefixes } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
@@ -70,14 +70,19 @@ export async function GET(request: Request) {
       query = query.or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
     }
 
-    const phonePrefix = url.searchParams.get('phone_prefix');
-    if (phonePrefix) {
-      query = query.ilike('phone', `${phonePrefix}%`);
+    const includePrefixes = parsePhonePrefixes(url.searchParams.get('phone_prefix'));
+    if (includePrefixes.length === 1) {
+      query = query.ilike('phone', `${includePrefixes[0]}%`);
+    } else if (includePrefixes.length > 1) {
+      query = query.or(includePrefixes.map(p => `phone.ilike.${p}%`).join(','));
     }
 
-    const excludePhonePrefix = url.searchParams.get('exclude_phone_prefix');
-    if (excludePhonePrefix) {
-      query = query.or(`phone.is.null,phone.not.ilike.${excludePhonePrefix}%`);
+    const excludePrefixes = parsePhonePrefixes(url.searchParams.get('exclude_phone_prefix'));
+    if (excludePrefixes.length === 1) {
+      query = query.or(`phone.is.null,phone.not.ilike.${excludePrefixes[0]}%`);
+    } else if (excludePrefixes.length > 1) {
+      const andClause = excludePrefixes.map(p => `phone.not.ilike.${p}%`).join(',');
+      query = query.or(`phone.is.null,and(${andClause})`);
     }
 
     if (search) {

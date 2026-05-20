@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { createLeadSchema, leadStatusSchema, INFOSHOP_DOMAIN } from '@/lib/validations/leads';
+import { createLeadSchema, leadStatusSchema, INFOSHOP_DOMAIN, parsePhonePrefixes } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
@@ -65,14 +65,19 @@ export async function GET(request: NextRequest) {
       query = query.or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
     }
 
-    const phonePrefix = searchParams.get('phone_prefix');
-    if (phonePrefix) {
-      query = query.ilike('phone', `${phonePrefix}%`);
+    const includePrefixes = parsePhonePrefixes(searchParams.get('phone_prefix'));
+    if (includePrefixes.length === 1) {
+      query = query.ilike('phone', `${includePrefixes[0]}%`);
+    } else if (includePrefixes.length > 1) {
+      query = query.or(includePrefixes.map(p => `phone.ilike.${p}%`).join(','));
     }
 
-    const excludePhonePrefix = searchParams.get('exclude_phone_prefix');
-    if (excludePhonePrefix) {
-      query = query.or(`phone.is.null,phone.not.ilike.${excludePhonePrefix}%`);
+    const excludePrefixes = parsePhonePrefixes(searchParams.get('exclude_phone_prefix'));
+    if (excludePrefixes.length === 1) {
+      query = query.or(`phone.is.null,phone.not.ilike.${excludePrefixes[0]}%`);
+    } else if (excludePrefixes.length > 1) {
+      const andClause = excludePrefixes.map(p => `phone.not.ilike.${p}%`).join(',');
+      query = query.or(`phone.is.null,and(${andClause})`);
     }
 
     const industry = searchParams.get('industry');

@@ -52,7 +52,16 @@ export const LEAD_SERVICES = [
   { value: 'custom_ai', label: 'Custom AI' },
 ] as const;
 
-export const HOTLINE_PHONE_PREFIX = '+995322';
+// Hotlines = Georgian landlines (regional codes start with 3 or 4 after +995).
+// Anything else (mobile +9955.../+9957..., etc.) is treated as a regular lead.
+export const HOTLINE_PHONE_PREFIXES = ['+9953', '+9954'] as const;
+export const HOTLINE_PHONE_PREFIX_PARAM = HOTLINE_PHONE_PREFIXES.join(',');
+
+// Parse a comma-separated `phone_prefix` query param into a clean list.
+export function parsePhonePrefixes(raw: string | null): string[] {
+  if (!raw) return [];
+  return raw.split(',').map(p => p.trim()).filter(Boolean);
+}
 
 export const INFOSHOP_DOMAIN = 'infoshop.ge';
 export const INFOSHOP_PATTERN = /infoshop\.ge/i;

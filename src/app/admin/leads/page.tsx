@@ -6,7 +6,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3, Tag } from 'lucide-react';
 import { EmptyState } from '@/components/admin';
-import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX, INFOSHOP_PATTERN } from '@/lib/validations/leads';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { HotLinesDropdown } from '@/app/sales/leads/HotLinesDropdown';
 import type { LeadWithSalesUser } from '@/types/database';
@@ -254,7 +254,7 @@ function AdminLeadsPageContent() {
   const fetchStatusCounts = useCallback(async () => {
     try {
       const statuses = LEAD_STATUSES.map(s => s.value);
-      const excludeParam = `exclude_phone_prefix=${encodeURIComponent(HOTLINE_PHONE_PREFIX)}`;
+      const excludeParam = `exclude_phone_prefix=${encodeURIComponent(HOTLINE_PHONE_PREFIX_PARAM)}`;
       const [allRes, ...statusResults] = await Promise.all([
         fetch(`/api/admin/leads?limit=1&${excludeParam}`).then(r => r.ok ? r.json() : null),
         ...statuses.map(s => fetch(`/api/admin/leads?status=${s}&limit=1&${excludeParam}`).then(r => r.ok ? r.json() : null)),
@@ -280,7 +280,7 @@ function AdminLeadsPageContent() {
       if (debouncedSearch) params.set('search', debouncedSearch);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
-      params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX);
+      params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX_PARAM);
 
       const res = await fetch(`/api/admin/leads?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch leads');
@@ -444,7 +444,7 @@ function AdminLeadsPageContent() {
         <HotLinesDropdown
           selectedIndustry={industryFilter}
           onSelect={handleIndustrySelect}
-          excludePhonePrefix={HOTLINE_PHONE_PREFIX}
+          excludePhonePrefix={HOTLINE_PHONE_PREFIX_PARAM}
           endpoint="/api/admin/leads/industries"
           label="All Categories"
           icon={Tag}
