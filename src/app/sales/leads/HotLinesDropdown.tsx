@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Flame, ChevronDown } from 'lucide-react';
+import { Flame, ChevronDown, type LucideIcon } from 'lucide-react';
 
 interface IndustryRow {
   industry: string;
@@ -12,10 +12,25 @@ interface HotLinesDropdownProps {
   selectedIndustry: string | null;
   onSelect: (industry: string | null) => void;
   phonePrefix?: string;
+  excludePhonePrefix?: string;
   endpoint?: string;
+  label?: string;
+  icon?: LucideIcon;
+  iconClassName?: string;
+  activeClassName?: string;
 }
 
-export function HotLinesDropdown({ selectedIndustry, onSelect, phonePrefix, endpoint = '/api/sales/leads/industries' }: HotLinesDropdownProps) {
+export function HotLinesDropdown({
+  selectedIndustry,
+  onSelect,
+  phonePrefix,
+  excludePhonePrefix,
+  endpoint = '/api/sales/leads/industries',
+  label = 'Hot Lines',
+  icon: Icon = Flame,
+  iconClassName = 'text-amber-500',
+  activeClassName = 'bg-amber-500 text-white shadow-sm',
+}: HotLinesDropdownProps) {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<IndustryRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -25,7 +40,10 @@ export function HotLinesDropdown({ selectedIndustry, onSelect, phonePrefix, endp
     let cancelled = false;
     (async () => {
       try {
-        const qs = phonePrefix ? `?phone_prefix=${encodeURIComponent(phonePrefix)}` : '';
+        const params = new URLSearchParams();
+        if (phonePrefix) params.set('phone_prefix', phonePrefix);
+        if (excludePhonePrefix) params.set('exclude_phone_prefix', excludePhonePrefix);
+        const qs = params.toString() ? `?${params.toString()}` : '';
         const res = await fetch(`${endpoint}${qs}`);
         if (!res.ok) return;
         const json = await res.json();
@@ -42,10 +60,10 @@ export function HotLinesDropdown({ selectedIndustry, onSelect, phonePrefix, endp
     return () => {
       cancelled = true;
     };
-  }, [phonePrefix, endpoint]);
+  }, [phonePrefix, excludePhonePrefix, endpoint]);
 
   const active = selectedIndustry !== null;
-  const buttonLabel = selectedIndustry ?? 'Hot Lines';
+  const buttonLabel = selectedIndustry ?? label;
 
   return (
     <div className="relative">
@@ -53,11 +71,11 @@ export function HotLinesDropdown({ selectedIndustry, onSelect, phonePrefix, endp
         onClick={() => setOpen(!open)}
         className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
           active
-            ? 'bg-amber-500 text-white shadow-sm'
+            ? activeClassName
             : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
         }`}
       >
-        <Flame className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-amber-500'}`} />
+        <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : iconClassName}`} />
         <span className="truncate max-w-[160px]">{buttonLabel}</span>
         <ChevronDown className="w-3 h-3" />
       </button>

@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const sourceFilter = url.searchParams.get('source');
     const phonePrefix = url.searchParams.get('phone_prefix');
+    const excludePhonePrefix = url.searchParams.get('exclude_phone_prefix');
 
     const PAGE = 1000;
     const counts = new Map<string, number>();
@@ -27,6 +28,7 @@ export async function GET(request: NextRequest) {
         .not('industry', 'is', null);
       if (sourceFilter) q = q.eq('source', sourceFilter);
       if (phonePrefix) q = q.ilike('phone', `${phonePrefix}%`);
+      if (excludePhonePrefix) q = q.or(`phone.is.null,phone.not.ilike.${excludePhonePrefix}%`);
       const { data, error: dbError } = await q.range(offset, offset + PAGE - 1);
 
       if (dbError) {

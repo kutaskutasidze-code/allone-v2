@@ -2,12 +2,13 @@
 
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3 } from 'lucide-react';
+import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3, Tag } from 'lucide-react';
 import { EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+import { HotLinesDropdown } from '@/app/sales/leads/HotLinesDropdown';
 import type { LeadWithSalesUser } from '@/types/database';
 
 const formatDate = (dateString: string) =>
@@ -219,7 +220,10 @@ function AddLeadModal({ onClose, onAdded }: { onClose: () => void; onAdded: () =
 
 function AdminLeadsPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const initialStatus = searchParams.get('status') || 'all';
+  const initialIndustry = searchParams.get('industry');
 
   const [leads, setLeads] = useState<LeadWithSalesUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -228,12 +232,23 @@ function AdminLeadsPageContent() {
   const [serviceFilter, setServiceFilter] = useState('all');
   const [websiteFilter, setWebsiteFilter] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
+  const [industryFilter, setIndustryFilter] = useState<string | null>(initialIndustry);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
   const [showAddLead, setShowAddLead] = useState(false);
   const [error, setError] = useState('');
   const limit = 50;
+
+  const handleIndustrySelect = useCallback((industry: string | null) => {
+    setIndustryFilter(industry);
+    setPage(1);
+    const params = new URLSearchParams(searchParams.toString());
+    if (industry) params.set('industry', industry);
+    else params.delete('industry');
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [router, pathname, searchParams]);
 
   // Fetch status counts separately (always unfiltered)
   const fetchStatusCounts = useCallback(async () => {
@@ -261,6 +276,7 @@ function AdminLeadsPageContent() {
       if (serviceFilter !== 'all') params.set('service', serviceFilter);
       if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
       if (sourceFilter !== 'all') params.set('has_source', sourceFilter);
+      if (industryFilter) params.set('industry', industryFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
@@ -276,7 +292,7 @@ function AdminLeadsPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, serviceFilter, websiteFilter, sourceFilter, debouncedSearch, page]);
+  }, [statusFilter, serviceFilter, websiteFilter, sourceFilter, industryFilter, debouncedSearch, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
   useEffect(() => { fetchStatusCounts(); }, [fetchStatusCounts]);
@@ -406,8 +422,8 @@ function AdminLeadsPageContent() {
         </select>
       </div>
 
-      {/* Service Filter */}
-      <div className="flex items-center gap-3">
+      {/* Service + Category Filter */}
+      <div className="flex flex-wrap items-center gap-3">
         <select
           value={serviceFilter}
           onChange={(e) => { setServiceFilter(e.target.value); setPage(1); }}
@@ -423,6 +439,21 @@ function AdminLeadsPageContent() {
         {serviceFilter !== 'all' && (
           <button onClick={() => { setServiceFilter('all'); setPage(1); }} className="text-xs text-gray-500 hover:text-gray-900">
             Clear
+          </button>
+        )}
+        <HotLinesDropdown
+          selectedIndustry={industryFilter}
+          onSelect={handleIndustrySelect}
+          excludePhonePrefix={HOTLINE_PHONE_PREFIX}
+          endpoint="/api/admin/leads/industries"
+          label="All Categories"
+          icon={Tag}
+          iconClassName="text-sky-500"
+          activeClassName="bg-sky-500 text-white shadow-sm"
+        />
+        {industryFilter && (
+          <button onClick={() => handleIndustrySelect(null)} className="text-xs text-gray-500 hover:text-gray-900">
+            Clear category
           </button>
         )}
       </div>
