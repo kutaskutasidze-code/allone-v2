@@ -34,6 +34,20 @@ export function AdminLayoutContent({
     });
   }, []);
 
+  // Apply `dark` to <html> so html + body backgrounds darken too (not just the
+  // admin wrapper). Clean up when leaving admin routes so the public site is
+  // unaffected.
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    return () => {
+      document.documentElement.classList.remove('dark');
+    };
+  }, [theme]);
+
   useEffect(() => {
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 1024);
@@ -62,11 +76,10 @@ export function AdminLayoutContent({
   }
 
   const desktopMargin = isDesktop ? (isCollapsed ? 72 : 256) : 0;
-  const isDark = theme === 'dark';
 
   return (
     <AdminThemeContext.Provider value={{ theme, toggleTheme }}>
-      <div className={`${isDark ? 'dark ' : ''}min-h-screen bg-[#FAFAFA]`}>
+      <div className="min-h-screen bg-[#FAFAFA]">
         <AdminSidebar
           isCollapsed={isCollapsed}
           onToggle={() => {

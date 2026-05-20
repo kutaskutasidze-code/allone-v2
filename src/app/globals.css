@@ -23,6 +23,13 @@
   color-scheme: dark;
 }
 
+/* When .dark is on <html>, the html + body backgrounds darken too so the
+   slate-900 fills the whole viewport, not just the admin wrapper. */
+html.dark,
+html.dark body {
+  background-color: var(--admin-bg);
+}
+
 .dark .bg-white { background-color: var(--admin-surface); }
 .dark .bg-gray-50 { background-color: #172033; }
 .dark .bg-gray-100 { background-color: var(--admin-surface-2); }
