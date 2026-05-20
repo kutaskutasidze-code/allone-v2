@@ -24,8 +24,6 @@ import {
   X,
   Bot,
   Flame,
-  Sun,
-  Moon,
 } from 'lucide-react';
 
 const navigationSections = [
@@ -70,11 +68,9 @@ interface AdminSidebarProps {
   onToggle: () => void;
   isMobileOpen: boolean;
   onMobileClose: () => void;
-  theme: 'light' | 'dark';
-  onToggleTheme: () => void;
 }
 
-export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClose, theme, onToggleTheme }: AdminSidebarProps) {
+export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClose }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -194,34 +190,6 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
 
       {/* Footer */}
       <div className="border-t border-gray-100 p-3 space-y-0.5">
-        <div className="relative group">
-          <button
-            onClick={onToggleTheme}
-            className={cn(
-              "flex w-full items-center rounded-lg text-[13px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-150",
-              isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
-            )}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-[18px] w-[18px] flex-shrink-0" />
-            ) : (
-              <Moon className="h-[18px] w-[18px] flex-shrink-0" />
-            )}
-            <span className={cn(
-              'whitespace-nowrap transition-all duration-200 overflow-hidden',
-              isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
-            )}>
-              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-            </span>
-          </button>
-          {isCollapsed && (
-            <div className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-[60]">
-              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-            </div>
-          )}
-        </div>
-
         <div className="relative group">
           <Link
             href="/"
@@ -353,14 +321,6 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
 
       {/* Footer */}
       <div className="border-t border-gray-100 p-3 space-y-0.5">
-        <button
-          onClick={onToggleTheme}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-150"
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {theme === 'dark' ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
-          <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-        </button>
         <Link
           href="/"
           target="_blank"

@@ -4,11 +4,12 @@ import { Suspense, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3, Tag } from 'lucide-react';
+import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, BarChart3, Tag, Sun, Moon } from 'lucide-react';
 import { EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { HotLinesDropdown } from '@/app/sales/leads/HotLinesDropdown';
+import { useAdminTheme } from '@/app/admin/AdminThemeContext';
 import type { LeadWithSalesUser } from '@/types/database';
 
 const formatDate = (dateString: string) =>
@@ -222,6 +223,7 @@ function AdminLeadsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { theme, toggleTheme } = useAdminTheme();
   const initialStatus = searchParams.get('status') || 'all';
   const initialIndustry = searchParams.get('industry');
 
@@ -337,6 +339,13 @@ function AdminLeadsPageContent() {
           <p className="mt-1.5 text-sm text-gray-500">{total} total leads</p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="inline-flex items-center justify-center w-10 h-10 text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 active:scale-[0.98] transition-all duration-150"
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
           <Link
             href="/admin/leads/analytics"
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 active:scale-[0.98] transition-all duration-150"
