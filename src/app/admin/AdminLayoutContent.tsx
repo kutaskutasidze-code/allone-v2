@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 
+type Theme = 'light' | 'dark';
+const THEME_STORAGE_KEY = 'allone-admin-theme';
+
 export function AdminLayoutContent({
   children,
 }: {
@@ -15,6 +18,21 @@ export function AdminLayoutContent({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [theme, setTheme] = useState<Theme>('light');
+
+  // Read stored theme on mount (client-only — SSR renders light, then this kicks in pre-paint).
+  useEffect(() => {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === 'dark' || stored === 'light') setTheme(stored);
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      try { window.localStorage.setItem(THEME_STORAGE_KEY, next); } catch {}
+      return next;
+    });
+  };
 
   useEffect(() => {
     const checkDesktop = () => {
@@ -44,9 +62,10 @@ export function AdminLayoutContent({
   }
 
   const desktopMargin = isDesktop ? (isCollapsed ? 72 : 256) : 0;
+  const isDark = theme === 'dark';
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className={`${isDark ? 'dark ' : ''}min-h-screen bg-[#FAFAFA]`}>
       <AdminSidebar
         isCollapsed={isCollapsed}
         onToggle={() => {
@@ -58,6 +77,8 @@ export function AdminLayoutContent({
         }}
         isMobileOpen={isMobileOpen}
         onMobileClose={() => setIsMobileOpen(false)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
       <main
         className="min-h-screen transition-[margin-left] duration-200 ease-out"
