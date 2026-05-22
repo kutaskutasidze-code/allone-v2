@@ -45,7 +45,12 @@ export async function middleware(request: NextRequest) {
     'nikoloz.gaprindashvili@allonelabs.com',
     'luka.tsulukidze@allonelabs.com',
     'luka.adamia@allonelabs.com',
+    'team@allonelabs.com',
   ];
+  // Normalize for comparison — Supabase may store emails with original casing,
+  // and a case-sensitive includes() would silently bounce a valid admin.
+  const userEmail = (user?.email || '').toLowerCase().trim();
+  const isAdmin = ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
 
   // Protect admin routes (except login)
   if (
@@ -56,14 +61,14 @@ export async function middleware(request: NextRequest) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
-    if (!ADMIN_EMAILS.includes(user!.email || '')) {
+    if (!isAdmin) {
       return NextResponse.redirect(new URL('/', request.url));
     }
   }
 
   // Protect admin API routes
   if (request.nextUrl.pathname.startsWith('/api/admin')) {
-    if (!isAuthenticated || !ADMIN_EMAILS.includes(user!.email || '')) {
+    if (!isAuthenticated || !isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
   }
