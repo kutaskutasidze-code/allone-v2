@@ -60,9 +60,15 @@ export async function GET(request: NextRequest) {
 
     const hasSource = searchParams.get('has_source');
     if (hasSource === 'yes') {
-      query = query.not('source_url', 'is', null).not('source_url', 'ilike', infoshopLike);
+      // "Has source" includes a valid source_url OR a facebook_url
+      query = query.or(
+        `and(source_url.not.is.null,source_url.not.ilike.${infoshopLike}),facebook_url.not.is.null`
+      );
     } else if (hasSource === 'no') {
-      query = query.or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
+      // "No source" means no valid source_url AND no facebook_url
+      query = query
+        .is('facebook_url', null)
+        .or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
     }
 
     const includePrefixes = parsePhonePrefixes(searchParams.get('phone_prefix'));
@@ -83,6 +89,19 @@ export async function GET(request: NextRequest) {
     const industry = searchParams.get('industry');
     if (industry && industry !== 'all') {
       query = query.eq('industry', industry);
+    }
+
+    // Assignment filters for the admin pool / per-rep views.
+    const assignment = searchParams.get('assignment');
+    if (assignment === 'unassigned') {
+      query = query.is('sales_user_id', null);
+    } else if (assignment === 'assigned') {
+      query = query.not('sales_user_id', 'is', null);
+    }
+
+    const assignedTo = searchParams.get('assigned_to');
+    if (assignedTo) {
+      query = query.eq('sales_user_id', assignedTo);
     }
 
     if (search) {

@@ -68,7 +68,10 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect sales routes (except login)
+  // Protect sales routes (except login). Anyone who can reach the sales portal
+  // must (a) be authenticated and (b) have a row in sales_users — otherwise the
+  // sidebar and the per-rep scoping wouldn't make sense and the API would 401
+  // every page load.
   if (
     request.nextUrl.pathname.startsWith('/sales') &&
     !request.nextUrl.pathname.startsWith('/sales/login') &&
@@ -76,6 +79,17 @@ export async function middleware(request: NextRequest) {
   ) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/sales/login', request.url));
+    }
+    if (!user?.email) {
+      return NextResponse.redirect(new URL('/sales/login', request.url));
+    }
+    const { data: salesUser } = await supabase
+      .from('sales_users')
+      .select('id')
+      .eq('email', user.email)
+      .maybeSingle();
+    if (!salesUser) {
+      return NextResponse.redirect(new URL('/', request.url));
     }
   }
 

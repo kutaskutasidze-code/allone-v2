@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
+import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, Sun, Inbox, PhoneCall, Layers } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
@@ -111,10 +111,20 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
   );
 }
 
+type ScopeMode = 'today' | 'mine' | 'callbacks' | 'done' | 'team';
+
 function LeadsPageContent() {
   const searchParams = useSearchParams();
-  const initialStatus = searchParams.get('status') || 'new';
+  const initialStatus = searchParams.get('status') || 'all';
   const salesUserIdFilter = searchParams.get('sales_user_id');
+  const initialScopeParam = searchParams.get('scope');
+
+  const [scopeMode, setScopeMode] = useState<ScopeMode>(
+    initialScopeParam === 'today' ? 'today'
+      : initialStatus === 'callback' ? 'callbacks'
+        : 'mine'
+  );
+  const [isSupervisor, setIsSupervisor] = useState(false);
 
   const [leads, setLeads] = useState<Record<string, unknown>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -130,16 +140,47 @@ function LeadsPageContent() {
 
   const debouncedSearch = useDebounce(search, 350);
 
+  // Detect whether the current user can use the "All team" scope.
+  useEffect(() => {
+    let active = true;
+    fetch('/api/sales/me')
+      .then(r => r.ok ? r.json() : null)
+      .then(json => {
+        if (!active) return;
+        const role = json?.data?.role;
+        if (role === 'supervisor' || role === 'admin') setIsSupervisor(true);
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
   const fetchLeads = useCallback(async () => {
     try {
       setIsLoading(true);
       const params = new URLSearchParams();
-      if (statusFilter !== 'all') params.set('status', statusFilter);
+
+      // Scope chips override the legacy status / sales_user_id query params.
+      if (scopeMode === 'today') {
+        params.set('scope', 'today');
+      } else if (scopeMode === 'callbacks') {
+        params.set('status', 'callback');
+      } else if (scopeMode === 'done') {
+        // "Done today" — leads I've moved off `new` since today.
+        // Implemented client-side filter for now; server still returns "mine".
+      } else if (scopeMode === 'team' && isSupervisor) {
+        params.set('all', 'true');
+      }
+
+      // Honor an explicit status pill click only when no scope filter overrides it.
+      if (scopeMode !== 'today' && scopeMode !== 'callbacks' && statusFilter !== 'all') {
+        params.set('status', statusFilter);
+      }
       if (serviceFilter !== 'all') params.set('service', serviceFilter);
       if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
       if (sourceFilter !== 'all') params.set('has_source', sourceFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
-      if (salesUserIdFilter) params.set('sales_user_id', salesUserIdFilter);
+      // Supervisors drilling into a specific rep from /sales/team
+      if (salesUserIdFilter && scopeMode === 'team') params.set('sales_user_id', salesUserIdFilter);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
       params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX_PARAM);
@@ -147,14 +188,26 @@ function LeadsPageContent() {
       const res = await fetch(`/api/sales/leads?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch leads');
       const result = await res.json();
-      setLeads(result.data || []);
+      let data: Record<string, unknown>[] = result.data || [];
+
+      if (scopeMode === 'done') {
+        const startOfDay = new Date();
+        startOfDay.setUTCHours(0, 0, 0, 0);
+        data = data.filter(l => {
+          const status = l.status as string;
+          const changed = l.status_changed_at as string | undefined;
+          return status !== 'new' && changed && new Date(changed) >= startOfDay;
+        });
+      }
+
+      setLeads(data);
       setTotal(result.pagination?.total || 0);
     } catch {
       setError('Failed to load leads');
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, serviceFilter, websiteFilter, sourceFilter, debouncedSearch, page, salesUserIdFilter]);
+  }, [scopeMode, isSupervisor, statusFilter, serviceFilter, websiteFilter, sourceFilter, debouncedSearch, page, salesUserIdFilter]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -189,7 +242,7 @@ function LeadsPageContent() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Leads" description={`${total} total leads`} action={{ label: 'Add Lead', href: '/sales/leads/new' }} />
+      <PageHeader title="Leads" description={scopeMode === 'team' ? `${total} total team leads` : `${total} leads · your pipeline`} action={{ label: 'Add Lead', href: '/sales/leads/new' }} />
 
       {error && (
         <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
@@ -198,19 +251,54 @@ function LeadsPageContent() {
         </div>
       )}
 
+      {/* Scope chips — high-level view selector for the rep's daily workflow. */}
       <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => { setStatusFilter('all'); setPage(1); }}
-          className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${statusFilter === 'all' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
-        >All</button>
-        {LEAD_STATUSES.map(s => (
+        {[
+          { value: 'today' as ScopeMode, label: "Today's Queue", icon: Sun },
+          { value: 'mine' as ScopeMode, label: 'All Mine', icon: Inbox },
+          { value: 'callbacks' as ScopeMode, label: 'Callbacks', icon: PhoneCall },
+          { value: 'done' as ScopeMode, label: 'Done Today', icon: Layers },
+        ].map(chip => {
+          const Icon = chip.icon;
+          const active = scopeMode === chip.value;
+          return (
+            <button
+              key={chip.value}
+              onClick={() => { setScopeMode(chip.value); setStatusFilter('all'); setPage(1); }}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${active ? 'bg-gray-900 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {chip.label}
+            </button>
+          );
+        })}
+        {isSupervisor && (
           <button
-            key={s.value}
-            onClick={() => { setStatusFilter(s.value); setPage(1); }}
-            className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${statusFilter === s.value ? 'bg-gray-900 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
-          >{s.label}</button>
-        ))}
+            onClick={() => { setScopeMode('team'); setStatusFilter('all'); setPage(1); }}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${scopeMode === 'team' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            All Team
+          </button>
+        )}
       </div>
+
+      {/* Status filter (only meaningful within the All-Mine / All-Team scope) */}
+      {(scopeMode === 'mine' || scopeMode === 'team') && (
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => { setStatusFilter('all'); setPage(1); }}
+            className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${statusFilter === 'all' ? 'bg-gray-900 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+          >All</button>
+          {LEAD_STATUSES.map(s => (
+            <button
+              key={s.value}
+              onClick={() => { setStatusFilter(s.value); setPage(1); }}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${statusFilter === s.value ? 'bg-gray-900 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
+            >{s.label}</button>
+          ))}
+        </div>
+      )}
 
       <div className="flex items-center gap-2">
         <select

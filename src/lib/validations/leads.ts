@@ -19,15 +19,21 @@ export const createLeadSchema = z.object({
   matched_service: leadServiceSchema.optional().or(z.literal('')).transform(val => val || null),
 });
 
+// IMPORTANT: each `.optional().transform(...)` must preserve `undefined` for fields the
+// client did not send. If the transform returned `null` for `undefined`, then a PATCH
+// like `{ status: 'contacted' }` would also wipe company/notes/email/phone to NULL.
+const emptyToNull = <T extends string | undefined>(val: T) =>
+  val === undefined ? undefined : (val === '' ? null : val);
+
 export const updateLeadSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255, 'Name too long').optional(),
-  email: z.string().email('Invalid email').optional().or(z.literal('')).transform(val => val || null),
-  phone: z.string().max(50).optional().transform(val => val || null),
-  company: z.string().max(255).optional().transform(val => val || null),
+  email: z.string().email('Invalid email').optional().or(z.literal('')).transform(emptyToNull),
+  phone: z.string().max(50).optional().transform(emptyToNull),
+  company: z.string().max(255).optional().transform(emptyToNull),
   status: leadStatusSchema.optional(),
   value: z.number().min(0, 'Value cannot be negative').optional(),
-  source: z.string().max(100).optional().transform(val => val || null),
-  notes: z.string().optional().transform(val => val || null),
+  source: z.string().max(100).optional().transform(emptyToNull),
+  notes: z.string().optional().transform(emptyToNull),
 });
 
 export type CreateLead = z.infer<typeof createLeadSchema>;

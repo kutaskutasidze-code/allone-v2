@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import type { LeadWithSalesUser } from '@/types/database';
 import { LEAD_STATUS_STYLES, LEAD_STATUS_LABELS, LEAD_STATUSES } from '@/lib/validations/leads';
+import { DailyActivityCard } from './DailyActivityCard';
 import { useState, useMemo } from 'react';
 import {
   LineChart,
@@ -198,6 +199,9 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
           </Link>
         ))}
       </div>
+
+      {/* Daily call activity by rep */}
+      <DailyActivityCard />
 
       {/* Revenue Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
