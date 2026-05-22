@@ -41,16 +41,23 @@ export async function middleware(request: NextRequest) {
 
   const isAuthenticated = !!user && !error;
 
-  const ADMIN_EMAILS = [
-    'nikoloz.gaprindashvili@allonelabs.com',
-    'luka.tsulukidze@allonelabs.com',
-    'luka.adamia@allonelabs.com',
-    'team@allonelabs.com',
-  ];
-  // Normalize for comparison — Supabase may store emails with original casing,
+  // Admin allowlist. Configurable via ADMIN_EMAILS env var (comma-separated)
+  // so new admins can be added in the Vercel dashboard without a code change.
+  // The hardcoded list below is a safety fallback if the env var is unset.
+  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS
+    ? process.env.ADMIN_EMAILS.split(',')
+    : [
+        'nikoloz.gaprindashvili@allonelabs.com',
+        'luka.tsulukidze@allonelabs.com',
+        'luka.adamia@allonelabs.com',
+        'team@allonelabs.com',
+      ]
+  ).map(e => e.toLowerCase().trim()).filter(Boolean);
+
+  // Case-insensitive comparison — Supabase may store emails with original casing,
   // and a case-sensitive includes() would silently bounce a valid admin.
   const userEmail = (user?.email || '').toLowerCase().trim();
-  const isAdmin = ADMIN_EMAILS.some(e => e.toLowerCase() === userEmail);
+  const isAdmin = ADMIN_EMAILS.includes(userEmail);
 
   // Protect admin routes (except login)
   if (
