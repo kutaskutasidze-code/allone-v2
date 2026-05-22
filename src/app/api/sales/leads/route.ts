@@ -32,8 +32,26 @@ export async function GET(request: Request) {
       .order('relevance_score', { ascending: false })
       .order('created_at', { ascending: false });
 
-    if (salesUserIdFilter) {
-      query = query.eq('sales_user_id', salesUserIdFilter);
+    // Per-rep scoping. A salesperson only ever sees leads assigned to them — the
+    // sales_user_id query param is ignored. A supervisor/admin can either ask for
+    // everyone (?all=true), a specific rep (?sales_user_id=...), or default to
+    // their own pipeline.
+    const wantAll = url.searchParams.get('all') === 'true';
+    if (canSeeAll) {
+      if (salesUserIdFilter) {
+        query = query.eq('sales_user_id', salesUserIdFilter);
+      } else if (!wantAll) {
+        query = query.eq('sales_user_id', salesUser.id);
+      }
+    } else {
+      query = query.eq('sales_user_id', salesUser.id);
+    }
+
+    // ?scope=today → leads assigned to me since midnight UTC today.
+    if (url.searchParams.get('scope') === 'today') {
+      const startOfDay = new Date();
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      query = query.gte('assigned_at', startOfDay.toISOString());
     }
 
     if (status && status !== 'all') {

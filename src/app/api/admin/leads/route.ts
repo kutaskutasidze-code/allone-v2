@@ -91,6 +91,19 @@ export async function GET(request: NextRequest) {
       query = query.eq('industry', industry);
     }
 
+    // Assignment filters for the admin pool / per-rep views.
+    const assignment = searchParams.get('assignment');
+    if (assignment === 'unassigned') {
+      query = query.is('sales_user_id', null);
+    } else if (assignment === 'assigned') {
+      query = query.not('sales_user_id', 'is', null);
+    }
+
+    const assignedTo = searchParams.get('assigned_to');
+    if (assignedTo) {
+      query = query.eq('sales_user_id', assignedTo);
+    }
+
     if (search) {
       const sanitized = search.replace(/[%_]/g, '');
       if (sanitized.length > 0) {
