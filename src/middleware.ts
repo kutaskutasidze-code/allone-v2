@@ -42,12 +42,9 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!user && !error;
 
   const ADMIN_EMAILS = [
+    'nikoloz.gaprindashvili@allonelabs.com',
     'luka.tsulukidze@allonelabs.com',
     'luka.adamia@allonelabs.com',
-    'levan.shavliashvili@allonelabs.com',
-    'tato.dzagnidze@allonelabs.com',
-    'elene.pirtskhalava@allonelabs.com',
-    'nikoloz.gaprindashvili@allonelabs.com',
   ];
 
   // Protect admin routes (except login)
