@@ -83,12 +83,19 @@ export async function middleware(request: NextRequest) {
     if (!user?.email) {
       return NextResponse.redirect(new URL('/sales/login', request.url));
     }
-    const { data: salesUser } = await supabase
-      .from('sales_users')
-      .select('id')
-      .eq('email', user.email)
-      .maybeSingle();
-    if (!salesUser) {
+    // Use the service role for this one lookup so it bypasses RLS — the
+    // sales_users RLS policies currently have an infinite-recursion bug that
+    // makes the anon client error out on any read of this table.
+    const adminUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent(user.email)}&select=id&limit=1`;
+    const lookup = await fetch(adminUrl, {
+      headers: {
+        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+      },
+      cache: 'no-store',
+    });
+    const rows = lookup.ok ? await lookup.json() : [];
+    if (!Array.isArray(rows) || rows.length === 0) {
       return NextResponse.redirect(new URL('/', request.url));
     }
   }
