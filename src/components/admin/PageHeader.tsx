@@ -11,11 +11,14 @@ interface PageHeaderProps {
     href?: string;
     onClick?: () => void;
   };
+  // Optional slot rendered to the LEFT of the primary action (e.g. icon
+  // buttons like a dark-mode toggle).
+  extras?: React.ReactNode;
 }
 
 const buttonClasses = 'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm hover:bg-gray-800 active:scale-[0.98] transition-all duration-150';
 
-export function PageHeader({ title, description, action }: PageHeaderProps) {
+export function PageHeader({ title, description, action, extras }: PageHeaderProps) {
   return (
     <div className="flex items-start justify-between mb-10">
       <div>
@@ -28,18 +31,23 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
           </p>
         )}
       </div>
-      {action && (
-        action.href ? (
-          <Link href={action.href} className={buttonClasses}>
-            <Plus className="h-4 w-4" />
-            {action.label}
-          </Link>
-        ) : (
-          <button onClick={action.onClick} className={buttonClasses}>
-            <Plus className="h-4 w-4" />
-            {action.label}
-          </button>
-        )
+      {(extras || action) && (
+        <div className="flex items-center gap-2">
+          {extras}
+          {action && (
+            action.href ? (
+              <Link href={action.href} className={buttonClasses}>
+                <Plus className="h-4 w-4" />
+                {action.label}
+              </Link>
+            ) : (
+              <button onClick={action.onClick} className={buttonClasses}>
+                <Plus className="h-4 w-4" />
+                {action.label}
+              </button>
+            )
+          )}
+        </div>
       )}
     </div>
   );

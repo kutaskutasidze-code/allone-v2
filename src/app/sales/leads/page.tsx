@@ -4,10 +4,11 @@ import { Suspense, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, Sun, Inbox, PhoneCall, Layers } from 'lucide-react';
+import { Search, X, Users, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2, Sun, Moon, Inbox, PhoneCall, Layers } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+import { useSalesTheme } from '@/app/sales/SalesThemeContext';
 
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -117,6 +118,7 @@ function LeadsPageContent() {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get('status') || 'all';
   const salesUserIdFilter = searchParams.get('sales_user_id');
+  const { theme, toggleTheme } = useSalesTheme();
   const initialScopeParam = searchParams.get('scope');
 
   const [scopeMode, setScopeMode] = useState<ScopeMode>(
@@ -242,7 +244,20 @@ function LeadsPageContent() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Leads" description={scopeMode === 'team' ? `${total} total team leads` : `${total} leads · your pipeline`} action={{ label: 'Add Lead', href: '/sales/leads/new' }} />
+      <PageHeader
+        title="Leads"
+        description={scopeMode === 'team' ? `${total} total team leads` : `${total} leads · your pipeline`}
+        action={{ label: 'Add Lead', href: '/sales/leads/new' }}
+        extras={
+          <button
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="inline-flex items-center justify-center w-10 h-10 text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 active:scale-[0.98] transition-all duration-150"
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+        }
+      />
 
       {error && (
         <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
