@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { Activity, ArrowRight } from 'lucide-react';
+import { Activity, ArrowRight, Check } from 'lucide-react';
 import { LEAD_STATUSES, LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from '@/lib/validations/leads';
 
 interface RepActivity {
@@ -10,9 +10,72 @@ interface RepActivity {
   name: string;
   email: string;
   role?: string;
+  dailyTarget: number;
   assignedToday: number;
   calledToday: number;
   byStatus: Record<string, number>;
+}
+
+function TargetCell({ rep, onSaved }: { rep: RepActivity; onSaved: (target: number) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(String(rep.dailyTarget));
+  const [saving, setSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing) inputRef.current?.select();
+  }, [editing]);
+
+  const save = async () => {
+    const n = parseInt(value, 10);
+    if (isNaN(n) || n < 0 || n > 10000 || n === rep.dailyTarget) {
+      setValue(String(rep.dailyTarget));
+      setEditing(false);
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/sales-users/${rep.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ daily_target: n }),
+      });
+      if (res.ok) onSaved(n);
+    } finally {
+      setSaving(false);
+      setEditing(false);
+    }
+  };
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        type="number"
+        min={0}
+        max={10000}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={save}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') save();
+          if (e.key === 'Escape') { setValue(String(rep.dailyTarget)); setEditing(false); }
+        }}
+        disabled={saving}
+        className="w-16 px-2 py-0.5 text-right text-sm rounded border border-gray-300 focus:border-gray-900 focus:outline-none"
+      />
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setEditing(true)}
+      className="px-2 py-0.5 rounded hover:bg-gray-100 text-gray-500 transition-colors tabular-nums"
+      title="Click to edit daily target"
+    >
+      {rep.dailyTarget}
+    </button>
+  );
 }
 
 interface ApiResponse {
@@ -59,6 +122,7 @@ export function DailyActivityCard() {
           <thead>
             <tr className="bg-gray-50 text-[11px] text-gray-500 uppercase tracking-wider">
               <th className="text-left px-5 py-2.5 font-medium">Rep</th>
+              <th className="text-right px-3 py-2.5 font-medium">Target</th>
               <th className="text-right px-3 py-2.5 font-medium">Assigned today</th>
               <th className="text-right px-3 py-2.5 font-medium">Called today</th>
               {callStatuses.map(s => (
@@ -73,27 +137,44 @@ export function DailyActivityCard() {
           </thead>
           <tbody>
             {isLoading ? (
-              <tr><td colSpan={2 + callStatuses.length + 1} className="px-5 py-8 text-center text-xs text-gray-400">Loading…</td></tr>
+              <tr><td colSpan={3 + callStatuses.length + 1} className="px-5 py-8 text-center text-xs text-gray-400">Loading…</td></tr>
             ) : !data || data.reps.length === 0 ? (
-              <tr><td colSpan={2 + callStatuses.length + 1} className="px-5 py-8 text-center text-xs text-gray-400">No sales reps configured yet.</td></tr>
+              <tr><td colSpan={3 + callStatuses.length + 1} className="px-5 py-8 text-center text-xs text-gray-400">No sales reps configured yet.</td></tr>
             ) : (
-              data.reps.map(rep => (
-                <tr key={rep.id} className="border-t border-gray-50">
-                  <td className="px-5 py-3">
-                    <span className="font-medium text-gray-900">{rep.name}</span>
-                    {rep.role === 'supervisor' && (
-                      <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">supervisor</span>
-                    )}
-                  </td>
-                  <td className="px-3 py-3 text-right tabular-nums text-gray-700">{rep.assignedToday}</td>
-                  <td className="px-3 py-3 text-right tabular-nums font-semibold text-gray-900">{rep.calledToday}</td>
-                  {callStatuses.map(s => (
-                    <td key={s.value} className="px-3 py-3 text-right tabular-nums text-gray-500">
-                      {rep.byStatus[s.value] || 0}
+              data.reps.map(rep => {
+                const onTarget = rep.calledToday >= rep.dailyTarget && rep.dailyTarget > 0;
+                return (
+                  <tr key={rep.id} className="border-t border-gray-50">
+                    <td className="px-5 py-3">
+                      <span className="font-medium text-gray-900">{rep.name}</span>
+                      {rep.role === 'supervisor' && (
+                        <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">supervisor</span>
+                      )}
                     </td>
-                  ))}
-                </tr>
-              ))
+                    <td className="px-3 py-3 text-right">
+                      <TargetCell
+                        rep={rep}
+                        onSaved={(target) => setData(d => d ? {
+                          ...d,
+                          reps: d.reps.map(r => r.id === rep.id ? { ...r, dailyTarget: target } : r),
+                        } : d)}
+                      />
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums text-gray-700">{rep.assignedToday}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      <span className={`font-semibold inline-flex items-center gap-1 ${onTarget ? 'text-emerald-600' : 'text-gray-900'}`}>
+                        {onTarget && <Check className="w-3.5 h-3.5" />}
+                        {rep.calledToday}
+                      </span>
+                    </td>
+                    {callStatuses.map(s => (
+                      <td key={s.value} className="px-3 py-3 text-right tabular-nums text-gray-500">
+                        {rep.byStatus[s.value] || 0}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

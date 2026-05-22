@@ -292,6 +292,7 @@ export interface Database {
           email: string;
           name: string;
           role: 'salesperson' | 'supervisor' | 'admin';
+          daily_target: number;
           created_at: string;
           updated_at: string;
         };
@@ -300,6 +301,7 @@ export interface Database {
           email: string;
           name: string;
           role?: 'salesperson' | 'supervisor' | 'admin';
+          daily_target?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -308,6 +310,7 @@ export interface Database {
           email?: string;
           name?: string;
           role?: 'salesperson' | 'supervisor' | 'admin';
+          daily_target?: number;
           created_at?: string;
           updated_at?: string;
         };

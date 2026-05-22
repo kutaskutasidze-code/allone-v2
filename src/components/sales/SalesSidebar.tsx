@@ -22,6 +22,7 @@ import {
   UserCog,
   Flame,
   Sun,
+  Phone,
 } from 'lucide-react';
 
 function buildNavigationSections(isSupervisor: boolean) {
@@ -30,6 +31,7 @@ function buildNavigationSections(isSupervisor: boolean) {
       label: 'Overview',
       items: [
         { name: 'Dashboard', href: '/sales', icon: LayoutDashboard },
+        { name: 'Call Mode', href: '/sales/call', icon: Phone },
         { name: "Today's Queue", href: '/sales/leads?scope=today', icon: Sun },
         { name: 'Analytics', href: '/sales/analytics', icon: BarChart3 },
       ],

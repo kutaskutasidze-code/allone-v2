@@ -29,7 +29,7 @@ export async function GET() {
 
     const { data: reps } = await admin
       .from('sales_users')
-      .select('id, name, email, role')
+      .select('id, name, email, role, daily_target')
       .order('name', { ascending: true });
 
     if (!reps || reps.length === 0) {
@@ -80,6 +80,7 @@ export async function GET() {
       name: r.name,
       email: r.email,
       role: r.role,
+      dailyTarget: r.daily_target ?? 80,
       ...perRep.get(r.id)!,
     }));
 

@@ -124,6 +124,7 @@ export default async function SalesDashboard() {
       recentLeads={recentLeads}
       todaysCalls={todaysCalls}
       todaysQueue={todaysQueue}
+      dailyTarget={salesUser.daily_target ?? 80}
       overdueCallbacks={overdueCallbacks}
     />
   );
