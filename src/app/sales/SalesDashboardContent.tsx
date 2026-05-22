@@ -1,12 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Users, TrendingUp, CheckCircle, ArrowRight, Phone, AlertTriangle } from 'lucide-react';
+import { Plus, Users, TrendingUp, CheckCircle, ArrowRight, Phone, AlertTriangle, Inbox } from 'lucide-react';
 import type { Lead, SalesUser } from '@/types/database';
 import { LeadStatusBadge, CommissionWidget } from '@/components/sales';
 import { formatCurrency } from '@/lib/utils';
-
-const DAILY_CALL_TARGET = 50;
 
 interface OverdueCallback {
   id: string;
@@ -29,6 +27,7 @@ interface SalesDashboardContentProps {
   };
   recentLeads: Lead[];
   todaysCalls: number;
+  todaysQueue: number;
   overdueCallbacks: OverdueCallback[];
 }
 
@@ -41,10 +40,13 @@ function timeAgo(dateStr: string) {
   return `${days}d overdue`;
 }
 
-export function SalesDashboardContent({ salesUser, stats, recentLeads, todaysCalls, overdueCallbacks }: SalesDashboardContentProps) {
+export function SalesDashboardContent({ salesUser, stats, recentLeads, todaysCalls, todaysQueue, overdueCallbacks }: SalesDashboardContentProps) {
   const totalLeads = stats.new + stats.contacted + stats.qualified + stats.won + stats.lost;
   const conversionRate = totalLeads > 0 ? ((stats.won / totalLeads) * 100).toFixed(1) : '0';
-  const callProgress = Math.min((todaysCalls / DAILY_CALL_TARGET) * 100, 100);
+  // The rep's daily call target is whatever was assigned to them today. If
+  // nothing was assigned today, we fall back to a hardcoded floor of 50.
+  const callTarget = Math.max(todaysQueue, 50);
+  const callProgress = callTarget > 0 ? Math.min((todaysCalls / callTarget) * 100, 100) : 0;
 
   const statsGrid = [
     { label: 'New', count: stats.new, href: '/sales/leads?status=new' },
@@ -66,8 +68,28 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads, todaysCal
         </p>
       </div>
 
-      {/* Daily Calls + Overdue Callbacks */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      {/* Today's queue + Daily Calls + Overdue Callbacks */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* Today's Queue */}
+        <Link
+          href="/sales/leads?scope=today"
+          className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow block"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Inbox className="h-4 w-4 text-blue-500" />
+            <span className="text-sm font-semibold text-gray-900">Today&apos;s Queue</span>
+          </div>
+          <div className="flex items-end gap-3 mb-3">
+            <span className="text-4xl font-bold text-gray-900">{todaysQueue}</span>
+            <span className="text-sm text-gray-400 mb-1">leads assigned today</span>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">
+            {todaysQueue === 0
+              ? 'No new leads in your queue yet. Check back later or ask your admin.'
+              : `Open queue to start calling →`}
+          </p>
+        </Link>
+
         {/* Today's Calls */}
         <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
           <div className="flex items-center gap-2 mb-3">
@@ -76,7 +98,7 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads, todaysCal
           </div>
           <div className="flex items-end gap-3 mb-3">
             <span className="text-4xl font-bold text-gray-900">{todaysCalls}</span>
-            <span className="text-sm text-gray-400 mb-1">/ {DAILY_CALL_TARGET} target</span>
+            <span className="text-sm text-gray-400 mb-1">/ {callTarget}</span>
           </div>
           <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
             <div
@@ -88,8 +110,8 @@ export function SalesDashboardContent({ salesUser, stats, recentLeads, todaysCal
           </div>
           <p className="text-xs text-gray-400 mt-2">
             {callProgress >= 100
-              ? 'Target reached! Great work!'
-              : `${DAILY_CALL_TARGET - todaysCalls} more calls to hit your target`}
+              ? 'Queue cleared. Great work!'
+              : `${Math.max(0, callTarget - todaysCalls)} more to clear your queue`}
           </p>
         </div>
 

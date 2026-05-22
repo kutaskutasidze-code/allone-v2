@@ -21,6 +21,7 @@ import {
   FileText,
   UserCog,
   Flame,
+  Sun,
 } from 'lucide-react';
 
 function buildNavigationSections(isSupervisor: boolean) {
@@ -29,6 +30,7 @@ function buildNavigationSections(isSupervisor: boolean) {
       label: 'Overview',
       items: [
         { name: 'Dashboard', href: '/sales', icon: LayoutDashboard },
+        { name: "Today's Queue", href: '/sales/leads?scope=today', icon: Sun },
         { name: 'Analytics', href: '/sales/analytics', icon: BarChart3 },
       ],
     },
