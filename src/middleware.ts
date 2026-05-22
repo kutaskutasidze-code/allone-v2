@@ -45,6 +45,8 @@ export async function middleware(request: NextRequest) {
     'luka.tsulukidze@allonelabs.com',
     'luka.adamia@allonelabs.com',
     'levan.shavliashvili@allonelabs.com',
+    'tato.dzagnidze@allonelabs.com',
+    'elene.pirtskhalava@allonelabs.com',
   ];
 
   // Protect admin routes (except login)
