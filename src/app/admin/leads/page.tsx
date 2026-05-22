@@ -31,6 +31,30 @@ const PITCH_LABELS: Record<string, string> = {
 
 const HIDDEN_TAGS = new Set(['enrich_attempted', 'website_audited']);
 
+function LeadCardSkeleton() {
+  return (
+    <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm shadow-black/[0.02] animate-pulse">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0 space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-40 rounded bg-gray-100" />
+            <div className="h-3 w-16 rounded bg-gray-100" />
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="h-3 w-28 rounded bg-gray-100" />
+            <div className="h-3 w-32 rounded bg-gray-100" />
+            <div className="h-3 w-20 rounded bg-gray-100" />
+          </div>
+          <div className="h-3 w-48 rounded bg-gray-100" />
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="h-6 w-20 rounded-full bg-gray-100" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; currentStatus: string; onUpdate: (id: string, status: string) => void }) {
   const [open, setOpen] = useState(false);
 
@@ -252,19 +276,14 @@ function AdminLeadsPageContent() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [router, pathname, searchParams]);
 
-  // Fetch status counts separately (always unfiltered)
+  // Fetch all status counts in one request (the server fans out internally).
   const fetchStatusCounts = useCallback(async () => {
     try {
-      const statuses = LEAD_STATUSES.map(s => s.value);
-      const excludeParam = `exclude_phone_prefix=${encodeURIComponent(HOTLINE_PHONE_PREFIX_PARAM)}`;
-      const [allRes, ...statusResults] = await Promise.all([
-        fetch(`/api/admin/leads?limit=1&${excludeParam}`).then(r => r.ok ? r.json() : null),
-        ...statuses.map(s => fetch(`/api/admin/leads?status=${s}&limit=1&${excludeParam}`).then(r => r.ok ? r.json() : null)),
-      ]);
-
-      const counts: Record<string, number> = { all: allRes?.meta?.total || 0 };
-      statuses.forEach((s, i) => { counts[s] = statusResults[i]?.meta?.total || 0; });
-      setStatusCounts(counts);
+      const params = new URLSearchParams({ exclude_phone_prefix: HOTLINE_PHONE_PREFIX_PARAM });
+      const res = await fetch(`/api/admin/leads/counts?${params.toString()}`);
+      if (!res.ok) return;
+      const result = await res.json();
+      setStatusCounts(result.data || {});
     } catch { /* ignore */ }
   }, []);
 
@@ -376,118 +395,117 @@ function AdminLeadsPageContent() {
         </div>
       )}
 
-      {/* Status Filter */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => { setStatusFilter('all'); setPage(1); }}
-          className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-            statusFilter === 'all'
-              ? 'bg-gray-900 text-white shadow-sm'
-              : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
-          }`}
-        >
-          <span className="text-base font-semibold mr-1.5">{statusCounts.all ?? '-'}</span>
-          All
-        </button>
-        {LEAD_STATUSES.map((s) => (
+      {/* Sticky filter bar — pins to the top of the scroll area on scroll */}
+      <div className="sticky top-0 z-20 -mx-5 lg:-mx-10 px-5 lg:px-10 py-3 bg-[#FAFAFA]/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 space-y-3">
+        {/* Status Filter */}
+        <div className="flex flex-wrap gap-2">
           <button
-            key={s.value}
-            onClick={() => { setStatusFilter(s.value); setPage(1); }}
+            onClick={() => { setStatusFilter('all'); setPage(1); }}
             className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-              statusFilter === s.value
+              statusFilter === 'all'
                 ? 'bg-gray-900 text-white shadow-sm'
                 : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
             }`}
           >
-            <span className="text-base font-semibold mr-1.5">{statusCounts[s.value] ?? '-'}</span>
-            {s.label}
+            <span className="text-base font-semibold mr-1.5">{statusCounts.all ?? '-'}</span>
+            All
           </button>
-        ))}
-      </div>
+          {LEAD_STATUSES.map((s) => (
+            <button
+              key={s.value}
+              onClick={() => { setStatusFilter(s.value); setPage(1); }}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                statusFilter === s.value
+                  ? 'bg-gray-900 text-white shadow-sm'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
+              }`}
+            >
+              <span className="text-base font-semibold mr-1.5">{statusCounts[s.value] ?? '-'}</span>
+              {s.label}
+            </button>
+          ))}
+        </div>
 
-      {/* Website Filter */}
-      <div className="flex items-center gap-2">
-        <select
-          value={websiteFilter}
-          onChange={(e) => { setWebsiteFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
-        >
-          <option value="all">All Leads</option>
-          <option value="yes">Has Website</option>
-          <option value="no">No Website</option>
-        </select>
-      </div>
+        {/* Filter row — website + source + service + category, all on one line */}
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={websiteFilter}
+            onChange={(e) => { setWebsiteFilter(e.target.value); setPage(1); }}
+            className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+          >
+            <option value="all">All Leads</option>
+            <option value="yes">Has Website</option>
+            <option value="no">No Website</option>
+          </select>
+          <select
+            value={sourceFilter}
+            onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
+            className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+          >
+            <option value="all">All Sources</option>
+            <option value="yes">Has Source / Facebook</option>
+            <option value="no">No Source / Facebook</option>
+          </select>
+          <select
+            value={serviceFilter}
+            onChange={(e) => { setServiceFilter(e.target.value); setPage(1); }}
+            className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+          >
+            <option value="all">All Services</option>
+            <option value="website">Website</option>
+            <option value="chatbots">Chatbots</option>
+            <option value="automation">Automation</option>
+            <option value="consulting">Consulting</option>
+            <option value="custom_ai">Custom AI</option>
+          </select>
+          <HotLinesDropdown
+            selectedIndustry={industryFilter}
+            onSelect={handleIndustrySelect}
+            excludePhonePrefix={HOTLINE_PHONE_PREFIX_PARAM}
+            endpoint="/api/admin/leads/industries"
+            label="All Categories"
+            icon={Tag}
+            iconClassName="text-sky-500"
+            activeClassName="bg-sky-500 text-white shadow-sm"
+          />
+          {(serviceFilter !== 'all' || industryFilter) && (
+            <button
+              onClick={() => {
+                setServiceFilter('all');
+                handleIndustrySelect(null);
+                setPage(1);
+              }}
+              className="text-xs text-gray-500 hover:text-gray-900"
+            >
+              Clear
+            </button>
+          )}
+        </div>
 
-      {/* Source Filter */}
-      <div className="flex items-center gap-2">
-        <select
-          value={sourceFilter}
-          onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
-        >
-          <option value="all">All Sources</option>
-          <option value="yes">Has Source</option>
-          <option value="no">No Source</option>
-        </select>
-      </div>
-
-      {/* Service + Category Filter */}
-      <div className="flex flex-wrap items-center gap-3">
-        <select
-          value={serviceFilter}
-          onChange={(e) => { setServiceFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
-        >
-          <option value="all">All Services</option>
-          <option value="website">Website</option>
-          <option value="chatbots">Chatbots</option>
-          <option value="automation">Automation</option>
-          <option value="consulting">Consulting</option>
-          <option value="custom_ai">Custom AI</option>
-        </select>
-        {serviceFilter !== 'all' && (
-          <button onClick={() => { setServiceFilter('all'); setPage(1); }} className="text-xs text-gray-500 hover:text-gray-900">
-            Clear
-          </button>
-        )}
-        <HotLinesDropdown
-          selectedIndustry={industryFilter}
-          onSelect={handleIndustrySelect}
-          excludePhonePrefix={HOTLINE_PHONE_PREFIX_PARAM}
-          endpoint="/api/admin/leads/industries"
-          label="All Categories"
-          icon={Tag}
-          iconClassName="text-sky-500"
-          activeClassName="bg-sky-500 text-white shadow-sm"
-        />
-        {industryFilter && (
-          <button onClick={() => handleIndustrySelect(null)} className="text-xs text-gray-500 hover:text-gray-900">
-            Clear category
-          </button>
-        )}
-      </div>
-
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          placeholder="Search by name, email, phone, company, city..."
-          className="w-full pl-10 pr-10 py-2.5 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none transition-colors"
-        />
-        {search && (
-          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900">
-            <X className="h-4 w-4" />
-          </button>
-        )}
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Search by name, email, phone, company, city..."
+            className="w-full pl-10 pr-10 py-2.5 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none transition-colors"
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900">
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Leads List */}
       {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <div className="space-y-1.5">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <LeadCardSkeleton key={i} />
+          ))}
         </div>
       ) : leads.length === 0 ? (
         <EmptyState icon={Users} title="No leads found" description={search || statusFilter !== 'all' ? 'Try adjusting your filters.' : 'No leads yet. They will appear here when scraped or submitted via contact form.'} />
