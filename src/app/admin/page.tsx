@@ -104,7 +104,7 @@ async function getLeadsData() {
     .from('leads')
     .select(`
       *,
-      sales_user:sales_users(id, name, email)
+      sales_user:sales_users!leads_sales_user_id_fkey(id, name, email)
     `)
     .order('created_at', { ascending: false })
     .limit(5);

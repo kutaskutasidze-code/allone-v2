@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       .from('leads')
       .select(`
         id, name, email, phone, company, city, country, website, facebook_url, industry, matched_service, status, value, source, source_url, notes, tags, relevance_score, created_at, updated_at,
-        sales_user:sales_users(id, name, email)
+        sales_user:sales_users!leads_sales_user_id_fkey(id, name, email)
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
