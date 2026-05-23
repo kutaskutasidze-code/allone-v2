@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { Activity, ArrowRight, Check } from 'lucide-react';
+import { Activity, ArrowRight, Check, PhoneCall } from 'lucide-react';
 import { LEAD_STATUSES, LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from '@/lib/validations/leads';
 
 interface RepActivity {
@@ -13,6 +13,7 @@ interface RepActivity {
   dailyTarget: number;
   assignedToday: number;
   calledToday: number;
+  callbacksToday: number;
   byStatus: Record<string, number>;
 }
 
@@ -81,7 +82,7 @@ function TargetCell({ rep, onSaved }: { rep: RepActivity; onSaved: (target: numb
 interface ApiResponse {
   data: {
     reps: RepActivity[];
-    totals: { assignedToday: number; calledToday: number };
+    totals: { assignedToday: number; calledToday: number; callbacksToday: number };
   };
 }
 
@@ -125,6 +126,12 @@ export function DailyActivityCard() {
               <th className="text-right px-3 py-2.5 font-medium">Target</th>
               <th className="text-right px-3 py-2.5 font-medium">Assigned today</th>
               <th className="text-right px-3 py-2.5 font-medium">Called today</th>
+              <th className="text-right px-3 py-2.5 font-medium" title="Callbacks scheduled for today">
+                <span className="inline-flex items-center gap-1.5">
+                  <PhoneCall className="w-3 h-3 text-amber-500" />
+                  <span className="hidden md:inline">Callbacks</span>
+                </span>
+              </th>
               {callStatuses.map(s => (
                 <th key={s.value} className="text-right px-3 py-2.5 font-medium" title={LEAD_STATUS_LABELS[s.value]}>
                   <span className="inline-flex items-center gap-1.5">
@@ -137,9 +144,9 @@ export function DailyActivityCard() {
           </thead>
           <tbody>
             {isLoading ? (
-              <tr><td colSpan={3 + callStatuses.length + 1} className="px-5 py-8 text-center text-xs text-gray-400">Loading…</td></tr>
+              <tr><td colSpan={4 + callStatuses.length + 1} className="px-5 py-8 text-center text-xs text-gray-400">Loading…</td></tr>
             ) : !data || data.reps.length === 0 ? (
-              <tr><td colSpan={3 + callStatuses.length + 1} className="px-5 py-8 text-center text-xs text-gray-400">No sales reps configured yet.</td></tr>
+              <tr><td colSpan={4 + callStatuses.length + 1} className="px-5 py-8 text-center text-xs text-gray-400">No sales reps configured yet.</td></tr>
             ) : (
               data.reps.map(rep => {
                 const onTarget = rep.calledToday >= rep.dailyTarget && rep.dailyTarget > 0;
@@ -165,6 +172,11 @@ export function DailyActivityCard() {
                       <span className={`font-semibold inline-flex items-center gap-1 ${onTarget ? 'text-emerald-600' : 'text-gray-900'}`}>
                         {onTarget && <Check className="w-3.5 h-3.5" />}
                         {rep.calledToday}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      <span className={rep.callbacksToday > 0 ? 'text-amber-600 font-medium' : 'text-gray-400'}>
+                        {rep.callbacksToday}
                       </span>
                     </td>
                     {callStatuses.map(s => (

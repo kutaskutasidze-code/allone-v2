@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, X, Users, Phone, Globe, MapPin, Building2, AlertCircle, CheckCircle2, Lock, Undo2 } from 'lucide-react';
+import { Search, X, Users, Phone, Globe, MapPin, Building2, AlertCircle, CheckCircle2, Lock, Undo2, Shuffle } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
@@ -46,6 +46,10 @@ function AssignLeadsContent() {
   const [isAssigning, setIsAssigning] = useState(false);
   const [error, setError] = useState('');
   const [flash, setFlash] = useState<{ type: 'ok' | 'warn'; msg: string } | null>(null);
+  const [distributeOpen, setDistributeOpen] = useState(false);
+  const [distributePerRep, setDistributePerRep] = useState(80);
+  const [distributing, setDistributing] = useState(false);
+  const [distributeRepIds, setDistributeRepIds] = useState<Set<string>>(new Set());
 
   const debouncedSearch = useDebounce(search, 350);
 
@@ -145,6 +149,42 @@ function AssignLeadsContent() {
     }
   };
 
+  const doDistribute = async () => {
+    setDistributing(true);
+    setError('');
+    try {
+      const body: { perRep: number; repIds?: string[]; filters?: Record<string, string> } = { perRep: distributePerRep };
+      if (distributeRepIds.size > 0) body.repIds = [...distributeRepIds];
+      if (industry !== 'all') body.filters = { ...(body.filters || {}), industry };
+      body.filters = { ...(body.filters || {}), excludePhonePrefix: HOTLINE_PHONE_PREFIX_PARAM };
+
+      const res = await fetch('/api/admin/leads/distribute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to distribute');
+
+      const lines = Object.values(json.data.perRep as Record<string, { name: string; count: number }>)
+        .filter(v => v.count > 0)
+        .map(v => `${v.name}: ${v.count}`)
+        .join(' · ');
+      setFlash({
+        type: json.data.totalAssigned > 0 ? 'ok' : 'warn',
+        msg: json.data.totalAssigned === 0
+          ? (json.data.reason || 'Nothing to distribute — pool is empty')
+          : `Distributed ${json.data.totalAssigned} leads (${lines}). ${json.data.totalRemaining} remain in pool.`,
+      });
+      setDistributeOpen(false);
+      await fetchLeads();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to distribute');
+    } finally {
+      setDistributing(false);
+    }
+  };
+
   const doUnassign = async () => {
     if (selected.size === 0) return;
     if (!confirm(`Send ${selected.size} lead(s) back to the unassigned pool?`)) return;
@@ -213,7 +253,105 @@ function AssignLeadsContent() {
         >
           Currently assigned
         </button>
+
+        <div className="flex-1" />
+
+        {tab === 'unassigned' && (
+          <button
+            onClick={() => { setDistributeOpen(true); setDistributeRepIds(new Set()); }}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 active:scale-[0.98] transition-all"
+          >
+            <Shuffle className="w-3.5 h-3.5" />
+            Distribute pool
+          </button>
+        )}
       </div>
+
+      {/* Distribute modal */}
+      {distributeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-start justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                  <Shuffle className="w-4 h-4 text-emerald-600" />
+                </div>
+                <h2 className="text-base font-semibold text-gray-900">Distribute the pool</h2>
+              </div>
+              <button onClick={() => setDistributeOpen(false)} className="text-gray-400 hover:text-gray-900">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-4">
+              Auto-assigns leads round-robin from the unassigned pool. Higher relevance score first.
+              {industry !== 'all' && <> Filtered to <strong className="text-gray-700">{industry}</strong> only.</>}
+            </p>
+
+            <label className="block text-xs font-medium text-gray-700 mb-2">Leads per rep</label>
+            <div className="flex items-center gap-2 mb-5">
+              {[50, 80, 100, 150].map(n => (
+                <button
+                  key={n}
+                  onClick={() => setDistributePerRep(n)}
+                  className={`px-3 py-1.5 text-xs rounded-lg border ${distributePerRep === n ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400'}`}
+                >
+                  {n}
+                </button>
+              ))}
+              <input
+                type="number"
+                min={1}
+                max={1000}
+                value={distributePerRep}
+                onChange={(e) => setDistributePerRep(Math.max(1, Math.min(1000, parseInt(e.target.value) || 0)))}
+                className="w-20 px-2 py-1.5 text-xs text-right rounded-lg border border-gray-200 focus:border-gray-400 focus:outline-none"
+              />
+            </div>
+
+            <label className="block text-xs font-medium text-gray-700 mb-2">Distribute to</label>
+            <p className="text-[11px] text-gray-500 mb-2">
+              Leave all unchecked to distribute to every salesperson automatically.
+            </p>
+            <div className="space-y-1 mb-5 max-h-40 overflow-y-auto">
+              {reps.filter(r => r.role !== 'supervisor' && r.role !== 'admin').map(rep => {
+                const checked = distributeRepIds.has(rep.id);
+                return (
+                  <label key={rep.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer text-sm">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => {
+                        setDistributeRepIds(prev => {
+                          const next = new Set(prev);
+                          if (next.has(rep.id)) next.delete(rep.id); else next.add(rep.id);
+                          return next;
+                        });
+                      }}
+                    />
+                    <span className="flex-1">{rep.name}</span>
+                  </label>
+                );
+              })}
+            </div>
+
+            <div className="bg-gray-50 rounded-lg px-3 py-2 text-[11px] text-gray-500 mb-5">
+              About to assign up to <strong className="text-gray-900">{distributePerRep * (distributeRepIds.size || reps.filter(r => r.role !== 'supervisor' && r.role !== 'admin').length)}</strong> leads total.
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setDistributeOpen(false)} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Cancel</button>
+              <button
+                onClick={doDistribute}
+                disabled={distributing}
+                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 rounded-lg inline-flex items-center gap-2"
+              >
+                {distributing && <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                {distributing ? 'Distributing…' : 'Distribute'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         {/* Lead list */}

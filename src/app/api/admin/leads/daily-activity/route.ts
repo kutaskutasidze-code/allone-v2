@@ -36,11 +36,15 @@ export async function GET() {
       return NextResponse.json({ data: { reps: [], totals: { assignedToday: 0, calledToday: 0 } } });
     }
 
-    // Pull all leads touched or assigned today in one round-trip (small set).
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
+    const tomorrowIso = endOfDay.toISOString();
+
+    // Pull all leads touched, assigned, OR scheduled-callback-today in one round-trip.
     const { data: rows, error } = await admin
       .from('leads')
-      .select('id, sales_user_id, status, assigned_at, status_changed_at')
-      .or(`assigned_at.gte.${sinceIso},status_changed_at.gte.${sinceIso}`)
+      .select('id, sales_user_id, status, assigned_at, status_changed_at, callback_at')
+      .or(`assigned_at.gte.${sinceIso},status_changed_at.gte.${sinceIso},and(callback_at.gte.${sinceIso},callback_at.lt.${tomorrowIso})`)
       .limit(5000);
 
     if (error) {
@@ -51,13 +55,15 @@ export async function GET() {
     type Stats = {
       assignedToday: number;
       calledToday: number;
+      callbacksToday: number;
       byStatus: Record<string, number>;
     };
     const perRep = new Map<string, Stats>();
-    for (const r of reps) perRep.set(r.id, { assignedToday: 0, calledToday: 0, byStatus: {} });
+    for (const r of reps) perRep.set(r.id, { assignedToday: 0, calledToday: 0, callbacksToday: 0, byStatus: {} });
 
     let totalAssigned = 0;
     let totalCalled = 0;
+    let totalCallbacks = 0;
 
     for (const row of rows || []) {
       if (!row.sales_user_id) continue;
@@ -73,6 +79,10 @@ export async function GET() {
         s.byStatus[row.status] = (s.byStatus[row.status] || 0) + 1;
         totalCalled++;
       }
+      if (row.callback_at && row.callback_at >= sinceIso && row.callback_at < tomorrowIso) {
+        s.callbacksToday++;
+        totalCallbacks++;
+      }
     }
 
     const result = reps.map(r => ({
@@ -87,7 +97,7 @@ export async function GET() {
     return NextResponse.json({
       data: {
         reps: result,
-        totals: { assignedToday: totalAssigned, calledToday: totalCalled },
+        totals: { assignedToday: totalAssigned, calledToday: totalCalled, callbacksToday: totalCallbacks },
       },
     });
   } catch (err) {

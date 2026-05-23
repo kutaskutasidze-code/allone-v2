@@ -34,6 +34,9 @@ export const updateLeadSchema = z.object({
   value: z.number().min(0, 'Value cannot be negative').optional(),
   source: z.string().max(100).optional().transform(emptyToNull),
   notes: z.string().optional().transform(emptyToNull),
+  // Accept an ISO date/datetime string or `null` to clear. Empty string also clears.
+  callback_at: z.union([z.string(), z.null()]).optional()
+    .transform(v => (v === '' || v === undefined) ? undefined : v),
 });
 
 export type CreateLead = z.infer<typeof createLeadSchema>;

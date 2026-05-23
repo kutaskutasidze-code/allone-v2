@@ -9,6 +9,7 @@ import { PageHeader, EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useSalesTheme } from '@/app/sales/SalesThemeContext';
+import { CallbackPicker } from '@/components/sales';
 
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -29,7 +30,7 @@ const PITCH_LABELS: Record<string, string> = {
 
 const HIDDEN_TAGS = new Set(['enrich_attempted', 'website_audited']);
 
-function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; currentStatus: string; onUpdate: (id: string, status: string) => void }) {
+function StatusDropdown({ leadId, currentStatus, onUpdate, onPickCallback }: { leadId: string; currentStatus: string; onUpdate: (id: string, status: string) => void; onPickCallback: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -47,7 +48,14 @@ function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; c
             {LEAD_STATUSES.map(s => (
               <button
                 key={s.value}
-                onClick={() => { onUpdate(leadId, s.value); setOpen(false); }}
+                onClick={() => {
+                  setOpen(false);
+                  if (s.value === 'callback') {
+                    onPickCallback(leadId);
+                  } else {
+                    onUpdate(leadId, s.value);
+                  }
+                }}
                 className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors ${currentStatus === s.value ? 'font-semibold' : ''}`}
               >
                 <span className={`inline-block w-2 h-2 rounded-full mr-2 ${LEAD_STATUS_STYLES[s.value]?.split(' ')[0]}`} />
@@ -119,6 +127,7 @@ function LeadsPageContent() {
   const initialStatus = searchParams.get('status') || 'all';
   const salesUserIdFilter = searchParams.get('sales_user_id');
   const { theme, toggleTheme } = useSalesTheme();
+  const [callbackForLeadId, setCallbackForLeadId] = useState<string | null>(null);
   const initialScopeParam = searchParams.get('scope');
 
   const [scopeMode, setScopeMode] = useState<ScopeMode>(
@@ -244,6 +253,15 @@ function LeadsPageContent() {
 
   return (
     <div className="space-y-6">
+      {callbackForLeadId && (
+        <CallbackPicker
+          onCancel={() => setCallbackForLeadId(null)}
+          onPick={(when) => {
+            updateLead(callbackForLeadId, { status: 'callback', callback_at: when });
+            setCallbackForLeadId(null);
+          }}
+        />
+      )}
       <PageHeader
         title="Leads"
         description={scopeMode === 'team' ? `${total} total team leads` : `${total} leads · your pipeline`}
@@ -449,6 +467,7 @@ function LeadsPageContent() {
                       leadId={l.id as string}
                       currentStatus={l.status as string}
                       onUpdate={(id, status) => updateLead(id, { status })}
+                      onPickCallback={(id) => setCallbackForLeadId(id)}
                     />
                     <LeadNotes
                       leadId={l.id as string}

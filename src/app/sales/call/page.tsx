@@ -19,6 +19,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, LEAD_STATUS_COLORS, INFOSHOP_PATTERN } from '@/lib/validations/leads';
+import { CallbackPicker } from '@/components/sales';
 
 interface Lead {
   id: string;
@@ -104,14 +105,17 @@ function CallModeContent() {
     setIndex(i => Math.min(i + 1, leads.length - 1));
   }, [leads.length]);
 
-  const setStatus = async (status: string) => {
+  const [callbackPickerOpen, setCallbackPickerOpen] = useState(false);
+
+  const persistStatus = async (status: string, callback_at?: string | null) => {
     if (!current) return;
     setBusy(true);
     setError('');
     try {
-      const updated = await update(current.id, { status } as Partial<Lead>);
+      const patch: Record<string, unknown> = { status };
+      if (callback_at !== undefined) patch.callback_at = callback_at;
+      const updated = await update(current.id, patch as Partial<Lead>);
       setLeads(prev => prev.map(l => l.id === current.id ? { ...l, ...updated } : l));
-      // Auto-advance to next untouched lead.
       const nextIdx = leads.findIndex((l, i) => i > index && l.status === 'new');
       if (nextIdx >= 0) setIndex(nextIdx);
       else advance();
@@ -120,6 +124,20 @@ function CallModeContent() {
     } finally {
       setBusy(false);
     }
+  };
+
+  const setStatus = async (status: string) => {
+    // Callback status needs a date — open the picker instead of saving immediately.
+    if (status === 'callback') {
+      setCallbackPickerOpen(true);
+      return;
+    }
+    await persistStatus(status);
+  };
+
+  const saveCallback = async (when: string) => {
+    setCallbackPickerOpen(false);
+    await persistStatus('callback', when);
   };
 
   const saveNotes = async () => {
@@ -356,6 +374,14 @@ function CallModeContent() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Callback date picker modal */}
+      {callbackPickerOpen && (
+        <CallbackPicker
+          onCancel={() => setCallbackPickerOpen(false)}
+          onPick={saveCallback}
+        />
+      )}
 
       {/* Bottom nav */}
       <div className="px-5 lg:px-0 py-3 border-t border-gray-100 bg-white sticky bottom-0 z-10">

@@ -92,6 +92,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     if (validated.value !== undefined) updateData.value = validated.value;
     if (validated.source !== undefined) updateData.source = validated.source;
     if (validated.notes !== undefined) updateData.notes = validated.notes;
+    if (validated.callback_at !== undefined) updateData.callback_at = validated.callback_at;
 
     // Atomic auto-assign: only set sales_user_id if lead is still unassigned at write time.
     // Uses .is('sales_user_id', null) in the WHERE clause so two concurrent claims can't both win.
