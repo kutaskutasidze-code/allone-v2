@@ -1,10 +1,31 @@
 'use client';
 
-import { Suspense, useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, X, Users, Phone, Globe, MapPin, Building2, AlertCircle, CheckCircle2, Lock, Undo2, Shuffle } from 'lucide-react';
+import { Suspense, useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Search, X, Users, Phone, Globe, MapPin, Building2, AlertCircle, CheckCircle2, Lock, Undo2, Shuffle, Scale, MinusCircle, ArrowDownToLine } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+
+interface RepLoad {
+  id: string;
+  name: string;
+  role: string;
+  isActive: boolean;
+  totalAssigned: number;
+  untouchedCount: number;
+}
+
+interface RepLoadsData {
+  reps: RepLoad[];
+  totals: { totalAssigned: number; untouchedCount: number; activeReps: number };
+}
+
+interface RebalancePreviewPerRep { name: string; movedToPool: number }
+
+interface RebalancePreview {
+  perRep: Record<string, RebalancePreviewPerRep>;
+  totalMovedToPool: number;
+}
 
 interface SalesRep {
   id: string;
@@ -50,6 +71,17 @@ function AssignLeadsContent() {
   const [distributePerRep, setDistributePerRep] = useState(80);
   const [distributing, setDistributing] = useState(false);
   const [distributeRepIds, setDistributeRepIds] = useState<Set<string>>(new Set());
+
+  // Rebalance state
+  const [repLoads, setRepLoads] = useState<RepLoadsData | null>(null);
+  const [rebalanceOpen, setRebalanceOpen] = useState(false);
+  const [rebalanceTarget, setRebalanceTarget] = useState<number>(0);
+  const [rebalancePreview, setRebalancePreview] = useState<RebalancePreview | null>(null);
+  const [rebalancing, setRebalancing] = useState(false);
+  const [takeOpenForRep, setTakeOpenForRep] = useState<string | null>(null);
+  const [takeCount, setTakeCount] = useState<number>(10);
+  const [taking, setTaking] = useState(false);
+  const takePopoverRef = useRef<HTMLDivElement>(null);
 
   const debouncedSearch = useDebounce(search, 350);
 
@@ -217,6 +249,120 @@ function AssignLeadsContent() {
     return () => clearTimeout(t);
   }, [flash]);
 
+  // Per-rep load counts — only needed on the "assigned" tab + after any
+  // mutation that changes assignment (distribute, assign, unassign, rebalance).
+  const fetchRepLoads = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/leads/rep-loads');
+      if (!res.ok) return;
+      const json = await res.json();
+      setRepLoads(json.data);
+    } catch { /* ignore — non-blocking */ }
+  }, []);
+
+  useEffect(() => {
+    if (tab === 'assigned') fetchRepLoads();
+  }, [tab, fetchRepLoads]);
+
+  // Default the rebalance target to the floor of the current mean every time
+  // the modal opens or load data refreshes (so the suggestion stays useful).
+  useEffect(() => {
+    if (!rebalanceOpen || !repLoads) return;
+    const active = repLoads.reps.filter(r => r.isActive);
+    if (active.length === 0) return;
+    const totalUntouched = active.reduce((s, r) => s + r.untouchedCount, 0);
+    setRebalanceTarget(Math.floor(totalUntouched / active.length));
+  }, [rebalanceOpen, repLoads]);
+
+  // Refresh the preview whenever the target input changes (debounced lightly
+  // by letting React batch — single API hit per blur is sufficient).
+  const refreshRebalancePreview = useCallback(async (target: number) => {
+    try {
+      const res = await fetch('/api/admin/leads/rebalance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'equalize', targetPerRep: target, dryRun: true }),
+      });
+      const json = await res.json();
+      if (res.ok) setRebalancePreview({ perRep: json.data.perRep, totalMovedToPool: json.data.totalMovedToPool });
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    if (!rebalanceOpen) { setRebalancePreview(null); return; }
+    refreshRebalancePreview(rebalanceTarget);
+  }, [rebalanceOpen, rebalanceTarget, refreshRebalancePreview]);
+
+  const doRebalance = async () => {
+    setRebalancing(true);
+    setError('');
+    try {
+      const res = await fetch('/api/admin/leads/rebalance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'equalize', targetPerRep: rebalanceTarget, dryRun: false }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to rebalance');
+      const lines = Object.values(json.data.perRep as Record<string, RebalancePreviewPerRep>)
+        .filter(v => v.movedToPool > 0)
+        .map(v => `${v.name}: −${v.movedToPool}`)
+        .join(' · ');
+      setFlash({
+        type: json.data.totalMovedToPool > 0 ? 'ok' : 'warn',
+        msg: json.data.totalMovedToPool === 0
+          ? 'Nothing to move — everyone is already at or below target.'
+          : `Moved ${json.data.totalMovedToPool} leads to pool (${lines}). Now click Distribute pool to spread them back out.`,
+      });
+      setRebalanceOpen(false);
+      await Promise.all([fetchLeads(), fetchRepLoads()]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to rebalance');
+    } finally {
+      setRebalancing(false);
+    }
+  };
+
+  const doTakeFromRep = async (repId: string, count: number) => {
+    setTaking(true);
+    setError('');
+    try {
+      const res = await fetch('/api/admin/leads/rebalance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'from_rep', repId, count, dryRun: false }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to take leads');
+      const moved = json.data.totalMovedToPool;
+      const repName = repLoads?.reps.find(r => r.id === repId)?.name || 'rep';
+      setFlash({
+        type: moved > 0 ? 'ok' : 'warn',
+        msg: moved === 0
+          ? `${repName} has no untouched leads to move.`
+          : `Took ${moved} from ${repName} → pool.`,
+      });
+      setTakeOpenForRep(null);
+      await Promise.all([fetchLeads(), fetchRepLoads()]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to take leads');
+    } finally {
+      setTaking(false);
+    }
+  };
+
+  // Close the per-rep "Take..." popover when clicking outside it.
+  useEffect(() => {
+    if (!takeOpenForRep) return;
+    const onClick = (e: MouseEvent) => {
+      if (takePopoverRef.current && !takePopoverRef.current.contains(e.target as Node)) {
+        setTakeOpenForRep(null);
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, [takeOpenForRep]);
+
   const totalPages = Math.max(1, Math.ceil(total / PAGE_LIMIT));
   const industries = useMemo(() => Array.from(new Set(leads.map(l => l.industry).filter(Boolean))) as string[], [leads]);
 
@@ -263,6 +409,17 @@ function AssignLeadsContent() {
           >
             <Shuffle className="w-3.5 h-3.5" />
             Distribute pool
+          </button>
+        )}
+
+        {tab === 'assigned' && (
+          <button
+            onClick={() => setRebalanceOpen(true)}
+            disabled={!repLoads || repLoads.totals.activeReps === 0}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-amber-600 text-white shadow-sm hover:bg-amber-700 disabled:opacity-50 active:scale-[0.98] transition-all"
+          >
+            <Scale className="w-3.5 h-3.5" />
+            Rebalance everyone
           </button>
         )}
       </div>
@@ -353,6 +510,80 @@ function AssignLeadsContent() {
         </div>
       )}
 
+      {/* Rebalance modal */}
+      {rebalanceOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-start justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                  <Scale className="w-4 h-4 text-amber-600" />
+                </div>
+                <h2 className="text-base font-semibold text-gray-900">Rebalance to pool</h2>
+              </div>
+              <button onClick={() => setRebalanceOpen(false)} className="text-gray-400 hover:text-gray-900">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-4">
+              Takes excess <strong className="text-gray-700">untouched</strong> leads from over-loaded reps back to the pool. Touched leads stay with their owner. After this, click <strong className="text-gray-700">Distribute pool</strong> to spread them back out.
+            </p>
+
+            <label className="block text-xs font-medium text-gray-700 mb-2">Target untouched per rep</label>
+            <div className="flex items-center gap-2 mb-4">
+              <input
+                type="number"
+                min={0}
+                max={10000}
+                value={rebalanceTarget}
+                onChange={(e) => setRebalanceTarget(Math.max(0, Math.min(10000, parseInt(e.target.value) || 0)))}
+                className="w-24 px-3 py-2 text-sm rounded-lg border border-gray-200 focus:border-gray-400 focus:outline-none"
+              />
+              <span className="text-xs text-gray-500">
+                Suggested: floor of the mean across active reps.
+              </span>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-3 mb-5 max-h-48 overflow-y-auto">
+              {!rebalancePreview ? (
+                <p className="text-[11px] text-gray-400">Calculating preview…</p>
+              ) : rebalancePreview.totalMovedToPool === 0 ? (
+                <p className="text-[11px] text-gray-500">No rep is above {rebalanceTarget}. Nothing will move.</p>
+              ) : (
+                <>
+                  <p className="text-[11px] font-medium text-gray-700 mb-2">
+                    Will move <strong>{rebalancePreview.totalMovedToPool}</strong> lead(s) to pool:
+                  </p>
+                  <ul className="space-y-1">
+                    {Object.entries(rebalancePreview.perRep)
+                      .filter(([, v]) => v.movedToPool > 0)
+                      .sort((a, b) => b[1].movedToPool - a[1].movedToPool)
+                      .map(([repId, v]) => (
+                        <li key={repId} className="flex items-center justify-between text-[11px]">
+                          <span className="text-gray-700">{v.name}</span>
+                          <span className="font-medium text-amber-700">−{v.movedToPool}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setRebalanceOpen(false)} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Cancel</button>
+              <button
+                onClick={doRebalance}
+                disabled={rebalancing || !rebalancePreview || rebalancePreview.totalMovedToPool === 0}
+                className="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded-lg inline-flex items-center gap-2"
+              >
+                {rebalancing && <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                {rebalancing ? 'Moving…' : 'Send to pool'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         {/* Lead list */}
         <div className="space-y-3">
@@ -391,6 +622,99 @@ function AssignLeadsContent() {
               </select>
             )}
           </div>
+
+          {tab === 'assigned' && repLoads && repLoads.reps.filter(r => r.isActive).length > 0 && (
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-gray-50">
+                <div className="text-xs font-medium text-gray-700">
+                  Rep loads
+                  <span className="ml-2 text-[11px] font-normal text-gray-500">
+                    {repLoads.totals.untouchedCount} untouched · {repLoads.totals.totalAssigned} total · {repLoads.totals.activeReps} active reps
+                  </span>
+                </div>
+              </div>
+              {(() => {
+                // Visual cue: amber accent on rows where untouched is significantly above median.
+                const activeReps = repLoads.reps.filter(r => r.isActive);
+                const sorted = [...activeReps].map(r => r.untouchedCount).sort((a, b) => a - b);
+                const median = sorted.length === 0 ? 0 :
+                  sorted.length % 2 === 1
+                    ? sorted[(sorted.length - 1) / 2]
+                    : (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2;
+                const overloadThreshold = Math.max(median * 1.25, median + 10);
+                return (
+                  <ul className="divide-y divide-gray-50">
+                    {activeReps.map(rep => {
+                      const isOverloaded = rep.untouchedCount > overloadThreshold && rep.untouchedCount > 0;
+                      const popoverOpen = takeOpenForRep === rep.id;
+                      return (
+                        <li key={rep.id} className={`flex items-center gap-3 px-4 py-2 text-xs ${isOverloaded ? 'bg-amber-50/50' : ''}`}>
+                          <span className="flex-1 truncate text-gray-900 font-medium">
+                            {rep.name}
+                            {(rep.role === 'supervisor' || rep.role === 'admin') && (
+                              <span className="ml-1.5 text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">{rep.role}</span>
+                            )}
+                          </span>
+                          <span className="tabular-nums text-gray-500">
+                            <span className="text-gray-400">total</span> <strong className="text-gray-700">{rep.totalAssigned}</strong>
+                          </span>
+                          <span className="tabular-nums text-gray-500">
+                            <span className="text-gray-400">untouched</span>{' '}
+                            <strong className={isOverloaded ? 'text-amber-700' : 'text-gray-700'}>{rep.untouchedCount}</strong>
+                          </span>
+                          <div className="relative">
+                            <button
+                              onClick={() => {
+                                if (popoverOpen) { setTakeOpenForRep(null); return; }
+                                setTakeOpenForRep(rep.id);
+                                setTakeCount(Math.min(rep.untouchedCount, 10));
+                              }}
+                              disabled={rep.untouchedCount === 0}
+                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-amber-700 hover:bg-amber-100 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+                              title={rep.untouchedCount === 0 ? 'No untouched leads to move' : 'Take N from this rep'}
+                            >
+                              <MinusCircle className="w-3 h-3" />
+                              Take…
+                            </button>
+                            {popoverOpen && (
+                              <div
+                                ref={takePopoverRef}
+                                className="absolute right-0 top-full mt-1 z-40 w-60 bg-white border border-gray-200 rounded-lg shadow-lg p-3"
+                              >
+                                <p className="text-[11px] text-gray-600 mb-2">
+                                  Send the oldest <strong>N untouched</strong> leads from {rep.name} back to the pool.
+                                  <br />
+                                  <span className="text-gray-400">Max available: {rep.untouchedCount}</span>
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    max={rep.untouchedCount}
+                                    value={takeCount}
+                                    onChange={(e) => setTakeCount(Math.max(1, Math.min(rep.untouchedCount, parseInt(e.target.value) || 1)))}
+                                    className="w-20 px-2 py-1.5 text-sm rounded border border-gray-200 focus:border-gray-400 focus:outline-none"
+                                  />
+                                  <button
+                                    onClick={() => doTakeFromRep(rep.id, takeCount)}
+                                    disabled={taking || takeCount < 1 || takeCount > rep.untouchedCount}
+                                    className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50"
+                                  >
+                                    <ArrowDownToLine className="w-3 h-3" />
+                                    {taking ? 'Moving…' : 'Send to pool'}
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                );
+              })()}
+            </div>
+          )}
 
           <div className="flex items-center gap-3 px-3 py-2 bg-gray-50 border border-gray-100 rounded-lg text-xs">
             <input
