@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
+import { salesUserIndustriesSchema } from '@/lib/validations/leads';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +12,7 @@ const createSchema = z.object({
   name: z.string().min(1).max(255),
   role: z.enum(['salesperson', 'supervisor', 'admin']).default('salesperson'),
   daily_target: z.number().int().min(0).max(10000).default(80),
+  industries: salesUserIndustriesSchema.default([]),
 });
 
 // Lightweight directory of sales users for the admin assign UI.
@@ -25,7 +27,7 @@ export async function GET() {
     const admin = createAdminClient();
     const { data, error } = await admin
       .from('sales_users')
-      .select('id, name, email, role, is_active, daily_target')
+      .select('id, name, email, role, is_active, daily_target, industries')
       .order('name', { ascending: true });
 
     if (error) {
@@ -58,7 +60,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await admin
       .from('sales_users')
       .insert(parsed.data)
-      .select('id, name, email, role, is_active, daily_target')
+      .select('id, name, email, role, is_active, daily_target, industries')
       .single();
 
     if (error) {

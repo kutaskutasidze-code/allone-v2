@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { Suspense, useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, X, Users, Phone, Globe, MapPin, Building2, AlertCircle, CheckCircle2, Lock, Undo2, Shuffle, Scale, MinusCircle, ArrowDownToLine } from 'lucide-react';
+import { Search, X, Users, Phone, Globe, MapPin, Building2, AlertCircle, CheckCircle2, Lock, Undo2, Shuffle, Scale, MinusCircle, ArrowDownToLine, Tag, ArrowRight } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
@@ -25,6 +26,14 @@ interface RebalancePreviewPerRep { name: string; movedToPool: number }
 interface RebalancePreview {
   perRep: Record<string, RebalancePreviewPerRep>;
   totalMovedToPool: number;
+}
+
+interface SpecialtyPreviewPerRep { name: string; count: number; industries: string[] }
+interface SpecialtyPreview {
+  totalAssigned: number;
+  perRep: Record<string, SpecialtyPreviewPerRep>;
+  uncovered: { total: number; byIndustry: Record<string, number> };
+  reason?: string;
 }
 
 interface SalesRep {
@@ -82,6 +91,12 @@ function AssignLeadsContent() {
   const [takeCount, setTakeCount] = useState<number>(10);
   const [taking, setTaking] = useState(false);
   const takePopoverRef = useRef<HTMLDivElement>(null);
+
+  // Distribute-by-specialty state
+  const [specialtyOpen, setSpecialtyOpen] = useState(false);
+  const [specialtyPerRep, setSpecialtyPerRep] = useState<string>(''); // '' = uncapped
+  const [specialtyPreview, setSpecialtyPreview] = useState<SpecialtyPreview | null>(null);
+  const [distributingSpecialty, setDistributingSpecialty] = useState(false);
 
   const debouncedSearch = useDebounce(search, 350);
 
@@ -351,6 +366,62 @@ function AssignLeadsContent() {
     }
   };
 
+  // Distribute by specialty — dry-run preview + execute.
+  const fetchSpecialtyPreview = useCallback(async () => {
+    try {
+      const body: { perRep?: number; dryRun: true } = { dryRun: true };
+      const n = parseInt(specialtyPerRep, 10);
+      if (!isNaN(n) && n > 0) body.perRep = n;
+      const res = await fetch('/api/admin/leads/distribute-by-specialty', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
+      if (res.ok) setSpecialtyPreview(json.data);
+    } catch { /* ignore */ }
+  }, [specialtyPerRep]);
+
+  useEffect(() => {
+    if (!specialtyOpen) { setSpecialtyPreview(null); return; }
+    fetchSpecialtyPreview();
+  }, [specialtyOpen, fetchSpecialtyPreview]);
+
+  const doDistributeBySpecialty = async () => {
+    setDistributingSpecialty(true);
+    setError('');
+    try {
+      const body: { perRep?: number; dryRun: false } = { dryRun: false };
+      const n = parseInt(specialtyPerRep, 10);
+      if (!isNaN(n) && n > 0) body.perRep = n;
+      const res = await fetch('/api/admin/leads/distribute-by-specialty', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to distribute by specialty');
+
+      const lines = Object.values(json.data.perRep as Record<string, SpecialtyPreviewPerRep>)
+        .filter(v => v.count > 0)
+        .map(v => `${v.name}: ${v.count}`)
+        .join(' · ');
+      const uncovered = json.data.uncovered?.total || 0;
+      setFlash({
+        type: json.data.totalAssigned > 0 ? 'ok' : 'warn',
+        msg: json.data.totalAssigned === 0
+          ? (json.data.reason || 'Nothing matched — set rep industries on /admin/team first.')
+          : `Routed ${json.data.totalAssigned} leads by specialty${lines ? ` (${lines})` : ''}${uncovered > 0 ? ` · ${uncovered} stayed in pool (no rep covers their industry)` : ''}.`,
+      });
+      setSpecialtyOpen(false);
+      await Promise.all([fetchLeads(), fetchRepLoads()]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to distribute by specialty');
+    } finally {
+      setDistributingSpecialty(false);
+    }
+  };
+
   // Close the per-rep "Take..." popover when clicking outside it.
   useEffect(() => {
     if (!takeOpenForRep) return;
@@ -403,13 +474,22 @@ function AssignLeadsContent() {
         <div className="flex-1" />
 
         {tab === 'unassigned' && (
-          <button
-            onClick={() => { setDistributeOpen(true); setDistributeRepIds(new Set()); }}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 active:scale-[0.98] transition-all"
-          >
-            <Shuffle className="w-3.5 h-3.5" />
-            Distribute pool
-          </button>
+          <>
+            <button
+              onClick={() => setSpecialtyOpen(true)}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-sky-600 text-white shadow-sm hover:bg-sky-700 active:scale-[0.98] transition-all"
+            >
+              <Tag className="w-3.5 h-3.5" />
+              Distribute by specialty
+            </button>
+            <button
+              onClick={() => { setDistributeOpen(true); setDistributeRepIds(new Set()); }}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 active:scale-[0.98] transition-all"
+            >
+              <Shuffle className="w-3.5 h-3.5" />
+              Distribute pool
+            </button>
+          </>
         )}
 
         {tab === 'assigned' && (
@@ -578,6 +658,124 @@ function AssignLeadsContent() {
               >
                 {rebalancing && <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                 {rebalancing ? 'Moving…' : 'Send to pool'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Distribute-by-specialty modal */}
+      {specialtyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center">
+                  <Tag className="w-4 h-4 text-sky-600" />
+                </div>
+                <h2 className="text-base font-semibold text-gray-900">Distribute by specialty</h2>
+              </div>
+              <button onClick={() => setSpecialtyOpen(false)} className="text-gray-400 hover:text-gray-900">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-4">
+              Routes each unassigned lead to a rep who covers its industry. Leads in industries no rep covers stay in the pool.
+              Set rep coverage on <Link href="/admin/team" className="text-sky-700 underline">/admin/team</Link>.
+            </p>
+
+            <label className="block text-xs font-medium text-gray-700 mb-2">Max per rep (optional)</label>
+            <div className="flex items-center gap-2 mb-5">
+              <input
+                type="number"
+                min={1}
+                max={10000}
+                value={specialtyPerRep}
+                onChange={(e) => setSpecialtyPerRep(e.target.value)}
+                placeholder="Uncapped"
+                className="w-32 px-3 py-2 text-sm rounded-lg border border-gray-200 focus:border-gray-400 focus:outline-none"
+              />
+              <span className="text-xs text-gray-500">Leave empty to assign every covered lead.</span>
+            </div>
+
+            {/* Preview */}
+            {!specialtyPreview ? (
+              <div className="text-xs text-gray-400 py-6 text-center">Calculating preview…</div>
+            ) : (
+              <>
+                {/* Per-rep what they'd receive */}
+                <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                  {Object.keys(specialtyPreview.perRep).length === 0 ? (
+                    <p className="text-[11px] text-gray-500">
+                      {specialtyPreview.reason || 'No covered leads to assign.'}
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-[11px] font-medium text-gray-700 mb-2">
+                        Will assign <strong>{specialtyPreview.totalAssigned}</strong> lead(s):
+                      </p>
+                      <ul className="space-y-1.5">
+                        {Object.entries(specialtyPreview.perRep)
+                          .sort((a, b) => b[1].count - a[1].count)
+                          .map(([repId, v]) => (
+                            <li key={repId} className="flex items-center justify-between gap-3 text-[11px]">
+                              <span className="flex items-center gap-2 flex-1 min-w-0">
+                                <span className="font-medium text-gray-900 truncate">{v.name}</span>
+                                <span className="flex flex-wrap gap-1">
+                                  {v.industries.map(i => (
+                                    <span key={i} className="px-1.5 py-0.5 rounded bg-sky-100 text-sky-700 text-[10px]">{i}</span>
+                                  ))}
+                                </span>
+                              </span>
+                              <span className="font-medium text-sky-700 tabular-nums shrink-0">+{v.count}</span>
+                            </li>
+                          ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+
+                {/* Coverage-gap warning */}
+                {specialtyPreview.uncovered.total > 0 && (
+                  <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 mb-4">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-amber-900 mb-1">
+                          {specialtyPreview.uncovered.total} lead(s) will stay in the pool — no rep covers their industry:
+                        </p>
+                        <ul className="space-y-0.5">
+                          {Object.entries(specialtyPreview.uncovered.byIndustry)
+                            .sort((a, b) => b[1] - a[1])
+                            .map(([ind, n]) => (
+                              <li key={ind} className="text-[11px] text-amber-800 flex items-center justify-between">
+                                <span>{ind}</span>
+                                <span className="tabular-nums font-medium">{n}</span>
+                              </li>
+                            ))}
+                        </ul>
+                        <Link
+                          href="/admin/team"
+                          className="inline-flex items-center gap-1 mt-2 text-[11px] font-medium text-amber-900 hover:text-amber-700"
+                        >
+                          Manage coverage <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setSpecialtyOpen(false)} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">Cancel</button>
+              <button
+                onClick={doDistributeBySpecialty}
+                disabled={distributingSpecialty || !specialtyPreview || specialtyPreview.totalAssigned === 0}
+                className="px-4 py-2 text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 disabled:opacity-50 rounded-lg inline-flex items-center gap-2"
+              >
+                {distributingSpecialty && <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                {distributingSpecialty ? 'Distributing…' : 'Distribute'}
               </button>
             </div>
           </div>

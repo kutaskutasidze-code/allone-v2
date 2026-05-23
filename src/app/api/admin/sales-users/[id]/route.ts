@@ -3,12 +3,14 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
+import { salesUserIndustriesSchema } from '@/lib/validations/leads';
 
 const patchSchema = z.object({
   daily_target: z.number().int().min(0).max(10000).optional(),
   name: z.string().min(1).max(255).optional(),
   role: z.enum(['salesperson', 'supervisor', 'admin']).optional(),
   is_active: z.boolean().optional(),
+  industries: salesUserIndustriesSchema.optional(),
 });
 
 export async function PATCH(request: NextRequest, ctx: { params: Promise<{ id: string }> }) {
@@ -32,7 +34,7 @@ export async function PATCH(request: NextRequest, ctx: { params: Promise<{ id: s
       .from('sales_users')
       .update(parsed.data)
       .eq('id', id)
-      .select('id, email, name, role, is_active, daily_target')
+      .select('id, email, name, role, is_active, daily_target, industries')
       .single();
 
     if (error) {

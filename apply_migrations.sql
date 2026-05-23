@@ -253,3 +253,16 @@ ALTER TABLE sales_users
 CREATE INDEX IF NOT EXISTS sales_users_active_idx
   ON sales_users (is_active)
   WHERE is_active = TRUE;
+
+-- ============================================================
+-- BEGIN: 20260524000000_sales_user_industries.sql
+-- ============================================================
+-- Per-rep industry coverage. Drives the "Distribute by specialty" admin
+-- action: law firm leads → reps who cover Law Firms, hotel leads → reps
+-- who cover Hotels, etc. Values must come from the canonical 18-industry
+-- list defined in 20260519020000_categorize_leads.sql; the API validates.
+ALTER TABLE sales_users
+  ADD COLUMN IF NOT EXISTS industries TEXT[] NOT NULL DEFAULT '{}';
+
+CREATE INDEX IF NOT EXISTS sales_users_industries_idx
+  ON sales_users USING GIN (industries);

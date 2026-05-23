@@ -61,6 +61,37 @@ export const LEAD_SERVICES = [
   { value: 'custom_ai', label: 'Custom AI' },
 ] as const;
 
+// Canonical industry list. MUST stay in sync with the categorization rules in
+// supabase/migrations/20260519020000_categorize_leads.sql — that migration sets
+// every lead's industry to one of these values (or NULL). Used for both the
+// admin rep-specialty multi-select and the distribute-by-specialty router.
+export const LEAD_INDUSTRIES = [
+  'Hotels',
+  'Restaurants & Cafes',
+  'E-commerce',
+  'Shops / Retail',
+  'Real Estate',
+  'Law Firms',
+  'Medical / Clinics',
+  'Beauty & Wellness',
+  'Education / Schools',
+  'Construction',
+  'Manufacturing / Production',
+  'Logistics / Transport',
+  'Finance / Insurance',
+  'IT / Tech',
+  'Marketing / Advertising',
+  'Auto / Car services',
+  'Professional Services',
+  'Other',
+] as const;
+
+export type LeadIndustry = typeof LEAD_INDUSTRIES[number];
+
+export const leadIndustrySchema = z.enum(LEAD_INDUSTRIES as unknown as [string, ...string[]]);
+
+export const salesUserIndustriesSchema = z.array(leadIndustrySchema).max(LEAD_INDUSTRIES.length);
+
 // Hotlines = Georgian landlines (regional codes start with 3 or 4 after +995).
 // Anything else (mobile +9955.../+9957..., etc.) is treated as a regular lead.
 export const HOTLINE_PHONE_PREFIXES = ['+9953', '+9954'] as const;

@@ -12,6 +12,7 @@ interface RepStats {
   role: string;
   isActive: boolean;
   dailyTarget: number;
+  industries: string[];
   assignedInPeriod: number;
   calledInPeriod: number;
   wonCount: number;
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     const { data: salesUsers, error: usersErr } = await admin
       .from('sales_users')
-      .select('id, name, email, role, is_active, daily_target')
+      .select('id, name, email, role, is_active, daily_target, industries')
       .order('name', { ascending: true });
 
     if (usersErr) {
@@ -99,6 +100,7 @@ export async function GET(request: NextRequest) {
         role: u.role,
         isActive: u.is_active ?? true,
         dailyTarget: u.daily_target ?? 80,
+        industries: u.industries ?? [],
         assignedInPeriod,
         calledInPeriod,
         wonCount,

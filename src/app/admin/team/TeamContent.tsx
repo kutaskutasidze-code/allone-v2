@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { Users, UserPlus, MoreVertical, X, Check, Power, AlertCircle } from 'lucide-react';
+import { Users, UserPlus, MoreVertical, X, Check, Power, AlertCircle, Tag, Search } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import { LEAD_INDUSTRIES } from '@/lib/validations/leads';
 
 interface RepStats {
   id: string;
@@ -11,6 +12,7 @@ interface RepStats {
   role: string;
   isActive: boolean;
   dailyTarget: number;
+  industries: string[];
   assignedInPeriod: number;
   calledInPeriod: number;
   wonCount: number;
@@ -223,6 +225,112 @@ function AddRepModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
   );
 }
 
+function IndustriesCell({ rep, onSave }: { rep: RepStats; onSave: (industries: string[]) => Promise<void> }) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<Set<string>>(new Set(rep.industries));
+  const [search, setSearch] = useState('');
+  const [saving, setSaving] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setDraft(new Set(rep.industries)); }, [rep.industries, open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onClick); document.removeEventListener('keydown', onKey); };
+  }, [open]);
+
+  const toggle = (ind: string) => {
+    setDraft(prev => {
+      const next = new Set(prev);
+      if (next.has(ind)) next.delete(ind); else next.add(ind);
+      return next;
+    });
+  };
+
+  const commit = async () => {
+    setSaving(true);
+    try {
+      await onSave(Array.from(draft).sort());
+      setOpen(false);
+    } finally { setSaving(false); }
+  };
+
+  const filtered = LEAD_INDUSTRIES.filter(i => i.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="inline-flex items-center gap-1 max-w-[260px] text-left hover:bg-gray-100 rounded px-1.5 py-0.5 transition-colors"
+        title="Click to edit industries this rep covers"
+      >
+        {rep.industries.length === 0 ? (
+          <span className="text-[11px] text-gray-400">— set industries</span>
+        ) : (
+          <span className="flex flex-wrap gap-1">
+            {rep.industries.slice(0, 3).map(i => (
+              <span key={i} className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-sky-50 text-sky-700">{i}</span>
+            ))}
+            {rep.industries.length > 3 && (
+              <span className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-gray-100 text-gray-600">+{rep.industries.length - 3}</span>
+            )}
+          </span>
+        )}
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full mt-1 z-40 w-80 bg-white border border-gray-200 rounded-lg shadow-lg p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-gray-700">Industries for {rep.name}</span>
+            <span className="text-[11px] text-gray-500">{draft.size} selected</span>
+          </div>
+          <div className="relative mb-2">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search…"
+              className="w-full pl-7 pr-2 py-1.5 text-xs rounded border border-gray-200 focus:border-gray-400 focus:outline-none"
+            />
+          </div>
+          <div className="flex items-center gap-2 mb-2 text-[11px]">
+            <button onClick={() => setDraft(new Set(LEAD_INDUSTRIES))} className="text-sky-700 hover:underline">Select all</button>
+            <span className="text-gray-300">·</span>
+            <button onClick={() => setDraft(new Set())} className="text-gray-500 hover:underline">Clear</button>
+          </div>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 max-h-56 overflow-y-auto mb-3">
+            {filtered.map(ind => {
+              const checked = draft.has(ind);
+              return (
+                <label key={ind} className="flex items-center gap-1.5 px-1.5 py-1 rounded hover:bg-gray-50 cursor-pointer text-[11px]">
+                  <input type="checkbox" checked={checked} onChange={() => toggle(ind)} className="rounded border-gray-300" />
+                  <span className={checked ? 'text-gray-900' : 'text-gray-600'}>{ind}</span>
+                </label>
+              );
+            })}
+            {filtered.length === 0 && <span className="col-span-2 text-[11px] text-gray-400 italic px-2 py-2">No matches</span>}
+          </div>
+          <div className="flex justify-end gap-2 border-t border-gray-100 pt-2">
+            <button onClick={() => setOpen(false)} className="px-3 py-1 text-xs text-gray-600 hover:text-gray-900">Cancel</button>
+            <button
+              onClick={commit}
+              disabled={saving}
+              className="px-3 py-1 text-xs font-medium text-white bg-gray-900 rounded hover:bg-gray-800 disabled:opacity-50 inline-flex items-center gap-1"
+            >
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RowActions({ rep, onChanged }: { rep: RepStats; onChanged: () => void }) {
   const [open, setOpen] = useState(false);
 
@@ -367,6 +475,11 @@ export function TeamContent() {
           <thead>
             <tr className="bg-gray-50 text-[11px] text-gray-500 uppercase tracking-wider">
               <th className="text-left px-4 py-3 font-medium">Rep</th>
+              <th className="text-left px-3 py-3 font-medium">
+                <span className="inline-flex items-center gap-1">
+                  <Tag className="w-3 h-3" /> Industries
+                </span>
+              </th>
               <th className="text-right px-3 py-3 font-medium">Target</th>
               <th className="text-right px-3 py-3 font-medium">Assigned</th>
               <th className="text-right px-3 py-3 font-medium">Calls</th>
@@ -380,10 +493,10 @@ export function TeamContent() {
           </thead>
           <tbody>
             {loading && !data ? (
-              <tr><td colSpan={10} className="px-4 py-10 text-center text-xs text-gray-400">Loading…</td></tr>
+              <tr><td colSpan={11} className="px-4 py-10 text-center text-xs text-gray-400">Loading…</td></tr>
             ) : !data || data.reps.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-4 py-10 text-center">
+                <td colSpan={11} className="px-4 py-10 text-center">
                   <Users className="w-6 h-6 mx-auto text-gray-300 mb-2" />
                   <p className="text-sm text-gray-500">No sales reps yet.</p>
                   <button onClick={() => setShowAdd(true)} className="mt-2 text-xs text-gray-700 underline">Add your first rep</button>
@@ -399,6 +512,9 @@ export function TeamContent() {
                       {!rep.isActive && <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">inactive</span>}
                     </div>
                     <div className="text-xs text-gray-500 mt-0.5">{rep.email}</div>
+                  </td>
+                  <td className="px-3 py-3">
+                    <IndustriesCell rep={rep} onSave={(industries) => patchRep(rep.id, { industries })} />
                   </td>
                   <td className="px-3 py-3 text-right">
                     <InlineNumberEdit value={rep.dailyTarget} onSave={(n) => patchRep(rep.id, { daily_target: n })} />
