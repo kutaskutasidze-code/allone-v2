@@ -40,8 +40,10 @@ export async function POST(request: NextRequest) {
     if (repIds && repIds.length > 0) {
       repsQuery = repsQuery.in('id', repIds);
     } else {
-      // Default: all salespeople (no supervisors/admins).
-      repsQuery = repsQuery.eq('role', 'salesperson');
+      // Default: every active rep regardless of role. Supervisors and admins
+      // can also be salespeople — the role label is independent of whether
+      // they take leads.
+      repsQuery = repsQuery.eq('is_active', true);
     }
     const { data: reps, error: repsErr } = await repsQuery;
     if (repsErr || !reps || reps.length === 0) {

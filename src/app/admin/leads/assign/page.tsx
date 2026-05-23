@@ -41,6 +41,7 @@ interface SalesRep {
   name: string;
   email: string;
   role?: string;
+  is_active?: boolean;
 }
 
 interface LeadRow {
@@ -547,10 +548,10 @@ function AssignLeadsContent() {
 
             <label className="block text-xs font-medium text-gray-700 mb-2">Distribute to</label>
             <p className="text-[11px] text-gray-500 mb-2">
-              Leave all unchecked to distribute to every salesperson automatically.
+              Leave all unchecked to distribute to every active rep automatically.
             </p>
             <div className="space-y-1 mb-5 max-h-40 overflow-y-auto">
-              {reps.filter(r => r.role !== 'supervisor' && r.role !== 'admin').map(rep => {
+              {reps.filter(r => r.is_active !== false).map(rep => {
                 const checked = distributeRepIds.has(rep.id);
                 return (
                   <label key={rep.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer text-sm">
@@ -566,13 +567,16 @@ function AssignLeadsContent() {
                       }}
                     />
                     <span className="flex-1">{rep.name}</span>
+                    {(rep.role === 'admin' || rep.role === 'supervisor') && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">{rep.role}</span>
+                    )}
                   </label>
                 );
               })}
             </div>
 
             <div className="bg-gray-50 rounded-lg px-3 py-2 text-[11px] text-gray-500 mb-5">
-              About to assign up to <strong className="text-gray-900">{distributePerRep * (distributeRepIds.size || reps.filter(r => r.role !== 'supervisor' && r.role !== 'admin').length)}</strong> leads total.
+              About to assign up to <strong className="text-gray-900">{distributePerRep * (distributeRepIds.size || reps.filter(r => r.is_active !== false).length)}</strong> leads total.
             </div>
 
             <div className="flex justify-end gap-2">
