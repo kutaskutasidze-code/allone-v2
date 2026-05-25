@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Suspense, useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, X, Users, Phone, Globe, MapPin, Building2, AlertCircle, CheckCircle2, Lock, Undo2, Shuffle, Scale, MinusCircle, ArrowDownToLine, Tag, ArrowRight } from 'lucide-react';
+import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
+import { Search, X, Users, Phone, Globe, MapPin, Building2, AlertCircle, CheckCircle2, Lock, Undo2, Shuffle, Scale, MinusCircle, ArrowDownToLine, Tag, ArrowRight, Flame } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
-import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
+import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN, LEAD_INDUSTRIES } from '@/lib/validations/leads';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 
 interface RepLoad {
@@ -81,6 +81,11 @@ function AssignLeadsContent() {
   const [distributePerRep, setDistributePerRep] = useState(80);
   const [distributing, setDistributing] = useState(false);
   const [distributeRepIds, setDistributeRepIds] = useState<Set<string>>(new Set());
+  // Hotline leads (Georgian landlines +9953/+9954) are normally excluded so
+  // they live in the dedicated /admin/leads/hotlines view. Law-firm leads
+  // mostly fall into this bucket, so admins need a way to include them
+  // when distributing. Default off preserves the previous behavior.
+  const [includeHotlines, setIncludeHotlines] = useState(false);
 
   // Rebalance state
   const [repLoads, setRepLoads] = useState<RepLoadsData | null>(null);
@@ -136,7 +141,7 @@ function AssignLeadsContent() {
       if (tab === 'assigned' && assignedToFilter !== 'all') params.set('assigned_to', assignedToFilter);
       if (industry !== 'all') params.set('industry', industry);
       if (debouncedSearch) params.set('search', debouncedSearch);
-      params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX_PARAM);
+      if (!includeHotlines) params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX_PARAM);
       params.set('page', String(page));
       params.set('limit', String(PAGE_LIMIT));
 
@@ -151,7 +156,7 @@ function AssignLeadsContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [tab, assignedToFilter, industry, debouncedSearch, page]);
+  }, [tab, assignedToFilter, industry, debouncedSearch, page, includeHotlines]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -204,7 +209,9 @@ function AssignLeadsContent() {
       const body: { perRep: number; repIds?: string[]; filters?: Record<string, string> } = { perRep: distributePerRep };
       if (distributeRepIds.size > 0) body.repIds = [...distributeRepIds];
       if (industry !== 'all') body.filters = { ...(body.filters || {}), industry };
-      body.filters = { ...(body.filters || {}), excludePhonePrefix: HOTLINE_PHONE_PREFIX_PARAM };
+      if (!includeHotlines) {
+        body.filters = { ...(body.filters || {}), excludePhonePrefix: HOTLINE_PHONE_PREFIX_PARAM };
+      }
 
       const res = await fetch('/api/admin/leads/distribute', {
         method: 'POST',
@@ -436,7 +443,6 @@ function AssignLeadsContent() {
   }, [takeOpenForRep]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_LIMIT));
-  const industries = useMemo(() => Array.from(new Set(leads.map(l => l.industry).filter(Boolean))) as string[], [leads]);
 
   return (
     <div className="space-y-6">
@@ -807,11 +813,20 @@ function AssignLeadsContent() {
             </div>
             <select
               value={industry}
-              onChange={(e) => { setIndustry(e.target.value); setPage(1); }}
+              onChange={(e) => {
+                const next = e.target.value;
+                setIndustry(next);
+                setPage(1);
+                // Auto-enable hotlines when picking an industry whose leads
+                // are mostly Georgian landlines — otherwise the user picks
+                // "Law Firms" and sees an empty list. They can still toggle
+                // it back off manually.
+                if (next !== 'all' && !includeHotlines) setIncludeHotlines(true);
+              }}
               className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
             >
               <option value="all">All categories</option>
-              {industries.map(i => <option key={i} value={i}>{i}</option>)}
+              {LEAD_INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
             </select>
             {tab === 'assigned' && (
               <select
@@ -823,6 +838,15 @@ function AssignLeadsContent() {
                 {reps.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
               </select>
             )}
+            <button
+              type="button"
+              onClick={() => { setIncludeHotlines(v => !v); setPage(1); }}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all ${includeHotlines ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'}`}
+              title="Hotlines = Georgian landlines (+9953/+9954). Most law-firm leads live here. Off by default to avoid double-distribution with /admin/leads/hotlines."
+            >
+              <Flame className="w-3.5 h-3.5" />
+              {includeHotlines ? 'Including hotlines' : 'Include hotlines'}
+            </button>
           </div>
 
           {tab === 'assigned' && repLoads && repLoads.reps.filter(r => r.isActive).length > 0 && (
