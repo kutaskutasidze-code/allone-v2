@@ -25,25 +25,26 @@ async function getSalesUser() {
   return salesUser;
 }
 
-// Returns this rep's own stats. Supervisors get the same view (their personal
-// pipeline) — they can still drill into the team via /sales/team and /sales/leads?all=true.
-async function getLeadStats(salesUserId: string, canSeeAll: boolean) {
+// Every sales user — including supervisors/admins — only sees their own
+// pipeline on /sales/*. Team-wide views live behind /admin.
+async function getLeadStats(salesUserId: string) {
   const supabase = createAdminClient();
   const statuses = ['new', 'contacted', 'qualified', 'won', 'lost'];
 
-  const scope = <T extends ReturnType<typeof supabase.from>>(q: T) =>
-    canSeeAll ? q : q.eq('sales_user_id', salesUserId);
-
   const results = await Promise.all(
     statuses.map(s =>
-      scope(supabase.from('leads').select('id', { count: 'exact', head: true })).eq('status', s)
+      supabase.from('leads').select('id', { count: 'exact', head: true })
+        .eq('sales_user_id', salesUserId)
+        .eq('status', s)
     )
   );
 
-  const { data: pipelineData } = await scope(supabase.from('leads').select('value'))
+  const { data: pipelineData } = await supabase.from('leads').select('value')
+    .eq('sales_user_id', salesUserId)
     .in('status', ['contacted', 'qualified']);
 
-  const { data: wonData } = await scope(supabase.from('leads').select('value'))
+  const { data: wonData } = await supabase.from('leads').select('value')
+    .eq('sales_user_id', salesUserId)
     .eq('status', 'won');
 
   const stats: Record<string, number> = {
@@ -58,13 +59,14 @@ async function getLeadStats(salesUserId: string, canSeeAll: boolean) {
   return stats;
 }
 
-async function getRecentLeads(salesUserId: string, canSeeAll: boolean) {
+async function getRecentLeads(salesUserId: string) {
   const supabase = createAdminClient();
-
-  let query = supabase.from('leads').select('*').order('created_at', { ascending: false }).limit(5);
-  if (!canSeeAll) query = query.eq('sales_user_id', salesUserId);
-
-  const { data: leads } = await query;
+  const { data: leads } = await supabase
+    .from('leads')
+    .select('*')
+    .eq('sales_user_id', salesUserId)
+    .order('created_at', { ascending: false })
+    .limit(5);
   return leads || [];
 }
 
@@ -107,11 +109,10 @@ async function getOverdueCallbacks() {
 
 export default async function SalesDashboard() {
   const salesUser = await getSalesUser();
-  const canSeeAll = salesUser.role === 'supervisor' || salesUser.role === 'admin';
 
   const [stats, recentLeads, todaysQueue, todaysCalls, overdueCallbacks] = await Promise.all([
-    getLeadStats(salesUser.id, false),       // personal stats always (own pipeline)
-    getRecentLeads(salesUser.id, canSeeAll), // supervisors see team recents
+    getLeadStats(salesUser.id),
+    getRecentLeads(salesUser.id),
     getTodaysQueueCount(salesUser.id),
     getTodaysCallsByMe(salesUser.id),
     getOverdueCallbacks(),

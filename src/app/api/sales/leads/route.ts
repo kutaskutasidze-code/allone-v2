@@ -21,31 +21,17 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const status = url.searchParams.get('status');
     const search = url.searchParams.get('search');
-    const salesUserIdFilter = url.searchParams.get('sales_user_id');
 
-    const canSeeAll = salesUser.role === 'supervisor' || salesUser.role === 'admin';
     const supabase = createAdminClient();
 
+    // Every sales user — including supervisors/admins — only sees leads
+    // assigned to them on /sales/*. Team-wide views live behind /admin.
     let query = supabase
       .from('leads')
       .select('*', { count: 'exact' })
+      .eq('sales_user_id', salesUser.id)
       .order('relevance_score', { ascending: false })
       .order('created_at', { ascending: false });
-
-    // Per-rep scoping. A salesperson only ever sees leads assigned to them — the
-    // sales_user_id query param is ignored. A supervisor/admin can either ask for
-    // everyone (?all=true), a specific rep (?sales_user_id=...), or default to
-    // their own pipeline.
-    const wantAll = url.searchParams.get('all') === 'true';
-    if (canSeeAll) {
-      if (salesUserIdFilter) {
-        query = query.eq('sales_user_id', salesUserIdFilter);
-      } else if (!wantAll) {
-        query = query.eq('sales_user_id', salesUser.id);
-      }
-    } else {
-      query = query.eq('sales_user_id', salesUser.id);
-    }
 
     // ?scope=today → leads assigned to me since midnight UTC today.
     if (url.searchParams.get('scope') === 'today') {

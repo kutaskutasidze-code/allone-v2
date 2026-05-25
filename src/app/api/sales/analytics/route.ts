@@ -5,7 +5,7 @@ import { leadStatusSchema } from '@/lib/validations/leads';
 
 export async function GET(request: NextRequest) {
   try {
-    await requireSalesAuth();
+    const { salesUser } = await requireSalesAuth();
     const supabase = createAdminClient();
 
     const days = parseInt(request.nextUrl.searchParams.get('days') || '30', 10);
@@ -15,13 +15,18 @@ export async function GET(request: NextRequest) {
     const statuses = [...leadStatusSchema.options];
     const services = ['chatbots', 'custom_ai', 'automation', 'website', 'consulting'];
 
+    // Every sales user — including supervisors/admins — only sees their own
+    // numbers on /sales/*. Team-wide analytics live behind /admin.
+    const scope = <T extends ReturnType<typeof supabase.from>>(q: T) =>
+      q.eq('sales_user_id', salesUser.id);
+
     const [totalRes, phoneRes, emailRes, newInPeriodRes, ...statusAndServiceResults] = await Promise.all([
-      supabase.from('leads').select('id', { count: 'exact', head: true }),
-      supabase.from('leads').select('id', { count: 'exact', head: true }).not('phone', 'is', null),
-      supabase.from('leads').select('id', { count: 'exact', head: true }).not('email', 'is', null),
-      supabase.from('leads').select('id', { count: 'exact', head: true }).gte('created_at', startDate.toISOString()),
-      ...statuses.map(s => supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', s)),
-      ...services.map(s => supabase.from('leads').select('id', { count: 'exact', head: true }).eq('matched_service', s)),
+      scope(supabase.from('leads').select('id', { count: 'exact', head: true })),
+      scope(supabase.from('leads').select('id', { count: 'exact', head: true })).not('phone', 'is', null),
+      scope(supabase.from('leads').select('id', { count: 'exact', head: true })).not('email', 'is', null),
+      scope(supabase.from('leads').select('id', { count: 'exact', head: true })).gte('created_at', startDate.toISOString()),
+      ...statuses.map(s => scope(supabase.from('leads').select('id', { count: 'exact', head: true })).eq('status', s)),
+      ...services.map(s => scope(supabase.from('leads').select('id', { count: 'exact', head: true })).eq('matched_service', s)),
     ]);
 
     const total = totalRes.count || 0;
@@ -48,9 +53,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Daily trend - fetch just dates from the period (limit higher)
-    const { data: recentDates } = await supabase
-      .from('leads')
-      .select('created_at')
+    const { data: recentDates } = await scope(
+      supabase.from('leads').select('created_at')
+    )
       .gte('created_at', startDate.toISOString())
       .order('created_at', { ascending: true })
       .limit(5000);

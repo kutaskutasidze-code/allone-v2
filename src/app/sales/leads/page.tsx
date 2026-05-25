@@ -120,12 +120,11 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
   );
 }
 
-type ScopeMode = 'today' | 'mine' | 'callbacks' | 'done' | 'team';
+type ScopeMode = 'today' | 'mine' | 'callbacks' | 'done';
 
 function LeadsPageContent() {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get('status') || 'all';
-  const salesUserIdFilter = searchParams.get('sales_user_id');
   const { theme, toggleTheme } = useSalesTheme();
   const [callbackForLeadId, setCallbackForLeadId] = useState<string | null>(null);
   const initialScopeParam = searchParams.get('scope');
@@ -135,7 +134,6 @@ function LeadsPageContent() {
       : initialStatus === 'callback' ? 'callbacks'
         : 'mine'
   );
-  const [isSupervisor, setIsSupervisor] = useState(false);
 
   const [leads, setLeads] = useState<Record<string, unknown>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -151,35 +149,15 @@ function LeadsPageContent() {
 
   const debouncedSearch = useDebounce(search, 350);
 
-  // Detect whether the current user can use the "All team" scope.
-  useEffect(() => {
-    let active = true;
-    fetch('/api/sales/me')
-      .then(r => r.ok ? r.json() : null)
-      .then(json => {
-        if (!active) return;
-        const role = json?.data?.role;
-        if (role === 'supervisor' || role === 'admin') setIsSupervisor(true);
-      })
-      .catch(() => {});
-    return () => { active = false; };
-  }, []);
-
   const fetchLeads = useCallback(async () => {
     try {
       setIsLoading(true);
       const params = new URLSearchParams();
 
-      // Scope chips override the legacy status / sales_user_id query params.
       if (scopeMode === 'today') {
         params.set('scope', 'today');
       } else if (scopeMode === 'callbacks') {
         params.set('status', 'callback');
-      } else if (scopeMode === 'done') {
-        // "Done today" — leads I've moved off `new` since today.
-        // Implemented client-side filter for now; server still returns "mine".
-      } else if (scopeMode === 'team' && isSupervisor) {
-        params.set('all', 'true');
       }
 
       // Honor an explicit status pill click only when no scope filter overrides it.
@@ -190,8 +168,6 @@ function LeadsPageContent() {
       if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
       if (sourceFilter !== 'all') params.set('has_source', sourceFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
-      // Supervisors drilling into a specific rep from /sales/team
-      if (salesUserIdFilter && scopeMode === 'team') params.set('sales_user_id', salesUserIdFilter);
       params.set('page', page.toString());
       params.set('limit', limit.toString());
       params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX_PARAM);
@@ -218,7 +194,7 @@ function LeadsPageContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [scopeMode, isSupervisor, statusFilter, serviceFilter, websiteFilter, sourceFilter, debouncedSearch, page, salesUserIdFilter]);
+  }, [scopeMode, statusFilter, serviceFilter, websiteFilter, sourceFilter, debouncedSearch, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -264,7 +240,7 @@ function LeadsPageContent() {
       )}
       <PageHeader
         title="Leads"
-        description={scopeMode === 'team' ? `${total} total team leads` : `${total} leads · your pipeline`}
+        description={`${total} leads · your pipeline`}
         action={{ label: 'Add Lead', href: '/sales/leads/new' }}
         extras={
           <button
@@ -305,19 +281,10 @@ function LeadsPageContent() {
             </button>
           );
         })}
-        {isSupervisor && (
-          <button
-            onClick={() => { setScopeMode('team'); setStatusFilter('all'); setPage(1); }}
-            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${scopeMode === 'team' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'}`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            All Team
-          </button>
-        )}
       </div>
 
-      {/* Status filter (only meaningful within the All-Mine / All-Team scope) */}
-      {(scopeMode === 'mine' || scopeMode === 'team') && (
+      {/* Status filter (only meaningful within the All-Mine scope) */}
+      {scopeMode === 'mine' && (
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => { setStatusFilter('all'); setPage(1); }}
