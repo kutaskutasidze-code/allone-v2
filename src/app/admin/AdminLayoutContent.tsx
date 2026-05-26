@@ -14,6 +14,7 @@ export function AdminLayoutContent({
   const pathname = usePathname();
   const router = useRouter();
   const isLoginPage = pathname === "/admin/login";
+  const isChatNativeHome = pathname === "/admin";
 
   if (isLoginPage) {
     return <>{children}</>;
@@ -33,6 +34,8 @@ export function AdminLayoutContent({
       chatScope={{ level: "org", org: "allone-admin" }}
       chatScopeLabel="Admin chat"
       chatApiPath="/api/sales/chat"
+      hideChat={isChatNativeHome}
+      hideChatToggle={isChatNativeHome}
       topbarRight={
         <button
           type="button"

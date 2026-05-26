@@ -14,6 +14,9 @@ export function SalesLayoutContent({
   const pathname = usePathname();
   const router = useRouter();
   const isLoginPage = pathname === "/sales/login";
+  // Chat-native home (and only the home) IS the chat — hide the side pane
+  // there so it doesn't double up. Every other route keeps the side chat.
+  const isChatNativeHome = pathname === "/sales";
 
   if (isLoginPage) {
     return <>{children}</>;
@@ -33,6 +36,8 @@ export function SalesLayoutContent({
       chatScope={{ level: "org", org: "allone-sales" }}
       chatScopeLabel="Sales chat"
       chatApiPath="/api/sales/chat"
+      hideChat={isChatNativeHome}
+      hideChatToggle={isChatNativeHome}
       topbarRight={
         <button
           type="button"
