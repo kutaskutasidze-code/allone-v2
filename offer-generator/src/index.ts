@@ -5,6 +5,7 @@ import { apiKeyAuth } from "./middleware/auth.js";
 import healthRouter from "./routes/health.js";
 import offersRouter from "./routes/offers.js";
 import referencesRouter from "./routes/references.js";
+import demosRouter from "./routes/demos.js";
 
 validateConfig();
 
@@ -31,6 +32,7 @@ app.use(healthRouter);
 app.use(apiKeyAuth);
 app.use(offersRouter);
 app.use(referencesRouter);
+app.use(demosRouter);
 
 app.listen(config.port, () => {
   logger.info(`Offer generator running on port ${config.port}`);
