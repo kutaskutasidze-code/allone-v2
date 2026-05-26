@@ -15,7 +15,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { Lead, SalesUser } from "@/types/database";
-import { LeadStatusBadge } from "@/components/sales";
+import {
+  LeadStatusBadge,
+  AimsBoard,
+  TelegramConnect,
+} from "@/components/sales";
 
 interface SalesDashboardContentProps {
   salesUser: SalesUser;
@@ -35,6 +39,10 @@ interface SalesDashboardContentProps {
     sent7d: number;
     engagementRate: number;
   };
+  telegramStatus?: {
+    connected: boolean;
+    username: string | null;
+  };
 }
 
 const formatCurrency = (value: number) => {
@@ -48,6 +56,7 @@ export function SalesDashboardContent({
   stats,
   recentLeads,
   demoStats,
+  telegramStatus,
 }: SalesDashboardContentProps) {
   const totalLeads =
     stats.new + stats.contacted + stats.qualified + stats.won + stats.lost;
@@ -116,6 +125,14 @@ export function SalesDashboardContent({
           Welcome back, {salesUser.name.split(" ")[0]}. Here&apos;s your
           pipeline overview.
         </p>
+      </div>
+
+      {/* Aims + Telegram connect — auto-computed aims, results vs targets */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <AimsBoard />
+        </div>
+        <TelegramConnect initial={telegramStatus} />
       </div>
 
       {/* Demo pipeline metrics */}

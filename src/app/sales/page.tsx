@@ -125,12 +125,27 @@ async function getDemoStats(salesUserId: string) {
   return { inFlight, awaitingReview, sent7d, engagementRate };
 }
 
+async function getTelegramStatus(salesUserId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("notification_channels")
+    .select("telegram_username, is_active")
+    .eq("sales_user_id", salesUserId)
+    .eq("channel_type", "telegram")
+    .maybeSingle();
+  return {
+    connected: Boolean(data?.is_active),
+    username: data?.telegram_username ?? null,
+  };
+}
+
 export default async function SalesDashboard() {
   const salesUser = await getSalesUser();
-  const [stats, recentLeads, demoStats] = await Promise.all([
+  const [stats, recentLeads, demoStats, telegramStatus] = await Promise.all([
     getLeadStats(salesUser.id),
     getRecentLeads(salesUser.id),
     getDemoStats(salesUser.id),
+    getTelegramStatus(salesUser.id),
   ]);
 
   return (
@@ -139,6 +154,7 @@ export default async function SalesDashboard() {
       stats={stats}
       recentLeads={recentLeads}
       demoStats={demoStats}
+      telegramStatus={telegramStatus}
     />
   );
 }
