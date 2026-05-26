@@ -1,5 +1,5 @@
-import { createBrowserClient } from '@supabase/ssr';
-import { revalidateTag } from 'next/cache';
+import { createBrowserClient } from "@supabase/ssr";
+import { revalidateTag } from "next/cache";
 
 /**
  * Invalidate cache for a specific tag
@@ -18,10 +18,15 @@ export function invalidateCache(tag: string): void {
 /**
  * Create a public Supabase client for caching
  * This client doesn't use cookies, making it safe for use in cached functions
+ *
+ * Returns null when env vars are absent (e.g. Vercel Preview builds without
+ * propagated env). Callers short-circuit to empty results so build-time data
+ * collection (generateStaticParams) doesn't fail.
  */
 function createPublicClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) return null;
   return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
@@ -30,13 +35,14 @@ function createPublicClient() {
  */
 export async function getCachedCategories() {
   const supabase = createPublicClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .order('display_order', { ascending: true });
+    .from("categories")
+    .select("*")
+    .order("display_order", { ascending: true });
 
   if (error) {
-    console.error('Failed to fetch categories:', error.message);
+    console.error("Failed to fetch categories:", error.message);
     return [];
   }
 
@@ -48,14 +54,15 @@ export async function getCachedCategories() {
  */
 export async function getCachedServices() {
   const supabase = createPublicClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
-    .from('services')
-    .select('*')
-    .eq('is_published', true)
-    .order('display_order', { ascending: true });
+    .from("services")
+    .select("*")
+    .eq("is_published", true)
+    .order("display_order", { ascending: true });
 
   if (error) {
-    console.error('Failed to fetch services:', error.message);
+    console.error("Failed to fetch services:", error.message);
     return [];
   }
 
@@ -67,14 +74,15 @@ export async function getCachedServices() {
  */
 export async function getCachedProjects() {
   const supabase = createPublicClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('is_published', true)
-    .order('display_order', { ascending: true });
+    .from("projects")
+    .select("*")
+    .eq("is_published", true)
+    .order("display_order", { ascending: true });
 
   if (error) {
-    console.error('Failed to fetch projects:', error.message);
+    console.error("Failed to fetch projects:", error.message);
     return [];
   }
 
@@ -86,14 +94,15 @@ export async function getCachedProjects() {
  */
 export async function getCachedClients() {
   const supabase = createPublicClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
-    .from('clients')
-    .select('*')
-    .eq('is_published', true)
-    .order('display_order', { ascending: true });
+    .from("clients")
+    .select("*")
+    .eq("is_published", true)
+    .order("display_order", { ascending: true });
 
   if (error) {
-    console.error('Failed to fetch clients:', error.message);
+    console.error("Failed to fetch clients:", error.message);
     return [];
   }
 
@@ -105,13 +114,14 @@ export async function getCachedClients() {
  */
 export async function getCachedStats() {
   const supabase = createPublicClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
-    .from('stats')
-    .select('*')
-    .order('display_order', { ascending: true });
+    .from("stats")
+    .select("*")
+    .order("display_order", { ascending: true });
 
   if (error) {
-    console.error('Failed to fetch stats:', error.message);
+    console.error("Failed to fetch stats:", error.message);
     return [];
   }
 
@@ -123,13 +133,14 @@ export async function getCachedStats() {
  */
 export async function getCachedValues() {
   const supabase = createPublicClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
-    .from('company_values')
-    .select('*')
-    .order('display_order', { ascending: true });
+    .from("company_values")
+    .select("*")
+    .order("display_order", { ascending: true });
 
   if (error) {
-    console.error('Failed to fetch values:', error.message);
+    console.error("Failed to fetch values:", error.message);
     return [];
   }
 
@@ -141,14 +152,15 @@ export async function getCachedValues() {
  */
 export async function getCachedAboutContent() {
   const supabase = createPublicClient();
+  if (!supabase) return null;
   const { data, error } = await supabase
-    .from('about_content')
-    .select('*')
+    .from("about_content")
+    .select("*")
     .limit(1)
     .single();
 
-  if (error && error.code !== 'PGRST116') {
-    console.error('Failed to fetch about content:', error.message);
+  if (error && error.code !== "PGRST116") {
+    console.error("Failed to fetch about content:", error.message);
     return null;
   }
 
@@ -160,20 +172,29 @@ export async function getCachedAboutContent() {
  */
 export async function getCachedContactInfo() {
   const supabase = createPublicClient();
+  if (!supabase) {
+    return {
+      email: "info@allonelabs.com",
+      location: "San Francisco, CA",
+      phone: null,
+    };
+  }
   const { data, error } = await supabase
-    .from('contact_info')
-    .select('*')
+    .from("contact_info")
+    .select("*")
     .limit(1)
     .single();
 
-  if (error && error.code !== 'PGRST116') {
-    console.error('Failed to fetch contact info:', error.message);
+  if (error && error.code !== "PGRST116") {
+    console.error("Failed to fetch contact info:", error.message);
     return null;
   }
 
-  return data || {
-    email: 'info@allonelabs.com',
-    location: 'San Francisco, CA',
-    phone: null,
-  };
+  return (
+    data || {
+      email: "info@allonelabs.com",
+      location: "San Francisco, CA",
+      phone: null,
+    }
+  );
 }
