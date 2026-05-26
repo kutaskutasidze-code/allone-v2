@@ -86,11 +86,14 @@ export async function runDemoPipeline(
       const wired = await wireAdmin({
         demoDir: skinDir,
         demoOrgId: crypto.randomUUID(),
+        demoJobId,
         segment,
         company,
       });
       await phaseExit(demoJobId, "wiring_admin", {
         seededRows: wired.seededRows,
+        adminUrl: wired.adminUrl,
+        warnings: wired.warnings,
       });
 
       await phaseEnter(demoJobId, "deploying", 70);

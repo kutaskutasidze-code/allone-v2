@@ -35,7 +35,7 @@ When a lead is created, automatically:
 - **No LLM in the email body.** Templates with variable substitution only.
 - **No auto-send.** Always human review. Catches broken demos before they ship to prospects.
 - **No new admin UIs on the cloned sites themselves.** The "admin" in this pipeline is the BF shell rendered against demo-scoped data, not pages built into the clone.
-- **No multi-tenant per-demo Supabase project sprawl.** Demos share one Supabase project with `demo_org_id` row-scoping. Teardown is row deletion + Vercel project delete.
+- **Dedicated `demos` Supabase project, shared across all demo orgs.** All demos live in ONE separate Supabase project (NOT `cywmdjldapzrnabsoosd`), row-scoped by `demo_org_id`. Reasons: sales PII and demo seed data must not co-mingle; per-demo project provisioning is too slow/expensive; sharing one demo project keeps Vercel build-time wiring trivial. Teardown is row deletion + Vercel project delete. Project rotation gives free mass-teardown if needed. Decided 2026-05-26.
 - **No real-time progress** in the sales UI for this first cut. Polling every 3s on the leads detail page is enough.
 
 ## Architecture

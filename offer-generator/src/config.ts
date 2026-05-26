@@ -32,6 +32,15 @@ export const config = {
     vercelToken: process.env.VERCEL_TOKEN || "",
     vercelTeam: process.env.VERCEL_TEAM || "allonelabs",
     tmpRoot: process.env.DEMO_TMP_ROOT || "/tmp",
+    // Dedicated Supabase project for demo orgs + seed data (decision recorded
+    // 2026-05-26 in the spec). NOT the same project as the sales website.
+    // When unset, admin-wirer skips data seeding and emits a warning.
+    demosSupabaseUrl: process.env.DEMO_SUPABASE_URL || "",
+    demosSupabaseServiceKey: process.env.DEMO_SUPABASE_SERVICE_ROLE_KEY || "",
+    // Shared admin frontend URL — every demo links to it with ?demo=<jobId>
+    // so one deploy serves all demos. Set after admin-shell goes live.
+    sharedAdminUrl:
+      process.env.SHARED_ADMIN_URL || "https://admin.allone-demos.com",
   },
 } as const;
 
