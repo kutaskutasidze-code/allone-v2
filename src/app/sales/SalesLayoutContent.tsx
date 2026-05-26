@@ -1,98 +1,86 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { usePathname } from 'next/navigation';
-import { SalesSidebar } from '@/components/sales/SalesSidebar';
-import { SalesThemeContext, type SalesTheme } from './SalesThemeContext';
+import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
+import { AppShell } from "@/components/bf-shell";
+import { salesNav } from "@/lib/sales-nav";
+import { createClient } from "@/lib/supabase/client";
+import { SalesThemeContext, type SalesTheme } from "./SalesThemeContext";
 
-const THEME_STORAGE_KEY = 'allone-sales-theme';
+const THEME_STORAGE_KEY = "allone-sales-theme";
 
-export function SalesLayoutContent({ children }: { children: React.ReactNode }) {
+export function SalesLayoutContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
-  const isLoginPage = pathname === '/sales/login';
+  const router = useRouter();
+  const isLoginPage = pathname === "/sales/login";
+  const isChatNativeHome = pathname === "/sales";
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
-  const [theme, setTheme] = useState<SalesTheme>('light');
+  const [theme, setTheme] = useState<SalesTheme>("light");
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'dark' || stored === 'light') setTheme(stored);
+    try {
+      const stored =
+        (localStorage.getItem(THEME_STORAGE_KEY) as SalesTheme | null) ?? null;
+      const prefersDark =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(stored ?? (prefersDark ? "dark" : "light"));
+    } catch {}
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme(prev => {
-      const next = prev === 'dark' ? 'light' : 'dark';
-      try { window.localStorage.setItem(THEME_STORAGE_KEY, next); } catch {}
+    setTheme((t) => {
+      const next: SalesTheme = t === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, next);
+      } catch {}
       return next;
     });
   }, []);
 
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    return () => {
-      document.documentElement.classList.remove('dark');
-    };
-  }, [theme]);
-
-  useEffect(() => {
-    const checkDesktop = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    checkDesktop();
-    window.addEventListener('resize', checkDesktop);
-    return () => window.removeEventListener('resize', checkDesktop);
-  }, []);
-
-  useEffect(() => {
-    setIsMobileOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsMobileOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   if (isLoginPage) {
-    return <>{children}</>;
+    return (
+      <SalesThemeContext.Provider value={{ theme, toggleTheme }}>
+        {children}
+      </SalesThemeContext.Provider>
+    );
   }
 
-  const desktopMargin = isDesktop ? (isCollapsed ? 72 : 256) : 0;
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/sales/login");
+    router.refresh();
+  };
 
   return (
     <SalesThemeContext.Provider value={{ theme, toggleTheme }}>
-      <div className="min-h-screen bg-[#FAFAFA] dark:bg-slate-900">
-        <SalesSidebar
-          isCollapsed={isCollapsed}
-          onToggle={() => {
-            if (window.innerWidth < 1024) {
-              setIsMobileOpen(!isMobileOpen);
-            } else {
-              setIsCollapsed(!isCollapsed);
-            }
-          }}
-          isMobileOpen={isMobileOpen}
-          onMobileClose={() => setIsMobileOpen(false)}
-        />
-        <main
-          className="min-h-screen transition-[margin-left] duration-200 ease-out"
-          style={{ marginLeft: desktopMargin }}
-        >
-          <div className="p-5 pt-16 lg:pt-8 lg:px-10 lg:pb-10">
-            <div className="max-w-7xl mx-auto">{children}</div>
-          </div>
-        </main>
-      </div>
+      <AppShell
+        brand={{ name: "Allone", sub: "Sales" }}
+        nav={salesNav}
+        chatScope={{ level: "org", org: "allone-sales" }}
+        chatScopeLabel="Sales chat"
+        chatApiPath="/api/sales/chat"
+        hideChat={isChatNativeHome}
+        hideChatToggle={isChatNativeHome}
+        topbarRight={
+          <button
+            type="button"
+            onClick={handleLogout}
+            aria-label="Sign out"
+            className="rounded-lg p-1.5 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)]"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        }
+      >
+        {children}
+      </AppShell>
     </SalesThemeContext.Provider>
   );
 }

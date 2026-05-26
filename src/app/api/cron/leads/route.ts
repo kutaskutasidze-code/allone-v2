@@ -1,25 +1,51 @@
-import { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { NextRequest } from "next/server";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Lazy-init: env vars are checked at request time, not module-load, so the
+// Vercel build doesn't crash in Preview environments where SUPABASE_URL
+// isn't set. Production sets the vars and gets the same client.
+let _supabase: SupabaseClient | null = null;
+function supabaseClient(): SupabaseClient {
+  if (_supabase) return _supabase;
+  _supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+  return _supabase;
+}
+const supabase = new Proxy({} as SupabaseClient, {
+  get(_t, prop) {
+    const v = (supabaseClient() as unknown as Record<string, unknown>)[
+      prop as string
+    ];
+    return typeof v === "function"
+      ? (v as () => unknown).bind(supabaseClient())
+      : v;
+  },
+});
 
 function verifyCron(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  if (process.env.CRON_SECRET && authHeader === `Bearer ${process.env.CRON_SECRET}`) return true;
-  const apiKey = request.headers.get('x-claude-api-key');
-  if (process.env.CLAUDE_REPORT_API_KEY && apiKey === process.env.CLAUDE_REPORT_API_KEY) return true;
+  const authHeader = request.headers.get("authorization");
+  if (
+    process.env.CRON_SECRET &&
+    authHeader === `Bearer ${process.env.CRON_SECRET}`
+  )
+    return true;
+  const apiKey = request.headers.get("x-claude-api-key");
+  if (
+    process.env.CLAUDE_REPORT_API_KEY &&
+    apiKey === process.env.CLAUDE_REPORT_API_KEY
+  )
+    return true;
   return false;
 }
 
 function escapeHtml(text: string): string {
   return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 // Email sending disabled — leads now come from Google Places scraper on Hetzner VPS
@@ -39,21 +65,21 @@ async function sendResendEmail(_to: string, _subject: string, _html: string) {
 // Tbilisi split into geographic quadrants for pagination, smaller cities as single zones
 const SCRAPE_SCHEDULE: { city: string; bbox: string; label: string }[] = [
   // Tbilisi — 6 geographic slices (covers ~5,700 businesses)
-  { city: 'Tbilisi', bbox: '41.68,44.70,41.72,44.80', label: 'Tbilisi SW' },
-  { city: 'Tbilisi', bbox: '41.72,44.70,41.76,44.80', label: 'Tbilisi W' },
-  { city: 'Tbilisi', bbox: '41.68,44.80,41.72,44.90', label: 'Tbilisi SE' },
-  { city: 'Tbilisi', bbox: '41.72,44.80,41.76,44.90', label: 'Tbilisi E' },
-  { city: 'Tbilisi', bbox: '41.76,44.70,41.82,44.80', label: 'Tbilisi NW' },
-  { city: 'Tbilisi', bbox: '41.76,44.80,41.82,44.90', label: 'Tbilisi NE' },
+  { city: "Tbilisi", bbox: "41.68,44.70,41.72,44.80", label: "Tbilisi SW" },
+  { city: "Tbilisi", bbox: "41.72,44.70,41.76,44.80", label: "Tbilisi W" },
+  { city: "Tbilisi", bbox: "41.68,44.80,41.72,44.90", label: "Tbilisi SE" },
+  { city: "Tbilisi", bbox: "41.72,44.80,41.76,44.90", label: "Tbilisi E" },
+  { city: "Tbilisi", bbox: "41.76,44.70,41.82,44.80", label: "Tbilisi NW" },
+  { city: "Tbilisi", bbox: "41.76,44.80,41.82,44.90", label: "Tbilisi NE" },
   // Batumi — 2 slices (covers ~1,170 businesses)
-  { city: 'Batumi', bbox: '41.62,41.60,41.66,41.68', label: 'Batumi S' },
-  { city: 'Batumi', bbox: '41.66,41.60,41.70,41.68', label: 'Batumi N' },
+  { city: "Batumi", bbox: "41.62,41.60,41.66,41.68", label: "Batumi S" },
+  { city: "Batumi", bbox: "41.66,41.60,41.70,41.68", label: "Batumi N" },
   // Kutaisi — 1 slice (covers ~577 businesses)
-  { city: 'Kutaisi', bbox: '42.22,42.65,42.30,42.75', label: 'Kutaisi' },
+  { city: "Kutaisi", bbox: "42.22,42.65,42.30,42.75", label: "Kutaisi" },
   // Rustavi — 1 slice (covers ~150 businesses)
-  { city: 'Rustavi', bbox: '41.52,44.95,41.58,45.05', label: 'Rustavi' },
+  { city: "Rustavi", bbox: "41.52,44.95,41.58,45.05", label: "Rustavi" },
   // Zugdidi — 1 slice (covers ~200 businesses)
-  { city: 'Zugdidi', bbox: '42.49,41.84,42.53,41.90', label: 'Zugdidi' },
+  { city: "Zugdidi", bbox: "42.49,41.84,42.53,41.90", label: "Zugdidi" },
 ];
 
 // ========== 1. EMAIL DIGEST ==========
@@ -62,39 +88,44 @@ async function sendDigest() {
 
   // Scraped leads only (exclude contact form submissions which have source='contact_form')
   const { data: newLeads, error } = await supabase
-    .from('leads')
-    .select('id, name, email, phone, company, source, status, city, country, relevance_score, created_at')
-    .gte('created_at', oneDayAgo)
-    .neq('source', 'contact_form')
-    .order('relevance_score', { ascending: false })
-    .order('created_at', { ascending: false })
+    .from("leads")
+    .select(
+      "id, name, email, phone, company, source, status, city, country, relevance_score, created_at",
+    )
+    .gte("created_at", oneDayAgo)
+    .neq("source", "contact_form")
+    .order("relevance_score", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(200);
 
   if (error) throw new Error(`Digest query failed: ${error.message}`);
-  if (!newLeads || newLeads.length === 0) return { sent: false, reason: 'No new leads in last 24 hours' };
+  if (!newLeads || newLeads.length === 0)
+    return { sent: false, reason: "No new leads in last 24 hours" };
 
-  const leadsWithPhone = newLeads.filter(l => l.phone);
-  const leadsWithContact = newLeads.filter(l => l.email || l.phone);
+  const leadsWithPhone = newLeads.filter((l) => l.phone);
+  const leadsWithContact = newLeads.filter((l) => l.email || l.phone);
 
-  const leadsHtml = newLeads.map(lead => {
-    const hasPhone = !!lead.phone;
-    const rowStyle = hasPhone ? 'font-weight: 500;' : 'color: #94a3b8;';
-    return `
+  const leadsHtml = newLeads
+    .map((lead) => {
+      const hasPhone = !!lead.phone;
+      const rowStyle = hasPhone ? "font-weight: 500;" : "color: #94a3b8;";
+      return `
     <tr style="${rowStyle}">
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.name || '')}${hasPhone ? ' &#x260E;' : ''}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.email || '-')}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.phone || '-')}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.company || '-')}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.city || '-')}</td>
-      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.status || '')}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.name || "")}${hasPhone ? " &#x260E;" : ""}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.email || "-")}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.phone || "-")}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.company || "-")}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.city || "-")}</td>
+      <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(lead.status || "")}</td>
     </tr>`;
-  }).join('');
+    })
+    .join("");
 
   const html = `
     <div style="font-family: 'Segoe UI', sans-serif; max-width: 700px; margin: 0 auto;">
       <div style="background: #0f172a; padding: 24px 32px; border-radius: 12px 12px 0 0;">
         <h2 style="margin: 0; color: white;">Daily Lead Report</h2>
-        <p style="margin: 4px 0 0; color: #94a3b8; font-size: 14px;">${newLeads.length} new lead${newLeads.length > 1 ? 's' : ''} in the last 24 hours</p>
+        <p style="margin: 4px 0 0; color: #94a3b8; font-size: 14px;">${newLeads.length} new lead${newLeads.length > 1 ? "s" : ""} in the last 24 hours</p>
         <p style="margin: 4px 0 0; color: #94a3b8; font-size: 13px;"><strong style="color: #22c55e;">${leadsWithPhone.length} with phone</strong> · ${leadsWithContact.length} with any contact info</p>
       </div>
       <div style="background: white; padding: 24px 32px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
@@ -115,14 +146,19 @@ async function sendDigest() {
     </div>
   `;
 
-  const contactEmail = process.env.CONTACT_EMAIL || 'kutaskutasidze@gmail.com';
+  const contactEmail = process.env.CONTACT_EMAIL || "kutaskutasidze@gmail.com";
   const sent = await sendResendEmail(
     contactEmail,
-    `[Allone] ${newLeads.length} new lead${newLeads.length > 1 ? 's' : ''} — Daily Report`,
+    `[Allone] ${newLeads.length} new lead${newLeads.length > 1 ? "s" : ""} — Daily Report`,
     html,
   );
 
-  return { sent, leads: newLeads.length, withPhone: leadsWithPhone.length, withContact: leadsWithContact.length };
+  return {
+    sent,
+    leads: newLeads.length,
+    withPhone: leadsWithPhone.length,
+    withContact: leadsWithContact.length,
+  };
 }
 
 // ========== 2. STALE LEADS CHECK ==========
@@ -130,19 +166,20 @@ async function checkStaleLeads() {
   const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
   const { count, error } = await supabase
-    .from('leads')
-    .select('id', { count: 'exact', head: true })
-    .eq('status', 'new')
-    .eq('country', 'GE')
-    .is('sales_user_id', null)
-    .lte('created_at', twoDaysAgo);
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "new")
+    .eq("country", "GE")
+    .is("sales_user_id", null)
+    .lte("created_at", twoDaysAgo);
 
   if (error) throw new Error(`Stale check failed: ${error.message}`);
 
   const staleCount = count || 0;
 
   if (staleCount > 0) {
-    const contactEmail = process.env.CONTACT_EMAIL || 'kutaskutasidze@gmail.com';
+    const contactEmail =
+      process.env.CONTACT_EMAIL || "kutaskutasidze@gmail.com";
     await sendResendEmail(
       contactEmail,
       `[Allone] ${staleCount} stale leads need attention`,
@@ -161,12 +198,12 @@ async function scrapeLeads() {
   const zone = SCRAPE_SCHEDULE[zoneIndex];
 
   const { data: job } = await supabase
-    .from('scrape_jobs')
+    .from("scrape_jobs")
     .insert({
       source_id: null,
-      status: 'running',
+      status: "running",
       search_query: `OSM+Wikidata: ${zone.label}`,
-      country: 'GE',
+      country: "GE",
       city: zone.city,
       started_at: new Date().toISOString(),
     })
@@ -177,10 +214,21 @@ async function scrapeLeads() {
 
   try {
     // Run OSM scraper only — Wikidata has only large corporations (useless for B2B sales)
-    const osmResult = await scrapeOSMZone(zone).catch(err => ({ found: 0, new: 0, prepared: 0, skippedChains: 0, error: String(err) }));
+    const osmResult = await scrapeOSMZone(zone).catch((err) => ({
+      found: 0,
+      new: 0,
+      prepared: 0,
+      skippedChains: 0,
+      error: String(err),
+    }));
 
     const errors: string[] = [];
-    if ('error' in osmResult && osmResult.error && typeof osmResult.error === 'string' && osmResult.error.startsWith('Error')) {
+    if (
+      "error" in osmResult &&
+      osmResult.error &&
+      typeof osmResult.error === "string" &&
+      osmResult.error.startsWith("Error")
+    ) {
       errors.push(`OSM: ${osmResult.error}`);
     }
 
@@ -189,20 +237,20 @@ async function scrapeLeads() {
 
     if (jobId) {
       await supabase
-        .from('scrape_jobs')
+        .from("scrape_jobs")
         .update({
-          status: 'completed',
+          status: "completed",
           leads_found: totalFound,
           leads_new: totalNew,
           completed_at: new Date().toISOString(),
         })
-        .eq('id', jobId);
+        .eq("id", jobId);
     }
 
     return {
       scraped: totalNew,
       found: totalFound,
-      country: 'GE',
+      country: "GE",
       zone: zone.label,
       osm: osmResult,
       errors: errors.length > 0 ? errors : undefined,
@@ -210,17 +258,25 @@ async function scrapeLeads() {
   } catch (err) {
     if (jobId) {
       await supabase
-        .from('scrape_jobs')
-        .update({ status: 'failed', error_message: String(err), completed_at: new Date().toISOString() })
-        .eq('id', jobId);
+        .from("scrape_jobs")
+        .update({
+          status: "failed",
+          error_message: String(err),
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", jobId);
     }
     throw err;
   }
 }
 
 // ========== OSM OVERPASS — ALL businesses with contact info in a bbox zone ==========
-async function scrapeOSMZone(zone: { city: string; bbox: string; label: string }) {
-  const [s, w, n, e] = zone.bbox.split(',');
+async function scrapeOSMZone(zone: {
+  city: string;
+  bbox: string;
+  label: string;
+}) {
+  const [s, w, n, e] = zone.bbox.split(",");
 
   // Query ALL nodes/ways/relations with phone or email in this bbox — simplified for speed
   const query = `[out:json][timeout:25];
@@ -232,10 +288,10 @@ async function scrapeOSMZone(zone: { city: string; bbox: string; label: string }
 );
 out body 300;`;
 
-  const res = await fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
+  const res = await fetch("https://overpass-api.de/api/interpreter", {
+    method: "POST",
     body: `data=${encodeURIComponent(query)}`,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     signal: AbortSignal.timeout(30000),
   });
 
@@ -247,30 +303,63 @@ out body 300;`;
   if (elements.length === 0) return { found: 0, new: 0 };
 
   // Batch duplicate check
-  const sourceUrls = elements.map(el => `https://www.openstreetmap.org/${el.type}/${el.id}`);
+  const sourceUrls = elements.map(
+    (el) => `https://www.openstreetmap.org/${el.type}/${el.id}`,
+  );
 
   // Check in batches of 100 (Supabase .in() limit)
   const existingUrls = new Set<string>();
   for (let i = 0; i < sourceUrls.length; i += 100) {
     const batch = sourceUrls.slice(i, i + 100);
     const { data: existing } = await supabase
-      .from('leads')
-      .select('source_url')
-      .in('source_url', batch);
+      .from("leads")
+      .select("source_url")
+      .in("source_url", batch);
     for (const l of existing || []) existingUrls.add(l.source_url);
   }
 
   // Known chains/corporations to skip — their numbers are call centers, not directors
   const CHAIN_BRANDS = new Set([
-    'mcdonalds', 'mcdonald', 'kfc', 'burger king', 'subway', 'dominos', 'papa johns',
-    'carrefour', 'spar', 'nikora', 'goodwill', 'smart', 'magniti', 'ori nabiji',
-    'wissol', 'socar', 'gulf', 'lukoil', 'rompetrol',
-    'tbc', 'bank of georgia', 'liberty bank', 'basisbank', 'credo bank', 'procredit',
-    'magti', 'geocell', 'beeline', 'silknet',
-    'aversi', 'psp', 'gpc',
-    'tegeta', 'autopapa',
-    'dunkin', 'starbucks', 'costa coffee',
-    'glovo', 'wolt', 'bolt',
+    "mcdonalds",
+    "mcdonald",
+    "kfc",
+    "burger king",
+    "subway",
+    "dominos",
+    "papa johns",
+    "carrefour",
+    "spar",
+    "nikora",
+    "goodwill",
+    "smart",
+    "magniti",
+    "ori nabiji",
+    "wissol",
+    "socar",
+    "gulf",
+    "lukoil",
+    "rompetrol",
+    "tbc",
+    "bank of georgia",
+    "liberty bank",
+    "basisbank",
+    "credo bank",
+    "procredit",
+    "magti",
+    "geocell",
+    "beeline",
+    "silknet",
+    "aversi",
+    "psp",
+    "gpc",
+    "tegeta",
+    "autopapa",
+    "dunkin",
+    "starbucks",
+    "costa coffee",
+    "glovo",
+    "wolt",
+    "bolt",
   ]);
 
   let skippedChains = 0;
@@ -282,42 +371,69 @@ out body 300;`;
 
     // SKIP chains and franchises — they have brand tags or are known chains
     // These have call center numbers, not director contacts
-    if (t['brand'] || t['brand:wikidata'] || t['brand:wikipedia']) {
+    if (t["brand"] || t["brand:wikidata"] || t["brand:wikipedia"]) {
       skippedChains++;
       continue;
     }
 
-    const name = t['name:en'] || t['name'] || null;
+    const name = t["name:en"] || t["name"] || null;
     if (!name) continue;
 
     // Also skip known chain names
     const nameLower = name.toLowerCase();
-    if (CHAIN_BRANDS.has(nameLower) || [...CHAIN_BRANDS].some(b => nameLower.includes(b))) {
+    if (
+      CHAIN_BRANDS.has(nameLower) ||
+      [...CHAIN_BRANDS].some((b) => nameLower.includes(b))
+    ) {
       skippedChains++;
       continue;
     }
 
-    const phone = t['contact:phone'] || t['phone'] || null;
-    const email = t['contact:email'] || t['email'] || null;
+    const phone = t["contact:phone"] || t["phone"] || null;
+    const email = t["contact:email"] || t["email"] || null;
     if (!phone && !email) continue;
 
-    const website = t['contact:website'] || t['website'] || null;
+    const website = t["contact:website"] || t["website"] || null;
 
     // Categorize based on OSM tags
-    const allTags = Object.entries(t).map(([k, v]) => `${k}=${v}`.toLowerCase()).join(' ');
-    let matchedService = 'website'; // default
-    if (allTags.includes('office=it') || allTags.includes('software') || allTags.includes('computer')) {
-      matchedService = 'custom_ai';
-    } else if (allTags.includes('clinic') || allTags.includes('hospital') || allTags.includes('dentist') || allTags.includes('pharmacy') || allTags.includes('doctor')) {
-      matchedService = 'chatbots';
-    } else if (allTags.includes('bank') || allTags.includes('insurance') || allTags.includes('lawyer') || allTags.includes('financial') || allTags.includes('university')) {
-      matchedService = 'consulting';
-    } else if (allTags.includes('logistics') || allTags.includes('warehouse') || allTags.includes('factory') || allTags.includes('supermarket') || allTags.includes('fuel')) {
-      matchedService = 'automation';
+    const allTags = Object.entries(t)
+      .map(([k, v]) => `${k}=${v}`.toLowerCase())
+      .join(" ");
+    let matchedService = "website"; // default
+    if (
+      allTags.includes("office=it") ||
+      allTags.includes("software") ||
+      allTags.includes("computer")
+    ) {
+      matchedService = "custom_ai";
+    } else if (
+      allTags.includes("clinic") ||
+      allTags.includes("hospital") ||
+      allTags.includes("dentist") ||
+      allTags.includes("pharmacy") ||
+      allTags.includes("doctor")
+    ) {
+      matchedService = "chatbots";
+    } else if (
+      allTags.includes("bank") ||
+      allTags.includes("insurance") ||
+      allTags.includes("lawyer") ||
+      allTags.includes("financial") ||
+      allTags.includes("university")
+    ) {
+      matchedService = "consulting";
+    } else if (
+      allTags.includes("logistics") ||
+      allTags.includes("warehouse") ||
+      allTags.includes("factory") ||
+      allTags.includes("supermarket") ||
+      allTags.includes("fuel")
+    ) {
+      matchedService = "automation";
     }
 
     // Higher relevance for businesses with both phone + email (likely owner-operated)
-    const relevanceScore = (phone && email) ? 8 : (phone ? 6 : 4);
+    const relevanceScore = phone && email ? 8 : phone ? 6 : 4;
 
     newLeadRecords.push({
       name,
@@ -326,15 +442,17 @@ out body 300;`;
       company: name,
       website,
       source_url: sourceUrl,
-      address: t['addr:street'] ? `${t['addr:street']} ${t['addr:housenumber'] || ''}`.trim() : null,
+      address: t["addr:street"]
+        ? `${t["addr:street"]} ${t["addr:housenumber"] || ""}`.trim()
+        : null,
       city: zone.city,
-      country: 'GE',
+      country: "GE",
       matched_service: matchedService,
       relevance_score: relevanceScore,
-      linkedin_url: t['contact:linkedin'] || null,
-      facebook_url: t['contact:facebook'] || null,
-      instagram_url: t['contact:instagram'] || null,
-      status: 'new' as const,
+      linkedin_url: t["contact:linkedin"] || null,
+      facebook_url: t["contact:facebook"] || null,
+      instagram_url: t["contact:instagram"] || null,
+      status: "new" as const,
     });
   }
 
@@ -342,7 +460,7 @@ out body 300;`;
   let insertErr: string | undefined;
   // Insert one by one to handle unique constraints gracefully
   for (const record of newLeadRecords) {
-    const { error: insertError } = await supabase.from('leads').insert(record);
+    const { error: insertError } = await supabase.from("leads").insert(record);
     if (!insertError) {
       newLeads++;
     } else if (!insertErr) {
@@ -350,7 +468,13 @@ out body 300;`;
     }
   }
 
-  return { found: elements.length, new: newLeads, prepared: newLeadRecords.length, skippedChains, error: insertErr };
+  return {
+    found: elements.length,
+    new: newLeads,
+    prepared: newLeadRecords.length,
+    skippedChains,
+    error: insertErr,
+  };
 }
 
 // ========== WIKIDATA — Georgian companies with phone/email (150 total, paginated) ==========
@@ -370,13 +494,13 @@ async function scrapeWikidata() {
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en,ka" . }
 } LIMIT 50 OFFSET ${offset}`;
 
-  const res = await fetch('https://query.wikidata.org/sparql', {
-    method: 'POST',
+  const res = await fetch("https://query.wikidata.org/sparql", {
+    method: "POST",
     body: `query=${encodeURIComponent(sparql)}`,
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
-      'User-Agent': 'AlloneLeadScraper/1.0 (https://allone.ge)',
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
+      "User-Agent": "AlloneLeadScraper/1.0 (https://allone.ge)",
     },
     signal: AbortSignal.timeout(15000),
   });
@@ -398,45 +522,66 @@ async function scrapeWikidata() {
 
   // Build source URLs for dedup
   const sourceUrls = results
-    .filter(r => r.item?.value)
-    .map(r => r.item!.value!);
+    .filter((r) => r.item?.value)
+    .map((r) => r.item!.value!);
 
   const { data: existing } = await supabase
-    .from('leads')
-    .select('source_url')
-    .in('source_url', sourceUrls);
+    .from("leads")
+    .select("source_url")
+    .in("source_url", sourceUrls);
 
-  const existingUrls = new Set((existing || []).map(l => l.source_url));
+  const existingUrls = new Set((existing || []).map((l) => l.source_url));
 
   // Deduplicate within batch (SPARQL returns multiple rows per company for multiple phones)
   const seenUrls = new Set<string>();
   const newLeadRecords = [];
   for (const r of results) {
     const sourceUrl = r.item?.value;
-    if (!sourceUrl || existingUrls.has(sourceUrl) || seenUrls.has(sourceUrl)) continue;
+    if (!sourceUrl || existingUrls.has(sourceUrl) || seenUrls.has(sourceUrl))
+      continue;
     seenUrls.add(sourceUrl);
 
     const name = r.itemLabel?.value;
-    if (!name || name.startsWith('Q')) continue;
+    if (!name || name.startsWith("Q")) continue;
 
     const phone = r.phone?.value || null;
     const emailRaw = r.email?.value || null;
-    const email = emailRaw?.replace('mailto:', '') || null;
+    const email = emailRaw?.replace("mailto:", "") || null;
     const website = r.website?.value || null;
     if (!phone && !email) continue;
 
-    const desc = (r.description?.value || '').toLowerCase();
-    let matchedService = 'consulting';
-    if (desc.includes('bank') || desc.includes('insurance') || desc.includes('financial')) {
-      matchedService = 'consulting';
-    } else if (desc.includes('hospital') || desc.includes('clinic') || desc.includes('pharma')) {
-      matchedService = 'chatbots';
-    } else if (desc.includes('hotel') || desc.includes('restaurant') || desc.includes('tourism')) {
-      matchedService = 'website';
-    } else if (desc.includes('software') || desc.includes('technology') || desc.includes('it ')) {
-      matchedService = 'custom_ai';
-    } else if (desc.includes('logist') || desc.includes('transport') || desc.includes('manufactur')) {
-      matchedService = 'automation';
+    const desc = (r.description?.value || "").toLowerCase();
+    let matchedService = "consulting";
+    if (
+      desc.includes("bank") ||
+      desc.includes("insurance") ||
+      desc.includes("financial")
+    ) {
+      matchedService = "consulting";
+    } else if (
+      desc.includes("hospital") ||
+      desc.includes("clinic") ||
+      desc.includes("pharma")
+    ) {
+      matchedService = "chatbots";
+    } else if (
+      desc.includes("hotel") ||
+      desc.includes("restaurant") ||
+      desc.includes("tourism")
+    ) {
+      matchedService = "website";
+    } else if (
+      desc.includes("software") ||
+      desc.includes("technology") ||
+      desc.includes("it ")
+    ) {
+      matchedService = "custom_ai";
+    } else if (
+      desc.includes("logist") ||
+      desc.includes("transport") ||
+      desc.includes("manufactur")
+    ) {
+      matchedService = "automation";
     }
 
     newLeadRecords.push({
@@ -446,11 +591,11 @@ async function scrapeWikidata() {
       company: name,
       website,
       source_url: sourceUrl,
-      city: 'Tbilisi',
-      country: 'GE',
+      city: "Tbilisi",
+      country: "GE",
       matched_service: matchedService,
       relevance_score: 8,
-      status: 'new' as const,
+      status: "new" as const,
     });
   }
 
@@ -458,7 +603,7 @@ async function scrapeWikidata() {
   let insertErr: string | undefined;
   // Insert one by one to handle unique constraint violations gracefully
   for (const record of newLeadRecords) {
-    const { error: insertError } = await supabase.from('leads').insert(record);
+    const { error: insertError } = await supabase.from("leads").insert(record);
     if (!insertError) {
       newLeads++;
     } else if (!insertErr) {
@@ -466,22 +611,27 @@ async function scrapeWikidata() {
     }
   }
 
-  return { found: results.length, new: newLeads, prepared: newLeadRecords.length, error: insertErr };
+  return {
+    found: results.length,
+    new: newLeads,
+    prepared: newLeadRecords.length,
+    error: insertErr,
+  };
 }
 
 // ========== 4. CLEANUP ==========
 async function cleanupNonGeorgianLeads() {
   const { count } = await supabase
-    .from('leads')
-    .select('id', { count: 'exact', head: true })
-    .not('country', 'eq', 'GE')
-    .not('source_url', 'is', null);
+    .from("leads")
+    .select("id", { count: "exact", head: true })
+    .not("country", "eq", "GE")
+    .not("source_url", "is", null);
 
   const { error } = await supabase
-    .from('leads')
+    .from("leads")
     .delete()
-    .not('country', 'eq', 'GE')
-    .not('source_url', 'is', null);
+    .not("country", "eq", "GE")
+    .not("source_url", "is", null);
 
   if (error) throw new Error(`Cleanup failed: ${error.message}`);
   return { deleted: count || 0 };
@@ -497,35 +647,42 @@ interface OSMElement {
 // ========== HANDLER ==========
 export async function GET(request: NextRequest) {
   if (!verifyCron(request)) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const url = new URL(request.url);
-  const task = url.searchParams.get('task');
+  const task = url.searchParams.get("task");
 
-  const results: Record<string, unknown> = { timestamp: new Date().toISOString(), task: task || 'scrape' };
+  const results: Record<string, unknown> = {
+    timestamp: new Date().toISOString(),
+    task: task || "scrape",
+  };
   let hasErrors = false;
 
-  if (task === 'digest') {
+  if (task === "digest") {
     const [digestResult, staleResult] = await Promise.allSettled([
       sendDigest(),
       checkStaleLeads(),
     ]);
 
-    if (digestResult.status === 'fulfilled') {
+    if (digestResult.status === "fulfilled") {
       results.digest = digestResult.value;
     } else {
-      results.digest = { error: digestResult.reason?.message || String(digestResult.reason) };
+      results.digest = {
+        error: digestResult.reason?.message || String(digestResult.reason),
+      };
       hasErrors = true;
     }
 
-    if (staleResult.status === 'fulfilled') {
+    if (staleResult.status === "fulfilled") {
       results.staleCheck = staleResult.value;
     } else {
-      results.staleCheck = { error: staleResult.reason?.message || String(staleResult.reason) };
+      results.staleCheck = {
+        error: staleResult.reason?.message || String(staleResult.reason),
+      };
       hasErrors = true;
     }
-  } else if (task === 'cleanup') {
+  } else if (task === "cleanup") {
     try {
       results.cleanup = await cleanupNonGeorgianLeads();
     } catch (err) {
@@ -543,6 +700,6 @@ export async function GET(request: NextRequest) {
 
   return Response.json(
     { success: !hasErrors, results },
-    { status: hasErrors ? 207 : 200 }
+    { status: hasErrors ? 207 : 200 },
   );
 }
