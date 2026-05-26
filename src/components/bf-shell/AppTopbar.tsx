@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, MessageSquare, Bell, ChevronRight } from "lucide-react";
+import { Menu, MessageSquare, ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface TopbarProps {
   brand: { name: string; sub?: string; logoUrl?: string };
@@ -65,17 +66,8 @@ export function AppTopbar({
       )}
 
       <div className="ml-auto flex items-center gap-1.5">
-        {rightSlot ?? (
-          <>
-            <button
-              type="button"
-              className="rounded-lg p-1.5 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)]"
-              aria-label="Notifications"
-            >
-              <Bell className="h-4 w-4" />
-            </button>
-          </>
-        )}
+        <ThemeToggle />
+        {rightSlot}
         {onToggleChat && (
           <button
             type="button"

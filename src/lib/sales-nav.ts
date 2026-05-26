@@ -8,6 +8,7 @@ import {
   Database,
   FileText,
   Send,
+  Target,
 } from "lucide-react";
 import type { NavSection } from "@/components/bf-shell";
 
@@ -39,6 +40,12 @@ export const salesNav: NavSection[] = [
     items: [
       { label: "Analytics", href: "/sales/analytics", icon: BarChart3 },
       { label: "Notifications", href: "/sales/notifications", icon: Send },
+    ],
+  },
+  {
+    label: "Admin",
+    items: [
+      { label: "Aim overrides", href: "/sales/admin/aims", icon: Target },
     ],
   },
 ];

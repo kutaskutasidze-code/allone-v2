@@ -1,27 +1,49 @@
 // Side-chat backend for the BF-shell side panel + chat-native /sales home.
-// Calls the Anthropic HTTP API directly (no SDK dep needed in allone-website).
+// Calls the Anthropic HTTP API directly (no SDK dep needed). Supports
+// tool-use via the tools defined in lib/sales-chat-tools.ts so the chat can
+// actually act (create leads, change status, trigger/get demo status, send
+// drafts) instead of telling the user to click around.
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireSalesAuth } from "@/lib/sales-auth";
 import { AuthError } from "@/lib/auth";
 import { fetchMetricEventsForUser } from "@/lib/sales-metric-events";
 import { computeAllAims } from "@/lib/sales-aims";
+import { TOOLS, executeTool, type ToolResult } from "@/lib/sales-chat-tools";
 
 interface IncomingMessage {
   role: "user" | "assistant";
   content: string;
 }
 
+interface AnthropicBlock {
+  type: "text" | "tool_use" | "tool_result";
+  text?: string;
+  id?: string;
+  name?: string;
+  input?: Record<string, unknown>;
+  tool_use_id?: string;
+  content?: unknown;
+}
+
 interface AnthropicResponse {
-  content?: Array<{ type: string; text?: string }>;
+  content?: AnthropicBlock[];
+  stop_reason?: string;
   error?: { message?: string };
 }
+
+interface ConversationMessage {
+  role: "user" | "assistant";
+  content: string | AnthropicBlock[];
+}
+
+const MAX_TOOL_ITERATIONS = 4;
 
 export async function POST(request: NextRequest) {
   try {
     const { supabase, salesUser } = await requireSalesAuth();
     const body = (await request.json()) as { messages?: IncomingMessage[] };
-    const messages = Array.isArray(body.messages) ? body.messages : [];
+    const incoming = Array.isArray(body.messages) ? body.messages : [];
 
     const apiKey = process.env.ANTHROPIC_API_KEY ?? "";
     if (!apiKey) {
@@ -43,42 +65,80 @@ export async function POST(request: NextRequest) {
       `Live numbers for this user (do not ask, just use them):`,
       formatAimsBrief(todayAims, weekAims, monthAims),
       ``,
-      `When the user asks "what should I do today?", reply with a 3-bullet plan grounded in the numbers above + any aim where progress is < 50%.`,
-      `Keep responses short and direct. Plain text, no markdown headers, no code blocks. Bullet points OK.`,
-      `If asked to do something the platform can do (create a lead, send a demo email, generate a demo), tell the user the route they should click — you do not have tool access yet in v1.`,
+      `Behavior:`,
+      `- When asked "what should I do today?", reply with a 3-bullet plan grounded in the numbers above + any aim where progress < 50%.`,
+      `- When the user asks you to DO something (add a lead, change status, send a demo), CALL THE MATCHING TOOL. Don't just describe what they could click.`,
+      `- After a tool call returns, summarize the result in one short sentence. Plain text only, no markdown headers / code blocks. Bullets OK.`,
+      `- If a tool returns an error, surface the error verbatim and offer one next step.`,
+      `- For lookups (list_leads, get_demo_status), prefer the tool over guessing.`,
     ].join("\n");
 
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 512,
-        system,
-        messages: messages.map((m) => ({
-          role: m.role,
-          content: String(m.content ?? ""),
-        })),
-      }),
-    });
-    const json = (await res.json()) as AnthropicResponse;
+    // Seed conversation from incoming. Each user message is plain text.
+    const conversation: ConversationMessage[] = incoming.map((m) => ({
+      role: m.role,
+      content: String(m.content ?? ""),
+    }));
 
-    if (!res.ok) {
-      return NextResponse.json({
-        text: `Anthropic returned ${res.status}: ${json.error?.message ?? "unknown error"}`,
+    // Tool-use loop: call Anthropic; if it asks for tools, execute them and
+    // feed the results back; otherwise return the text reply.
+    for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 1024,
+          system,
+          tools: TOOLS,
+          messages: conversation,
+        }),
       });
+      const json = (await res.json()) as AnthropicResponse;
+      if (!res.ok) {
+        return NextResponse.json({
+          text: `Anthropic returned ${res.status}: ${json.error?.message ?? "unknown error"}`,
+        });
+      }
+
+      const blocks = json.content ?? [];
+      const toolUses = blocks.filter((b) => b.type === "tool_use");
+
+      if (toolUses.length === 0) {
+        const text = blocks
+          .map((b) => (b.type === "text" && b.text ? b.text : ""))
+          .join("")
+          .trim();
+        return NextResponse.json({ text });
+      }
+
+      // Persist the assistant's tool-use turn into the conversation.
+      conversation.push({ role: "assistant", content: blocks });
+
+      // Execute each tool and build a user message of tool_result blocks.
+      const results: ToolResult[] = [];
+      const toolResultBlocks: AnthropicBlock[] = [];
+      for (const t of toolUses) {
+        const r = await executeTool(
+          { name: t.name!, input: t.input ?? {} },
+          { supabase, salesUserId: salesUser.id },
+        );
+        results.push(r);
+        toolResultBlocks.push({
+          type: "tool_result",
+          tool_use_id: t.id!,
+          content: JSON.stringify(r),
+        });
+      }
+      conversation.push({ role: "user", content: toolResultBlocks });
     }
 
-    const text = (json.content ?? [])
-      .map((b) => (b.type === "text" && b.text ? b.text : ""))
-      .join("")
-      .trim();
-
-    return NextResponse.json({ text });
+    return NextResponse.json({
+      text: "I ran out of tool steps before finishing. Try asking in smaller pieces.",
+    });
   } catch (err) {
     if (err instanceof AuthError) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

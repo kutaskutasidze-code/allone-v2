@@ -10,6 +10,10 @@ import {
   type Period,
 } from "./sales-aims";
 import { fetchMetricEventsForUser } from "./sales-metric-events";
+import {
+  fetchGrowthOverridesForUser,
+  applyGrowthOverrides,
+} from "./sales-aim-overrides";
 import { sendMessage, escapeHTML, isTelegramConfigured } from "./telegram";
 
 export type MessageKind =
@@ -39,10 +43,16 @@ export interface RunSummary {
   errors: Array<{ sales_user_id: string; error: string }>;
 }
 
+export interface DeliverOpts {
+  // When set, send only to this sales_user (used by the preview button).
+  salesUserId?: string;
+}
+
 export async function deliverScheduledRun(
   supabase: SupabaseClient,
   kind: MessageKind,
   now: Date = new Date(),
+  opts: DeliverOpts = {},
 ): Promise<RunSummary> {
   const summary: RunSummary = {
     attempted: 0,
@@ -59,7 +69,7 @@ export async function deliverScheduledRun(
   }
 
   // All active sales users with a connected, active telegram channel.
-  const { data: rows } = await supabase
+  let q = supabase
     .from("sales_users")
     .select(
       "id, name, email, role, notification_channels!inner ( telegram_chat_id, is_active, channel_type )",
@@ -67,6 +77,9 @@ export async function deliverScheduledRun(
     .eq("notification_channels.channel_type", "telegram")
     .eq("notification_channels.is_active", true);
 
+  if (opts.salesUserId) q = q.eq("id", opts.salesUserId);
+
+  const { data: rows } = await q;
   type Joined = SalesUserRow & {
     notification_channels: ChannelRow[];
   };
@@ -79,8 +92,14 @@ export async function deliverScheduledRun(
     if (!chatId) continue;
     summary.attempted += 1;
     try {
-      const events = await fetchMetricEventsForUser(supabase, user.id, now);
-      const aims = computeAllAims(events, now, period);
+      const [events, overrides] = await Promise.all([
+        fetchMetricEventsForUser(supabase, user.id, now),
+        fetchGrowthOverridesForUser(supabase, user.id),
+      ]);
+      const aims = applyGrowthOverrides(
+        computeAllAims(events, now, period),
+        overrides,
+      );
       const text =
         user.role === "admin"
           ? await renderAdminMessage(supabase, kind, aims, now)
@@ -208,7 +227,14 @@ async function renderAdminMessage(
   const perUser: Array<{ name: string; aims: AimResult[] }> = [];
   for (const u of list) {
     const events = await fetchMetricEventsForUser(supabase, u.id, now);
-    perUser.push({ name: u.name, aims: computeAllAims(events, now, period) });
+    const overrides = await fetchGrowthOverridesForUser(supabase, u.id);
+    perUser.push({
+      name: u.name,
+      aims: applyGrowthOverrides(
+        computeAllAims(events, now, period),
+        overrides,
+      ),
+    });
   }
 
   const totals: Record<string, { aim: number; actual: number }> = {};

@@ -38,10 +38,29 @@ export function ChatNativeHome({
   scopeLabel,
 }: ChatNativeHomeProps) {
   const router = useRouter();
+  const LS_KEY = `allonce.chat.history.${apiPath}`;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Restore history on mount.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) setMessages(JSON.parse(raw) as Message[]);
+    } catch {}
+    // intentionally only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist on every change.
+  useEffect(() => {
+    try {
+      if (messages.length > 0)
+        localStorage.setItem(LS_KEY, JSON.stringify(messages));
+    } catch {}
+  }, [messages, LS_KEY]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({

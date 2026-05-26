@@ -28,10 +28,33 @@ export function AppChatPane({
   apiPath = "/api/sales/chat",
   onClose,
 }: AppChatPaneProps) {
+  const LS_KEY = `allonce.chat.history.side.${apiPath}`;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Restore on mount, persist on every change.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) setMessages(JSON.parse(raw) as Message[]);
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try {
+      if (messages.length > 0)
+        localStorage.setItem(LS_KEY, JSON.stringify(messages));
+    } catch {}
+  }, [messages, LS_KEY]);
+
+  const clearHistory = () => {
+    setMessages([]);
+    try {
+      localStorage.removeItem(LS_KEY);
+    } catch {}
+  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -106,13 +129,26 @@ export function AppChatPane({
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-md p-1 text-[color:var(--ink-400)] hover:bg-[color:var(--bg-sunken)] hover:text-[color:var(--ink-900)]"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex items-center gap-1">
+          {messages.length > 0 && (
+            <button
+              type="button"
+              onClick={clearHistory}
+              aria-label="Clear chat history"
+              title="Clear chat history"
+              className="rounded-md px-1.5 py-0.5 text-[10px] font-medium text-[color:var(--ink-400)] hover:bg-[color:var(--bg-sunken)] hover:text-[color:var(--ink-900)]"
+            >
+              Clear
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md p-1 text-[color:var(--ink-400)] hover:bg-[color:var(--bg-sunken)] hover:text-[color:var(--ink-900)]"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3">
