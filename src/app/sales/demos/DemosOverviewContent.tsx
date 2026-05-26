@@ -112,9 +112,17 @@ export function DemosOverviewContent({
             Personalized demo pipelines across your leads.
           </p>
         </div>
-        <span className="text-sm text-[var(--gray-500)]">
-          {filtered.length} of {jobs.length}
-        </span>
+        <div className="flex items-center gap-3 text-sm">
+          <Link
+            href="/sales/demos/references"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)]"
+          >
+            Reference library
+          </Link>
+          <span className="text-[var(--gray-500)]">
+            {filtered.length} of {jobs.length}
+          </span>
+        </div>
       </div>
 
       {errorMessage && (
