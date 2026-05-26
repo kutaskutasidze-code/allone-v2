@@ -204,7 +204,7 @@ function Row({ job }: { job: Job }) {
     <tr className="border-b border-[var(--gray-100)] last:border-b-0">
       <td className="px-5 py-3">
         <Link
-          href={`/sales/leads/${job.lead_id}`}
+          href={`/sales/demos/${job.id}`}
           className="block transition hover:opacity-80"
         >
           <div className="font-medium text-[var(--black)]">
