@@ -131,6 +131,39 @@ router.post("/api/demos/:id/retry", async (req, res) => {
   }
 });
 
+router.post("/api/demos/:id/teardown", async (req, res) => {
+  try {
+    const job = await getDemoJob(req.params.id);
+    if (!job) {
+      res.status(404).json({ success: false, error: "Demo job not found" });
+      return;
+    }
+    if (job.demo_vercel_project_id) {
+      const { teardownVercel } = await import("../deployer/index.js");
+      await teardownVercel(job.demo_vercel_project_id);
+    }
+    if (job.demo_supabase_org_id && job.reference_template_id) {
+      const { data: ref } = await supabase
+        .from("reference_templates")
+        .select("segment")
+        .eq("id", job.reference_template_id)
+        .maybeSingle();
+      if (ref?.segment) {
+        const { unseedDemo } = await import("../admin-wirer/index.js");
+        await unseedDemo(job.demo_supabase_org_id, ref.segment as any);
+      }
+    }
+    await supabase
+      .from("demo_jobs")
+      .update({ status: "deleted" })
+      .eq("id", job.id);
+    res.json({ success: true });
+  } catch (err) {
+    logger.error("teardownDemo failed", { error: err });
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+
 async function kickoff(demoJobId: string): Promise<void> {
   const job = await getDemoJob(demoJobId);
   if (!job) throw new Error(`demo_job ${demoJobId} disappeared`);

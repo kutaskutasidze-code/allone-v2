@@ -1,6 +1,7 @@
-import { revalidatePath } from 'next/cache';
-import { requireSalesAuth } from '@/lib/sales-auth';
-import { AuthError } from '@/lib/auth';
+import { revalidatePath } from "next/cache";
+import { requireSalesAuth } from "@/lib/sales-auth";
+import { AuthError } from "@/lib/auth";
+import { teardownDemosForLead } from "@/lib/demo-pipeline-trigger";
 import {
   success,
   error,
@@ -8,10 +9,10 @@ import {
   unauthorized,
   notFound,
   forbidden,
-} from '@/lib/api-response';
-import { updateLeadSchema } from '@/lib/validations/leads';
-import { idParamSchema } from '@/lib/validations';
-import { logger } from '@/lib/logger';
+} from "@/lib/api-response";
+import { updateLeadSchema } from "@/lib/validations/leads";
+import { idParamSchema } from "@/lib/validations";
+import { logger } from "@/lib/logger";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -28,20 +29,24 @@ export async function GET(request: Request, { params }: RouteParams) {
       return validationError(idResult.error);
     }
 
-    logger.db('select', 'leads', { userId: salesUser.id, resourceId: id });
+    logger.db("select", "leads", { userId: salesUser.id, resourceId: id });
 
     const { data, error: dbError } = await supabase
-      .from('leads')
-      .select('*')
-      .eq('id', id)
+      .from("leads")
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (dbError) {
-      if (dbError.code === 'PGRST116') {
-        return notFound('Lead');
+      if (dbError.code === "PGRST116") {
+        return notFound("Lead");
       }
-      logger.error('Failed to fetch lead', { error: dbError.message, userId: salesUser.id, resourceId: id });
-      return error('Failed to fetch lead');
+      logger.error("Failed to fetch lead", {
+        error: dbError.message,
+        userId: salesUser.id,
+        resourceId: id,
+      });
+      return error("Failed to fetch lead");
     }
 
     // Check ownership
@@ -52,8 +57,10 @@ export async function GET(request: Request, { params }: RouteParams) {
     return success(data);
   } catch (err) {
     if (err instanceof AuthError) return unauthorized();
-    logger.error('Unexpected error in GET /api/sales/leads/[id]', { error: String(err) });
-    return error('Internal server error');
+    logger.error("Unexpected error in GET /api/sales/leads/[id]", {
+      error: String(err),
+    });
+    return error("Internal server error");
   }
 }
 
@@ -77,16 +84,16 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Check ownership first
     const { data: existingLead, error: fetchError } = await supabase
-      .from('leads')
-      .select('sales_user_id')
-      .eq('id', id)
+      .from("leads")
+      .select("sales_user_id")
+      .eq("id", id)
       .single();
 
     if (fetchError) {
-      if (fetchError.code === 'PGRST116') {
-        return notFound('Lead');
+      if (fetchError.code === "PGRST116") {
+        return notFound("Lead");
       }
-      return error('Failed to fetch lead');
+      return error("Failed to fetch lead");
     }
 
     if (existingLead.sales_user_id !== salesUser.id) {
@@ -94,6 +101,14 @@ export async function PUT(request: Request, { params }: RouteParams) {
     }
 
     const validated = result.data;
+
+    // Capture previous status so we can detect transitions to 'lost' below.
+    const { data: priorStatusRow } = await supabase
+      .from("leads")
+      .select("status")
+      .eq("id", id)
+      .single();
+    const priorStatus = priorStatusRow?.status as string | undefined;
 
     // Build update object with only provided fields
     const updateData: Record<string, unknown> = {
@@ -109,29 +124,53 @@ export async function PUT(request: Request, { params }: RouteParams) {
     if (validated.source !== undefined) updateData.source = validated.source;
     if (validated.notes !== undefined) updateData.notes = validated.notes;
 
-    logger.db('update', 'leads', { userId: salesUser.id, resourceId: id });
+    logger.db("update", "leads", { userId: salesUser.id, resourceId: id });
 
     const { data, error: dbError } = await supabase
-      .from('leads')
+      .from("leads")
       .update(updateData)
-      .eq('id', id)
+      .eq("id", id)
       .select()
       .single();
 
     if (dbError) {
-      logger.error('Failed to update lead', { error: dbError.message, userId: salesUser.id, resourceId: id });
-      return error('Failed to update lead');
+      logger.error("Failed to update lead", {
+        error: dbError.message,
+        userId: salesUser.id,
+        resourceId: id,
+      });
+      return error("Failed to update lead");
     }
 
-    logger.audit('update', 'leads', id, salesUser.id);
-    revalidatePath('/sales/leads');
-    revalidatePath('/sales');
+    logger.audit("update", "leads", id, salesUser.id);
+    revalidatePath("/sales/leads");
+    revalidatePath("/sales");
+
+    // If status transitioned to 'lost', tear down any active demos for this
+    // lead immediately to free Vercel + Supabase resources.
+    if (validated.status === "lost" && priorStatus !== "lost") {
+      teardownDemosForLead(id)
+        .then((r) =>
+          logger.info("Demos torn down on lead lost", {
+            id,
+            torn_down: r.torn_down,
+          }),
+        )
+        .catch((err) =>
+          logger.error("teardownDemosForLead failed", {
+            id,
+            error: err instanceof Error ? err.message : String(err),
+          }),
+        );
+    }
 
     return success(data);
   } catch (err) {
     if (err instanceof AuthError) return unauthorized();
-    logger.error('Unexpected error in PUT /api/sales/leads/[id]', { error: String(err) });
-    return error('Internal server error');
+    logger.error("Unexpected error in PUT /api/sales/leads/[id]", {
+      error: String(err),
+    });
+    return error("Internal server error");
   }
 }
 
@@ -148,42 +187,48 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     // Check ownership first
     const { data: existingLead, error: fetchError } = await supabase
-      .from('leads')
-      .select('sales_user_id')
-      .eq('id', id)
+      .from("leads")
+      .select("sales_user_id")
+      .eq("id", id)
       .single();
 
     if (fetchError) {
-      if (fetchError.code === 'PGRST116') {
-        return notFound('Lead');
+      if (fetchError.code === "PGRST116") {
+        return notFound("Lead");
       }
-      return error('Failed to fetch lead');
+      return error("Failed to fetch lead");
     }
 
     if (existingLead.sales_user_id !== salesUser.id) {
       return forbidden();
     }
 
-    logger.db('delete', 'leads', { userId: salesUser.id, resourceId: id });
+    logger.db("delete", "leads", { userId: salesUser.id, resourceId: id });
 
     const { error: dbError } = await supabase
-      .from('leads')
+      .from("leads")
       .delete()
-      .eq('id', id);
+      .eq("id", id);
 
     if (dbError) {
-      logger.error('Failed to delete lead', { error: dbError.message, userId: salesUser.id, resourceId: id });
-      return error('Failed to delete lead');
+      logger.error("Failed to delete lead", {
+        error: dbError.message,
+        userId: salesUser.id,
+        resourceId: id,
+      });
+      return error("Failed to delete lead");
     }
 
-    logger.audit('delete', 'leads', id, salesUser.id);
-    revalidatePath('/sales/leads');
-    revalidatePath('/sales');
+    logger.audit("delete", "leads", id, salesUser.id);
+    revalidatePath("/sales/leads");
+    revalidatePath("/sales");
 
-    return success({ message: 'Lead deleted successfully' });
+    return success({ message: "Lead deleted successfully" });
   } catch (err) {
     if (err instanceof AuthError) return unauthorized();
-    logger.error('Unexpected error in DELETE /api/sales/leads/[id]', { error: String(err) });
-    return error('Internal server error');
+    logger.error("Unexpected error in DELETE /api/sales/leads/[id]", {
+      error: String(err),
+    });
+    return error("Internal server error");
   }
 }

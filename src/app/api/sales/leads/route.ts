@@ -1,6 +1,6 @@
-import { revalidatePath } from 'next/cache';
-import { requireSalesAuth } from '@/lib/sales-auth';
-import { AuthError } from '@/lib/auth';
+import { revalidatePath } from "next/cache";
+import { requireSalesAuth } from "@/lib/sales-auth";
+import { AuthError } from "@/lib/auth";
 import {
   success,
   successWithPagination,
@@ -9,48 +9,63 @@ import {
   unauthorized,
   getPaginationParams,
   createPaginationMeta,
-} from '@/lib/api-response';
-import { createLeadSchema } from '@/lib/validations/leads';
-import { logger } from '@/lib/logger';
+} from "@/lib/api-response";
+import { createLeadSchema } from "@/lib/validations/leads";
+import { logger } from "@/lib/logger";
+import { enqueueDemoJob } from "@/lib/demo-pipeline-trigger";
 
 export async function GET(request: Request) {
   try {
     const { supabase, salesUser } = await requireSalesAuth();
     const { page, limit, offset } = getPaginationParams(request.url);
     const url = new URL(request.url);
-    const status = url.searchParams.get('status');
-    const search = url.searchParams.get('search');
+    const status = url.searchParams.get("status");
+    const search = url.searchParams.get("search");
 
-    logger.db('select', 'leads', { userId: salesUser.id });
+    logger.db("select", "leads", { userId: salesUser.id });
 
     let query = supabase
-      .from('leads')
-      .select('*', { count: 'exact' })
-      .eq('sales_user_id', salesUser.id)
-      .order('created_at', { ascending: false });
+      .from("leads")
+      .select("*", { count: "exact" })
+      .eq("sales_user_id", salesUser.id)
+      .order("created_at", { ascending: false });
 
     // Filter by status if provided
-    if (status && status !== 'all') {
-      query = query.eq('status', status);
+    if (status && status !== "all") {
+      query = query.eq("status", status);
     }
 
     // Search by name, email, or company
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%,company.ilike.%${search}%`);
+      query = query.or(
+        `name.ilike.%${search}%,email.ilike.%${search}%,company.ilike.%${search}%`,
+      );
     }
 
-    const { data, error: dbError, count } = await query.range(offset, offset + limit - 1);
+    const {
+      data,
+      error: dbError,
+      count,
+    } = await query.range(offset, offset + limit - 1);
 
     if (dbError) {
-      logger.error('Failed to fetch leads', { error: dbError.message, userId: salesUser.id });
-      return error('Failed to fetch leads');
+      logger.error("Failed to fetch leads", {
+        error: dbError.message,
+        userId: salesUser.id,
+      });
+      return error("Failed to fetch leads");
     }
 
-    return successWithPagination(data || [], createPaginationMeta(page, limit, count));
+    return successWithPagination(
+      data || [],
+      createPaginationMeta(page, limit, count),
+    );
   } catch (err) {
     if (err instanceof AuthError) return unauthorized();
-    logger.error('Unexpected error in GET /api/sales/leads', { error: String(err) });
-    return error('Internal server error');
+    logger.error("Unexpected error in GET /api/sales/leads", {
+      error: String(err),
+    });
+    return error("Internal server error");
   }
 }
 
@@ -67,10 +82,10 @@ export async function POST(request: Request) {
 
     const validated = result.data;
 
-    logger.db('insert', 'leads', { userId: salesUser.id });
+    logger.db("insert", "leads", { userId: salesUser.id });
 
     const { data, error: dbError } = await supabase
-      .from('leads')
+      .from("leads")
       .insert({
         sales_user_id: salesUser.id,
         name: validated.name,
@@ -86,18 +101,47 @@ export async function POST(request: Request) {
       .single();
 
     if (dbError) {
-      logger.error('Failed to create lead', { error: dbError.message, userId: salesUser.id });
-      return error('Failed to create lead');
+      logger.error("Failed to create lead", {
+        error: dbError.message,
+        userId: salesUser.id,
+      });
+      return error("Failed to create lead");
     }
 
-    logger.audit('create', 'leads', data.id, salesUser.id, { name: validated.name });
-    revalidatePath('/sales/leads');
-    revalidatePath('/sales');
+    logger.audit("create", "leads", data.id, salesUser.id, {
+      name: validated.name,
+    });
+    revalidatePath("/sales/leads");
+    revalidatePath("/sales");
+
+    // Auto-trigger personalized demo pipeline unless source signals bulk import.
+    const sourceLower = (validated.source ?? "").toLowerCase();
+    const skipDemo =
+      sourceLower.includes("bulk") || sourceLower.includes("import");
+    if (!skipDemo) {
+      enqueueDemoJob({ lead_id: data.id, sales_user_id: salesUser.id })
+        .then((r) => {
+          if (!r.ok) {
+            logger.error("Demo enqueue failed for new lead", {
+              lead_id: data.id,
+              error: r.error,
+            });
+          }
+        })
+        .catch((err) => {
+          logger.error("Demo enqueue threw", {
+            lead_id: data.id,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        });
+    }
 
     return success(data, 201);
   } catch (err) {
     if (err instanceof AuthError) return unauthorized();
-    logger.error('Unexpected error in POST /api/sales/leads', { error: String(err) });
-    return error('Internal server error');
+    logger.error("Unexpected error in POST /api/sales/leads", {
+      error: String(err),
+    });
+    return error("Internal server error");
   }
 }
