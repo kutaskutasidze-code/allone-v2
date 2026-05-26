@@ -37,10 +37,12 @@ export const config = {
     // When unset, admin-wirer skips data seeding and emits a warning.
     demosSupabaseUrl: process.env.DEMO_SUPABASE_URL || "",
     demosSupabaseServiceKey: process.env.DEMO_SUPABASE_SERVICE_ROLE_KEY || "",
-    // Shared admin frontend URL — every demo links to it with ?demo=<jobId>
-    // so one deploy serves all demos. Set after admin-shell goes live.
+    // Shared admin route — every demo's marketing page links to
+    // <sharedAdminUrl>/<demoJobId>. v1 ships as a route inside allone-website
+    // (/d/[demoJobId]); a future extraction can swap this for a dedicated host.
     sharedAdminUrl:
-      process.env.SHARED_ADMIN_URL || "https://admin.allone-demos.com",
+      process.env.SHARED_ADMIN_URL ||
+      `${process.env.PUBLIC_SITE_URL || "https://allonelabs.com"}/d`,
   },
 } as const;
 

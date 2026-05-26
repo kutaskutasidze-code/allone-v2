@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 import {
   LayoutDashboard,
   Users,
@@ -18,28 +18,30 @@ import {
   BarChart3,
   Database,
   FileText,
-} from 'lucide-react';
+  Sparkles,
+} from "lucide-react";
 
 const navigationSections = [
   {
-    label: 'Overview',
+    label: "Overview",
     items: [
-      { name: 'Dashboard', href: '/sales', icon: LayoutDashboard },
-      { name: 'Analytics', href: '/sales/analytics', icon: BarChart3 },
+      { name: "Dashboard", href: "/sales", icon: LayoutDashboard },
+      { name: "Analytics", href: "/sales/analytics", icon: BarChart3 },
     ],
   },
   {
-    label: 'Sales',
+    label: "Sales",
     items: [
-      { name: 'Leads', href: '/sales/leads', icon: Users },
-      { name: 'Campaigns', href: '/sales/campaigns', icon: Mail },
+      { name: "Leads", href: "/sales/leads", icon: Users },
+      { name: "Demos", href: "/sales/demos", icon: Sparkles },
+      { name: "Campaigns", href: "/sales/campaigns", icon: Mail },
     ],
   },
   {
-    label: 'System',
+    label: "System",
     items: [
-      { name: 'Sources', href: '/sales/sources', icon: Database },
-      { name: 'Templates', href: '/sales/templates', icon: FileText },
+      { name: "Sources", href: "/sales/sources", icon: Database },
+      { name: "Templates", href: "/sales/templates", icon: FileText },
     ],
   },
 ];
@@ -51,20 +53,25 @@ interface SalesSidebarProps {
   onMobileClose: () => void;
 }
 
-export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClose }: SalesSidebarProps) {
+export function SalesSidebar({
+  isCollapsed,
+  onToggle,
+  isMobileOpen,
+  onMobileClose,
+}: SalesSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/sales/login');
+    router.push("/sales/login");
     router.refresh();
   };
 
   const isActive = (href: string) => {
-    if (href === '/sales') {
-      return pathname === '/sales';
+    if (href === "/sales") {
+      return pathname === "/sales";
     }
     return pathname.startsWith(href);
   };
@@ -79,10 +86,12 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
   const desktopSidebarContent = (
     <div className="flex h-full flex-col relative">
       {/* Logo Section */}
-      <div className={cn(
-        "flex h-16 items-center border-b border-[var(--gray-100)] transition-all duration-200",
-        isCollapsed ? "justify-center px-2" : "px-5"
-      )}>
+      <div
+        className={cn(
+          "flex h-16 items-center border-b border-[var(--gray-100)] transition-all duration-200",
+          isCollapsed ? "justify-center px-2" : "px-5",
+        )}
+      >
         <Link href="/sales" className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg overflow-hidden bg-white border border-[var(--gray-200)] flex-shrink-0">
             <Image
@@ -98,7 +107,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             {!isCollapsed && (
               <motion.div
                 initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: 'auto' }}
+                animate={{ opacity: 1, width: "auto" }}
                 exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.15 }}
                 className="flex items-center gap-1.5 whitespace-nowrap overflow-hidden"
@@ -106,7 +115,9 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
                 <span className="text-base font-semibold tracking-tight text-[var(--black)]">
                   Allone
                 </span>
-                <span className="text-xs font-medium text-[var(--gray-400)]">Sales</span>
+                <span className="text-xs font-medium text-[var(--gray-400)]">
+                  Sales
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -123,7 +134,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
                 {!isCollapsed && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
+                    animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.15 }}
                     className="px-3 mb-2 overflow-hidden"
@@ -145,22 +156,28 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
                       <Link
                         href={item.href}
                         className={cn(
-                          'flex items-center rounded-lg text-[13px] font-medium transition-all duration-200',
-                          isCollapsed ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2',
+                          "flex items-center rounded-lg text-[13px] font-medium transition-all duration-200",
+                          isCollapsed
+                            ? "justify-center px-2 py-2.5"
+                            : "gap-3 px-3 py-2",
                           active
-                            ? 'bg-[var(--gray-100)] text-[var(--black)]'
-                            : 'text-[var(--gray-600)] hover:bg-white hover:text-[var(--black)]'
+                            ? "bg-[var(--gray-100)] text-[var(--black)]"
+                            : "text-[var(--gray-600)] hover:bg-white hover:text-[var(--black)]",
                         )}
                       >
-                        <Icon className={cn(
-                          'h-[18px] w-[18px] flex-shrink-0 transition-colors',
-                          active ? 'text-[var(--black)]' : 'text-[var(--gray-400)]'
-                        )} />
+                        <Icon
+                          className={cn(
+                            "h-[18px] w-[18px] flex-shrink-0 transition-colors",
+                            active
+                              ? "text-[var(--black)]"
+                              : "text-[var(--gray-400)]",
+                          )}
+                        />
                         <AnimatePresence mode="wait">
                           {!isCollapsed && (
                             <motion.span
                               initial={{ opacity: 0, width: 0 }}
-                              animate={{ opacity: 1, width: 'auto' }}
+                              animate={{ opacity: 1, width: "auto" }}
                               exit={{ opacity: 0, width: 0 }}
                               transition={{ duration: 0.15 }}
                               className="whitespace-nowrap overflow-hidden"
@@ -194,7 +211,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             target="_blank"
             className={cn(
               "flex items-center rounded-lg text-[13px] font-medium text-[var(--gray-500)] hover:bg-white hover:text-[var(--black)] transition-all duration-200",
-              isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
+              isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2",
             )}
           >
             <ExternalLink className="h-[18px] w-[18px] flex-shrink-0" />
@@ -202,7 +219,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
               {!isCollapsed && (
                 <motion.span
                   initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
+                  animate={{ opacity: 1, width: "auto" }}
                   exit={{ opacity: 0, width: 0 }}
                   transition={{ duration: 0.15 }}
                   className="whitespace-nowrap overflow-hidden"
@@ -225,7 +242,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             onClick={handleLogout}
             className={cn(
               "flex w-full items-center rounded-lg text-[13px] font-medium text-[var(--gray-500)] hover:bg-white hover:text-[var(--black)] transition-all duration-200",
-              isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
+              isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2",
             )}
           >
             <LogOut className="h-[18px] w-[18px] flex-shrink-0" />
@@ -233,7 +250,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
               {!isCollapsed && (
                 <motion.span
                   initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
+                  animate={{ opacity: 1, width: "auto" }}
                   exit={{ opacity: 0, width: 0 }}
                   transition={{ duration: 0.15 }}
                   className="whitespace-nowrap overflow-hidden"
@@ -256,7 +273,12 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
         onClick={onToggle}
         className="absolute -right-3 top-20 w-6 h-6 bg-white border border-[var(--gray-200)] rounded-full flex items-center justify-center text-[var(--gray-400)] hover:text-[var(--black)] hover:border-[var(--gray-300)] hover:bg-white transition-all duration-200 shadow-sm z-50"
       >
-        <ChevronLeft className={cn("h-4 w-4 transition-transform duration-200", isCollapsed && "rotate-180")} />
+        <ChevronLeft
+          className={cn(
+            "h-4 w-4 transition-transform duration-200",
+            isCollapsed && "rotate-180",
+          )}
+        />
       </button>
     </div>
   );
@@ -266,7 +288,11 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
     <div className="flex h-full flex-col">
       {/* Logo Section with close button */}
       <div className="flex h-16 items-center justify-between border-b border-[var(--gray-100)] px-5">
-        <Link href="/sales" className="flex items-center gap-3" onClick={handleNavClick}>
+        <Link
+          href="/sales"
+          className="flex items-center gap-3"
+          onClick={handleNavClick}
+        >
           <div className="w-9 h-9 rounded-lg overflow-hidden bg-white border border-[var(--gray-200)]">
             <Image
               src="/images/allone-logo.png"
@@ -281,7 +307,9 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             <span className="text-base font-semibold tracking-tight text-[var(--black)]">
               Allone
             </span>
-            <span className="text-xs font-medium text-[var(--gray-400)]">Sales</span>
+            <span className="text-xs font-medium text-[var(--gray-400)]">
+              Sales
+            </span>
           </div>
         </Link>
         <button
@@ -312,16 +340,20 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
                       href={item.href}
                       onClick={handleNavClick}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors',
+                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors",
                         active
-                          ? 'bg-[var(--gray-100)] text-[var(--black)]'
-                          : 'text-[var(--gray-600)] hover:bg-white hover:text-[var(--black)]'
+                          ? "bg-[var(--gray-100)] text-[var(--black)]"
+                          : "text-[var(--gray-600)] hover:bg-white hover:text-[var(--black)]",
                       )}
                     >
-                      <Icon className={cn(
-                        'h-[18px] w-[18px]',
-                        active ? 'text-[var(--black)]' : 'text-[var(--gray-400)]'
-                      )} />
+                      <Icon
+                        className={cn(
+                          "h-[18px] w-[18px]",
+                          active
+                            ? "text-[var(--black)]"
+                            : "text-[var(--gray-400)]",
+                        )}
+                      />
                       <span>{item.name}</span>
                     </Link>
                   );
@@ -360,7 +392,7 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       <aside
         className={cn(
           "fixed left-0 top-0 z-40 h-screen bg-white border-r border-[var(--gray-200)] hidden lg:block transition-[width] duration-200 ease-out",
-          isCollapsed ? "w-[72px]" : "w-64"
+          isCollapsed ? "w-[72px]" : "w-64",
         )}
       >
         {desktopSidebarContent}
@@ -390,10 +422,10 @@ export function SalesSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             />
             {/* Mobile Sidebar */}
             <motion.aside
-              initial={{ x: '-100%' }}
+              initial={{ x: "-100%" }}
               animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="lg:hidden fixed left-0 top-0 z-50 h-screen w-[280px] bg-white shadow-xl"
             >
               {mobileSidebarContent}

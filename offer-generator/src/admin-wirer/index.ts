@@ -1,9 +1,11 @@
 // admin-wirer — gives the marketing demo a working /admin link.
 //
-// v1 model: SHARED admin. One admin SPA at config.demo.sharedAdminUrl serves
-// every demo; the demo's marketing index.html gets an "Open admin" banner
-// injected that points at <sharedAdminUrl>?demo=<demoJobId>. The shared admin
-// queries demo_orgs by id to pull brand color/name + reads org-scoped data.
+// v1 model: SHARED admin route. Lives at <sharedAdminUrl>/<demoJobId>
+// (default: <PUBLIC_SITE_URL>/d/<demoJobId>, a route inside allone-website at
+// src/app/d/[demoJobId]/). The route resolves the demo_job → demo_org server-
+// side, applies the demo_org's brand color/logo, and renders the segment-
+// appropriate view (tourism/ecom). Marketing demo index.html gets an
+// "Open your admin →" pill injected pointing at that URL.
 //
 // Why shared, not embedded: per-demo admin builds blow up Vercel function
 // quota and build time. The "feels like one product" requirement is met
@@ -68,10 +70,11 @@ export async function wireAdmin(opts: WireAdminOpts): Promise<WireAdminResult> {
     );
   }
 
-  // 2. Build the shared admin URL for this demo
-  const adminUrl = `${config.demo.sharedAdminUrl}?demo=${encodeURIComponent(
-    opts.demoJobId,
-  )}`;
+  // 2. Build the shared admin URL for this demo. v1: /d/<demoJobId> inside
+  // allone-website. The route resolves the demo + brand server-side and
+  // renders the segment-appropriate view (see src/app/d/[demoJobId]/).
+  const base = config.demo.sharedAdminUrl.replace(/\/$/, "");
+  const adminUrl = `${base}/${encodeURIComponent(opts.demoJobId)}`;
 
   // 3. Inject "Open admin" entry into the marketing clone
   opts.onProgress?.({ type: "phase", phase: "inject_admin_link" });
