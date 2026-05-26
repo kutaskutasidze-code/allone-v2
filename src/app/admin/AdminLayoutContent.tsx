@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
+import { AppShell } from "@/components/bf-shell";
+import { adminNav } from "@/lib/admin-nav";
+import { createClient } from "@/lib/supabase/client";
 
 export function AdminLayoutContent({
   children,
@@ -10,63 +12,39 @@ export function AdminLayoutContent({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isLoginPage = pathname === '/admin/login';
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const checkDesktop = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    checkDesktop();
-    window.addEventListener('resize', checkDesktop);
-    return () => window.removeEventListener('resize', checkDesktop);
-  }, []);
-
-  useEffect(() => {
-    setIsMobileOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsMobileOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const router = useRouter();
+  const isLoginPage = pathname === "/admin/login";
 
   if (isLoginPage) {
     return <>{children}</>;
   }
 
-  const desktopMargin = isDesktop ? (isCollapsed ? 72 : 256) : 0;
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/admin/login");
+    router.refresh();
+  };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
-      <AdminSidebar
-        isCollapsed={isCollapsed}
-        onToggle={() => {
-          if (window.innerWidth < 1024) {
-            setIsMobileOpen(!isMobileOpen);
-          } else {
-            setIsCollapsed(!isCollapsed);
-          }
-        }}
-        isMobileOpen={isMobileOpen}
-        onMobileClose={() => setIsMobileOpen(false)}
-      />
-      <main
-        className="min-h-screen transition-[margin-left] duration-200 ease-out"
-        style={{ marginLeft: desktopMargin }}
-      >
-        <div className="p-5 pt-16 lg:pt-8 lg:px-10 lg:pb-10">
-          <div className="max-w-7xl mx-auto">{children}</div>
-        </div>
-      </main>
-    </div>
+    <AppShell
+      brand={{ name: "Allone", sub: "Admin" }}
+      nav={adminNav}
+      chatScope={{ level: "org", org: "allone-admin" }}
+      chatScopeLabel="Admin chat"
+      chatApiPath="/api/sales/chat"
+      topbarRight={
+        <button
+          type="button"
+          onClick={handleLogout}
+          aria-label="Sign out"
+          className="rounded-lg p-1.5 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)]"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
+      }
+    >
+      {children}
+    </AppShell>
   );
 }

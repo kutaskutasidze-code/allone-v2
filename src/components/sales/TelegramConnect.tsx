@@ -46,6 +46,31 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
     }
   };
 
+  const sendPreview = async (kind: string) => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/sales/notifications/preview?kind=${encodeURIComponent(kind)}`,
+        { method: "POST" },
+      );
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setError(json.error ?? "Preview send failed");
+        return;
+      }
+      if (json.delivered > 0) {
+        setError(null);
+        alert("Sent — check your Telegram.");
+      } else {
+        const firstErr = json.errors?.[0]?.error ?? "no active channel";
+        setError(`Not delivered: ${firstErr}`);
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="rounded-2xl border border-[var(--gray-200)] bg-white p-5">
       <div className="flex items-center justify-between gap-4">
@@ -97,10 +122,38 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
       </div>
 
       {connected && (
-        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-          <CheckCircle2 className="h-3 w-3" />
-          {username ? `@${username}` : "Connected"}
-        </div>
+        <>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+              <CheckCircle2 className="h-3 w-3" />
+              {username ? `@${username}` : "Connected"}
+            </span>
+            <button
+              type="button"
+              onClick={() => sendPreview("daily_aim")}
+              disabled={busy}
+              className="rounded-full border border-[var(--gray-200)] px-2.5 py-1 text-[11px] font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+            >
+              Preview daily aim
+            </button>
+            <button
+              type="button"
+              onClick={() => sendPreview("daily_report")}
+              disabled={busy}
+              className="rounded-full border border-[var(--gray-200)] px-2.5 py-1 text-[11px] font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+            >
+              Preview EOD report
+            </button>
+            <button
+              type="button"
+              onClick={() => sendPreview("weekly_report")}
+              disabled={busy}
+              className="rounded-full border border-[var(--gray-200)] px-2.5 py-1 text-[11px] font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+            >
+              Preview weekly report
+            </button>
+          </div>
+        </>
       )}
 
       {deepLink && !connected && (

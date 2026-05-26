@@ -1,71 +1,50 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { SalesSidebar } from '@/components/sales/SalesSidebar';
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
+import { AppShell } from "@/components/bf-shell";
+import { salesNav } from "@/lib/sales-nav";
+import { createClient } from "@/lib/supabase/client";
 
-export function SalesLayoutContent({ children }: { children: React.ReactNode }) {
+export function SalesLayoutContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
-  const isLoginPage = pathname === '/sales/login';
-
-  // Sidebar state
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  // Track desktop vs mobile
-  useEffect(() => {
-    const checkDesktop = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    checkDesktop();
-    window.addEventListener('resize', checkDesktop);
-    return () => window.removeEventListener('resize', checkDesktop);
-  }, []);
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsMobileOpen(false);
-  }, [pathname]);
-
-  // Close mobile menu on window resize to desktop
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsMobileOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const router = useRouter();
+  const isLoginPage = pathname === "/sales/login";
 
   if (isLoginPage) {
     return <>{children}</>;
   }
 
-  // Calculate margin for desktop only
-  const desktopMargin = isDesktop ? (isCollapsed ? 72 : 256) : 0;
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/sales/login");
+    router.refresh();
+  };
 
   return (
-    <div className="min-h-screen bg-white">
-      <SalesSidebar
-        isCollapsed={isCollapsed}
-        onToggle={() => {
-          if (window.innerWidth < 1024) {
-            setIsMobileOpen(!isMobileOpen);
-          } else {
-            setIsCollapsed(!isCollapsed);
-          }
-        }}
-        isMobileOpen={isMobileOpen}
-        onMobileClose={() => setIsMobileOpen(false)}
-      />
-      <main
-        className="min-h-screen transition-[margin-left] duration-200 ease-out"
-        style={{ marginLeft: desktopMargin }}
-      >
-        <div className="p-4 pt-16 lg:pt-6 lg:p-8">{children}</div>
-      </main>
-    </div>
+    <AppShell
+      brand={{ name: "Allone", sub: "Sales" }}
+      nav={salesNav}
+      chatScope={{ level: "org", org: "allone-sales" }}
+      chatScopeLabel="Sales chat"
+      chatApiPath="/api/sales/chat"
+      topbarRight={
+        <button
+          type="button"
+          onClick={handleLogout}
+          aria-label="Sign out"
+          className="rounded-lg p-1.5 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)]"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
+      }
+    >
+      {children}
+    </AppShell>
   );
 }
