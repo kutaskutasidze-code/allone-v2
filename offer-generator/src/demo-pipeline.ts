@@ -144,6 +144,16 @@ export async function runDemoPipeline(
     // Done
     await jobsRepo.markDraftReady(demoJobId);
     logger.info("Demo pipeline complete", { demoJobId });
+
+    // Fire notification to the assigned sales user. Fire-and-forget; failure
+    // doesn't unwind the pipeline — the draft is still visible in the UI.
+    const { notifyDraftReady } = await import("./notifier/index.js");
+    notifyDraftReady({ demoJobId }).catch((err) =>
+      logger.warn("notifyDraftReady threw", {
+        demoJobId,
+        error: err instanceof Error ? err.message : String(err),
+      }),
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     logger.error("Demo pipeline failed", { demoJobId, error: msg });

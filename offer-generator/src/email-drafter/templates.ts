@@ -91,7 +91,37 @@ const COLD_KA_BODY = COLD_EN_BODY.replace(
   )
   .replace("view proposal", "ნახეთ წინადადება");
 
+// Segment-tailored copy. Body is identical EN layout; the swap is in the
+// opening line — that's where segment specificity moves the needle. Drafter
+// picks the most specific match: (segment, source, language) → fallbacks.
+
+const segmentOpenerEN: Record<string, string> = {
+  tourism:
+    "I looked at how {{lead.company}} sells trips today and built you a working version of what we'd ship — booking calendar, hotel + transfer pipeline, your colors, your inventory.",
+  ecom: "I looked at {{lead.company}}'s storefront and built you a working version of what we'd ship — admin dashboard with your products, orders, and customers, all branded.",
+};
+
+const segmentOpenerKA: Record<string, string> = {
+  tourism:
+    "მე ვნახე როგორ ყიდის {{lead.company}} მოგზაურობებს დღეს და თქვენთვის ავაგე სამუშაო ვერსია — დაჯავშნის კალენდარი, სასტუმროების და ტრანსფერების მართვა, თქვენი ფერებით.",
+  ecom: "მე ვნახე {{lead.company}}-ის ვიტრინა და თქვენთვის ავაგე სამუშაო ვერსია — ადმინ პანელი თქვენი პროდუქტებით, შეკვეთებით და მომხმარებლებით.",
+};
+
+function segmentedBody(
+  base: string,
+  fallbackOpener: string,
+  newOpener: string,
+): string {
+  return base.replace(fallbackOpener, newOpener);
+}
+
+const FALLBACK_OPENER_EN =
+  "I took a look at {{lead.company}}'s current site and built you a working version of what we'd ship — branded with your colors, your name, your services.";
+const FALLBACK_OPENER_KA =
+  "მე ვნახე {{lead.company}}-ის მიმდინარე საიტი და თქვენთვის ავაგე სამუშაო ვერსია იმისა, რასაც გავუშვებდით — თქვენი ფერებით, თქვენი სახელით, თქვენი სერვისებით.";
+
 export const SEEDABLE_TEMPLATES: SeedableTemplate[] = [
+  // Default cold (no segment match): used when no segment-specific row exists.
   {
     name: "demo-pipeline-cold-en",
     description:
@@ -112,6 +142,61 @@ export const SEEDABLE_TEMPLATES: SeedableTemplate[] = [
     target_service: "general",
     language: "ka",
     segment: null,
+    lead_source: "cold",
+    swap_variables: SHARED_VARS,
+  },
+  // Per-segment cold variants (EN+KA × {tourism, ecom}).
+  {
+    name: "demo-pipeline-cold-tourism-en",
+    description: "Cold outreach tailored for tourism segment (EN).",
+    subject:
+      "{{lead.first_name}}, your {{lead.company}} booking dashboard demo",
+    body: segmentedBody(
+      COLD_EN_BODY,
+      FALLBACK_OPENER_EN,
+      segmentOpenerEN.tourism,
+    ),
+    target_service: "general",
+    language: "en",
+    segment: "tourism",
+    lead_source: "cold",
+    swap_variables: SHARED_VARS,
+  },
+  {
+    name: "demo-pipeline-cold-tourism-ka",
+    description: "Cold outreach tailored for tourism segment (KA).",
+    subject: "{{lead.first_name}}, {{lead.company}}-ის დაჯავშნის დემო",
+    body: segmentedBody(
+      COLD_KA_BODY,
+      FALLBACK_OPENER_KA,
+      segmentOpenerKA.tourism,
+    ),
+    target_service: "general",
+    language: "ka",
+    segment: "tourism",
+    lead_source: "cold",
+    swap_variables: SHARED_VARS,
+  },
+  {
+    name: "demo-pipeline-cold-ecom-en",
+    description: "Cold outreach tailored for ecom segment (EN).",
+    subject:
+      "{{lead.first_name}}, your {{lead.company}} storefront + admin demo",
+    body: segmentedBody(COLD_EN_BODY, FALLBACK_OPENER_EN, segmentOpenerEN.ecom),
+    target_service: "general",
+    language: "en",
+    segment: "ecom",
+    lead_source: "cold",
+    swap_variables: SHARED_VARS,
+  },
+  {
+    name: "demo-pipeline-cold-ecom-ka",
+    description: "Cold outreach tailored for ecom segment (KA).",
+    subject: "{{lead.first_name}}, {{lead.company}}-ის მაღაზიის დემო",
+    body: segmentedBody(COLD_KA_BODY, FALLBACK_OPENER_KA, segmentOpenerKA.ecom),
+    target_service: "general",
+    language: "ka",
+    segment: "ecom",
     lead_source: "cold",
     swap_variables: SHARED_VARS,
   },
