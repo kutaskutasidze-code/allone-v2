@@ -5,11 +5,13 @@ import { useRef } from 'react';
 import { MacBookFrame } from './MacBookFrame';
 import { HeroPreview } from './HeroPreview';
 import { useI18n } from '@/lib/i18n';
+import { useIsMobile } from '@/lib/hooks/useIsMobile';
 
 const techStack: { name: string; color: string }[] = [];
 
 export function WebDevShowcase() {
   const { t } = useI18n();
+  const mobile = useIsMobile();
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -37,7 +39,7 @@ export function WebDevShowcase() {
         <div className="grid grid-cols-1 lg:grid-cols-[0.68fr_0.32fr] gap-8 lg:gap-10 items-center">
           {/* MacBook — order-2 on mobile (below text), order-1 on desktop (left) */}
           <motion.div
-            style={{
+            style={mobile ? { y: 0, opacity: 1 } : {
               y: entryY,
               opacity: entryOpacity,
             }}

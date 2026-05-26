@@ -24,6 +24,7 @@ export function Footer() {
                   width={28}
                   height={28}
                   className="object-contain"
+                  style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(18%) saturate(531%) hue-rotate(166deg) brightness(99%) contrast(87%)' }}
                 />
                 <span className="text-sm font-semibold text-[#071D2F] tracking-[-0.02em] font-[family-name:var(--font-display)]">
                   {t('footer.brand')}
@@ -57,15 +58,15 @@ export function Footer() {
                 {t('footer.services')}
               </p>
               <nav className="space-y-2.5">
-                <Link href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                <a href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.chatbots')}
-                </Link>
-                <Link href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                </a>
+                <a href="/#services" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.webdev')}
-                </Link>
-                <Link href="/#automation" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                </a>
+                <a href="/#automation" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.automation')}
-                </Link>
+                </a>
                 <Link href="/contact" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.consulting')}
                 </Link>

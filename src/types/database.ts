@@ -291,6 +291,8 @@ export interface Database {
           id: string;
           email: string;
           name: string;
+          role: 'salesperson' | 'supervisor' | 'admin';
+          daily_target: number;
           created_at: string;
           updated_at: string;
         };
@@ -298,6 +300,8 @@ export interface Database {
           id?: string;
           email: string;
           name: string;
+          role?: 'salesperson' | 'supervisor' | 'admin';
+          daily_target?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -305,6 +309,8 @@ export interface Database {
           id?: string;
           email?: string;
           name?: string;
+          role?: 'salesperson' | 'supervisor' | 'admin';
+          daily_target?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -317,7 +323,7 @@ export interface Database {
           email: string | null;
           phone: string | null;
           company: string | null;
-          status: 'new' | 'contacted' | 'qualified' | 'won' | 'lost';
+          status: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
           value: number;
           source: string | null;
           notes: string | null;
@@ -342,6 +348,7 @@ export interface Database {
           email_opened_at: string | null;
           email_replied_at: string | null;
           is_scraped: boolean;
+          won_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -352,7 +359,7 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           company?: string | null;
-          status?: 'new' | 'contacted' | 'qualified' | 'won' | 'lost';
+          status?: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
           value?: number;
           source?: string | null;
           notes?: string | null;
@@ -376,6 +383,7 @@ export interface Database {
           email_opened_at?: string | null;
           email_replied_at?: string | null;
           is_scraped?: boolean;
+          won_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -386,7 +394,7 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           company?: string | null;
-          status?: 'new' | 'contacted' | 'qualified' | 'won' | 'lost';
+          status?: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
           value?: number;
           source?: string | null;
           notes?: string | null;
@@ -410,6 +418,7 @@ export interface Database {
           email_opened_at?: string | null;
           email_replied_at?: string | null;
           is_scraped?: boolean;
+          won_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

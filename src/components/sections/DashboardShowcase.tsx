@@ -3,8 +3,10 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { EmbeddableDashboard } from '@/components/sections/dashboard/DashboardShowcase';
+import { useIsMobile } from '@/lib/hooks/useIsMobile';
 
 export function DashboardShowcase() {
+  const mobile = useIsMobile();
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -51,7 +53,7 @@ export function DashboardShowcase() {
 
           {/* Right — Dashboard zoomed in, overflowing right */}
           <motion.div
-            style={{
+            style={mobile ? { y: 0, opacity: 1 } : {
               y: dashY,
               opacity: dashOpacity,
             }}

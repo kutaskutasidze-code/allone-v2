@@ -15,8 +15,9 @@ export async function insertLead(lead: LeadData): Promise<{ success: boolean; is
     }
   }
 
-  // Check for duplicates by phone, website, or email
+  // Check for duplicates by source_url, phone, website, or email
   const orClauses: string[] = [];
+  if (lead.source_url) orClauses.push(`source_url.eq.${lead.source_url}`);
   if (lead.phone) orClauses.push(`phone.eq.${lead.phone}`);
   if (lead.website) orClauses.push(`website.eq.${lead.website}`);
   if (lead.email) orClauses.push(`email.eq.${lead.email}`);

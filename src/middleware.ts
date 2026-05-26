@@ -41,11 +41,23 @@ export async function middleware(request: NextRequest) {
 
   const isAuthenticated = !!user && !error;
 
-  const ADMIN_EMAILS = [
-    'luka.tsulukidze@allonelabs.com',
-    'luka.adamia@allonelabs.com',
-    'levan.shavliashvili@allonelabs.com',
-  ];
+  // Admin allowlist. Configurable via ADMIN_EMAILS env var (comma-separated)
+  // so new admins can be added in the Vercel dashboard without a code change.
+  // The hardcoded list below is a safety fallback if the env var is unset.
+  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS
+    ? process.env.ADMIN_EMAILS.split(',')
+    : [
+        'nikoloz.gaprindashvili@allonelabs.com',
+        'luka.tsulukidze@allonelabs.com',
+        'luka.adamia@allonelabs.com',
+        'team@allonelabs.com',
+      ]
+  ).map(e => e.toLowerCase().trim()).filter(Boolean);
+
+  // Case-insensitive comparison — Supabase may store emails with original casing,
+  // and a case-sensitive includes() would silently bounce a valid admin.
+  const userEmail = (user?.email || '').toLowerCase().trim();
+  const isAdmin = ADMIN_EMAILS.includes(userEmail);
 
   // Protect admin routes (except login)
   if (
@@ -56,19 +68,22 @@ export async function middleware(request: NextRequest) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
-    if (!ADMIN_EMAILS.includes(user!.email || '')) {
+    if (!isAdmin) {
       return NextResponse.redirect(new URL('/', request.url));
     }
   }
 
   // Protect admin API routes
   if (request.nextUrl.pathname.startsWith('/api/admin')) {
-    if (!isAuthenticated || !ADMIN_EMAILS.includes(user!.email || '')) {
+    if (!isAuthenticated || !isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
   }
 
-  // Protect sales routes (except login)
+  // Protect sales routes (except login). Anyone who can reach the sales portal
+  // must (a) be authenticated and (b) have a row in sales_users — otherwise the
+  // sidebar and the per-rep scoping wouldn't make sense and the API would 401
+  // every page load.
   if (
     request.nextUrl.pathname.startsWith('/sales') &&
     !request.nextUrl.pathname.startsWith('/sales/login') &&
@@ -76,6 +91,24 @@ export async function middleware(request: NextRequest) {
   ) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL('/sales/login', request.url));
+    }
+    if (!user?.email) {
+      return NextResponse.redirect(new URL('/sales/login', request.url));
+    }
+    // Use the service role for this one lookup so it bypasses RLS — the
+    // sales_users RLS policies currently have an infinite-recursion bug that
+    // makes the anon client error out on any read of this table.
+    const adminUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent(user.email)}&select=id&limit=1`;
+    const lookup = await fetch(adminUrl, {
+      headers: {
+        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+      },
+      cache: 'no-store',
+    });
+    const rows = lookup.ok ? await lookup.json() : [];
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return NextResponse.redirect(new URL('/', request.url));
     }
   }
 

@@ -13,7 +13,7 @@ export function OrganizationSchema({
   name = 'ALLONE',
   url = 'https://allone.ge',
   logo = 'https://allone.ge/images/allone-logo.png',
-  description = 'AI automation agency that converges all your systems into one intelligent layer. Custom AI solutions, workflow automation, intelligent chatbots, and modern website development for businesses worldwide.',
+  description = 'AI automation company that converges all your systems into one intelligent layer. Custom AI solutions, workflow automation, intelligent chatbots, and modern website development for businesses worldwide.',
   email = 'info@allonelabs.com',
   sameAs = [],
 }: OrganizationSchemaProps) {
@@ -113,10 +113,10 @@ export function LocalBusinessSchema() {
     {
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
-      name: 'ALLONE — AI Automation Agency',
+      name: 'ALLONE — AI Automation Company',
       url: 'https://allone.ge',
       email: 'info@allonelabs.com',
-      description: 'AI automation agency offering custom chatbots, workflow automation, and web development services in Tbilisi, Georgia.',
+      description: 'AI automation company offering custom chatbots, workflow automation, and web development services in Tbilisi, Georgia.',
       image: 'https://allone.ge/images/allone-logo.png',
       priceRange: '$$',
       address: {
@@ -136,10 +136,10 @@ export function LocalBusinessSchema() {
     {
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
-      name: 'ALLONE — AI Automation Agency',
+      name: 'ALLONE — AI Automation Company',
       url: 'https://allone.ge',
       email: 'info@allonelabs.com',
-      description: 'AI automation agency offering custom chatbots, workflow automation, and web development services in Brussels, Belgium.',
+      description: 'AI automation company offering custom chatbots, workflow automation, and web development services in Brussels, Belgium.',
       image: 'https://allone.ge/images/allone-logo.png',
       priceRange: '$$',
       address: {

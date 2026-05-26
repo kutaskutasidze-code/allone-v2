@@ -58,6 +58,27 @@ export function Header() {
   // Mobile state
   const [isMobile, setIsMobile] = useState(false);
 
+  // Track which hash section is in view
+  const [activeHash, setActiveHash] = useState<string | null>(null);
+  useEffect(() => {
+    if (pathname !== '/') { setActiveHash(null); return; }
+    const sections = ['services', 'automation'];
+    const observers: IntersectionObserver[] = [];
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      const obs = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) setActiveHash(id);
+      }, { threshold: 0.2 });
+      obs.observe(el);
+      observers.push(obs);
+    }
+    // Clear when scrolled to top (hero)
+    const handleScroll = () => { if (window.scrollY < 200) setActiveHash(null); };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => { observers.forEach(o => o.disconnect()); window.removeEventListener('scroll', handleScroll); };
+  }, [pathname]);
+
   // Chat state
   const [chatMode, setChatMode] = useState<'closed' | 'input' | 'expanded'>('closed');
   const [hasUnread, setHasUnread] = useState(false);
@@ -159,7 +180,6 @@ export function Header() {
     { name: 'Home', i18nKey: 'nav.home', href: '/', icon: IconHome },
     { name: 'Services', i18nKey: 'nav.services', href: '/#services', icon: IconServices },
     { name: 'Work', i18nKey: 'nav.work', href: '/work', icon: IconWork },
-    { name: 'Lab', i18nKey: 'nav.lab', href: '/lab', icon: IconLab },
   ];
 
   const dockWidth = isMobile ? 'auto' : chatMode === 'closed' ? 780 : 400;
@@ -251,10 +271,16 @@ export function Header() {
                 <>
                   {/* Mobile: icon nav */}
                   {navItems.map((item) => {
-                    const isActive = item.href.startsWith('/#') ? false : item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+                    const isActive = item.href.startsWith('/#') ? (activeHash != null && item.href === '/#services' && ['services', 'automation'].includes(activeHash)) : item.href === '/' ? pathname === '/' && !activeHash : pathname.startsWith(item.href);
                     const Icon = item.icon;
+                    const handleClick = item.href.startsWith('/#') ? (e: React.MouseEvent) => {
+                      if (pathname === '/') {
+                        e.preventDefault();
+                        document.getElementById(item.href.slice(2))?.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    } : undefined;
                     return (
-                      <Link key={item.name} href={item.href} className="relative w-10 h-10 flex items-center justify-center rounded-full">
+                      <Link key={item.name} href={item.href} onClick={handleClick} className="relative w-10 h-10 flex items-center justify-center rounded-full">
                         {isActive && (
                           <motion.div
                             layoutId="dock-lamp"
@@ -294,18 +320,25 @@ export function Header() {
                 <>
                   {/* Desktop: logo + text nav */}
                   <Link href="/" className="flex items-center gap-2 pl-1 pr-2">
-                    <Image src="/images/allone-logo-transparent.png" alt="allone" width={26} height={26} className="object-contain" />
+                    <Image src="/images/allone-logo-transparent.png" alt="allone" width={26} height={26} className="object-contain" style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(18%) saturate(531%) hue-rotate(166deg) brightness(99%) contrast(87%)' }} />
                     <span className="font-display font-semibold text-[15px] tracking-tight text-[#071D2F]">AllOne</span>
                   </Link>
 
                   <div className="w-px h-5 bg-[#071D2F]/10 mx-1" />
 
                   {navItems.map((item) => {
-                    const isActive = item.href.startsWith('/#') ? false : item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+                    const isActive = item.href.startsWith('/#') ? (activeHash != null && item.href === '/#services' && ['services', 'automation'].includes(activeHash)) : item.href === '/' ? pathname === '/' && !activeHash : pathname.startsWith(item.href);
+                    const handleClick = item.href.startsWith('/#') ? (e: React.MouseEvent) => {
+                      if (pathname === '/') {
+                        e.preventDefault();
+                        document.getElementById(item.href.slice(2))?.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    } : undefined;
                     return (
                       <Link
                         key={item.name}
                         href={item.href}
+                        onClick={handleClick}
                         onMouseEnter={() => setHovered(item.name)}
                         onMouseLeave={() => setHovered(null)}
                         className={`relative px-4 py-2 text-[13px] font-medium rounded-full transition-colors duration-150 ${

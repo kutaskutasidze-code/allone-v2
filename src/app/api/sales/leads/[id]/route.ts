@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { requireSalesAuth } from "@/lib/sales-auth";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { AuthError } from "@/lib/auth";
-import { teardownDemosForLead } from "@/lib/demo-pipeline-trigger";
 import {
   success,
   error,
@@ -13,6 +13,7 @@ import {
 import { updateLeadSchema } from "@/lib/validations/leads";
 import { idParamSchema } from "@/lib/validations";
 import { logger } from "@/lib/logger";
+import { teardownDemosForLead } from "@/lib/demo-pipeline-trigger";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -20,17 +21,13 @@ interface RouteParams {
 
 export async function GET(request: Request, { params }: RouteParams) {
   try {
-    const { supabase, salesUser } = await requireSalesAuth();
+    const { salesUser } = await requireSalesAuth();
     const { id } = await params;
 
-    // Validate ID
     const idResult = idParamSchema.safeParse({ id });
-    if (!idResult.success) {
-      return validationError(idResult.error);
-    }
+    if (!idResult.success) return validationError(idResult.error);
 
-    logger.db("select", "leads", { userId: salesUser.id, resourceId: id });
-
+    const supabase = createAdminClient();
     const { data, error: dbError } = await supabase
       .from("leads")
       .select("*")
@@ -38,79 +35,55 @@ export async function GET(request: Request, { params }: RouteParams) {
       .single();
 
     if (dbError) {
-      if (dbError.code === "PGRST116") {
-        return notFound("Lead");
-      }
-      logger.error("Failed to fetch lead", {
-        error: dbError.message,
-        userId: salesUser.id,
-        resourceId: id,
-      });
+      if (dbError.code === "PGRST116") return notFound("Lead");
       return error("Failed to fetch lead");
     }
 
-    // Check ownership
-    if (data.sales_user_id !== salesUser.id) {
-      return forbidden();
-    }
+    const canSeeAll =
+      salesUser.role === "supervisor" || salesUser.role === "admin";
+    if (!canSeeAll && data.sales_user_id !== salesUser.id) return forbidden();
 
     return success(data);
   } catch (err) {
     if (err instanceof AuthError) return unauthorized();
-    logger.error("Unexpected error in GET /api/sales/leads/[id]", {
-      error: String(err),
-    });
     return error("Internal server error");
   }
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
-    const { supabase, salesUser } = await requireSalesAuth();
+    const { salesUser } = await requireSalesAuth();
     const { id } = await params;
     const body = await request.json();
 
-    // Validate ID
     const idResult = idParamSchema.safeParse({ id });
-    if (!idResult.success) {
-      return validationError(idResult.error);
-    }
+    if (!idResult.success) return validationError(idResult.error);
 
-    // Validate input
     const result = updateLeadSchema.safeParse(body);
-    if (!result.success) {
-      return validationError(result.error);
-    }
+    if (!result.success) return validationError(result.error);
 
-    // Check ownership first
+    const supabase = createAdminClient();
+
     const { data: existingLead, error: fetchError } = await supabase
       .from("leads")
-      .select("sales_user_id")
+      .select("sales_user_id, status")
       .eq("id", id)
       .single();
 
     if (fetchError) {
-      if (fetchError.code === "PGRST116") {
-        return notFound("Lead");
-      }
+      if (fetchError.code === "PGRST116") return notFound("Lead");
       return error("Failed to fetch lead");
     }
 
-    if (existingLead.sales_user_id !== salesUser.id) {
-      return forbidden();
-    }
+    const canSeeAll =
+      salesUser.role === "supervisor" || salesUser.role === "admin";
+    const isOwn = existingLead.sales_user_id === salesUser.id;
+    const isUnassigned = !existingLead.sales_user_id;
 
+    if (!canSeeAll && !isOwn && !isUnassigned) return forbidden();
+
+    const priorStatus = existingLead.status as string | undefined;
     const validated = result.data;
-
-    // Capture previous status so we can detect transitions to 'lost' below.
-    const { data: priorStatusRow } = await supabase
-      .from("leads")
-      .select("status")
-      .eq("id", id)
-      .single();
-    const priorStatus = priorStatusRow?.status as string | undefined;
-
-    // Build update object with only provided fields
     const updateData: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
     };
@@ -123,15 +96,39 @@ export async function PUT(request: Request, { params }: RouteParams) {
     if (validated.value !== undefined) updateData.value = validated.value;
     if (validated.source !== undefined) updateData.source = validated.source;
     if (validated.notes !== undefined) updateData.notes = validated.notes;
+    if (validated.callback_at !== undefined)
+      updateData.callback_at = validated.callback_at;
 
-    logger.db("update", "leads", { userId: salesUser.id, resourceId: id });
+    let updateQuery = supabase.from("leads").update(updateData).eq("id", id);
+    if (isUnassigned && salesUser.role === "salesperson") {
+      updateData.sales_user_id = salesUser.id;
+      updateQuery = supabase
+        .from("leads")
+        .update(updateData)
+        .eq("id", id)
+        .is("sales_user_id", null);
+    }
 
-    const { data, error: dbError } = await supabase
-      .from("leads")
-      .update(updateData)
-      .eq("id", id)
-      .select()
-      .single();
+    const { data, error: dbError } = await updateQuery.select().maybeSingle();
+
+    if (!dbError && !data && isUnassigned && salesUser.role === "salesperson") {
+      delete updateData.sales_user_id;
+      const retry = await supabase
+        .from("leads")
+        .update(updateData)
+        .eq("id", id)
+        .select()
+        .single();
+      if (retry.error) {
+        logger.error("Failed to update lead after claim race", {
+          error: retry.error.message,
+          id,
+        });
+        return error("Failed to update lead");
+      }
+      maybeFireLostHook(id, validated.status, priorStatus);
+      return success(retry.data);
+    }
 
     if (dbError) {
       logger.error("Failed to update lead", {
@@ -142,50 +139,28 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return error("Failed to update lead");
     }
 
-    logger.audit("update", "leads", id, salesUser.id);
     revalidatePath("/sales/leads");
     revalidatePath("/sales");
 
-    // If status transitioned to 'lost', tear down any active demos for this
-    // lead immediately to free Vercel + Supabase resources.
-    if (validated.status === "lost" && priorStatus !== "lost") {
-      teardownDemosForLead(id)
-        .then((r) =>
-          logger.info("Demos torn down on lead lost", {
-            id,
-            torn_down: r.torn_down,
-          }),
-        )
-        .catch((err) =>
-          logger.error("teardownDemosForLead failed", {
-            id,
-            error: err instanceof Error ? err.message : String(err),
-          }),
-        );
-    }
+    maybeFireLostHook(id, validated.status, priorStatus);
 
     return success(data);
   } catch (err) {
     if (err instanceof AuthError) return unauthorized();
-    logger.error("Unexpected error in PUT /api/sales/leads/[id]", {
-      error: String(err),
-    });
     return error("Internal server error");
   }
 }
 
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
-    const { supabase, salesUser } = await requireSalesAuth();
+    const { salesUser } = await requireSalesAuth();
     const { id } = await params;
 
-    // Validate ID
     const idResult = idParamSchema.safeParse({ id });
-    if (!idResult.success) {
-      return validationError(idResult.error);
-    }
+    if (!idResult.success) return validationError(idResult.error);
 
-    // Check ownership first
+    const supabase = createAdminClient();
+
     const { data: existingLead, error: fetchError } = await supabase
       .from("leads")
       .select("sales_user_id")
@@ -193,17 +168,14 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       .single();
 
     if (fetchError) {
-      if (fetchError.code === "PGRST116") {
-        return notFound("Lead");
-      }
+      if (fetchError.code === "PGRST116") return notFound("Lead");
       return error("Failed to fetch lead");
     }
 
-    if (existingLead.sales_user_id !== salesUser.id) {
+    const canSeeAll =
+      salesUser.role === "supervisor" || salesUser.role === "admin";
+    if (!canSeeAll && existingLead.sales_user_id !== salesUser.id)
       return forbidden();
-    }
-
-    logger.db("delete", "leads", { userId: salesUser.id, resourceId: id });
 
     const { error: dbError } = await supabase
       .from("leads")
@@ -211,24 +183,39 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       .eq("id", id);
 
     if (dbError) {
-      logger.error("Failed to delete lead", {
-        error: dbError.message,
-        userId: salesUser.id,
-        resourceId: id,
-      });
       return error("Failed to delete lead");
     }
 
-    logger.audit("delete", "leads", id, salesUser.id);
     revalidatePath("/sales/leads");
     revalidatePath("/sales");
 
     return success({ message: "Lead deleted successfully" });
   } catch (err) {
     if (err instanceof AuthError) return unauthorized();
-    logger.error("Unexpected error in DELETE /api/sales/leads/[id]", {
-      error: String(err),
-    });
     return error("Internal server error");
+  }
+}
+
+// Fire-and-forget: when a lead transitions to 'lost', tear down any active
+// demo for it (frees Vercel project + seeded org rows).
+function maybeFireLostHook(
+  id: string,
+  newStatus: string | undefined,
+  priorStatus: string | undefined,
+) {
+  if (newStatus === "lost" && priorStatus !== "lost") {
+    teardownDemosForLead(id)
+      .then((r) =>
+        logger.info("Demos torn down on lead lost", {
+          id,
+          torn_down: r.torn_down,
+        }),
+      )
+      .catch((err) =>
+        logger.error("teardownDemosForLead failed", {
+          id,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
   }
 }

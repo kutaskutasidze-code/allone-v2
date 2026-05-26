@@ -5,6 +5,7 @@ import { motion, useTransform, type MotionValue } from 'framer-motion';
 
 interface FloatingElementProps {
   scrollYProgress: MotionValue<number>;
+  entryDelay?: number;
 }
 
 // Lighthouse gauge ring helper
@@ -226,45 +227,45 @@ const elements = [
     content: (
       <div className="-m-4 flex flex-col h-[calc(100%+2rem)]">
         {/* Product image */}
-        <div className="h-[90px] bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-end justify-center relative overflow-hidden flex-shrink-0">
-          {/* Lamp silhouette */}
-          <svg viewBox="0 0 60 80" className="w-12 h-16 mb-1" fill="none">
-            <ellipse cx="30" cy="74" rx="14" ry="3" fill="#d4d4d8" />
-            <rect x="28" y="35" width="4" height="39" rx="2" fill="#a1a1aa" />
-            <path d="M16 38 C16 25 22 18 30 18 C38 18 44 25 44 38 Z" fill="#fbbf24" fillOpacity="0.6" />
-            <path d="M20 38 C20 28 24 22 30 22 C36 22 40 28 40 38 Z" fill="#fde68a" />
-            <circle cx="30" cy="30" r="3" fill="#fbbf24" fillOpacity="0.8" />
-          </svg>
+        <div className="h-[100px] relative overflow-hidden flex-shrink-0">
+          <img
+            src="https://images.unsplash.com/photo-1534105615256-13940a56ff44?auto=format&fit=crop&w=600&h=400&q=80"
+            alt="Minimal desk lamp"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: 'center 40%' }}
+          />
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
           {/* Wishlist */}
-          <button className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center">
-            <svg viewBox="0 0 16 16" fill="none" stroke="#9ca3af" strokeWidth="1.5" className="w-2.5 h-2.5"><path d="M8 14s-5.5-3.5-5.5-7A3 3 0 018 4.5 3 3 0 0113.5 7C13.5 10.5 8 14 8 14z"/></svg>
+          <button className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#374151" strokeWidth="1.5" className="w-3 h-3"><path d="M8 14s-5.5-3.5-5.5-7A3 3 0 018 4.5 3 3 0 0113.5 7C13.5 10.5 8 14 8 14z"/></svg>
           </button>
-          {/* Sale badge */}
-          <span className="absolute top-2 left-2 text-[7px] font-bold text-white bg-red-500 px-1.5 py-0.5 rounded">-15%</span>
+          {/* New badge */}
+          <span className="absolute top-2.5 left-2.5 text-[7px] font-semibold text-white bg-black/70 backdrop-blur-sm px-2 py-0.5 rounded-full tracking-wide">NEW</span>
         </div>
         {/* Details */}
         <div className="p-3 flex-1 flex flex-col">
-          <div className="text-[7px] text-gray-400 font-mono uppercase tracking-wider mb-0.5">Home &amp; Living</div>
-          <div className="text-[10px] font-semibold text-gray-900 mb-0.5">Minimal Desk Lamp</div>
-          <div className="flex items-center gap-0.5 mb-2">
+          <div className="text-[7px] text-gray-400 uppercase tracking-wider mb-1">Lighting</div>
+          <div className="text-[11px] font-semibold text-gray-900 leading-tight mb-1">Nordic Desk Lamp</div>
+          <div className="text-[8px] text-gray-400 mb-2">Matte Black · Dimmable LED</div>
+          <div className="flex items-center gap-0.5 mb-2.5">
             {[1,2,3,4,5].map((_, i) => (
-              <svg key={i} viewBox="0 0 12 12" className="w-2 h-2" fill={i < 4 ? '#f59e0b' : '#e5e7eb'}><path d="M6 0l1.8 3.7L12 4.3l-3 2.9.7 4.1L6 9.3 2.3 11.3l.7-4.1-3-2.9 4.2-.6z"/></svg>
+              <svg key={i} viewBox="0 0 12 12" className="w-2.5 h-2.5" fill={i < 5 ? '#111827' : '#e5e7eb'}><path d="M6 0l1.8 3.7L12 4.3l-3 2.9.7 4.1L6 9.3 2.3 11.3l.7-4.1-3-2.9 4.2-.6z"/></svg>
             ))}
-            <span className="text-[7px] text-gray-400 ml-0.5">128</span>
+            <span className="text-[7px] text-gray-500 ml-1">4.9 (312)</span>
           </div>
-          <div className="flex items-center gap-1.5 mt-auto">
-            <span className="text-[12px] font-bold text-gray-900">$89</span>
-            <span className="text-[9px] text-gray-400 line-through">$105</span>
-            <button className="ml-auto bg-gray-900 text-white text-[7px] font-medium px-2.5 py-1.5 rounded flex items-center gap-1">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-2.5 h-2.5"><circle cx="6" cy="14" r="1"/><circle cx="13" cy="14" r="1"/><path d="M1 1h2l1.5 9h9l1.5-7H5"/></svg>
-              Add
-            </button>
+          <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+            <div>
+              <span className="text-[13px] font-bold text-gray-900">$89</span>
+              <span className="text-[9px] text-gray-400 line-through ml-1">$119</span>
+            </div>
+            <button className="bg-gray-900 text-white text-[7px] font-semibold px-3 py-1.5 rounded-full tracking-wide">Add to Bag</button>
           </div>
         </div>
       </div>
     ),
-    w: 170, h: 210,
-    x: -420, y: 60,
+    w: 175, h: 240,
+    x: -420, y: -20,
     rotate: -3,
     entryOffset: 0.025,
   },
@@ -303,7 +304,7 @@ const elements = [
 ];
 
 
-export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps) {
+export function WebDevFloatingElements({ scrollYProgress, entryDelay = 0 }: FloatingElementProps) {
   const [scale, setScale] = useState(1);
   const [maxElements, setMaxElements] = useState(8);
   useEffect(() => {
@@ -327,7 +328,7 @@ export function WebDevFloatingElements({ scrollYProgress }: FloatingElementProps
           <FloatingElement
             key={i}
             scrollYProgress={scrollYProgress}
-            baseEntry={0.4 + el.entryOffset}
+            baseEntry={0.4 + el.entryOffset + entryDelay}
             x={el.x}
             y={el.y}
             w={el.w}

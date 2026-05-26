@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -20,30 +21,41 @@ import {
   Tag,
   UserCheck,
   ChevronLeft,
+  ChevronDown,
   Menu,
   X,
   Bot,
+  Flame,
+  UserPlus,
+  ClipboardList,
 } from 'lucide-react';
 
 const navigationSections = [
   {
     label: 'Overview',
+    defaultOpen: true,
     items: [
       { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     ],
   },
   {
-    label: 'Content',
+    label: 'Sales',
+    defaultOpen: true,
+    items: [
+      { name: 'Leads', href: '/admin/leads', icon: UserCheck },
+      { name: 'Assign Leads', href: '/admin/leads/assign', icon: UserPlus },
+      { name: 'Hot Lines', href: '/admin/leads/hotlines', icon: Flame },
+      { name: 'Team', href: '/admin/team', icon: Users },
+      { name: 'Audit Log', href: '/admin/leads/audit', icon: ClipboardList },
+    ],
+  },
+  {
+    label: 'Site Content',
+    defaultOpen: false,
     items: [
       { name: 'Projects', href: '/admin/projects', icon: FolderKanban },
       { name: 'Services', href: '/admin/services', icon: Briefcase },
       { name: 'Clients', href: '/admin/clients', icon: Users },
-      { name: 'Leads', href: '/admin/leads', icon: UserCheck },
-    ],
-  },
-  {
-    label: 'Configuration',
-    items: [
       { name: 'Categories', href: '/admin/categories', icon: Tag },
       { name: 'Stats', href: '/admin/stats', icon: BarChart3 },
       { name: 'Values', href: '/admin/values', icon: Heart },
@@ -53,13 +65,44 @@ const navigationSections = [
   },
   {
     label: 'Tools',
+    defaultOpen: false,
     items: [
       { name: 'Claude', href: '/admin/claude', icon: Bot },
-      { name: 'Sales Dashboard', href: '/sales', icon: Briefcase },
+      { name: 'Sales Portal', href: '/sales', icon: Briefcase },
       { name: 'Pitch Deck', href: '/pitch', icon: FileText },
     ],
   },
 ];
+
+const SECTION_STATE_KEY = 'allone-admin-nav-sections';
+
+function useSectionOpenState() {
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
+    const defaults: Record<string, boolean> = {};
+    for (const s of navigationSections) defaults[s.label] = s.defaultOpen;
+    return defaults;
+  });
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(SECTION_STATE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as Record<string, boolean>;
+        setOpenSections(prev => ({ ...prev, ...parsed }));
+      }
+    } catch {}
+  }, []);
+
+  const toggle = (label: string) => {
+    setOpenSections(prev => {
+      const next = { ...prev, [label]: !prev[label] };
+      try { window.localStorage.setItem(SECTION_STATE_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  return { openSections, toggle };
+}
 
 interface AdminSidebarProps {
   isCollapsed: boolean;
@@ -72,6 +115,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const { openSections, toggle: toggleSection } = useSectionOpenState();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -83,8 +127,20 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
     if (href === '/admin') {
       return pathname === '/admin';
     }
+    if (href === '/admin/leads') {
+      return pathname === '/admin/leads' ||
+        (pathname.startsWith('/admin/leads/')
+          && !pathname.startsWith('/admin/leads/hotlines')
+          && !pathname.startsWith('/admin/leads/assign')
+          && !pathname.startsWith('/admin/leads/audit'));
+    }
     return pathname.startsWith(href);
   };
+
+  // If a nav item under a collapsed section is active, treat that section as
+  // visually expanded for this render so the user sees where they are.
+  const sectionContainsActive = (items: typeof navigationSections[number]['items']) =>
+    items.some(i => isActive(i.href));
 
   const handleNavClick = () => {
     if (isMobileOpen) {
@@ -160,25 +216,50 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <div className="space-y-6">
-          {navigationSections.map((section, idx) => (
-            <div key={section.label}>
-              {idx > 0 && <div className="border-t border-gray-100 mb-3" />}
-              <div className={cn(
-                'px-3 mb-2 transition-all duration-200 overflow-hidden',
-                isCollapsed ? 'h-0 opacity-0' : 'h-auto opacity-100'
-              )}>
-                <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                  {section.label}
-                </span>
+        <div className="space-y-3">
+          {navigationSections.map((section, idx) => {
+            const hasActive = sectionContainsActive(section.items);
+            const isOpen = isCollapsed || openSections[section.label] || hasActive;
+            return (
+              <div key={section.label}>
+                {idx > 0 && <div className="border-t border-gray-100 mb-3" />}
+                {!isCollapsed && (
+                  <button
+                    onClick={() => toggleSection(section.label)}
+                    className="w-full flex items-center justify-between px-3 mb-1 group"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400 group-hover:text-gray-600 transition-colors">
+                      {section.label}
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        'h-3 w-3 text-gray-300 group-hover:text-gray-500 transition-transform duration-200',
+                        !isOpen && '-rotate-90'
+                      )}
+                    />
+                  </button>
+                )}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="space-y-0.5 pt-1">
+                        {section.items.map((item) => (
+                          <NavItem key={item.name} item={item} collapsed={isCollapsed} />
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <div className="space-y-0.5">
-                {section.items.map((item) => (
-                  <NavItem key={item.name} item={item} collapsed={isCollapsed} />
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </nav>
 
@@ -271,45 +352,71 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <div className="space-y-6">
-          {navigationSections.map((section, idx) => (
-            <div key={section.label}>
-              {idx > 0 && <div className="border-t border-gray-100 mb-3" />}
-              <div className="px-3 mb-2">
-                <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                  {section.label}
-                </span>
-              </div>
-              <div className="space-y-0.5">
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = isActive(item.href);
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={handleNavClick}
-                      className={cn(
-                        'relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors duration-150',
-                        active
-                          ? 'text-gray-900 font-semibold'
-                          : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-                      )}
+        <div className="space-y-3">
+          {navigationSections.map((section, idx) => {
+            const hasActive = sectionContainsActive(section.items);
+            const isOpen = openSections[section.label] || hasActive;
+            return (
+              <div key={section.label}>
+                {idx > 0 && <div className="border-t border-gray-100 mb-3" />}
+                <button
+                  onClick={() => toggleSection(section.label)}
+                  className="w-full flex items-center justify-between px-3 mb-1 group"
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400 group-hover:text-gray-600 transition-colors">
+                    {section.label}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'h-3 w-3 text-gray-300 group-hover:text-gray-500 transition-transform duration-200',
+                      !isOpen && '-rotate-90'
+                    )}
+                  />
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="overflow-hidden"
                     >
-                      {active && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-gray-900 rounded-full" />
-                      )}
-                      <Icon className={cn(
-                        'h-[18px] w-[18px]',
-                        active ? 'text-gray-900' : 'text-gray-400'
-                      )} />
-                      <span>{item.name}</span>
-                    </Link>
-                  );
-                })}
+                      <div className="space-y-0.5 pt-1">
+                        {section.items.map((item) => {
+                          const Icon = item.icon;
+                          const active = isActive(item.href);
+                          return (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              onClick={handleNavClick}
+                              className={cn(
+                                'relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors duration-150',
+                                active
+                                  ? 'text-gray-900 font-semibold'
+                                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                              )}
+                            >
+                              {active && (
+                                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-gray-900 rounded-full" />
+                              )}
+                              <Icon className={cn(
+                                'h-[18px] w-[18px]',
+                                active ? 'text-gray-900' : 'text-gray-400'
+                              )} />
+                              <span>{item.name}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </nav>
 

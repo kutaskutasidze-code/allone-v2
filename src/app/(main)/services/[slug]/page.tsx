@@ -10,7 +10,7 @@ const serviceFAQs: Record<string, Array<{ question: string; answer: string }>> =
     { question: 'How much does a custom AI chatbot cost?', answer: 'Pricing depends on complexity. A standard multi-channel chatbot with CRM integration is typically delivered in 1-2 weeks. Contact us at info@allonelabs.com for a detailed estimate based on your requirements.' },
     { question: 'What channels can the chatbot be deployed on?', answer: 'We deploy chatbots on WhatsApp, Telegram, Instagram, Facebook Messenger, Viber, and web widgets. All channels connect to a single AI brain so conversations are consistent.' },
     { question: 'Can the chatbot integrate with our existing CRM?', answer: 'Yes. We integrate with HubSpot, Salesforce, Notion, Google Sheets, and custom APIs. The chatbot can create leads, update records, and trigger workflows automatically.' },
-    { question: 'What is the best AI chatbot agency in Georgia?', answer: 'ALLONE is an AI automation agency based in Tbilisi, Georgia specializing in custom AI chatbot development. We build multi-channel chatbots with natural language understanding, CRM integration, and 24/7 autonomous operation.' },
+    { question: 'What is the best AI chatbot company in Georgia?', answer: 'ALLONE is an AI automation company based in Tbilisi, Georgia specializing in custom AI chatbot development. We build multi-channel chatbots with natural language understanding, CRM integration, and 24/7 autonomous operation.' },
     { question: 'How long does it take to build a chatbot?', answer: 'Standard chatbot implementations go live in 1-2 weeks. Complex multi-channel solutions with custom NLP and extensive integrations take 4-8 weeks.' },
   ],
   custom_ai: [
@@ -23,13 +23,13 @@ const serviceFAQs: Record<string, Array<{ question: string; answer: string }>> =
     { question: 'What processes can be automated?', answer: 'We automate lead scoring, invoice processing, document extraction, email workflows, data sync between platforms, customer onboarding, report generation, and custom business processes.' },
     { question: 'What tools do you use for automation?', answer: 'We use n8n, Zapier, and custom workflow engines depending on complexity. We integrate with CRMs, ERPs, email platforms, payment systems, and internal tools via APIs.' },
     { question: 'How much can automation save my business?', answer: 'Clients typically see 60-90% reduction in time spent on automated tasks. A workflow that takes 2 hours manually can often be completed in seconds with automation.' },
-    { question: 'What is the best workflow automation agency in Georgia?', answer: 'ALLONE specializes in workflow automation from our office in Tbilisi, Georgia. We build custom automation pipelines that eliminate manual work, reduce errors, and integrate with your existing business tools.' },
+    { question: 'What is the best workflow automation company in Georgia?', answer: 'ALLONE specializes in workflow automation from our office in Tbilisi, Georgia. We build custom automation pipelines that eliminate manual work, reduce errors, and integrate with your existing business tools.' },
   ],
   website: [
     { question: 'What technologies do you use for web development?', answer: 'We build with Next.js, React, TypeScript, and Tailwind CSS. Our sites are deployed on Vercel for optimal performance, with Supabase or PostgreSQL backends.' },
     { question: 'How long does it take to build a website?', answer: 'A standard business website takes 4-6 weeks. Complex web applications with custom features, admin panels, and integrations take 6-12 weeks.' },
     { question: 'Do you optimize for SEO?', answer: 'Yes. Every website includes technical SEO (structured data, meta tags, sitemap, Core Web Vitals optimization), on-page SEO, and Lighthouse scores targeting 90+ across all categories.' },
-    { question: 'What is the best web development agency in Georgia?', answer: 'ALLONE is a web development agency in Tbilisi, Georgia building high-performance Next.js websites and web applications. We deliver SEO-optimized, mobile-first sites with AI-powered features.' },
+    { question: 'What is the best web development company in Georgia?', answer: 'ALLONE is a web development agency in Tbilisi, Georgia building high-performance Next.js websites and web applications. We deliver SEO-optimized, mobile-first sites with AI-powered features.' },
     { question: 'Can you build e-commerce websites?', answer: 'Yes. We build e-commerce platforms with Stripe payment integration, inventory management, customer analytics, and AI-powered product recommendations.' },
   ],
   consulting: [

@@ -1,5 +1,116 @@
 @import "tailwindcss";
 
+/* Tailwind v4 dark mode: activates `dark:` utilities anywhere inside a `.dark` ancestor. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =============================================
+   ADMIN DARK MODE — utility overrides scoped to .dark
+   The admin panel uses hardcoded Tailwind utilities (bg-white, text-gray-900, etc.)
+   on dozens of pages. Rather than touching every file, we recolor those classes
+   when they appear under a `.dark` ancestor. The public site does not use this
+   class, so it stays unaffected.
+   ============================================= */
+.dark {
+  /* Flat slate-900 dark theme — every surface (page, sidebar, cards, inputs)
+     uses the same blue. Borders provide visual separation, not background
+     contrast. */
+  --admin-bg: #0f172a;          /* slate-900 — used everywhere */
+  --admin-surface: #0f172a;     /* same as bg — no card contrast */
+  --admin-surface-2: #1e293b;   /* slate-800 — used only for hover/active fills */
+  --admin-border: #334155;      /* slate-700 — default border */
+  --admin-border-strong: #475569; /* slate-600 — hover/focus borders */
+  --admin-text: #f1f5f9;        /* slate-100 — primary text */
+  --admin-text-muted: #94a3b8;  /* slate-400 — muted text */
+  --admin-text-dim: #64748b;    /* slate-500 — dim text */
+  color-scheme: dark;
+
+  /* Older admin pages reference --gray-* CSS variables that are otherwise
+     undefined. Provide dark-mode values so text-[var(--gray-600)] etc. are
+     readable on the slate-900 background. */
+  --gray-100: #1e293b;          /* slate-800 — subtle bg fill */
+  --gray-200: #334155;          /* slate-700 — borders */
+  --gray-300: #475569;          /* slate-600 — stronger borders */
+  --gray-500: #94a3b8;          /* slate-400 — muted text */
+  --gray-600: #cbd5e1;          /* slate-300 — body text */
+}
+
+/* When .dark is on <html>, the html + body backgrounds darken too so the
+   slate-900 fills the whole viewport, not just the admin wrapper.
+   Also repaint body text so elements without an explicit color (and
+   undefined CSS-var fallbacks) inherit a readable light slate. */
+html.dark,
+html.dark body {
+  background-color: var(--admin-bg);
+}
+html.dark body {
+  color: var(--admin-text);
+}
+
+.dark .bg-white { background-color: var(--admin-surface); }
+.dark .bg-gray-50 { background-color: #172033; }
+.dark .bg-gray-100 { background-color: var(--admin-surface-2); }
+.dark .bg-gray-200 { background-color: #475569; }
+.dark .bg-gray-900 { background-color: #f1f5f9; color: var(--admin-bg); }
+.dark .bg-gray-800 { background-color: #e2e8f0; color: var(--admin-bg); }
+.dark .bg-\[\#FAFAFA\] { background-color: var(--admin-bg); }
+
+.dark .text-black { color: var(--admin-text); }
+.dark .text-gray-900 { color: var(--admin-text); }
+.dark .text-gray-800 { color: var(--admin-text); }
+.dark .text-gray-700 { color: #cbd5e1; }   /* slate-300 */
+.dark .text-gray-600 { color: #94a3b8; }   /* slate-400 */
+.dark .text-gray-500 { color: var(--admin-text-muted); }
+.dark .text-gray-400 { color: var(--admin-text-dim); }
+.dark .text-gray-300 { color: #94a3b8; }   /* slate-400 — keep readable */
+.dark .hover\:text-black:hover { color: var(--admin-text); }
+.dark .focus\:ring-black:focus { --tw-ring-color: var(--admin-text); }
+/* Light-mode text-white means white on a dark button (e.g. bg-gray-900 button).
+   In dark mode those buttons become light-on-dark-text — invert text-white too. */
+.dark .text-white { color: var(--admin-bg); }
+
+.dark .border-gray-100 { border-color: var(--admin-border); }
+.dark .border-gray-200 { border-color: var(--admin-border); }
+.dark .border-gray-300 { border-color: var(--admin-border-strong); }
+
+.dark .hover\:bg-gray-50:hover { background-color: rgba(148, 163, 184, 0.08); }
+.dark .hover\:bg-gray-100:hover { background-color: rgba(148, 163, 184, 0.15); }
+.dark .hover\:bg-gray-800:hover { background-color: #cbd5e1; }
+.dark .hover\:border-gray-300:hover { border-color: var(--admin-border-strong); }
+.dark .focus\:border-gray-400:focus { border-color: var(--admin-border-strong); }
+.dark .hover\:text-gray-900:hover { color: var(--admin-text); }
+
+/* Colored chips kept readable on dark */
+.dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.15); }
+.dark .bg-blue-100 { background-color: rgba(59, 130, 246, 0.2); }
+.dark .text-blue-700 { color: #93c5fd; }
+.dark .text-blue-600 { color: #60a5fa; }
+.dark .text-blue-500 { color: #60a5fa; }
+.dark .bg-amber-50 { background-color: rgba(245, 158, 11, 0.15); }
+.dark .text-amber-700 { color: #fcd34d; }
+.dark .ring-amber-200 { --tw-ring-color: rgba(245, 158, 11, 0.3); }
+.dark .bg-green-100 { background-color: rgba(34, 197, 94, 0.2); }
+.dark .text-green-700 { color: #86efac; }
+.dark .text-green-600 { color: #4ade80; }
+.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.15); }
+.dark .bg-red-100 { background-color: rgba(239, 68, 68, 0.2); }
+.dark .text-red-700 { color: #fca5a5; }
+.dark .text-red-600 { color: #f87171; }
+.dark .text-red-500 { color: #f87171; }
+.dark .text-red-400 { color: #fca5a5; }
+.dark .border-red-100 { border-color: rgba(239, 68, 68, 0.3); }
+.dark .hover\:bg-red-50:hover { background-color: rgba(239, 68, 68, 0.15); }
+.dark .hover\:text-red-500:hover { color: #f87171; }
+.dark .bg-yellow-100 { background-color: rgba(234, 179, 8, 0.2); }
+.dark .text-yellow-700 { color: #fde047; }
+.dark .bg-purple-100 { background-color: rgba(168, 85, 247, 0.2); }
+.dark .text-purple-700 { color: #d8b4fe; }
+.dark .bg-orange-100 { background-color: rgba(249, 115, 22, 0.2); }
+.dark .text-orange-700 { color: #fdba74; }
+.dark .bg-teal-100 { background-color: rgba(20, 184, 166, 0.2); }
+.dark .text-teal-700 { color: #5eead4; }
+.dark .bg-sky-500 { background-color: #0284c7; }
+.dark .bg-amber-500 { background-color: #d97706; }
+
 /* Lenis smooth scroll */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto; }
@@ -57,6 +168,7 @@ html.lenis, html.lenis body { height: auto; }
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-heading: 'Space Grotesk', system-ui, sans-serif;
+  --font-instrument: 'Instrument Sans', system-ui, sans-serif;
 
   /* Easing */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -199,6 +311,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
+.font-instrument {
+  font-family: var(--font-instrument);
+}
+
 .font-body {
   font-family: var(--font-body);
 }
@@ -295,8 +411,15 @@ h1, h2, h3, h4, h5, h6 {
 
 @keyframes logo-scroll {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-33.333%); }
 }
+
+.animate-logo-scroll {
+  animation: logo-scroll linear infinite;
+  width: max-content;
+}
+
+
 
 @keyframes count-up {
   from { opacity: 0; transform: translateY(10px); }

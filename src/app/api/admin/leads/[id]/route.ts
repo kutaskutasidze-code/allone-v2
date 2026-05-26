@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { createClient as createServiceClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { updateLeadSchema } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
-
-function getAdminClient() {
-  return createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-}
 
 export async function PATCH(
   request: NextRequest,
@@ -32,7 +25,7 @@ export async function PATCH(
     }
 
     // Use service role to bypass RLS for the actual update
-    const admin = getAdminClient();
+    const admin = createAdminClient();
     const { data, error } = await admin
       .from('leads')
       .update({ ...result.data, updated_at: new Date().toISOString() })
@@ -41,6 +34,9 @@ export async function PATCH(
       .single();
 
     if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+      }
       logger.error('Failed to update lead', { error: error.message, id });
       return NextResponse.json({ error: 'Failed to update lead' }, { status: 500 });
     }
@@ -65,7 +61,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const admin = getAdminClient();
+    const admin = createAdminClient();
     const { error } = await admin.from('leads').delete().eq('id', id);
 
     if (error) {

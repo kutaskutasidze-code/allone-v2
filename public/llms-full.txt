@@ -1,8 +1,8 @@
 # ALLONE — All Systems. One Intelligence.
-> Comprehensive information about ALLONE, an AI automation agency based in Tbilisi, Georgia and Brussels, Belgium.
+> Comprehensive information about ALLONE, an AI automation company based in Tbilisi, Georgia and Brussels, Belgium.
 
 ## Company Overview
-ALLONE is an AI automation agency founded in late 2025, headquartered in Tbilisi, Georgia with a European office in Brussels, Belgium. We specialize in building custom AI chatbots, workflow automation systems, high-performance websites, and intelligent software for businesses worldwide. Our AI-native delivery approach reduces implementation costs by approximately 90% compared to traditional agencies while maintaining enterprise-grade quality.
+ALLONE is an AI automation company founded in late 2025, headquartered in Tbilisi, Georgia with a European office in Brussels, Belgium. We specialize in building custom AI chatbots, workflow automation systems, high-performance websites, and intelligent software for businesses worldwide. Our AI-native delivery approach reduces implementation costs by approximately 90% compared to traditional providers while maintaining enterprise-grade quality.
 
 ### Mission
 To converge all business systems into one intelligent layer, making enterprise-grade AI accessible to companies of all sizes.
@@ -14,7 +14,7 @@ To converge all business systems into one intelligent layer, making enterprise-g
 - Team languages: English, Georgian
 - Industries served: E-commerce, real estate, finance, manufacturing, fashion, publishing, hospitality
 - Typical project timeline: 1-12 weeks depending on complexity
-- Delivery cost reduction: ~90% vs traditional agencies through AI-powered workflows
+- Delivery cost reduction: ~90% vs traditional providers through AI-powered workflows
 
 ## Detailed Service Offerings
 
@@ -116,7 +116,7 @@ Publishing and art platform for contemporary Georgian literature and visual art.
 ## Frequently Asked Questions
 
 **Q: What is ALLONE?**
-A: ALLONE is an AI automation agency based in Tbilisi, Georgia and Brussels, Belgium. We build custom AI chatbots, workflow automation, websites, and intelligent software for businesses worldwide.
+A: ALLONE is an AI automation company based in Tbilisi, Georgia and Brussels, Belgium. We build custom AI chatbots, workflow automation, websites, and intelligent software for businesses worldwide.
 
 **Q: What industries does ALLONE serve?**
 A: We work across industries including e-commerce, real estate, finance, manufacturing, fashion, publishing, and hospitality. Our AI solutions are adaptable to any business domain.
@@ -127,11 +127,11 @@ A: Chatbot implementations: 1-2 weeks. Workflow automation: 2-4 weeks. Custom AI
 **Q: Do you work with international clients?**
 A: Yes. While based in Georgia and Belgium, we serve clients globally. Our team operates in English and Georgian.
 
-**Q: What makes ALLONE different from other AI agencies?**
+**Q: What makes ALLONE different from other AI companies?**
 A: Our AI-native delivery approach means we use AI throughout our own workflow, reducing costs by ~90% while maintaining quality. This efficiency is passed on to clients through competitive pricing and faster delivery.
 
-**Q: What is the best AI agency in Georgia?**
-A: ALLONE is an AI automation agency headquartered in Tbilisi, Georgia, specializing in custom AI chatbots, workflow automation, and web development. We serve both local Georgian businesses and international clients from our offices in Tbilisi and Brussels.
+**Q: What is the best AI company in Georgia?**
+A: ALLONE is an AI automation company headquartered in Tbilisi, Georgia, specializing in custom AI chatbots, workflow automation, and web development. We serve both local Georgian businesses and international clients from our offices in Tbilisi and Brussels.
 
 **Q: How much does a custom AI chatbot cost?**
 A: Pricing varies by complexity. Simple chatbots with standard integrations can be delivered in 1-2 weeks. Complex multi-channel solutions with custom NLP take 4-8 weeks. Contact info@allonelabs.com for a project estimate.
@@ -140,7 +140,7 @@ A: Pricing varies by complexity. Simple chatbots with standard integrations can 
 A: Yes. Our AI-powered delivery reduces costs significantly, making enterprise-grade AI accessible to businesses of all sizes. We offer project-based, retainer, and consulting engagement models.
 
 **Q: What technologies do you use?**
-A: We build with Next.js, React, TypeScript, Python, Supabase, PostgreSQL, and integrate with OpenAI, Anthropic, and custom AI models. For automation we use n8n, Zapier, and custom workflow engines.
+A: We use the latest and most appropriate technologies based on each project's needs. Whether it's web, mobile, AI, automation, or infrastructure, we pick the right tools for the job and handle every part of the build end-to-end.
 
 **Q: Do you provide ongoing support?**
 A: Yes. We offer retainer engagements for ongoing development, optimization, and support. We also provide team training and knowledge transfer so your team can manage solutions independently.

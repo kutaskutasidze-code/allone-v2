@@ -1,5 +1,9 @@
 export { SalesSidebar } from "./SalesSidebar";
 export { LeadStatusBadge } from "./LeadStatusBadge";
+// Master's lead-distribution + callback work
+export { CommissionWidget } from "./CommissionWidget";
+export { CallbackPicker } from "./CallbackPicker";
+// Demo-pipeline + Telegram + aims (feat/sales-demo-pipeline)
 export { DemoSection } from "./DemoSection";
 export { DemoPanel } from "./DemoPanel";
 export { AuditPanel } from "./AuditPanel";

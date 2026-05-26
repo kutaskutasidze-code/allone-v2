@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { requireSalesAuth } from "@/lib/sales-auth";
 import { AuthError } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   success,
   successWithPagination,
@@ -10,36 +11,93 @@ import {
   getPaginationParams,
   createPaginationMeta,
 } from "@/lib/api-response";
-import { createLeadSchema } from "@/lib/validations/leads";
+import {
+  createLeadSchema,
+  INFOSHOP_DOMAIN,
+  parsePhonePrefixes,
+} from "@/lib/validations/leads";
 import { logger } from "@/lib/logger";
 import { enqueueDemoJob } from "@/lib/demo-pipeline-trigger";
 
 export async function GET(request: Request) {
   try {
-    const { supabase, salesUser } = await requireSalesAuth();
+    const { salesUser } = await requireSalesAuth();
     const { page, limit, offset } = getPaginationParams(request.url);
     const url = new URL(request.url);
     const status = url.searchParams.get("status");
     const search = url.searchParams.get("search");
 
-    logger.db("select", "leads", { userId: salesUser.id });
+    const supabase = createAdminClient();
 
     let query = supabase
       .from("leads")
       .select("*", { count: "exact" })
       .eq("sales_user_id", salesUser.id)
+      .order("relevance_score", { ascending: false })
       .order("created_at", { ascending: false });
 
-    // Filter by status if provided
-    if (status && status !== "all") {
-      query = query.eq("status", status);
+    if (url.searchParams.get("scope") === "today") {
+      const startOfDay = new Date();
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      query = query.gte("assigned_at", startOfDay.toISOString());
     }
 
-    // Search by name, email, or company
-    if (search) {
+    if (status && status !== "all") query = query.eq("status", status);
+
+    const service = url.searchParams.get("service");
+    if (service && service !== "all")
+      query = query.eq("matched_service", service);
+
+    const industry = url.searchParams.get("industry");
+    if (industry && industry !== "all") query = query.eq("industry", industry);
+
+    const source = url.searchParams.get("source");
+    if (source) query = query.eq("source", source);
+
+    const infoshopLike = `%${INFOSHOP_DOMAIN}%`;
+    const hasWebsite = url.searchParams.get("has_website");
+    if (hasWebsite === "yes") {
+      query = query
+        .not("website", "is", null)
+        .not("website", "ilike", infoshopLike);
+    } else if (hasWebsite === "no") {
+      query = query.or(`website.is.null,website.ilike.${infoshopLike}`);
+    }
+
+    const hasSource = url.searchParams.get("has_source");
+    if (hasSource === "yes") query = query.not("source", "is", null);
+    else if (hasSource === "no") query = query.is("source", null);
+
+    const includePrefixes = parsePhonePrefixes(
+      url.searchParams.get("phone_prefix"),
+    );
+    if (includePrefixes.length === 1) {
+      query = query.ilike("phone", `${includePrefixes[0]}%`);
+    } else if (includePrefixes.length > 1) {
       query = query.or(
-        `name.ilike.%${search}%,email.ilike.%${search}%,company.ilike.%${search}%`,
+        includePrefixes.map((p) => `phone.ilike.${p}%`).join(","),
       );
+    }
+
+    const excludePrefixes = parsePhonePrefixes(
+      url.searchParams.get("exclude_phone_prefix"),
+    );
+    if (excludePrefixes.length === 1) {
+      query = query.or(`phone.is.null,phone.not.ilike.${excludePrefixes[0]}%`);
+    } else if (excludePrefixes.length > 1) {
+      const andClause = excludePrefixes
+        .map((p) => `phone.not.ilike.${p}%`)
+        .join(",");
+      query = query.or(`phone.is.null,and(${andClause})`);
+    }
+
+    if (search) {
+      const sanitized = search.replace(/[%_,()]/g, "").slice(0, 100);
+      if (sanitized.length > 0) {
+        query = query.or(
+          `name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company.ilike.%${sanitized}%`,
+        );
+      }
     }
 
     const {
@@ -74,15 +132,10 @@ export async function POST(request: Request) {
     const { supabase, salesUser } = await requireSalesAuth();
     const body = await request.json();
 
-    // Validate input
     const result = createLeadSchema.safeParse(body);
-    if (!result.success) {
-      return validationError(result.error);
-    }
+    if (!result.success) return validationError(result.error);
 
     const validated = result.data;
-
-    logger.db("insert", "leads", { userId: salesUser.id });
 
     const { data, error: dbError } = await supabase
       .from("leads")

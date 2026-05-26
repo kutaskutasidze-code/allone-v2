@@ -1,26 +1,22 @@
-import { createClient } from "@/lib/supabase/server";
-import { DashboardContent } from "../DashboardContent";
+import { createClient } from '@/lib/supabase/server';
+import { DashboardContent } from '../DashboardContent';
 
 async function getStats() {
   const supabase = await createClient();
 
-  const [projects, services, clients, stats, values, categories] =
-    await Promise.all([
-      supabase.from("projects").select("id, is_published", { count: "exact" }),
-      supabase.from("services").select("id, is_published", { count: "exact" }),
-      supabase.from("clients").select("id, is_published", { count: "exact" }),
-      supabase.from("stats").select("id", { count: "exact" }),
-      supabase.from("company_values").select("id", { count: "exact" }),
-      supabase.from("categories").select("id", { count: "exact" }),
-    ]);
+  const [projects, services, clients, stats, values, categories] = await Promise.all([
+    supabase.from('projects').select('id, is_published', { count: 'exact' }),
+    supabase.from('services').select('id, is_published', { count: 'exact' }),
+    supabase.from('clients').select('id, is_published', { count: 'exact' }),
+    supabase.from('stats').select('id', { count: 'exact' }),
+    supabase.from('company_values').select('id', { count: 'exact' }),
+    supabase.from('categories').select('id', { count: 'exact' }),
+  ]);
 
   // Calculate published counts
-  const publishedProjects =
-    projects.data?.filter((p) => p.is_published).length || 0;
-  const publishedServices =
-    services.data?.filter((s) => s.is_published).length || 0;
-  const publishedClients =
-    clients.data?.filter((c) => c.is_published).length || 0;
+  const publishedProjects = projects.data?.filter(p => p.is_published).length || 0;
+  const publishedServices = services.data?.filter(s => s.is_published).length || 0;
+  const publishedClients = clients.data?.filter(c => c.is_published).length || 0;
 
   return {
     projects: { total: projects.count || 0, published: publishedProjects },
@@ -37,9 +33,9 @@ async function getDailyRevenue() {
 
   // Get all projects with revenue and project_date
   const { data: projects } = await supabase
-    .from("projects")
-    .select("revenue, project_date")
-    .order("project_date", { ascending: true });
+    .from('projects')
+    .select('revenue, project_date')
+    .order('project_date', { ascending: true });
 
   if (!projects || projects.length === 0) {
     return [];
@@ -72,9 +68,9 @@ async function getRevenueByCategory() {
 
   // Get all projects with revenue and category
   const { data: projects } = await supabase
-    .from("projects")
-    .select("revenue, category")
-    .not("category", "is", null);
+    .from('projects')
+    .select('revenue, category')
+    .not('category', 'is', null);
 
   if (!projects || projects.length === 0) {
     return [];
@@ -85,8 +81,7 @@ async function getRevenueByCategory() {
 
   projects.forEach((project) => {
     if (project.category) {
-      categoryData[project.category] =
-        (categoryData[project.category] || 0) + (project.revenue || 0);
+      categoryData[project.category] = (categoryData[project.category] || 0) + (project.revenue || 0);
     }
   });
 
@@ -101,37 +96,38 @@ async function getLeadsData() {
 
   // Get leads count
   const { count: leadsCount } = await supabase
-    .from("leads")
-    .select("id", { count: "exact" });
+    .from('leads')
+    .select('id', { count: 'exact' });
 
   // Get recent leads with sales user info
   const { data: recentLeads } = await supabase
-    .from("leads")
-    .select(
-      `
+    .from('leads')
+    .select(`
       *,
-      sales_user:sales_users(id, name, email)
-    `,
-    )
-    .order("created_at", { ascending: false })
+      sales_user:sales_users!leads_sales_user_id_fkey(id, name, email)
+    `)
+    .order('created_at', { ascending: false })
     .limit(5);
 
   // Get leads by status
   const { data: allLeads } = await supabase
-    .from("leads")
-    .select("status, value");
+    .from('leads')
+    .select('status, value');
 
   const leadStats = {
     new: 0,
     contacted: 0,
+    callback: 0,
     qualified: 0,
     won: 0,
     lost: 0,
+    not_interested: 0,
+    unavailable: 0,
     totalValue: 0,
   };
 
   if (allLeads) {
-    allLeads.forEach((lead) => {
+    allLeads.forEach(lead => {
       leadStats[lead.status as keyof typeof leadStats]++;
       leadStats.totalValue += lead.value || 0;
     });

@@ -3,8 +3,10 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Container } from '@/components/layout';
 import { useRef } from 'react';
+import { useIsMobile } from '@/lib/hooks/useIsMobile';
 
 export function ProjectsHero() {
+  const mobile = useIsMobile();
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -17,7 +19,7 @@ export function ProjectsHero() {
   return (
     <section ref={sectionRef} className="pt-28 pb-16 lg:pt-36 lg:pb-20 relative overflow-hidden">
       <Container>
-        <motion.div className="max-w-4xl" style={{ y, opacity }}>
+        <motion.div className="max-w-4xl" style={mobile ? { y: 0, opacity: 1 } : { y, opacity }}>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
