@@ -1,2 +1,7 @@
-export { SalesSidebar } from './SalesSidebar';
-export { LeadStatusBadge } from './LeadStatusBadge';
+export { SalesSidebar } from "./SalesSidebar";
+export { LeadStatusBadge } from "./LeadStatusBadge";
+export { DemoSection } from "./DemoSection";
+export { DemoPanel } from "./DemoPanel";
+export { AuditPanel } from "./AuditPanel";
+export { DraftPanel } from "./DraftPanel";
+export { LeadContextPanel } from "./LeadContextPanel";
