@@ -104,18 +104,19 @@ router.post("/api/demos/:id/retry", async (req, res) => {
       });
       return;
     }
-    // Reset state and re-dispatch.
+    // Reset status only (don't clear current_phase or phase_history — the
+    // orchestrator's resume mode reads phase_history to decide which phases
+    // to skip and which to re-run).
     await supabase
       .from("demo_jobs")
       .update({
         status: "queued",
-        current_phase: null,
         progress: 0,
         error_message: null,
       })
       .eq("id", job.id);
 
-    kickoff(job.id).catch((err) => {
+    kickoff(job.id, { resume: true }).catch((err) => {
       logger.error("demo pipeline retry crashed", {
         id: job.id,
         error: err.message,
@@ -164,7 +165,10 @@ router.post("/api/demos/:id/teardown", async (req, res) => {
   }
 });
 
-async function kickoff(demoJobId: string): Promise<void> {
+async function kickoff(
+  demoJobId: string,
+  opts: { resume?: boolean } = {},
+): Promise<void> {
   const job = await getDemoJob(demoJobId);
   if (!job) throw new Error(`demo_job ${demoJobId} disappeared`);
 
@@ -182,14 +186,18 @@ async function kickoff(demoJobId: string): Promise<void> {
 
   const lead_url = await guessLeadUrl(lead);
 
-  await runDemoPipeline(demoJobId, {
-    lead_id: lead.id,
-    lead_name: lead.name,
-    lead_company: lead.company,
-    lead_email: lead.email ?? "",
-    lead_url,
-    lead_source: (lead.source as LeadSource) || "cold",
-  });
+  await runDemoPipeline(
+    demoJobId,
+    {
+      lead_id: lead.id,
+      lead_name: lead.name,
+      lead_company: lead.company,
+      lead_email: lead.email ?? "",
+      lead_url,
+      lead_source: (lead.source as LeadSource) || "cold",
+    },
+    opts,
+  );
 }
 
 // Derive lead's site URL: prefer leads.company_spec.domain (set by enrichment

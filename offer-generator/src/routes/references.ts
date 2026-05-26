@@ -98,12 +98,10 @@ router.post("/api/references/:id/refresh", async (req, res) => {
         error: err.message,
       });
     });
-    res
-      .status(202)
-      .json({
-        success: true,
-        data: { id: req.params.id, status: "refreshing" },
-      });
+    res.status(202).json({
+      success: true,
+      data: { id: req.params.id, status: "refreshing" },
+    });
   } catch (err) {
     logger.error("refresh dispatch failed", { error: err });
     res.status(500).json({ success: false, error: "Internal server error" });
@@ -116,6 +114,16 @@ router.delete("/api/references/:id", async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     logger.error("deactivateReference failed", { error: err });
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+
+router.post("/api/references/:id/reactivate", async (req, res) => {
+  try {
+    await setReferenceActive(req.params.id, true);
+    res.json({ success: true });
+  } catch (err) {
+    logger.error("reactivateReference failed", { error: err });
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 });

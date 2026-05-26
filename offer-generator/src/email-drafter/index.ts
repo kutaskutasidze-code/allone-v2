@@ -210,7 +210,10 @@ function buildPartialVariables(
 
 // Substitute {{var}} markers, surviving missing vars (they stay as the literal
 // text so the sales user can spot what's missing instead of getting "undefined").
-function substitute(template: string, vars: Record<string, unknown>): string {
+export function substitute(
+  template: string,
+  vars: Record<string, unknown>,
+): string {
   return template.replace(
     /\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g,
     (_match, key: string) => {
@@ -221,7 +224,7 @@ function substitute(template: string, vars: Record<string, unknown>): string {
   );
 }
 
-function htmlToPlain(html: string): string {
+export function htmlToPlain(html: string): string {
   return html
     .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/<script[\s\S]*?<\/script>/gi, "")

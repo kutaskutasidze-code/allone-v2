@@ -89,7 +89,7 @@ export async function validateClonedApis(
   return { ...summary, raw: res.stdout };
 }
 
-function parseValidationSummary(stdout: string): {
+export function parseValidationSummary(stdout: string): {
   matchRate: number;
   total: number;
   matched: number;

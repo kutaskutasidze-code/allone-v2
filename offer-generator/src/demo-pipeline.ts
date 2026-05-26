@@ -8,7 +8,14 @@ import { skinClone } from "./skinner/index.js";
 import { wireAdmin } from "./admin-wirer/index.js";
 import { deployToVercel } from "./deployer/index.js";
 import { draftEmail } from "./email-drafter/index.js";
-import type { AuditSummary, CompanySpec, DemoStatus } from "./types/demo.js";
+import type {
+  AuditSummary,
+  CompanySpec,
+  DemoStatus,
+  DemoJob,
+  DemoJobPhaseEntry,
+  Segment,
+} from "./types/demo.js";
 
 // Orchestrates the full demo pipeline for a single demo_jobs row.
 //
@@ -27,6 +34,16 @@ import type { AuditSummary, CompanySpec, DemoStatus } from "./types/demo.js";
 // current_phase. Each phase writes phase_history entry on enter + exit.
 //
 // Slice 8: full implementation. Slices 3-7 fill in the called modules.
+export interface RunDemoPipelineOpts {
+  // When true, skip phases that already have an `ok` entry in phase_history
+  // and reuse their stored outputs. Used by the retry endpoint to avoid
+  // re-running expensive phases (enriching analyzer call, parallel audit,
+  // email draft) when only a later phase failed. Skinning + deploying are
+  // always re-run because their on-disk state (the /tmp clone dir) is not
+  // durable across process restarts.
+  resume?: boolean;
+}
+
 export async function runDemoPipeline(
   demoJobId: string,
   leadInput: {
@@ -37,26 +54,54 @@ export async function runDemoPipeline(
     lead_url?: string | null;
     lead_source: "cold" | "referral" | "inbound" | "imported";
   },
+  opts: RunDemoPipelineOpts = {},
 ): Promise<void> {
   logger.info("Demo pipeline starting", {
     demoJobId,
     lead_id: leadInput.lead_id,
+    resume: Boolean(opts.resume),
   });
+
+  // Read existing job state once so resume-mode decisions are consistent
+  // through the run.
+  const prior = opts.resume ? await jobsRepo.getDemoJob(demoJobId) : null;
+  const priorHistory: DemoJobPhaseEntry[] = (prior?.phase_history ??
+    []) as DemoJobPhaseEntry[];
+  const phaseOk = (phase: string) =>
+    Boolean(
+      opts.resume &&
+      priorHistory.some((p) => p.phase === phase && p.status === "ok"),
+    );
 
   try {
     // Phase 1: enriching
-    await phaseEnter(demoJobId, "enriching", 5);
-    const analysis = leadInput.lead_url
-      ? await analyzeWebsite(leadInput.lead_url, async () => {})
-      : null;
-    const segment = await classifySegment(analysis, undefined);
-    const company: CompanySpec = await enrichCompanySpec(
-      leadInput.lead_email,
-      leadInput.lead_name,
-      leadInput.lead_company,
-      analysis,
-    );
-    await phaseExit(demoJobId, "enriching", { segment });
+    let analysis: import("./types/analysis.js").AnalysisData | null = null;
+    let segment: Segment;
+    let company: CompanySpec;
+
+    if (phaseOk("enriching") && prior?.audit_results) {
+      // Reuse cached enrichment from previous run. Pull segment + spec from
+      // the leads row's company_spec; analyzer output is implicit in
+      // audit_results which we keep for the parallel audit branch below.
+      const cached = await readCachedEnrichment(leadInput.lead_id);
+      segment = (cached.segment ?? "other") as Segment;
+      company = cached.company_spec;
+      logger.info("Resume: skipping enriching", { demoJobId, segment });
+    } else {
+      await phaseEnter(demoJobId, "enriching", 5);
+      analysis = leadInput.lead_url
+        ? await analyzeWebsite(leadInput.lead_url, async () => {})
+        : null;
+      segment = await classifySegment(analysis, undefined);
+      company = await enrichCompanySpec(
+        leadInput.lead_email,
+        leadInput.lead_name,
+        leadInput.lead_company,
+        analysis,
+      );
+      await phaseExit(demoJobId, "enriching", { segment });
+      await persistEnrichment(leadInput.lead_id, segment, company);
+    }
 
     // Phase 2: parallel { skin → wire_admin → deploy } | { audit }
     const reference = await pickReference(segment);
@@ -113,6 +158,10 @@ export async function runDemoPipeline(
     };
 
     const auditPhase = async () => {
+      if (phaseOk("auditing")) {
+        logger.info("Resume: skipping auditing", { demoJobId });
+        return;
+      }
       await phaseEnter(demoJobId, "auditing", 30);
       const summary: AuditSummary | null = analysis
         ? summarizeAudit(analysis)
@@ -123,23 +172,31 @@ export async function runDemoPipeline(
 
     await Promise.all([skinThenDeploy(), auditPhase()]);
 
-    // Phase 3: drafting
-    await phaseEnter(demoJobId, "drafting", 90);
+    // Phase 3: drafting (skippable on resume if already ok and a draft exists)
     const job = await jobsRepo.getDemoJob(demoJobId);
     if (!job?.demo_url) throw new Error("Demo URL missing after deploy");
-    const draft = await draftEmail({
-      lead_id: leadInput.lead_id,
-      lead_name: leadInput.lead_name,
-      lead_company: leadInput.lead_company,
-      lead_email: leadInput.lead_email,
-      segment,
-      source: leadInput.lead_source,
-      demo_url: job.demo_url,
-      demo_job_id: demoJobId,
-      audit: job.audit_results,
-    });
-    await jobsRepo.setEmailDraftId(demoJobId, draft.id);
-    await phaseExit(demoJobId, "drafting", { draftId: draft.id });
+
+    if (phaseOk("drafting") && job.email_draft_id) {
+      logger.info("Resume: skipping drafting", {
+        demoJobId,
+        draftId: job.email_draft_id,
+      });
+    } else {
+      await phaseEnter(demoJobId, "drafting", 90);
+      const draft = await draftEmail({
+        lead_id: leadInput.lead_id,
+        lead_name: leadInput.lead_name,
+        lead_company: leadInput.lead_company,
+        lead_email: leadInput.lead_email,
+        segment,
+        source: leadInput.lead_source,
+        demo_url: job.demo_url,
+        demo_job_id: demoJobId,
+        audit: job.audit_results,
+      });
+      await jobsRepo.setEmailDraftId(demoJobId, draft.id);
+      await phaseExit(demoJobId, "drafting", { draftId: draft.id });
+    }
 
     // Done
     await jobsRepo.markDraftReady(demoJobId);
@@ -222,4 +279,50 @@ function summarizeAudit(
 
 function severityRank(s: "critical" | "warning" | "info"): number {
   return s === "critical" ? 0 : s === "warning" ? 1 : 2;
+}
+
+// Resume helper — pulls cached segment + company_spec from the leads row
+// (populated by enricher on the first run, which also writes
+// leads.company_spec + leads.segment as a side-effect of the enrich phase).
+//
+// If no cached data exists, falls back to empty defaults so the caller can
+// still proceed (it'll just re-enrich on the next phase).
+async function persistEnrichment(
+  leadId: string,
+  segment: Segment,
+  company: CompanySpec,
+): Promise<void> {
+  const { supabase } = await import("./database/client.js");
+  const { error } = await supabase
+    .from("leads")
+    .update({
+      segment,
+      company_spec: company as unknown as Record<string, unknown>,
+      enrichment_status: "enriched",
+    })
+    .eq("id", leadId);
+  if (error) {
+    logger.warn("persistEnrichment failed", { leadId, error: error.message });
+  }
+}
+
+async function readCachedEnrichment(
+  leadId: string,
+): Promise<{ segment: string | null; company_spec: CompanySpec }> {
+  const { supabase } = await import("./database/client.js");
+  const { data } = await supabase
+    .from("leads")
+    .select("segment, company_spec, name, company, email")
+    .eq("id", leadId)
+    .maybeSingle();
+  const cs = (data?.company_spec as CompanySpec | null) ?? null;
+  if (cs) return { segment: data?.segment ?? null, company_spec: cs };
+  // No cache — minimal stub. The next run will overwrite with real enrich.
+  return {
+    segment: null,
+    company_spec: {
+      name: data?.company ?? data?.name ?? "Lead",
+      email: data?.email ?? undefined,
+    },
+  };
 }

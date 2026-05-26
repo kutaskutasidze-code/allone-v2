@@ -122,7 +122,11 @@ export async function sendEmailDraft(opts: SendOpts): Promise<SendResult> {
 
 // Rewrite <a href="..."> targets through /api/track/demo/<job>/click?to=<url>
 // and append an invisible <img src="...open.gif"> before </body>.
-function injectTracking(html: string, base: string, jobId: string): string {
+export function injectTracking(
+  html: string,
+  base: string,
+  jobId: string,
+): string {
   if (!jobId) return html;
   let out = html.replace(/href=("|')(https?:\/\/[^"']+)\1/gi, (_m, q, url) => {
     if (url.includes(`/api/track/demo/`)) return `href=${q}${url}${q}`;

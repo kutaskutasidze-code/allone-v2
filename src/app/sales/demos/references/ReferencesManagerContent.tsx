@@ -70,11 +70,9 @@ export function ReferencesManagerContent({
       if (ref.is_active) {
         await fetch(`/api/admin/references/${ref.id}`, { method: "DELETE" });
       } else {
-        // No reactivate endpoint yet — call POST to recreate would dup, so
-        // optimistically flip in UI. Server-side reactivate is a follow-up.
-        setItems((s) =>
-          s.map((r) => (r.id === ref.id ? { ...r, is_active: true } : r)),
-        );
+        await fetch(`/api/admin/references/${ref.id}/reactivate`, {
+          method: "POST",
+        });
       }
     } finally {
       setBusyId(null);

@@ -152,7 +152,7 @@ async function inspectProjectId(
   }
 }
 
-function sanitizeProjectName(name: string): string {
+export function sanitizeProjectName(name: string): string {
   // Vercel: lowercase, alphanumeric + dashes, up to 100 chars.
   return (
     name
