@@ -19,23 +19,21 @@ export async function fetchMetricEventsForUser(
   ).toISOString();
   const events: MetricEvent[] = [];
 
-  // Leads: contacted / qualified / won
+  // Leads: contacted / qualified / won. Use status_changed_at — updated_at
+  // gets touched by every patch (including bulk imports), which would lump
+  // 30k untouched leads into "today" the next time the importer runs.
   const { data: leads } = await supabase
     .from("leads")
-    .select("id, status, value, updated_at, created_at")
+    .select("id, status, value, status_changed_at, created_at")
     .eq("sales_user_id", salesUserId)
-    .gte("updated_at", since);
+    .gte("status_changed_at", since);
   for (const l of (leads as Array<{
     status: string;
     value: number;
-    updated_at: string;
+    status_changed_at: string | null;
     created_at: string;
   }> | null) ?? []) {
-    // We use updated_at as the transition timestamp. This is approximate —
-    // a lead that's only ever been 'new' counts on its created_at. For a
-    // status that moved through multiple values, only the final stop is
-    // recorded here.
-    const t = l.updated_at;
+    const t = l.status_changed_at ?? l.created_at;
     if (
       l.status === "contacted" ||
       l.status === "qualified" ||
