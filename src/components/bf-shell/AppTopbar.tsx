@@ -83,7 +83,7 @@ export function AppTopbar({
             )}
           </button>
         )}
-        <Link href="/app" className="flex items-center pr-1">
+        <Link href="/" className="flex items-center pr-1">
           <BrandLogo size="lg" variant="mark" />
         </Link>
 

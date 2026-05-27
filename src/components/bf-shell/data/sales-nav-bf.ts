@@ -81,10 +81,7 @@ export const salesNavBF: NavConfig = {
   ],
 };
 
-export const salesFooterBF = [
-  { label: "Account", href: "/sales/account" },
-  { label: "Sign out", href: "/sales/logout" },
-];
+export const salesFooterBF = [{ label: "Sign out", href: "/sales/logout" }];
 
 export const adminNavBF: NavConfig = {
   top: { label: "Dashboard", href: "/admin", icon: "home" },
@@ -107,7 +104,6 @@ export const adminNavBF: NavConfig = {
     {
       label: "Content",
       items: [
-        { label: "Pages", href: "/admin/pages", icon: "file-text" },
         { label: "Services", href: "/admin/services", icon: "briefcase" },
         { label: "Projects", href: "/admin/projects", icon: "building" },
         { label: "Clients", href: "/admin/clients", icon: "users" },
@@ -134,7 +130,4 @@ export const adminNavBF: NavConfig = {
   ],
 };
 
-export const adminFooterBF = [
-  { label: "Account", href: "/admin/account" },
-  { label: "Sign out", href: "/admin/logout" },
-];
+export const adminFooterBF = [{ label: "Sign out", href: "/admin/logout" }];
