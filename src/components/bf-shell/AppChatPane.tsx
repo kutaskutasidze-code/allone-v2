@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect, type FormEvent } from "react";
-import { Send, X, Loader2, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Sparkles, Send, Loader2, X } from "lucide-react";
+
+// BF-styled side chat. Visually matches travelplace-bf's AppChatPane shape
+// (header / scrollable history / sticky composer) but keeps the chat backend
+// thin — POSTs to /api/sales/chat which already supports tool-use.
 
 export interface ChatScope {
-  level: "org" | "tool" | "artifact";
+  level: "org" | "tool" | "artifact" | string;
   org?: string;
   tool?: string;
   artifact?: string;
@@ -16,17 +20,19 @@ interface Message {
 }
 
 interface AppChatPaneProps {
-  scope?: ChatScope;
-  scopeLabel?: string;
-  apiPath?: string;
+  scope: ChatScope;
+  scopeLabel: string;
+  starters?: string[];
   onClose: () => void;
+  apiPath?: string;
 }
 
 export function AppChatPane({
   scope,
   scopeLabel,
-  apiPath = "/api/sales/chat",
+  starters,
   onClose,
+  apiPath = "/api/sales/chat",
 }: AppChatPaneProps) {
   const LS_KEY = `allonce.chat.history.side.${apiPath}`;
   const [messages, setMessages] = useState<Message[]>([]);
@@ -34,7 +40,6 @@ export function AppChatPane({
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Restore on mount, persist on every change.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(LS_KEY);
@@ -42,19 +47,13 @@ export function AppChatPane({
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   useEffect(() => {
     try {
       if (messages.length > 0)
         localStorage.setItem(LS_KEY, JSON.stringify(messages));
     } catch {}
   }, [messages, LS_KEY]);
-
-  const clearHistory = () => {
-    setMessages([]);
-    try {
-      localStorage.removeItem(LS_KEY);
-    } catch {}
-  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -63,11 +62,18 @@ export function AppChatPane({
     });
   }, [messages, busy]);
 
-  const send = async (e?: FormEvent) => {
+  const clearHistory = () => {
+    setMessages([]);
+    try {
+      localStorage.removeItem(LS_KEY);
+    } catch {}
+  };
+
+  const send = async (text?: string, e?: FormEvent) => {
     e?.preventDefault();
-    const text = input.trim();
-    if (!text || busy) return;
-    const userMsg: Message = { role: "user", text };
+    const t = (text ?? input).trim();
+    if (!t || busy) return;
+    const userMsg: Message = { role: "user", text: t };
     setMessages((m) => [...m, userMsg]);
     setInput("");
     setBusy(true);
@@ -84,8 +90,7 @@ export function AppChatPane({
         }),
       });
       const json = await res.json();
-      const reply: string =
-        json.text ?? json.error ?? "Hmm, I couldn't respond. Try again?";
+      const reply: string = json.text ?? json.error ?? "No response.";
       setMessages((m) => [...m, { role: "assistant", text: reply }]);
     } catch (err) {
       setMessages((m) => [
@@ -101,17 +106,14 @@ export function AppChatPane({
   };
 
   return (
-    <aside
-      className="bf-island mx-3 mt-3 mb-3 hidden w-80 shrink-0 flex-col xl:flex"
-      style={{ borderRadius: 16 }}
-    >
-      <div
-        className="flex items-center justify-between border-b px-3 py-2"
+    <aside className="flex h-full flex-col">
+      <header
+        className="flex items-center justify-between px-3 py-2 border-b"
         style={{ borderColor: "var(--allonce-line-soft)" }}
       >
         <div className="flex items-center gap-2">
           <div
-            className="flex h-6 w-6 items-center justify-center rounded"
+            className="flex h-7 w-7 items-center justify-center rounded-full"
             style={{
               background: "var(--ao-accent-soft)",
               color: "var(--ao-accent)",
@@ -119,13 +121,13 @@ export function AppChatPane({
           >
             <Sparkles className="h-3.5 w-3.5" />
           </div>
-          <div>
-            <p className="text-[11px] font-mono uppercase tracking-wider text-[color:var(--ink-500)]">
-              {scopeLabel ?? "Side chat"}
+          <div className="leading-tight">
+            <p className="text-[12px] font-medium text-[var(--ink-900)]">
+              {scopeLabel}
             </p>
-            <p className="text-[11px] text-[color:var(--ink-400)]">
-              {scope?.level ?? "org"}
-              {scope?.org ? ` · ${scope.org}` : ""}
+            <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+              {scope.level}
+              {scope.org ? ` · ${scope.org}` : ""}
             </p>
           </div>
         </div>
@@ -134,9 +136,7 @@ export function AppChatPane({
             <button
               type="button"
               onClick={clearHistory}
-              aria-label="Clear chat history"
-              title="Clear chat history"
-              className="rounded-md px-1.5 py-0.5 text-[10px] font-medium text-[color:var(--ink-400)] hover:bg-[color:var(--bg-sunken)] hover:text-[color:var(--ink-900)]"
+              className="rounded-md px-1.5 py-0.5 text-[10px] font-medium text-[var(--ink-400)] hover:bg-[var(--bg-sunken)] hover:text-[var(--ink-900)]"
             >
               Clear
             </button>
@@ -144,34 +144,59 @@ export function AppChatPane({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md p-1 text-[color:var(--ink-400)] hover:bg-[color:var(--bg-sunken)] hover:text-[color:var(--ink-900)]"
+            aria-label="Close chat"
+            className="rounded-md p-1 text-[var(--ink-400)] hover:bg-[var(--bg-sunken)] hover:text-[var(--ink-900)]"
           >
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
-      </div>
+      </header>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3">
         {messages.length === 0 ? (
-          <p className="text-xs text-[color:var(--ink-400)]">
-            Ask anything about your leads, demos, or sales activity.
-          </p>
+          <div className="space-y-3">
+            <p className="text-[12px] text-[var(--ink-400)]">
+              Ask anything about your leads, demos, or sales activity.
+            </p>
+            {starters && starters.length > 0 && (
+              <div className="space-y-1.5">
+                {starters.map((s, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => send(s)}
+                    className="block w-full rounded-[var(--radius-xs)] border px-2.5 py-1.5 text-left text-[12px] text-[var(--ink-700)] transition hover:bg-[var(--bg-sunken)]"
+                    style={{ borderColor: "var(--allonce-line)" }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         ) : (
           <div className="flex flex-col gap-3">
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={`max-w-[88%] rounded-xl px-3 py-2 text-[13px] leading-relaxed ${
+                className={`max-w-[88%] rounded-[var(--radius-sm)] px-3 py-2 text-[13px] leading-relaxed ${
                   m.role === "user"
-                    ? "ml-auto bg-[color:var(--ao-accent)] text-white"
-                    : "mr-auto bg-[color:var(--bg-sunken)] text-[color:var(--ink-800)]"
+                    ? "ml-auto text-white"
+                    : "mr-auto text-[var(--ink-800)]"
                 }`}
+                style={{
+                  background:
+                    m.role === "user" ? "var(--ao-accent)" : "var(--bg-sunken)",
+                }}
               >
                 {m.text}
               </div>
             ))}
             {busy && (
-              <div className="mr-auto inline-flex items-center gap-1.5 rounded-xl bg-[color:var(--bg-sunken)] px-3 py-2 text-xs text-[color:var(--ink-500)]">
+              <div
+                className="mr-auto inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] px-3 py-2 text-xs text-[var(--ink-500)]"
+                style={{ background: "var(--bg-sunken)" }}
+              >
                 <Loader2 className="h-3 w-3 animate-spin" /> thinking…
               </div>
             )}
@@ -180,11 +205,14 @@ export function AppChatPane({
       </div>
 
       <form
-        onSubmit={send}
+        onSubmit={(e) => send(undefined, e)}
         className="border-t px-2 py-2"
         style={{ borderColor: "var(--allonce-line-soft)" }}
       >
-        <div className="bf-card-sunken flex items-end gap-1 px-2 py-1.5">
+        <div
+          className="flex items-end gap-1 rounded-[var(--radius-xs)] px-2 py-1.5"
+          style={{ background: "var(--bg-sunken)" }}
+        >
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -196,15 +224,15 @@ export function AppChatPane({
             }}
             rows={1}
             placeholder="Message…"
-            className="flex-1 resize-none bg-transparent text-[13px] text-[color:var(--ink-900)] placeholder-[color:var(--ink-400)] focus:outline-none"
+            className="flex-1 resize-none bg-transparent text-[13px] text-[var(--ink-900)] placeholder-[var(--ink-400)] focus:outline-none"
             style={{ maxHeight: 120 }}
           />
           <button
             type="submit"
             disabled={!input.trim() || busy}
-            className="rounded-md p-1.5 text-white disabled:opacity-40"
-            style={{ background: "var(--ao-accent)" }}
             aria-label="Send"
+            className="rounded-md p-1.5 text-white transition disabled:opacity-40"
+            style={{ background: "var(--ao-accent)" }}
           >
             {busy ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

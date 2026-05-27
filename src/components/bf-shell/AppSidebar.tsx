@@ -2,92 +2,298 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-import { X } from "lucide-react";
+import {
+  salesNavBF as tourismNav,
+  salesFooterBF as tourismFooter,
+  adminNavBF,
+  adminFooterBF,
+  type NavConfig,
+} from "./data/sales-nav-bf";
+import { useLocale } from "./lib/i18n";
+import type { TranslationKey } from "./lib/i18n";
+import {
+  BarChart3,
+  Briefcase,
+  Building,
+  Calendar,
+  Car,
+  Compass,
+  DollarSign,
+  FileText,
+  GitBranch,
+  Globe,
+  Home,
+  MapPin,
+  MessageCircle,
+  Plane,
+  Plug,
+  Receipt,
+  RotateCcw,
+  Scale,
+  Scroll,
+  Shield,
+  Tag,
+  Tags,
+  TrendingDown,
+  Truck,
+  UserCheck,
+  Users,
+  Wallet,
+} from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
 
-export interface NavItem {
-  label: string;
+const ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
+  home: Home,
+  plane: Plane,
+  building: Building,
+  truck: Truck,
+  "user-check": UserCheck,
+  "file-text": FileText,
+  shield: Shield,
+  compass: Compass,
+  car: Car,
+  receipt: Receipt,
+  "rotate-ccw": RotateCcw,
+  wallet: Wallet,
+  globe: Globe,
+  "git-branch": GitBranch,
+  "map-pin": MapPin,
+  scale: Scale,
+  scroll: Scroll,
+  tags: Tags,
+  tag: Tag,
+  "trending-down": TrendingDown,
+  "bar-chart-3": BarChart3,
+  calendar: Calendar,
+  "message-circle": MessageCircle,
+  plug: Plug,
+  users: Users,
+  "dollar-sign": DollarSign,
+  briefcase: Briefcase,
+};
+
+// href → translation key (e.g. "/app/avia" → "nav.avia",
+// "/app/juridical-form" → "nav.juridical_form",
+// "/app/reports/hotel-directory" → "nav.hotel_directory")
+const HREF_KEY_OVERRIDE: Record<string, TranslationKey> = {
+  "/app/reports/hotel-directory": "nav.hotel_directory",
+  "/app/reports/hotel-price": "nav.hotel_price",
+  "/app/reports/debitor": "nav.report_debitor",
+  "/app/reports/sum": "nav.report_sum",
+};
+
+function navKey(href: string): TranslationKey {
+  if (href === "/app") return "nav.home";
+  if (HREF_KEY_OVERRIDE[href]) return HREF_KEY_OVERRIDE[href];
+  const slug = href
+    .replace(/^\/app\//, "")
+    .replace(/\//g, "_")
+    .replace(/-/g, "_");
+  return ("nav." + slug) as TranslationKey;
+}
+
+const SECTION_KEY: Record<string, TranslationKey> = {
+  Bookings: "nav.section.bookings",
+  Operations: "nav.section.operations",
+  Catalog: "nav.section.catalog",
+  Reports: "nav.section.reports",
+};
+
+const SUB_KEY: Record<string, TranslationKey> = {
+  contacts: "tabs.contacts",
+  banks: "tabs.banks",
+  "bank-accounts": "tabs.banks",
+  balance: "tabs.balance",
+  prices: "tabs.prices",
+  parameters: "tabs.parameters",
+};
+
+const FOOTER_KEY: Record<string, TranslationKey> = {
+  "/app/account": "nav.account",
+  "/app/organization": "nav.organization",
+  "/app/billing": "nav.billing",
+  "/app/help": "nav.help",
+};
+
+function Icon({ name }: { name: string }) {
+  const I = ICONS[name];
+  if (!I) return null;
+  return <I className="h-4 w-4 shrink-0" strokeWidth={1.75} />;
+}
+
+function NavRow({
+  href,
+  label,
+  iconName,
+  count,
+  active,
+}: {
   href: string;
-  icon: LucideIcon;
-  badge?: string | number;
+  label: string;
+  iconName: string;
+  count?: number | null;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center gap-3 rounded-[var(--radius-xs)] px-3 py-1.5 text-[13px] transition ${
+        active
+          ? "bg-[var(--bg-sunken)] text-[var(--ink-900)] font-medium"
+          : "text-[var(--ink-900)] hover:bg-[var(--bg-app)]"
+      }`}
+    >
+      <Icon name={iconName} />
+      <span className="flex-1 truncate">{label}</span>
+      {count != null && (
+        <span className="font-mono text-[11px] tabular-nums text-[var(--ink-400)]">
+          {count}
+        </span>
+      )}
+    </Link>
+  );
 }
 
-export interface NavSection {
-  label?: string;
-  items: NavItem[];
+function SubRow({
+  href,
+  label,
+  active,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`block rounded-[var(--radius-xs)] px-3 py-1 pl-10 text-[12px] transition ${
+        active
+          ? "bg-[var(--bg-sunken)] text-[var(--ink-900)] font-medium"
+          : "text-[var(--ink-500)] hover:bg-[var(--bg-app)] hover:text-[var(--ink-900)]"
+      }`}
+    >
+      {label}
+    </Link>
+  );
 }
 
-interface SidebarProps {
-  nav: NavSection[];
-  open: boolean;
-  onClose: () => void;
+interface AppSidebarProps {
+  nav?: NavConfig;
+  footer?: Array<{ label: string; href: string }>;
 }
 
-export function AppSidebar({ nav, open, onClose }: SidebarProps) {
-  const pathname = usePathname();
-  const isActive = (href: string) =>
-    href === pathname ||
-    (href !== "/sales" && href !== "/admin" && pathname.startsWith(href));
+export function AppSidebar({ nav, footer }: AppSidebarProps = {}) {
+  const pathname = usePathname() ?? "";
+  const { t } = useLocale();
 
-  if (!open) return null;
+  // Auto-pick nav by route prefix if not explicitly passed
+  const resolvedNav =
+    nav ?? (pathname.startsWith("/admin") ? adminNavBF : tourismNav);
+  const resolvedFooter =
+    footer ?? (pathname.startsWith("/admin") ? adminFooterBF : tourismFooter);
+
+  const matchesItem = (href: string) =>
+    pathname === href || pathname.startsWith(href + "/");
+
+  const isOnDetailFor = (itemHref: string) =>
+    new RegExp(`^${itemHref}/[^/]+`).test(pathname);
 
   return (
-    <aside
-      className="bf-island mx-3 mt-3 mb-3 hidden w-60 shrink-0 flex-col gap-1 px-2 py-3 lg:flex"
-      style={{ borderRadius: 16 }}
-    >
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Close sidebar"
-        className="absolute right-2 top-2 hidden text-[color:var(--ink-400)] hover:text-[color:var(--ink-900)] lg:hidden"
-      >
-        <X className="h-4 w-4" />
-      </button>
-      <nav className="flex flex-col gap-3">
-        {nav.map((section, si) => (
-          <div key={si} className="flex flex-col gap-0.5">
-            {section.label && (
-              <div className="px-2 pb-1 pt-2 text-[10px] font-mono uppercase tracking-wider text-[color:var(--ink-400)]">
-                {section.label}
-              </div>
-            )}
-            {section.items.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition ${
-                    active
-                      ? "bg-[color:var(--ao-accent-soft)] text-[color:var(--ao-accent)]"
-                      : "text-[color:var(--ink-700)] hover:bg-[color:var(--bg-sunken)]"
-                  }`}
-                >
-                  <Icon
-                    className={`h-4 w-4 shrink-0 ${active ? "" : "text-[color:var(--ink-400)]"}`}
-                  />
-                  <span className="flex-1 truncate">{item.label}</span>
-                  {item.badge !== undefined && (
-                    <span
-                      className="rounded-full px-1.5 py-0.5 text-[10px] font-medium"
-                      style={{
-                        background: active
-                          ? "rgba(0,71,255,0.18)"
-                          : "var(--bg-sunken)",
-                        color: active ? "var(--ao-accent)" : "var(--ink-500)",
-                      }}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+    <aside className="flex h-full flex-col">
+      <nav className="flex-1 overflow-y-auto px-2 py-4">
+        {/* Top — Home */}
+        <ul className="space-y-0.5">
+          <li>
+            <NavRow
+              href={resolvedNav.top.href}
+              label={t(navKey(resolvedNav.top.href))}
+              iconName={resolvedNav.top.icon}
+              active={pathname === resolvedNav.top.href}
+            />
+          </li>
+        </ul>
+
+        {/* Sections */}
+        {resolvedNav.sections.map((section) => (
+          <div key={section.label} className="mt-6 px-3">
+            <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-400)]">
+              {SECTION_KEY[section.label]
+                ? t(SECTION_KEY[section.label])
+                : section.label}
+            </div>
+            <ul className="space-y-0.5">
+              {section.items.map((item) => {
+                const active = matchesItem(item.href);
+                const expandSub =
+                  !!item.subEntities && isOnDetailFor(item.href);
+                const key = navKey(item.href);
+                const translated = t(key);
+                // Safety: if the dict didn't have it, t() returns the key
+                // itself — fall back to the raw label from the nav config.
+                const label = translated === key ? item.label : translated;
+                return (
+                  <li key={item.href}>
+                    <NavRow
+                      href={item.href}
+                      label={label}
+                      iconName={item.icon}
+                      count={item.count}
+                      active={active}
+                    />
+                    {expandSub && item.subEntities && (
+                      <ul className="mt-0.5 space-y-0.5">
+                        {item.subEntities.map((sub) => {
+                          const subHref = `${item.href}/${pathname.split("/")[3] ?? ""}/${sub.segment}`;
+                          const subActive = pathname.endsWith(
+                            "/" + sub.segment,
+                          );
+                          const subLabel = SUB_KEY[sub.segment]
+                            ? t(SUB_KEY[sub.segment])
+                            : sub.label;
+                          return (
+                            <li key={sub.segment}>
+                              <SubRow
+                                href={subHref}
+                                label={subLabel}
+                                active={subActive}
+                              />
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         ))}
       </nav>
+
+      {/* Footer — BF defaults, translated */}
+      <div className="border-t border-[var(--allonce-line-soft)] px-2 py-3">
+        <ul className="space-y-0.5">
+          {resolvedFooter.map((item) => {
+            const label = FOOTER_KEY[item.href]
+              ? t(FOOTER_KEY[item.href])
+              : item.label;
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 rounded-[var(--radius-xs)] px-3 py-1.5 text-[13px] transition ${
+                    matchesItem(item.href)
+                      ? "bg-[var(--bg-sunken)] text-[var(--ink-900)] font-medium"
+                      : "text-[var(--ink-700)] hover:bg-[var(--bg-app)] hover:text-[var(--ink-900)]"
+                  }`}
+                >
+                  <span>{label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </aside>
   );
 }

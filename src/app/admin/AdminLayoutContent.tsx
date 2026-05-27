@@ -1,14 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { AppShell } from "@/components/bf-shell";
-import { adminNav } from "@/lib/admin-nav";
-import { createClient } from "@/lib/supabase/client";
 import { AdminThemeContext, type AdminTheme } from "./AdminThemeContext";
 
 const THEME_STORAGE_KEY = "allone-admin-theme";
+
+const ADMIN_CHAT_STARTERS = [
+  "Recent activity across services",
+  "Open offers",
+  "How many leads are unassigned?",
+];
 
 export function AdminLayoutContent({
   children,
@@ -16,7 +19,6 @@ export function AdminLayoutContent({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const isLoginPage = pathname === "/admin/login";
   const isChatNativeHome = pathname === "/admin";
 
@@ -51,33 +53,13 @@ export function AdminLayoutContent({
     );
   }
 
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/admin/login");
-    router.refresh();
-  };
-
   return (
     <AdminThemeContext.Provider value={{ theme, toggleTheme }}>
       <AppShell
-        brand={{ name: "Allone", sub: "Admin" }}
-        nav={adminNav}
         chatScope={{ level: "org", org: "allone-admin" }}
-        chatScopeLabel="Admin chat"
-        chatApiPath="/api/sales/chat"
-        hideChat={isChatNativeHome}
+        chatScopeLabel="Allone Admin"
+        chatStarters={ADMIN_CHAT_STARTERS}
         hideChatToggle={isChatNativeHome}
-        topbarRight={
-          <button
-            type="button"
-            onClick={handleLogout}
-            aria-label="Sign out"
-            className="rounded-lg p-1.5 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)]"
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
-        }
       >
         {children}
       </AppShell>
