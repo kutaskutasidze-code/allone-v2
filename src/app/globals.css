@@ -313,6 +313,104 @@ html.lenis body {
   --section-gap: 8rem;
   --section-py: 6rem;
   --content-gap: 3rem;
+
+  /* ──────────────────────────────────────────────────────────────────
+     BF SHELL TOKENS — ported verbatim from travelplace-bf/app/globals.css
+     so the shell components (AppShell / AppSidebar / AppTopbar / AccountMenu /
+     NotificationsMenu / CommandPalette / etc.) render with the same
+     spacing/shadows/colors as on BF. The only rename: --allonce-* in BF
+     becomes --allone-* here to match the renamed component classNames.
+     ────────────────────────────────────────────────────────────────── */
+
+  /* islands & sunken */
+  --bg-app: #f2f2f7;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #ffffff;
+  --bg-sunken: #ececef;
+
+  --allone-bg: var(--bg-surface);
+  --allone-bg-soft: var(--bg-surface-alt);
+  --allone-bg-raised: var(--bg-sunken);
+
+  /* ink scale (warm near-black) */
+  --ink-900: #0a0a0a;
+  --ink-800: #1d1d1f;
+  --ink-700: #3f3f45;
+  --ink-500: #6b6b6b;
+  --ink-400: #86868b;
+  --ink-300: #a1a1a6;
+  --ink-200: #c7c7cc;
+  --ink-100: #e5e5ea;
+
+  --allone-ink: var(--ink-900);
+  --allone-ink-strong: var(--ink-900);
+  --allone-ink-muted: var(--ink-500);
+  --allone-ink-faint: var(--ink-400);
+  --allone-ink-dim: var(--ink-300);
+
+  --allone-line: #e5e5e5;
+  --allone-line-soft: rgba(0, 0, 0, 0.05);
+  --allone-line-strong: rgba(0, 0, 0, 0.12);
+
+  /* electric blue accent — BF's pitch color, kept verbatim */
+  --ao-accent: #0047ff;
+  --ao-accent-hover: #003bd9;
+  --ao-accent-soft: #e6edff;
+
+  --ao-allone-accent: var(--ao-accent);
+  --ao-allone-accent-hover: var(--ao-accent-hover);
+  --ao-allone-accent-soft: var(--ao-accent-soft);
+
+  --allone-ok: #28c840;
+  --allone-warn: #febc2e;
+  --allone-err: #ff5f57;
+
+  /* BF shell uses these names for shadows; keep BF defs side-by-side
+     with our marketing --radius-* (they don't conflict). */
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* BF radii — scoped to the shell so the marketing site keeps its tighter
+   radii. Anything inside <AppShell> gets BF's larger curvature. */
+[data-bf-shell="1"] {
+  --radius-xs: 10px;
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+}
+
+/* BF DARK theme — same flip as travelplace-bf does on html[data-theme=dark]. */
+html[data-theme="dark"] {
+  --bg-app: #0a0a0a;
+  --bg-surface: #161618;
+  --bg-surface-alt: #1f1f22;
+  --bg-sunken: #2a2a2e;
+
+  --allone-bg: var(--bg-surface);
+  --allone-bg-soft: var(--bg-surface-alt);
+  --allone-bg-raised: var(--bg-sunken);
+
+  --ink-900: #f5f5f7;
+  --ink-800: #e5e5ea;
+  --ink-700: #c7c7cc;
+  --ink-500: #98989d;
+  --ink-400: #6d6d72;
+  --ink-300: #48484a;
+  --ink-200: #2c2c2e;
+  --ink-100: #1c1c1e;
+
+  --allone-line: rgba(255, 255, 255, 0.08);
+  --allone-line-soft: rgba(255, 255, 255, 0.05);
+  --allone-line-strong: rgba(255, 255, 255, 0.16);
+
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 1px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* Tailwind theme bridge */

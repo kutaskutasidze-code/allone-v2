@@ -113,6 +113,7 @@ export function AppShell({
   return (
     <AuthGuard>
       <div
+        data-bf-shell="1"
         className="flex h-screen flex-col"
         style={{ backgroundColor: "var(--bg-app)" }}
       >
