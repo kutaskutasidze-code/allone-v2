@@ -122,7 +122,6 @@ export const adminNavBF: NavConfig = {
     {
       label: "Sales",
       items: [
-        { label: "Offers", href: "/admin/offers", icon: "message-circle" },
         { label: "Claude", href: "/admin/claude", icon: "plug" },
         { label: "Sales Portal", href: "/sales", icon: "briefcase" },
       ],

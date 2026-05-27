@@ -9,7 +9,6 @@ const STARTERS: QuickAction[] = [
   { label: "Services", href: "/admin/services" },
   { label: "Projects", href: "/admin/projects" },
   { label: "Clients", href: "/admin/clients" },
-  { label: "Offers", href: "/admin/offers" },
   { label: "Leads", href: "/admin/leads" },
 ];
 
