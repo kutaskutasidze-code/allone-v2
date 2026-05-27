@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           response = NextResponse.next({
             request: {
@@ -27,11 +27,11 @@ export async function middleware(request: NextRequest) {
             },
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   const {
@@ -44,39 +44,42 @@ export async function middleware(request: NextRequest) {
   // Admin allowlist. Configurable via ADMIN_EMAILS env var (comma-separated)
   // so new admins can be added in the Vercel dashboard without a code change.
   // The hardcoded list below is a safety fallback if the env var is unset.
-  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS
-    ? process.env.ADMIN_EMAILS.split(',')
-    : [
-        'nikoloz.gaprindashvili@allonelabs.com',
-        'luka.tsulukidze@allonelabs.com',
-        'luka.adamia@allonelabs.com',
-        'team@allonelabs.com',
-      ]
-  ).map(e => e.toLowerCase().trim()).filter(Boolean);
+  const ADMIN_EMAILS = (
+    process.env.ADMIN_EMAILS
+      ? process.env.ADMIN_EMAILS.split(",")
+      : [
+          "nikoloz.gaprindashvili@allonelabs.com",
+          "luka.tsulukidze@allonelabs.com",
+          "luka.adamia@allonelabs.com",
+          "team@allonelabs.com",
+        ]
+  )
+    .map((e) => e.toLowerCase().trim())
+    .filter(Boolean);
 
   // Case-insensitive comparison — Supabase may store emails with original casing,
   // and a case-sensitive includes() would silently bounce a valid admin.
-  const userEmail = (user?.email || '').toLowerCase().trim();
+  const userEmail = (user?.email || "").toLowerCase().trim();
   const isAdmin = ADMIN_EMAILS.includes(userEmail);
 
   // Protect admin routes (except login)
   if (
-    request.nextUrl.pathname.startsWith('/admin') &&
-    !request.nextUrl.pathname.startsWith('/admin/login') &&
-    !request.nextUrl.pathname.startsWith('/api/')
+    request.nextUrl.pathname.startsWith("/admin") &&
+    !request.nextUrl.pathname.startsWith("/admin/login") &&
+    !request.nextUrl.pathname.startsWith("/api/")
   ) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     if (!isAdmin) {
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
   // Protect admin API routes
-  if (request.nextUrl.pathname.startsWith('/api/admin')) {
+  if (request.nextUrl.pathname.startsWith("/api/admin")) {
     if (!isAuthenticated || !isAdmin) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   }
 
@@ -85,44 +88,56 @@ export async function middleware(request: NextRequest) {
   // sidebar and the per-rep scoping wouldn't make sense and the API would 401
   // every page load.
   if (
-    request.nextUrl.pathname.startsWith('/sales') &&
-    !request.nextUrl.pathname.startsWith('/sales/login') &&
-    !request.nextUrl.pathname.startsWith('/api/')
+    request.nextUrl.pathname.startsWith("/sales") &&
+    !request.nextUrl.pathname.startsWith("/sales/login") &&
+    !request.nextUrl.pathname.startsWith("/api/")
   ) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/sales/login', request.url));
+      return NextResponse.redirect(new URL("/sales/login", request.url));
     }
     if (!user?.email) {
-      return NextResponse.redirect(new URL('/sales/login', request.url));
+      return NextResponse.redirect(new URL("/sales/login", request.url));
     }
-    // Use the service role for this one lookup so it bypasses RLS — the
-    // sales_users RLS policies currently have an infinite-recursion bug that
-    // makes the anon client error out on any read of this table.
-    const adminUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent(user.email)}&select=id&limit=1`;
-    const lookup = await fetch(adminUrl, {
-      headers: {
-        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
-      },
-      cache: 'no-store',
-    });
-    const rows = lookup.ok ? await lookup.json() : [];
-    if (!Array.isArray(rows) || rows.length === 0) {
-      return NextResponse.redirect(new URL('/', request.url));
+    // Admin emails (allowlist) bypass the sales_users existence check —
+    // they should always be able to reach the sales portal.
+    if (!isAdmin) {
+      const adminUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent(user.email)}&select=id&limit=1`;
+      const lookup = await fetch(adminUrl, {
+        headers: {
+          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+        },
+        cache: "no-store",
+      });
+      const rows = lookup.ok ? await lookup.json() : [];
+      if (!Array.isArray(rows) || rows.length === 0) {
+        // Surface the reason on the login page instead of silently bouncing
+        // to the marketing landing.
+        const url = new URL("/sales/login", request.url);
+        url.searchParams.set("error", "not_sales_user");
+        return NextResponse.redirect(url);
+      }
     }
   }
 
   // Redirect logged-in users away from admin/sales login pages
-  if (request.nextUrl.pathname === '/admin/login' && isAuthenticated) {
-    return NextResponse.redirect(new URL('/admin', request.url));
+  if (request.nextUrl.pathname === "/admin/login" && isAuthenticated) {
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
-  if (request.nextUrl.pathname === '/sales/login' && isAuthenticated) {
-    return NextResponse.redirect(new URL('/sales', request.url));
+  if (request.nextUrl.pathname === "/sales/login" && isAuthenticated) {
+    return NextResponse.redirect(new URL("/sales", request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ['/admin', '/admin/:path*', '/api/admin/:path*', '/sales', '/sales/:path*', '/api/sales/:path*'],
+  matcher: [
+    "/admin",
+    "/admin/:path*",
+    "/api/admin/:path*",
+    "/sales",
+    "/sales/:path*",
+    "/api/sales/:path*",
+  ],
 };

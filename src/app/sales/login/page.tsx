@@ -1,36 +1,55 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
-import { createClient } from '@/lib/supabase/client';
-import { AnimatedLogoHero } from '@/components/shared';
-import { AlertCircle, ArrowRight } from 'lucide-react';
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
+import { AnimatedLogoHero } from "@/components/shared";
+import { AlertCircle, ArrowRight } from "lucide-react";
 
-export default function SalesLoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+const ERROR_MESSAGES: Record<string, string> = {
+  not_sales_user:
+    "We couldn't find a sales user for this account. Ask an admin to add you to sales_users, or sign in with a different account.",
+};
+
+// Inner client component that reads useSearchParams. Hoisted so the page
+// component can wrap it in <Suspense>, which Next.js requires when the
+// page is prerendered.
+function SalesLoginInner() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  useEffect(() => {
+    const fromQuery = searchParams.get("error");
+    if (fromQuery && ERROR_MESSAGES[fromQuery]) {
+      setError(ERROR_MESSAGES[fromQuery]);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (authError) {
         setError(authError.message);
         return;
       }
 
-      router.push('/sales');
+      router.push("/sales");
       router.refresh();
     } catch {
-      setError('An unexpected error occurred');
+      setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +70,9 @@ export default function SalesLoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">Email Address</label>
+              <label className="block text-xs font-medium text-gray-500 mb-2">
+                Email Address
+              </label>
               <input
                 type="email"
                 value={email}
@@ -64,7 +85,9 @@ export default function SalesLoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">Password</label>
+              <label className="block text-xs font-medium text-gray-500 mb-2">
+                Password
+              </label>
               <input
                 type="password"
                 value={password}
@@ -80,7 +103,7 @@ export default function SalesLoginPage() {
               {error && (
                 <motion.div
                   initial={{ opacity: 0, y: -10, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  animate={{ opacity: 1, y: 0, height: "auto" }}
                   exit={{ opacity: 0, y: -10, height: 0 }}
                   className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm"
                 >
@@ -117,5 +140,13 @@ export default function SalesLoginPage() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+export default function SalesLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <SalesLoginInner />
+    </Suspense>
   );
 }
