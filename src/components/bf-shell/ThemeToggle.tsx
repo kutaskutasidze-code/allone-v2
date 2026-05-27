@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const KEY = "allone.prefs";
+const KEY = "allonce.prefs";
 
 type Theme = "light" | "dark";
 

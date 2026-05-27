@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useLocale, LOCALES, LOCALE_LABEL, type Locale } from "./lib/i18n";
-
-// Ported verbatim from travelplace-bf's LanguageToggle. Uses our local
-// i18n shim which exposes the same {locale, setLocale, t} API.
+import { useLocale } from "@/lib/i18n/useLocale";
+import { LOCALES, LOCALE_LABEL, type Locale } from "@/lib/i18n/dict";
 
 export function LanguageToggle() {
   const { locale, setLocale } = useLocale();
@@ -46,7 +44,7 @@ export function LanguageToggle() {
         <span className="tracking-wider">{locale}</span>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 min-w-[140px] overflow-hidden rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-white shadow-[var(--shadow-md)]">
+        <div className="absolute right-0 top-full mt-1 min-w-[140px] overflow-hidden rounded-[var(--radius-sm)] border border-[var(--allonce-line)] bg-white shadow-[var(--shadow-md)]">
           {LOCALES.map((l: Locale) => (
             <button
               key={l}

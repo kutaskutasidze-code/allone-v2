@@ -2,14 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/lib/next-auth-shim";
 import { toast } from "./Toast";
 
-// Adapted verbatim from travelplace-bf's AccountMenu. Two swaps:
-//   1. Session source: Supabase auth here vs next-auth in BF
-//   2. Sign-out path: /sales/login or /admin/login depending on active zone
-
+// Two-letter avatar initials. "Luka Adamia" -> "LA", "luka" -> "LU",
+// "luka@allonelabs.com" -> "LU". Trimmed/uppercased; falls back to "·"
+// while the session is still loading so the badge isn't blank.
 function deriveInitials(name?: string | null, email?: string | null): string {
   const source = (name || email || "").trim();
   if (!source) return "·";
@@ -26,28 +24,24 @@ interface SessionUser {
 }
 
 export function AccountMenu() {
-  const supabase = createClient();
-  const router = useRouter();
-  const pathname = usePathname() ?? "";
-  const zone = pathname.startsWith("/admin") ? "admin" : "sales";
-
+  // Fetch the session directly instead of going through <SessionProvider>
+  // — keeps the menu self-contained and avoids wrapping the whole tree
+  // just to read three fields. The AuthGuard already gates render anyway.
   const [user, setUser] = useState<SessionUser | null>(null);
   useEffect(() => {
     let cancelled = false;
-    supabase.auth.getUser().then(({ data }) => {
-      if (cancelled || !data.user) return;
-      setUser({
-        name: (data.user.user_metadata?.name as string | undefined) ?? null,
-        email: data.user.email ?? null,
-        image:
-          (data.user.user_metadata?.avatar_url as string | undefined) ?? null,
+    fetch("/api/auth/session", { cache: "no-store", credentials: "include" })
+      .then((r) => r.json())
+      .then((j: { user?: SessionUser } | null) => {
+        if (!cancelled && j?.user) setUser(j.user);
+      })
+      .catch(() => {
+        /* keep null → falls back to safe placeholders */
       });
-    });
     return () => {
       cancelled = true;
     };
-  }, [supabase]);
-
+  }, []);
   const displayName = user?.name ?? user?.email?.split("@")[0] ?? "Account";
   const displayEmail = user?.email ?? "";
   const initials = deriveInitials(user?.name, user?.email);
@@ -79,17 +73,6 @@ export function AccountMenu() {
     return () => window.removeEventListener("keydown", onEsc);
   }, [open]);
 
-  const handleSignOut = async () => {
-    setOpen(false);
-    try {
-      localStorage.removeItem("allone.authenticated");
-    } catch {}
-    toast("Signed out", "ok");
-    await supabase.auth.signOut();
-    router.push(`/${zone}/login`);
-    router.refresh();
-  };
-
   return (
     <div className="relative">
       <button
@@ -100,9 +83,14 @@ export function AccountMenu() {
         className="ml-1 inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[var(--bg-sunken)] text-[11px] font-semibold text-[var(--ink-900)] shadow-[var(--shadow-sm)] transition hover:scale-105"
       >
         {user?.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={user.image} alt="" className="h-full w-full object-cover" />
         ) : (
+          // While the session loads (user === null), show a neutral disc — no
+          // pattern flash that then swaps to the Google pic. Initials land
+          // once the session resolves and user.image is still absent.
+          // `leading-none` so the two-letter monogram sits at the visual
+          // center of the disc — the default flex centering puts the
+          // baseline a hair below middle for tight glyphs.
           <span
             className="leading-none"
             style={{ transform: "translateY(0.5px)" }}
@@ -117,7 +105,7 @@ export function AccountMenu() {
           ref={panelRef}
           className="absolute right-0 top-[calc(100%+8px)] z-50 w-[260px] overflow-hidden rounded-[var(--radius-lg)] border border-black/8 bg-[var(--bg-surface)] shadow-[0_24px_56px_-12px_rgba(0,0,0,0.18),0_4px_12px_-2px_rgba(0,0,0,0.08)] ring-1 ring-black/5 animate-fade-in"
         >
-          <div className="border-b border-[var(--allone-line-soft)] px-4 py-3">
+          <div className="border-b border-[var(--allonce-line-soft)] px-4 py-3">
             <p className="text-[13.5px] font-semibold text-[var(--ink-900)]">
               {displayName}
             </p>
@@ -130,29 +118,61 @@ export function AccountMenu() {
 
           <div className="py-1.5">
             <MenuItem
-              href={`/${zone}`}
+              href="/app/account"
               onClick={() => setOpen(false)}
-              label={zone === "admin" ? "Admin home" : "Sales home"}
+              label="Account settings"
             />
             <MenuItem
-              href={`/${zone}/dashboard`}
+              href="/app/organization"
               onClick={() => setOpen(false)}
-              label="Dashboard"
+              label="Organization settings"
             />
-            {zone === "sales" && (
-              <MenuItem
-                href="/sales/notifications"
-                onClick={() => setOpen(false)}
-                label="Notifications"
-              />
-            )}
+            <MenuItem
+              href="/app/billing"
+              onClick={() => setOpen(false)}
+              label="Billing"
+            />
+            <MenuItem
+              href="/app/account/api-keys"
+              onClick={() => setOpen(false)}
+              label="API keys"
+            />
           </div>
 
-          <div className="border-t border-[var(--allone-line-soft)] py-1.5">
+          <div className="border-t border-[var(--allonce-line-soft)] py-1.5">
+            <MenuItem
+              href="/app/help"
+              onClick={() => setOpen(false)}
+              label="Help & docs"
+            />
+            <MenuItem
+              href="/app/status"
+              onClick={() => setOpen(false)}
+              label="System status"
+            />
+          </div>
+
+          <div className="border-t border-[var(--allonce-line-soft)] py-1.5">
             <button
               type="button"
-              onClick={handleSignOut}
-              className="block w-full px-4 py-2 text-left text-[13px] text-[var(--ink-500)] transition hover:bg-[var(--bg-surface-alt)] hover:text-[var(--allone-err)]"
+              onClick={() => {
+                setOpen(false);
+                try {
+                  // Clear any legacy client-side flags. Real auth lives in
+                  // the next-auth session cookie cleared by signOut() below.
+                  localStorage.removeItem("allonce.authenticated");
+                  localStorage.removeItem("allonce.auth.provider");
+                  localStorage.removeItem("allonce.auth.email");
+                } catch {}
+                toast("Signed out", "ok");
+                // Land on the marketing page after sign-out, not the signin
+                // form. Users who want to come back can click "Sign in" from
+                // the landing nav. next-auth clears the JWT cookie before
+                // following callbackUrl, so the AuthGuard on /app will then
+                // bounce any back-button attempt to /signin.
+                void signOut({ callbackUrl: "/" });
+              }}
+              className="block w-full px-4 py-2 text-left text-[13px] text-[var(--ink-500)] transition hover:bg-[var(--bg-surface-alt)] hover:text-[var(--allonce-err)]"
             >
               Sign out
             </button>

@@ -2,15 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  salesNavBF as tourismNav,
-  salesFooterBF as tourismFooter,
-  adminNavBF,
-  adminFooterBF,
-  type NavConfig,
-} from "./data/sales-nav-bf";
-import { useLocale } from "./lib/i18n";
-import type { TranslationKey } from "./lib/i18n";
+import { tourismFooter, tourismNav } from "@/data/tourism-nav";
+import { useLocale } from "@/lib/i18n/useLocale";
+import type { TranslationKey } from "@/lib/i18n/dict";
 import {
   BarChart3,
   Briefcase,
@@ -83,11 +77,10 @@ const HREF_KEY_OVERRIDE: Record<string, TranslationKey> = {
 };
 
 function navKey(href: string): TranslationKey {
-  if (href === "/app" || href === "/sales" || href === "/admin")
-    return "nav.home";
+  if (href === "/app") return "nav.home";
   if (HREF_KEY_OVERRIDE[href]) return HREF_KEY_OVERRIDE[href];
   const slug = href
-    .replace(/^\/(app|sales|admin)\//, "")
+    .replace(/^\/app\//, "")
     .replace(/\//g, "_")
     .replace(/-/g, "_");
   return ("nav." + slug) as TranslationKey;
@@ -178,20 +171,9 @@ function SubRow({
   );
 }
 
-interface AppSidebarProps {
-  nav?: NavConfig;
-  footer?: Array<{ label: string; href: string }>;
-}
-
-export function AppSidebar({ nav, footer }: AppSidebarProps = {}) {
+export function AppSidebar() {
   const pathname = usePathname() ?? "";
   const { t } = useLocale();
-
-  // Auto-pick nav by route prefix if not explicitly passed
-  const resolvedNav =
-    nav ?? (pathname.startsWith("/admin") ? adminNavBF : tourismNav);
-  const resolvedFooter =
-    footer ?? (pathname.startsWith("/admin") ? adminFooterBF : tourismFooter);
 
   const matchesItem = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
@@ -201,31 +183,21 @@ export function AppSidebar({ nav, footer }: AppSidebarProps = {}) {
 
   return (
     <aside className="flex h-full flex-col">
-      <nav className="bf-no-scrollbar flex-1 overflow-y-auto px-2 py-4">
+      <nav className="flex-1 overflow-y-auto px-2 py-4">
         {/* Top — Home */}
         <ul className="space-y-0.5">
           <li>
-            {(() => {
-              const topKey = navKey(resolvedNav.top.href);
-              const topTranslated = t(topKey);
-              const topLabel =
-                topTranslated === topKey
-                  ? resolvedNav.top.label
-                  : topTranslated;
-              return (
-                <NavRow
-                  href={resolvedNav.top.href}
-                  label={topLabel}
-                  iconName={resolvedNav.top.icon}
-                  active={pathname === resolvedNav.top.href}
-                />
-              );
-            })()}
+            <NavRow
+              href={tourismNav.top.href}
+              label={t(navKey(tourismNav.top.href))}
+              iconName={tourismNav.top.icon}
+              active={pathname === tourismNav.top.href}
+            />
           </li>
         </ul>
 
         {/* Sections */}
-        {resolvedNav.sections.map((section) => (
+        {tourismNav.sections.map((section) => (
           <div key={section.label} className="mt-6 px-3">
             <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-400)]">
               {SECTION_KEY[section.label]
@@ -282,33 +254,22 @@ export function AppSidebar({ nav, footer }: AppSidebarProps = {}) {
       </nav>
 
       {/* Footer — BF defaults, translated */}
-      <div className="border-t border-[var(--allone-line-soft)] px-2 py-3">
+      <div className="border-t border-[var(--allonce-line-soft)] px-2 py-3">
         <ul className="space-y-0.5">
-          {resolvedFooter.map((item) => {
+          {tourismFooter.map((item) => {
             const label = FOOTER_KEY[item.href]
               ? t(FOOTER_KEY[item.href])
               : item.label;
-            const className = `flex w-full items-center gap-3 rounded-[var(--radius-xs)] px-3 py-1.5 text-left text-[13px] transition ${
-              matchesItem(item.href)
-                ? "bg-[var(--bg-sunken)] text-[var(--ink-900)] font-medium"
-                : "text-[var(--ink-700)] hover:bg-[var(--bg-app)] hover:text-[var(--ink-900)]"
-            }`;
-            // Logout must be a form POST so Next.js Link prefetches don't
-            // sign the user out before the page even renders.
-            if (item.href.endsWith("/logout")) {
-              return (
-                <li key={item.href}>
-                  <form action={item.href} method="post">
-                    <button type="submit" className={className}>
-                      <span>{label}</span>
-                    </button>
-                  </form>
-                </li>
-              );
-            }
             return (
               <li key={item.href}>
-                <Link href={item.href} className={className}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-3 rounded-[var(--radius-xs)] px-3 py-1.5 text-[13px] transition ${
+                    matchesItem(item.href)
+                      ? "bg-[var(--bg-sunken)] text-[var(--ink-900)] font-medium"
+                      : "text-[var(--ink-700)] hover:bg-[var(--bg-app)] hover:text-[var(--ink-900)]"
+                  }`}
+                >
                   <span>{label}</span>
                 </Link>
               </li>

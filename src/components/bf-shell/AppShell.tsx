@@ -21,9 +21,9 @@ interface AppShellProps {
   hideChatToggle?: boolean;
 }
 
-const STORAGE_KEY_CHAT = "allone.chat.open";
-const STORAGE_KEY_SIDEBAR = "allone.sidebar.open";
-const STORAGE_KEY_TOPBAR = "allone.topbar.open";
+const STORAGE_KEY_CHAT = "allonce.chat.open";
+const STORAGE_KEY_SIDEBAR = "allonce.sidebar.open";
+const STORAGE_KEY_TOPBAR = "allonce.topbar.open";
 
 // Tailwind `md` breakpoint
 const MOBILE_BREAKPOINT = "(max-width: 767px)";
@@ -113,7 +113,6 @@ export function AppShell({
   return (
     <AuthGuard>
       <div
-        data-bf-shell="1"
         className="flex h-screen flex-col"
         style={{ backgroundColor: "var(--bg-app)" }}
       >

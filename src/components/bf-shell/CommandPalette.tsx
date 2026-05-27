@@ -1,15 +1,13 @@
 "use client";
 
-// Ported from travelplace-bf's CommandPalette. Adapted:
-//   - Routes mapped from /app/* to /sales/* and /admin/* (we detect the
-//     active zone from the pathname).
-//   - signOut() uses Supabase instead of next-auth.
-//   - Event name changed from "allonce.openPalette" to "allone.openPalette"
-//     to match the rest of the renamed event bus.
+// TODO(tourism-clone): stripped to navigation-only for the tourism rewrite.
+// Spawn/business/tools/artifacts commands removed alongside mock-businesses /
+// mock-artifacts data fixtures. A later task can repopulate this with
+// hotel/contract/contact searches once the Supabase data layer is live.
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/next-auth-shim";
 
 interface Item {
   id: string;
@@ -23,102 +21,63 @@ interface Item {
 
 export function CommandPalette() {
   const router = useRouter();
-  const pathname = usePathname() ?? "";
-  const zone = pathname.startsWith("/admin") ? "admin" : "sales";
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Build the static command set — navigation + sign-out only for now.
   const items: Item[] = useMemo(() => {
-    const supabase = createClient();
-    const z = zone;
     const list: Item[] = [
       {
-        id: "go-home",
-        label: z === "admin" ? "Admin home" : "Sales home",
-        hint: "Chat-native entry",
+        id: "go-hub",
+        label: "Go to Overview",
+        hint: "Main dashboard",
         group: "Navigate",
-        href: `/${z}`,
+        href: "/app",
+        shortcut: "g o",
       },
       {
-        id: "go-dashboard",
-        label: "Dashboard",
-        hint: "Pipeline overview",
+        id: "go-account",
+        label: "Account",
+        hint: "Your personal settings",
         group: "Navigate",
-        href: `/${z}/dashboard`,
+        href: "/app/account",
+      },
+      {
+        id: "go-org",
+        label: "Organization",
+        hint: "Team-wide settings",
+        group: "Navigate",
+        href: "/app/organization",
+      },
+      {
+        id: "go-billing",
+        label: "Billing",
+        hint: "Plan and invoices",
+        group: "Navigate",
+        href: "/app/billing",
+      },
+      {
+        id: "go-help",
+        label: "Help",
+        hint: "In-app docs",
+        group: "Navigate",
+        href: "/app/help",
+      },
+      {
+        id: "action-signout",
+        label: "Sign out",
+        hint: "End this session",
+        group: "Actions",
+        action: () => {
+          void signOut({ callbackUrl: "/" });
+        },
       },
     ];
-    if (z === "sales") {
-      list.push(
-        {
-          id: "go-leads",
-          label: "Leads",
-          hint: "Your queue",
-          group: "Navigate",
-          href: "/sales/leads",
-        },
-        {
-          id: "go-demos",
-          label: "Demos",
-          hint: "Personalized demo jobs",
-          group: "Navigate",
-          href: "/sales/demos",
-        },
-        {
-          id: "go-references",
-          label: "Reference library",
-          hint: "Demo templates",
-          group: "Navigate",
-          href: "/sales/demos/references",
-        },
-        {
-          id: "go-notifications",
-          label: "Notifications",
-          hint: "Aim alerts + Telegram sends",
-          group: "Navigate",
-          href: "/sales/notifications",
-        },
-      );
-    } else {
-      list.push(
-        {
-          id: "go-admin-leads",
-          label: "All leads",
-          hint: "Across reps",
-          group: "Navigate",
-          href: "/admin/leads",
-        },
-        {
-          id: "go-admin-assign",
-          label: "Assign leads",
-          hint: "Distribute to reps",
-          group: "Navigate",
-          href: "/admin/leads/assign",
-        },
-        {
-          id: "go-admin-team",
-          label: "Team",
-          hint: "Sales user roster",
-          group: "Navigate",
-          href: "/admin/team",
-        },
-      );
-    }
-    list.push({
-      id: "action-signout",
-      label: "Sign out",
-      hint: "End this session",
-      group: "Actions",
-      action: () => {
-        void supabase.auth.signOut().then(() => {
-          router.push(`/${z}/login`);
-          router.refresh();
-        });
-      },
-    });
+
     return list;
-  }, [zone, router]);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -128,6 +87,7 @@ export function CommandPalette() {
       .slice(0, 50);
   }, [items, query]);
 
+  // Keyboard shortcuts
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -165,16 +125,18 @@ export function CommandPalette() {
     else if (it.action) it.action();
   }
 
+  // Listen for global "open" event (from topbar click)
   useEffect(() => {
     function onOpen() {
       setOpen(true);
     }
-    window.addEventListener("allone.openPalette", onOpen);
-    return () => window.removeEventListener("allone.openPalette", onOpen);
+    window.addEventListener("allonce.openPalette", onOpen);
+    return () => window.removeEventListener("allonce.openPalette", onOpen);
   }, []);
 
   if (!open) return null;
 
+  // Group items for display
   const grouped: Record<string, Item[]> = {};
   for (const it of filtered) {
     if (!grouped[it.group]) grouped[it.group] = [];
@@ -187,10 +149,10 @@ export function CommandPalette() {
       onClick={() => setOpen(false)}
     >
       <div
-        className="w-full max-w-[640px] overflow-hidden rounded-[var(--radius-xl)] bg-white border border-[var(--allone-line)] shadow-[var(--shadow-lg)]"
+        className="w-full max-w-[640px] overflow-hidden rounded-[var(--radius-xl)] bg-white border border-[var(--allonce-line)] shadow-[var(--shadow-lg)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-3 border-b border-[var(--allone-line-soft)] px-5 py-4">
+        <div className="flex items-center gap-3 border-b border-[var(--allonce-line-soft)] px-5 py-4">
           <svg
             width="16"
             height="16"
@@ -210,9 +172,9 @@ export function CommandPalette() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search navigation, actions…"
-            className="flex-1 bg-transparent text-[15px] text-[var(--ink-900)] placeholder:text-[var(--ink-400)] outline-none"
+            className="flex-1 bg-transparent text-[15px] text-[var(--ink-900)] placeholder:text-[var(--ink-400)] no-ring outline-none"
           />
-          <kbd className="rounded border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--ink-400)]">
+          <kbd className="rounded border border-[var(--allonce-line)] bg-[var(--bg-surface-alt)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--ink-400)]">
             esc
           </kbd>
         </div>
@@ -264,7 +226,7 @@ export function CommandPalette() {
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-[var(--allone-line-soft)] bg-[var(--bg-surface-alt)] px-5 py-2 text-[11px] text-[var(--ink-500)]">
+        <div className="flex items-center justify-between border-t border-[var(--allonce-line-soft)] bg-[var(--bg-surface-alt)] px-5 py-2 text-[11px] text-[var(--ink-500)]">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               <kbd className="rounded bg-white px-1.5 py-0.5 font-mono text-[10px]">

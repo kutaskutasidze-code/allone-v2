@@ -2,11 +2,12 @@
 
 import { useEffect } from "react";
 
-// Reads `allone.locale` from localStorage on first render and applies it
-// to <html> so the useLocale() hook + CSS lang selectors pick it up before
-// hydration. Ported from travelplace-bf with the storage key rename.
+// Reads `tp.locale` from localStorage on first render and applies to <html>
+// so the useLocale() hook can pick it up. Cookie was set when the operator
+// last toggled locale; this script ensures localStorage also tracks it for
+// fast initial client renders.
 
-const KEY = "allone.locale";
+const KEY = "tp.locale";
 
 export function LocaleBoot() {
   useEffect(() => {

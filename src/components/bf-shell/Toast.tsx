@@ -1,34 +1,30 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-
-// Event-driven toast bus — anyone can `toast("Saved")` from anywhere and
-// ToastHost (mounted once in AppShell) renders the pill. Ported verbatim
-// from travelplace-bf so call sites stay identical.
+import { useEffect, useState } from 'react';
 
 export interface ToastMessage {
   id: string;
   text: string;
-  kind?: "info" | "ok" | "warn" | "err";
+  kind?: 'info' | 'ok' | 'warn' | 'err';
   action?: { label: string; onClick: () => void };
 }
 
-const EVENT = "allone.toast";
+const EVENT = 'allonce.toast';
 
 export function toast(
   text: string,
-  kind: ToastMessage["kind"] = "info",
-  action?: ToastMessage["action"],
+  kind: ToastMessage['kind'] = 'info',
+  action?: ToastMessage['action']
 ) {
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
   const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   window.dispatchEvent(
-    new CustomEvent(EVENT, { detail: { id, text, kind, action } }),
+    new CustomEvent(EVENT, { detail: { id, text, kind, action } })
   );
 }
 
 export function comingSoon(what: string) {
-  toast(`${what} · ships next round`, "info");
+  toast(`${what} · ships next round`, 'info');
 }
 
 export function ToastHost() {
@@ -62,7 +58,7 @@ export function ToastHost() {
             <button
               type="button"
               onClick={m.action.onClick}
-              className="ml-2 rounded-full bg-white/10 px-2.5 py-0.5 text-[11.5px] font-medium transition hover:bg-white/20"
+              className="ml-2 rounded-full bg-white/10 px-2.5 py-0.5 text-[11.5px] font-medium transition hover:bg-white"
             >
               {m.action.label}
             </button>
@@ -73,15 +69,15 @@ export function ToastHost() {
   );
 }
 
-function KindDot({ kind = "info" }: { kind?: ToastMessage["kind"] }) {
+function KindDot({ kind = 'info' }: { kind?: ToastMessage['kind'] }) {
   const color =
-    kind === "ok"
-      ? "var(--allone-ok)"
-      : kind === "warn"
-        ? "var(--allone-warn)"
-        : kind === "err"
-          ? "var(--allone-err)"
-          : "#ffffff99";
+    kind === 'ok'
+      ? 'var(--allonce-ok)'
+      : kind === 'warn'
+      ? 'var(--allonce-warn)'
+      : kind === 'err'
+      ? 'var(--allonce-err)'
+      : '#ffffff99';
   return (
     <span
       className="inline-block h-1.5 w-1.5 rounded-full"

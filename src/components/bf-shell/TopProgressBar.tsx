@@ -1,11 +1,19 @@
 "use client";
 
+// Top progress bar — slim 2px sliver under the topbar that appears during
+// route transitions. Avoids the "page froze" feel between click and paint.
+//
+// App-Router has no built-in router events, so we approximate by:
+//   1. patching <Link> click handlers via a global capture listener on <a>
+//      tags whose href is an internal navigation,
+//   2. listening for pathname/searchParams changes to fade out when the
+//      destination commits.
+//
+// Net effect: a 150ms grace period to swallow instant cached navigations,
+// then a continuous indeterminate sweep until the next page hydrates.
+
 import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-
-// Slim sliver under the topbar during route transitions. Approximates
-// App-Router events (which don't exist) by listening for internal-link
-// clicks and fading out when pathname/searchParams settle.
 
 const SHOW_DELAY_MS = 150;
 
@@ -30,9 +38,11 @@ export function TopProgressBar() {
       if (!href || href.startsWith("#")) return;
       if (anchor.target && anchor.target !== "_self") return;
 
+      // Only internal, same-origin navigations
       try {
         const url = new URL(href, window.location.href);
         if (url.origin !== window.location.origin) return;
+        // Same path + same search = no nav, no progress bar
         if (
           url.pathname === window.location.pathname &&
           url.search === window.location.search
@@ -53,6 +63,7 @@ export function TopProgressBar() {
     };
   }, []);
 
+  // When the route commits (pathname or search changes), hide the bar.
   useEffect(() => {
     setVisible(false);
   }, [pathname, search]);
