@@ -9,15 +9,15 @@ const SIZE_PX: Record<Exclude<LogoSize, number>, number> = {
   lg: 36,
 };
 
-interface AllOnceLogoProps {
+interface BrandLogoProps {
   size?: LogoSize;
   variant?: LogoVariant;
 }
 
-export function AllOnceLogo({
+export function BrandLogo({
   size = "md",
   variant = "mark",
-}: AllOnceLogoProps) {
+}: BrandLogoProps) {
   const px = typeof size === "number" ? size : SIZE_PX[size];
   if (variant === "wordmark") {
     return (

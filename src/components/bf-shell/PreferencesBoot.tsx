@@ -2,8 +2,8 @@
 import { useEffect } from "react";
 
 // Applies saved theme pre-paint (data-theme on documentElement) so the
-// initial render matches what ThemeToggle persists to allonce.prefs.
-const KEY = "allonce.prefs";
+// initial render matches what ThemeToggle persists to allone.prefs.
+const KEY = "allone.prefs";
 export function PreferencesBoot() {
   useEffect(() => {
     try {

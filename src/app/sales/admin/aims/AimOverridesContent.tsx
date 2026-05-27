@@ -103,7 +103,7 @@ export function AimOverridesContent({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[color:var(--allonce-line-soft)] text-left text-[11px] font-mono uppercase tracking-wider text-[color:var(--ink-500)]">
+            <tr className="border-b border-[color:var(--allone-line-soft)] text-left text-[11px] font-mono uppercase tracking-wider text-[color:var(--ink-500)]">
               <th className="px-3 py-2 font-medium">Sales user</th>
               {METRICS.map((m) => (
                 <th key={m.key} className="px-3 py-2 font-medium">
@@ -119,7 +119,7 @@ export function AimOverridesContent({
             {initialUsers.map((u) => (
               <tr
                 key={u.id}
-                className="border-b border-[color:var(--allonce-line-soft)]"
+                className="border-b border-[color:var(--allone-line-soft)]"
               >
                 <td className="px-3 py-3">
                   <div className="font-medium text-[color:var(--ink-900)]">
@@ -185,7 +185,7 @@ function Cell({
         className={`w-14 rounded-md border px-1.5 py-1 text-sm focus:outline-none ${
           isOverridden
             ? "border-[color:var(--ao-accent)] bg-[color:var(--ao-accent-soft)] text-[color:var(--ao-accent)]"
-            : "border-[color:var(--allonce-line)] text-[color:var(--ink-700)]"
+            : "border-[color:var(--allone-line)] text-[color:var(--ink-700)]"
         }`}
       />
       <button

@@ -21,9 +21,9 @@ interface AppShellProps {
   hideChatToggle?: boolean;
 }
 
-const STORAGE_KEY_CHAT = "allonce.chat.open";
-const STORAGE_KEY_SIDEBAR = "allonce.sidebar.open";
-const STORAGE_KEY_TOPBAR = "allonce.topbar.open";
+const STORAGE_KEY_CHAT = "allone.chat.open";
+const STORAGE_KEY_SIDEBAR = "allone.sidebar.open";
+const STORAGE_KEY_TOPBAR = "allone.topbar.open";
 
 // Tailwind `md` breakpoint
 const MOBILE_BREAKPOINT = "(max-width: 767px)";

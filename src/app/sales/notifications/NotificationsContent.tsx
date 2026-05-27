@@ -77,12 +77,12 @@ export function NotificationsContent({ sends }: { sends: Send[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[color:var(--allonce-line)] py-10 text-center text-sm text-[color:var(--ink-500)]">
+        <div className="rounded-2xl border border-dashed border-[color:var(--allone-line)] py-10 text-center text-sm text-[color:var(--ink-500)]">
           <Send className="mx-auto mb-2 h-5 w-5 text-[color:var(--ink-300)]" />
           No notifications yet for this filter.
         </div>
       ) : (
-        <ul className="divide-y divide-[color:var(--allonce-line-soft)]">
+        <ul className="divide-y divide-[color:var(--allone-line-soft)]">
           {filtered.map((s) => {
             const ok = !s.error;
             const Icon = ok ? CheckCircle2 : AlertCircle;

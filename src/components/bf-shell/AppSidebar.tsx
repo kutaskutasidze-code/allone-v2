@@ -271,7 +271,7 @@ export function AppSidebar({ nav, footer }: AppSidebarProps = {}) {
       </nav>
 
       {/* Footer — BF defaults, translated */}
-      <div className="border-t border-[var(--allonce-line-soft)] px-2 py-3">
+      <div className="border-t border-[var(--allone-line-soft)] px-2 py-3">
         <ul className="space-y-0.5">
           {resolvedFooter.map((item) => {
             const label = FOOTER_KEY[item.href]

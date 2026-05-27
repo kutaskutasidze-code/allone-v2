@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AllOnceLogo } from "./AllOnceLogo";
+import { BrandLogo } from "./BrandLogo";
 import { NotificationsMenu } from "./NotificationsMenu";
 import { AccountMenu } from "./AccountMenu";
 import { ThemeToggle } from "./ThemeToggle";
@@ -33,7 +33,7 @@ export function AppTopbar({
 }: AppTopbarProps) {
   function openPalette() {
     if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("allonce.openPalette"));
+      window.dispatchEvent(new CustomEvent("allone.openPalette"));
     }
   }
 
@@ -84,12 +84,12 @@ export function AppTopbar({
           </button>
         )}
         <Link href="/app" className="flex items-center pr-1">
-          <AllOnceLogo size="lg" variant="mark" />
+          <BrandLogo size="lg" variant="mark" />
         </Link>
 
         {breadcrumb.length > 0 && (
           <>
-            <span className="hidden h-4 w-px bg-[var(--allonce-line)] sm:inline-block" />
+            <span className="hidden h-4 w-px bg-[var(--allone-line)] sm:inline-block" />
             <nav
               aria-label="breadcrumb"
               className="hidden min-w-0 items-center gap-1.5 truncate sm:flex"

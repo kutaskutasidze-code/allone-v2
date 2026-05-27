@@ -9,9 +9,9 @@
   --bg-surface-alt: #ffffff;
   --bg-sunken: #ececef;
 
-  --allonce-bg: var(--bg-surface);
-  --allonce-bg-soft: var(--bg-surface-alt);
-  --allonce-bg-raised: var(--bg-sunken);
+  --allone-bg: var(--bg-surface);
+  --allone-bg-soft: var(--bg-surface-alt);
+  --allone-bg-raised: var(--bg-sunken);
 
   /* ink scale (warm near-black) */
   --ink-900: #0a0a0a;
@@ -23,27 +23,30 @@
   --ink-200: #c7c7cc;
   --ink-100: #e5e5ea;
 
-  --allonce-ink: var(--ink-900);
-  --allonce-ink-strong: var(--ink-900);
-  --allonce-ink-muted: var(--ink-500);
-  --allonce-ink-faint: var(--ink-400);
-  --allonce-ink-dim: var(--ink-300);
+  --allone-ink: var(--ink-900);
+  --allone-ink-strong: var(--ink-900);
+  --allone-ink-muted: var(--ink-500);
+  --allone-ink-faint: var(--ink-400);
+  --allone-ink-dim: var(--ink-300);
 
-  --allonce-line: #e5e5e5;
-  --allonce-line-soft: rgba(0, 0, 0, 0.05);
-  --allonce-line-strong: rgba(0, 0, 0, 0.12);
+  --allone-line: #e5e5e5;
+  --allone-line-soft: rgba(0, 0, 0, 0.05);
+  --allone-line-strong: rgba(0, 0, 0, 0.12);
 
-  /* electric blue accent */
-  --ao-accent: #0047ff;
-  --ao-accent-hover: #003bd9;
-  --ao-accent-soft: #e6edff;
-  --ao-allonce-accent: var(--ao-accent);
-  --ao-allonce-accent-hover: var(--ao-accent-hover);
-  --ao-allonce-accent-soft: var(--ao-accent-soft);
+  /* Electric Blue — canonical Allone accent per docs/brand-strategy
+     (phase-3-identity/20-brand-identity-system.md). Matches the existing
+     --accent token used in src/app/globals.css so the BF shell renders
+     in the same accent as the rest of the site. */
+  --ao-accent: #0a68f5;
+  --ao-accent-hover: #0b5cd6;
+  --ao-accent-soft: rgba(10, 104, 245, 0.08);
+  --ao-allone-accent: var(--ao-accent);
+  --ao-allone-accent-hover: var(--ao-accent-hover);
+  --ao-allone-accent-soft: var(--ao-accent-soft);
 
-  --allonce-ok: #28c840;
-  --allonce-warn: #febc2e;
-  --allonce-err: #ff5f57;
+  --allone-ok: #28c840;
+  --allone-warn: #febc2e;
+  --allone-err: #ff5f57;
 
   --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.04);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.06);
@@ -71,12 +74,12 @@ html[data-theme="dark"] {
   --ink-300: #6b6b6b;
   --ink-200: #3f3f45;
   --ink-100: #1d1d1f;
-  --allonce-line: rgba(255, 255, 255, 0.1);
-  --allonce-line-soft: rgba(255, 255, 255, 0.05);
-  --allonce-line-strong: rgba(255, 255, 255, 0.18);
-  --ao-accent: #4d7eff;
-  --ao-accent-hover: #6b94ff;
-  --ao-accent-soft: rgba(77, 126, 255, 0.18);
+  --allone-line: rgba(255, 255, 255, 0.1);
+  --allone-line-soft: rgba(255, 255, 255, 0.05);
+  --allone-line-strong: rgba(255, 255, 255, 0.18);
+  --ao-accent: #5e8eff;
+  --ao-accent-hover: #7da3ff;
+  --ao-accent-soft: rgba(94, 142, 255, 0.18);
 }
 
 html[data-theme="dark"] body {
@@ -87,13 +90,13 @@ html[data-theme="dark"] body {
 /* Convenience utility classes — used by misc surfaces */
 .bf-island {
   background: var(--bg-surface);
-  border: 1px solid var(--allonce-line-soft);
+  border: 1px solid var(--allone-line-soft);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
 }
 .bf-card {
   background: var(--bg-surface);
-  border: 1px solid var(--allonce-line-soft);
+  border: 1px solid var(--allone-line-soft);
   border-radius: var(--radius-sm);
   padding: 1.25rem;
 }

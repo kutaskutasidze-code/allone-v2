@@ -34,7 +34,7 @@ export function AppChatPane({
   onClose,
   apiPath = "/api/sales/chat",
 }: AppChatPaneProps) {
-  const LS_KEY = `allonce.chat.history.side.${apiPath}`;
+  const LS_KEY = `allone.chat.history.side.${apiPath}`;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -109,7 +109,7 @@ export function AppChatPane({
     <aside className="flex h-full flex-col">
       <header
         className="flex items-center justify-between px-3 py-2 border-b"
-        style={{ borderColor: "var(--allonce-line-soft)" }}
+        style={{ borderColor: "var(--allone-line-soft)" }}
       >
         <div className="flex items-center gap-2">
           <div
@@ -166,7 +166,7 @@ export function AppChatPane({
                     type="button"
                     onClick={() => send(s)}
                     className="block w-full rounded-[var(--radius-xs)] border px-2.5 py-1.5 text-left text-[12px] text-[var(--ink-700)] transition hover:bg-[var(--bg-sunken)]"
-                    style={{ borderColor: "var(--allonce-line)" }}
+                    style={{ borderColor: "var(--allone-line)" }}
                   >
                     {s}
                   </button>
@@ -207,7 +207,7 @@ export function AppChatPane({
       <form
         onSubmit={(e) => send(undefined, e)}
         className="border-t px-2 py-2"
-        style={{ borderColor: "var(--allonce-line-soft)" }}
+        style={{ borderColor: "var(--allone-line-soft)" }}
       >
         <div
           className="flex items-end gap-1 rounded-[var(--radius-xs)] px-2 py-1.5"

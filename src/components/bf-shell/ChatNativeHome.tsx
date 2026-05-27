@@ -38,7 +38,7 @@ export function ChatNativeHome({
   scopeLabel,
 }: ChatNativeHomeProps) {
   const router = useRouter();
-  const LS_KEY = `allonce.chat.history.${apiPath}`;
+  const LS_KEY = `allone.chat.history.${apiPath}`;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -157,7 +157,7 @@ export function ChatNativeHome({
       <form
         onSubmit={(e) => send(undefined, e)}
         className="border-t px-8 py-4"
-        style={{ borderColor: "var(--allonce-line-soft)" }}
+        style={{ borderColor: "var(--allone-line-soft)" }}
       >
         <div className="bf-card-sunken flex items-end gap-2 px-3 py-2">
           <textarea
@@ -200,7 +200,7 @@ export function ChatNativeHome({
                   else if (s.prompt) send(s.prompt);
                 }}
                 className="group inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium text-[color:var(--ink-700)] transition hover:bg-[color:var(--bg-sunken)]"
-                style={{ borderColor: "var(--allonce-line)" }}
+                style={{ borderColor: "var(--allone-line)" }}
               >
                 {s.icon}
                 <span>{s.label}</span>
