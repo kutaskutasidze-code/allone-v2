@@ -4,6 +4,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { AimOverridesContent } from "./AimOverridesContent";
 
 interface SalesUserRow {
@@ -22,15 +23,16 @@ interface OverrideRow {
 async function requireAdmin() {
   const supabase = await createClient();
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) redirect("/sales/login");
-  const { data: salesUser } = await supabase
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.email) redirect("/sales/login");
+  const admin = createAdminClient();
+  const { data: salesUser } = await admin
     .from("sales_users")
     .select("*")
-    .eq("email", session.user.email)
-    .single();
-  if (!salesUser) redirect("/");
+    .eq("email", user.email.toLowerCase())
+    .maybeSingle();
+  if (!salesUser) redirect("/sales/login?error=not_sales_user");
   if ((salesUser as { role?: string }).role !== "admin") redirect("/sales");
   return { supabase, salesUser };
 }
