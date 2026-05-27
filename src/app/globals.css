@@ -373,6 +373,18 @@ html.lenis body {
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
+/* Hide scrollbars inside BF shell scroll containers — keep scrolling,
+   just no visible track/thumb. */
+.bf-no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.bf-no-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 /* BF radii — scoped to the shell so the marketing site keeps its tighter
    radii. Anything inside <AppShell> gets BF's larger curvature. */
 [data-bf-shell="1"] {

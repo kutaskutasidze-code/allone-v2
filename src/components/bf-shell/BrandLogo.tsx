@@ -14,10 +14,7 @@ interface BrandLogoProps {
   variant?: LogoVariant;
 }
 
-export function BrandLogo({
-  size = "md",
-  variant = "mark",
-}: BrandLogoProps) {
+export function BrandLogo({ size = "md", variant = "mark" }: BrandLogoProps) {
   const px = typeof size === "number" ? size : SIZE_PX[size];
   if (variant === "wordmark") {
     return (
@@ -29,27 +26,29 @@ export function BrandLogo({
       </span>
     );
   }
+  // The real Allone mark — six-arm rounded glyph from the brand book.
+  // Inline SVG (verbatim from /public/images/allone-logo-rounded.svg) so it
+  // scales pixel-perfect at any size and inherits color through fill.
   return (
     <svg
       width={px}
       height={px}
-      viewBox="0 0 28 28"
+      viewBox="0 0 200 200"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="Allone Labs"
+      style={{ display: "block" }}
     >
-      <rect x="0.5" y="0.5" width="27" height="27" rx="6.5" fill="#0047FF" />
-      <text
-        x="14"
-        y="19"
-        textAnchor="middle"
-        fontFamily="Inter, system-ui, sans-serif"
-        fontSize="14"
-        fontWeight="700"
-        fill="#FFFFFF"
-      >
-        A
-      </text>
+      <g fill="#2B8AFF" stroke="none">
+        <path d="M92 16 C96 8 104 8 108 16 L120 52 C122 56 120 60 116 62 L108 66 C104 68 100 66 100 62 L100 62 C100 66 96 68 92 66 L84 62 C80 60 78 56 80 52 Z" />
+        <path d="M184 92 C192 96 192 104 184 108 L148 120 C144 122 140 120 138 116 L134 108 C132 104 134 100 138 100 L138 100 C134 100 132 96 134 92 L138 84 C140 80 144 78 148 80 Z" />
+        <path d="M108 184 C104 192 96 192 92 184 L80 148 C78 144 80 140 84 138 L92 134 C96 132 100 134 100 138 L100 138 C100 134 104 132 108 134 L116 138 C120 140 122 144 120 148 Z" />
+        <path d="M16 108 C8 104 8 96 16 92 L52 80 C56 78 60 80 62 84 L66 92 C68 96 66 100 62 100 L62 100 C66 100 68 104 66 108 L62 116 C60 120 56 122 52 120 Z" />
+        <path d="M86 58 Q92 52 100 58 L108 66 Q104 72 100 72 Q96 72 92 66 Z" />
+        <path d="M92 134 Q96 128 100 128 Q104 128 108 134 L114 142 Q108 148 100 142 Z" />
+        <path d="M134 92 Q128 96 128 100 Q128 104 134 108 L142 114 Q148 108 142 100 Z" />
+        <path d="M66 92 Q72 96 72 100 Q72 104 66 108 L58 114 Q52 108 58 100 Z" />
+      </g>
     </svg>
   );
 }
