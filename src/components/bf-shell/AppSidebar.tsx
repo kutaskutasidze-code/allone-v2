@@ -83,10 +83,11 @@ const HREF_KEY_OVERRIDE: Record<string, TranslationKey> = {
 };
 
 function navKey(href: string): TranslationKey {
-  if (href === "/app") return "nav.home";
+  if (href === "/app" || href === "/sales" || href === "/admin")
+    return "nav.home";
   if (HREF_KEY_OVERRIDE[href]) return HREF_KEY_OVERRIDE[href];
   const slug = href
-    .replace(/^\/app\//, "")
+    .replace(/^\/(app|sales|admin)\//, "")
     .replace(/\//g, "_")
     .replace(/-/g, "_");
   return ("nav." + slug) as TranslationKey;
@@ -204,12 +205,22 @@ export function AppSidebar({ nav, footer }: AppSidebarProps = {}) {
         {/* Top — Home */}
         <ul className="space-y-0.5">
           <li>
-            <NavRow
-              href={resolvedNav.top.href}
-              label={t(navKey(resolvedNav.top.href))}
-              iconName={resolvedNav.top.icon}
-              active={pathname === resolvedNav.top.href}
-            />
+            {(() => {
+              const topKey = navKey(resolvedNav.top.href);
+              const topTranslated = t(topKey);
+              const topLabel =
+                topTranslated === topKey
+                  ? resolvedNav.top.label
+                  : topTranslated;
+              return (
+                <NavRow
+                  href={resolvedNav.top.href}
+                  label={topLabel}
+                  iconName={resolvedNav.top.icon}
+                  active={pathname === resolvedNav.top.href}
+                />
+              );
+            })()}
           </li>
         </ul>
 
