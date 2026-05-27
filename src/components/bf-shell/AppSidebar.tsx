@@ -288,16 +288,27 @@ export function AppSidebar({ nav, footer }: AppSidebarProps = {}) {
             const label = FOOTER_KEY[item.href]
               ? t(FOOTER_KEY[item.href])
               : item.label;
+            const className = `flex w-full items-center gap-3 rounded-[var(--radius-xs)] px-3 py-1.5 text-left text-[13px] transition ${
+              matchesItem(item.href)
+                ? "bg-[var(--bg-sunken)] text-[var(--ink-900)] font-medium"
+                : "text-[var(--ink-700)] hover:bg-[var(--bg-app)] hover:text-[var(--ink-900)]"
+            }`;
+            // Logout must be a form POST so Next.js Link prefetches don't
+            // sign the user out before the page even renders.
+            if (item.href.endsWith("/logout")) {
+              return (
+                <li key={item.href}>
+                  <form action={item.href} method="post">
+                    <button type="submit" className={className}>
+                      <span>{label}</span>
+                    </button>
+                  </form>
+                </li>
+              );
+            }
             return (
               <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 rounded-[var(--radius-xs)] px-3 py-1.5 text-[13px] transition ${
-                    matchesItem(item.href)
-                      ? "bg-[var(--bg-sunken)] text-[var(--ink-900)] font-medium"
-                      : "text-[var(--ink-700)] hover:bg-[var(--bg-app)] hover:text-[var(--ink-900)]"
-                  }`}
-                >
+                <Link href={item.href} className={className}>
                   <span>{label}</span>
                 </Link>
               </li>
