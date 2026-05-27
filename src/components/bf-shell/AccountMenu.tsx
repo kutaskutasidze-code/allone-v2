@@ -118,37 +118,19 @@ export function AccountMenu() {
 
           <div className="py-1.5">
             <MenuItem
-              href="/app/account"
+              href="/sales/dashboard"
               onClick={() => setOpen(false)}
-              label="Account settings"
+              label="Dashboard"
             />
             <MenuItem
-              href="/app/organization"
+              href="/sales/notifications"
               onClick={() => setOpen(false)}
-              label="Organization settings"
+              label="Notifications"
             />
             <MenuItem
-              href="/app/billing"
+              href="/admin/team"
               onClick={() => setOpen(false)}
-              label="Billing"
-            />
-            <MenuItem
-              href="/app/account/api-keys"
-              onClick={() => setOpen(false)}
-              label="API keys"
-            />
-          </div>
-
-          <div className="border-t border-[var(--allonce-line-soft)] py-1.5">
-            <MenuItem
-              href="/app/help"
-              onClick={() => setOpen(false)}
-              label="Help & docs"
-            />
-            <MenuItem
-              href="/app/status"
-              onClick={() => setOpen(false)}
-              label="System status"
+              label="Team"
             />
           </div>
 
@@ -170,7 +152,7 @@ export function AccountMenu() {
                 // the landing nav. next-auth clears the JWT cookie before
                 // following callbackUrl, so the AuthGuard on /app will then
                 // bounce any back-button attempt to /signin.
-                void signOut({ callbackUrl: "/" });
+                void signOut({ callbackUrl: "/sales/login" });
               }}
               className="block w-full px-4 py-2 text-left text-[13px] text-[var(--ink-500)] transition hover:bg-[var(--bg-surface-alt)] hover:text-[var(--allonce-err)]"
             >
