@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const { data: actor } = await admin
       .from('sales_users')
       .select('id')
-      .eq('email', user.email)
+      .eq('email', (user.email||'').toLowerCase())
       .maybeSingle();
 
     // Verify the target sales user exists.

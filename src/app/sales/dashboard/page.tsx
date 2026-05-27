@@ -15,7 +15,7 @@ async function getSalesUser() {
   const { data: salesUser } = await admin
     .from('sales_users')
     .select('*')
-    .eq('email', user.email)
+    .eq('email', (user.email||'').toLowerCase())
     .maybeSingle();
 
   if (!salesUser) {

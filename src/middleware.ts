@@ -101,7 +101,7 @@ export async function middleware(request: NextRequest) {
     // Admin emails (allowlist) bypass the sales_users existence check —
     // they should always be able to reach the sales portal.
     if (!isAdmin) {
-      const adminUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent(user.email)}&select=id&limit=1`;
+      const adminUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent((user.email||'').toLowerCase())}&select=id&limit=1`;
       const lookup = await fetch(adminUrl, {
         headers: {
           apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
