@@ -1,0 +1,50 @@
+# Fly config for allone-offer-generator. Set up: `fly launch --no-deploy`
+# generates the app + region; then `fly deploy` uses this file.
+#
+# Secrets are NOT in this file — set via `fly secrets set` so they don't
+# end up in git. See DEPLOY.md for the full list.
+
+app = "allone-offer-generator"
+primary_region = "fra"    # Frankfurt — closest to Tbilisi + Brussels operators
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3100"
+  PUPPETEER_EXECUTABLE_PATH = "/usr/bin/chromium"
+  XRAY_BIN_DIR = "/opt/site-xray"
+  DEMO_TMP_ROOT = "/data/tmp"
+  REFS_ROOT = "/data/refs"
+
+[http_service]
+  internal_port = 3100
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 5
+    hard_limit = 10
+
+  [[http_service.checks]]
+    grace_period = "20s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/health"
+
+# 2 vCPU / 2 GB — enough for Puppeteer + concurrent xray jobs.
+[[vm]]
+  size = "shared-cpu-2x"
+  memory = "2gb"
+
+# Persistent volume for the demo tmp dir + refs cache. Without this every
+# cold start would re-clone everything, and refs would never accumulate.
+[mounts]
+  source = "offer_data"
+  destination = "/data"

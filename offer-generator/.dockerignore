@@ -1,0 +1,21 @@
+node_modules
+dist
+.git
+.env
+.env.local
+.env.*.local
+*.log
+
+# Keep vendor/site-xray, but exclude the heavy output dirs site-xray
+# accumulates on dev machines.
+vendor/site-xray/node_modules
+vendor/site-xray/output*
+vendor/site-xray/*-clone
+vendor/site-xray/goga*
+vendor/site-xray/cactus-clone
+vendor/site-xray/kenkais-*
+vendor/site-xray/ssscript-clone
+vendor/site-xray/ui
+vendor/site-xray/.git
+vendor/site-xray/data
+vendor/site-xray/snap-*
