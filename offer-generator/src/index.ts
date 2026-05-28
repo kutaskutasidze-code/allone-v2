@@ -3,7 +3,6 @@ import { config, validateConfig } from "./config.js";
 import { logger } from "./utils/logger.js";
 import { apiKeyAuth } from "./middleware/auth.js";
 import healthRouter from "./routes/health.js";
-import offersRouter from "./routes/offers.js";
 import referencesRouter from "./routes/references.js";
 import demosRouter from "./routes/demos.js";
 import draftsRouter from "./routes/drafts.js";
@@ -32,7 +31,6 @@ app.use(healthRouter);
 
 // All other routes require API key
 app.use(apiKeyAuth);
-app.use(offersRouter);
 app.use(referencesRouter);
 app.use(demosRouter);
 app.use(draftsRouter);
