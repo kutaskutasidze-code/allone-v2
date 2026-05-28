@@ -23,7 +23,7 @@ const ICONS = {
 const COLORS = {
   critical: "text-red-600 bg-red-50 border-red-100",
   warning: "text-amber-700 bg-amber-50 border-amber-100",
-  info: "text-blue-700 bg-blue-50 border-blue-100",
+  info: "text-[var(--ao-accent-hover)] bg-[var(--ao-accent-soft)] border-blue-100",
 } as const;
 
 export function AuditPanel({ audit }: AuditPanelProps) {
@@ -31,7 +31,7 @@ export function AuditPanel({ audit }: AuditPanelProps) {
   const issues = audit?.topIssues ?? [];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-white">
+    <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)]">
       <div className="flex items-center justify-between border-b border-[var(--gray-200)] px-5 py-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--gray-500)]">

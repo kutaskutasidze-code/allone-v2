@@ -15,7 +15,7 @@ export function StatusBadge({ published, size = 'sm' }: StatusBadgeProps) {
         size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-2.5 py-1 text-xs',
         published
           ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
-          : 'bg-gray-50 text-gray-500 ring-1 ring-gray-200'
+          : 'bg-[var(--bg-surface-alt)] text-[var(--ink-500)] ring-1 ring-gray-200'
       )}
     >
       <span className={cn(
@@ -34,9 +34,9 @@ interface CountBadgeProps {
 
 export function CountBadge({ count, label }: CountBadgeProps) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium bg-gray-50 text-gray-600 rounded-md ring-1 ring-gray-200">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium bg-[var(--bg-surface-alt)] text-[var(--ink-700)] rounded-md ring-1 ring-gray-200">
       {count}
-      {label && <span className="text-gray-400">{label}</span>}
+      {label && <span className="text-[var(--ink-400)]">{label}</span>}
     </span>
   );
 }

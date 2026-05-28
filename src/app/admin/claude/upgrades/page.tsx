@@ -36,7 +36,7 @@ const ACTION_ICONS: Record<string, typeof CheckCircle2> = {
 
 const ACTION_COLORS: Record<string, string> = {
   install: 'bg-green-50 text-green-600',
-  update: 'bg-blue-50 text-blue-600',
+  update: 'bg-[var(--ao-accent-soft)] text-[var(--ao-accent)]',
   remove: 'bg-red-50 text-red-600',
   configure: 'bg-purple-50 text-purple-600',
 };
@@ -157,7 +157,7 @@ export default function UpgradesPage() {
           ))}
         </div>
       ) : upgrades.length > 0 ? (
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl divide-y divide-[var(--gray-100)]">
+        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl divide-y divide-[var(--gray-100)]">
           {upgrades.map((upgrade, index) => {
             const ActionIcon = ACTION_ICONS[upgrade.action] || CheckCircle2;
             return (
@@ -166,7 +166,7 @@ export default function UpgradesPage() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.02 }}
-                className="p-4 hover:bg-white transition-colors"
+                className="p-4 hover:bg-[var(--bg-surface)] transition-colors"
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -230,7 +230,7 @@ export default function UpgradesPage() {
           })}
         </div>
       ) : (
-        <div className="p-8 bg-white border border-[var(--gray-200)] rounded-xl text-center">
+        <div className="p-8 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl text-center">
           <Filter className="h-8 w-8 text-[var(--gray-300)] mx-auto mb-3" />
           <p className="text-sm text-[var(--gray-500)]">No upgrades found</p>
         </div>

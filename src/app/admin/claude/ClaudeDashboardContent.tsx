@@ -165,7 +165,7 @@ export function ClaudeDashboardContent({
         </div>
         <Link
           href="/admin/claude/capabilities"
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-white border border-[var(--gray-200)] rounded-lg hover:bg-white transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
         >
           View All
           <ArrowRight className="h-4 w-4" />
@@ -182,7 +182,7 @@ export function ClaudeDashboardContent({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="p-4 bg-white border border-[var(--gray-200)] rounded-xl"
+              className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${stat.color}`}>
@@ -206,7 +206,7 @@ export function ClaudeDashboardContent({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 + index * 0.05 }}
-            className="p-4 bg-white border border-[var(--gray-200)] rounded-xl"
+            className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
           >
             <div className="text-2xl font-semibold text-[var(--black)]">{stat.value}</div>
             <div className="text-xs text-[var(--gray-500)] mt-0.5">{stat.title}</div>
@@ -221,7 +221,7 @@ export function ClaudeDashboardContent({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="p-5 bg-white border border-[var(--gray-200)] rounded-xl"
+          className="p-5 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
@@ -271,7 +271,7 @@ export function ClaudeDashboardContent({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="p-5 bg-white border border-[var(--gray-200)] rounded-xl"
+          className="p-5 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
@@ -351,13 +351,13 @@ export function ClaudeDashboardContent({
         </div>
 
         {upgrades.length > 0 ? (
-          <div className="bg-white border border-[var(--gray-200)] rounded-xl divide-y divide-[var(--gray-100)]">
+          <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl divide-y divide-[var(--gray-100)]">
             {upgrades.slice(0, 5).map((upgrade) => {
               const ActionIcon = ACTION_ICONS[upgrade.action] || CheckCircle2;
               return (
                 <div
                   key={upgrade.id}
-                  className="flex items-center gap-4 p-4 hover:bg-white transition-colors"
+                  className="flex items-center gap-4 p-4 hover:bg-[var(--bg-surface)] transition-colors"
                 >
                   <div
                     className={`w-8 h-8 flex items-center justify-center rounded-lg ${
@@ -402,7 +402,7 @@ export function ClaudeDashboardContent({
             })}
           </div>
         ) : (
-          <div className="p-8 bg-white border border-[var(--gray-200)] rounded-xl text-center">
+          <div className="p-8 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl text-center">
             <p className="text-sm text-[var(--gray-400)]">No upgrades recorded yet</p>
           </div>
         )}

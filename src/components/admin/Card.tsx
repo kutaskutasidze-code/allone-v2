@@ -20,7 +20,7 @@ export function Card({ children, className, padding = 'md', hover = false }: Car
   return (
     <div
       className={cn(
-        'bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]',
+        'bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]',
         paddingStyles[padding],
         hover && 'hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200',
         className
@@ -41,9 +41,9 @@ export function CardHeader({ title, description, action }: CardHeaderProps) {
   return (
     <div className="flex items-start justify-between mb-5">
       <div>
-        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+        <h3 className="text-sm font-semibold text-[var(--ink-900)]">{title}</h3>
         {description && (
-          <p className="mt-0.5 text-xs text-gray-500">{description}</p>
+          <p className="mt-0.5 text-xs text-[var(--ink-500)]">{description}</p>
         )}
       </div>
       {action && <div>{action}</div>}
@@ -60,8 +60,8 @@ interface CardSectionProps {
 export function CardSection({ title, children, className }: CardSectionProps) {
   return (
     <div className={cn('space-y-4', className)}>
-      <div className="pb-2 border-b border-gray-100">
-        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+      <div className="pb-2 border-b border-[var(--allone-line-soft)]">
+        <h3 className="text-sm font-semibold text-[var(--ink-900)]">{title}</h3>
       </div>
       {children}
     </div>

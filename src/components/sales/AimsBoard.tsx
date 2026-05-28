@@ -49,7 +49,7 @@ export function AimsBoard() {
   const current = data?.[tab] ?? [];
 
   return (
-    <div className="rounded-2xl border border-[var(--gray-200)] bg-white p-5">
+    <div className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
@@ -67,7 +67,7 @@ export function AimsBoard() {
               onClick={() => setTab(t.key)}
               className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition ${
                 tab === t.key
-                  ? "bg-white text-[var(--black)] shadow-sm"
+                  ? "bg-[var(--bg-surface)] text-[var(--black)] shadow-sm"
                   : "text-[var(--gray-500)] hover:text-[var(--black)]"
               }`}
             >

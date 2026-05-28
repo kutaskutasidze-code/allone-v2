@@ -84,7 +84,7 @@ function TargetCell({
           }
         }}
         disabled={saving}
-        className="w-16 px-2 py-0.5 text-right text-sm rounded border border-gray-300 focus:border-gray-900 focus:outline-none"
+        className="w-16 px-2 py-0.5 text-right text-sm rounded border border-[var(--allone-line-strong)] focus:border-gray-900 focus:outline-none"
       />
     );
   }
@@ -92,7 +92,7 @@ function TargetCell({
   return (
     <button
       onClick={() => setEditing(true)}
-      className="px-2 py-0.5 rounded hover:bg-gray-100 text-gray-500 transition-colors tabular-nums"
+      className="px-2 py-0.5 rounded hover:bg-[var(--bg-sunken)] text-[var(--ink-500)] transition-colors tabular-nums"
       title="Click to edit daily target"
     >
       {rep.dailyTarget}
@@ -134,21 +134,21 @@ export function DailyActivityCard() {
   const showsAllTime = range === "all";
 
   return (
-    <div className="bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] overflow-hidden">
-      <div className="flex items-center justify-between gap-3 flex-wrap px-5 py-4 border-b border-gray-100">
+    <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] overflow-hidden">
+      <div className="flex items-center justify-between gap-3 flex-wrap px-5 py-4 border-b border-[var(--allone-line-soft)]">
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-gray-400" />
-          <h2 className="text-sm font-semibold text-gray-900">Call activity</h2>
+          <Activity className="w-4 h-4 text-[var(--ink-400)]" />
+          <h2 className="text-sm font-semibold text-[var(--ink-900)]">Call activity</h2>
         </div>
-        <div className="flex items-center gap-1 rounded-md bg-gray-50 p-0.5">
+        <div className="flex items-center gap-1 rounded-md bg-[var(--bg-surface-alt)] p-0.5">
           {RANGES.map((r) => (
             <button
               key={r.value}
               onClick={() => setRange(r.value)}
               className={`px-2.5 py-1 text-xs rounded transition-colors ${
                 range === r.value
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-900"
+                  ? "bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-sm"
+                  : "text-[var(--ink-500)] hover:text-[var(--ink-900)]"
               }`}
             >
               {r.label}
@@ -157,7 +157,7 @@ export function DailyActivityCard() {
         </div>
         <Link
           href="/admin/leads/assign"
-          className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-900 transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)] transition-colors"
         >
           Assign more
           <ArrowRight className="w-3 h-3" />
@@ -167,7 +167,7 @@ export function DailyActivityCard() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 text-[11px] text-gray-500 uppercase tracking-wider">
+            <tr className="bg-[var(--bg-surface-alt)] text-[11px] text-[var(--ink-500)] uppercase tracking-wider">
               <th className="text-left px-5 py-2.5 font-medium">Rep</th>
               <th className="text-right px-3 py-2.5 font-medium">Target</th>
               <th className="text-right px-3 py-2.5 font-medium">
@@ -207,7 +207,7 @@ export function DailyActivityCard() {
               <tr>
                 <td
                   colSpan={4 + callStatuses.length + 1}
-                  className="px-5 py-8 text-center text-xs text-gray-400"
+                  className="px-5 py-8 text-center text-xs text-[var(--ink-400)]"
                 >
                   Loading…
                 </td>
@@ -216,7 +216,7 @@ export function DailyActivityCard() {
               <tr>
                 <td
                   colSpan={4 + callStatuses.length + 1}
-                  className="px-5 py-8 text-center text-xs text-gray-400"
+                  className="px-5 py-8 text-center text-xs text-[var(--ink-400)]"
                 >
                   No sales reps configured yet.
                 </td>
@@ -228,13 +228,13 @@ export function DailyActivityCard() {
                   rep.called >= rep.dailyTarget &&
                   rep.dailyTarget > 0;
                 return (
-                  <tr key={rep.id} className="border-t border-gray-50">
+                  <tr key={rep.id} className="border-t border-[var(--allone-line-soft)]">
                     <td className="px-5 py-3">
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-[var(--ink-900)]">
                         {rep.name}
                       </span>
                       {rep.role === "supervisor" && (
-                        <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">
+                        <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-[var(--ao-accent-soft)] text-[var(--ao-accent-hover)] rounded">
                           supervisor
                         </span>
                       )}
@@ -258,12 +258,12 @@ export function DailyActivityCard() {
                         }
                       />
                     </td>
-                    <td className="px-3 py-3 text-right tabular-nums text-gray-700">
+                    <td className="px-3 py-3 text-right tabular-nums text-[var(--ink-700)]">
                       {rep.assigned}
                     </td>
                     <td className="px-3 py-3 text-right tabular-nums">
                       <span
-                        className={`font-semibold inline-flex items-center gap-1 ${onTarget ? "text-emerald-600" : "text-gray-900"}`}
+                        className={`font-semibold inline-flex items-center gap-1 ${onTarget ? "text-emerald-600" : "text-[var(--ink-900)]"}`}
                       >
                         {onTarget && <Check className="w-3.5 h-3.5" />}
                         {rep.called}
@@ -274,7 +274,7 @@ export function DailyActivityCard() {
                         className={
                           rep.callbacks > 0
                             ? "text-amber-600 font-medium"
-                            : "text-gray-400"
+                            : "text-[var(--ink-400)]"
                         }
                       >
                         {rep.callbacks}
@@ -283,7 +283,7 @@ export function DailyActivityCard() {
                     {callStatuses.map((s) => (
                       <td
                         key={s.value}
-                        className="px-3 py-3 text-right tabular-nums text-gray-500"
+                        className="px-3 py-3 text-right tabular-nums text-[var(--ink-500)]"
                       >
                         {rep.byStatus[s.value] || 0}
                       </td>

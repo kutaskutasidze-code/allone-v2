@@ -129,7 +129,7 @@ export default function ValuesPage() {
       {showAddForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/30" onClick={() => setShowAddForm(false)} />
-          <div className="relative z-10 w-full max-w-md bg-white rounded-xl p-6 mx-4 border border-[var(--gray-200)]">
+          <div className="relative z-10 w-full max-w-md bg-[var(--bg-surface)] rounded-xl p-6 mx-4 border border-[var(--gray-200)]">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-base font-medium text-[var(--black)]">Add Value</h2>
               <button onClick={() => setShowAddForm(false)} className="text-[var(--gray-400)] hover:text-[var(--black)]">
@@ -194,7 +194,7 @@ export default function ValuesPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="p-5 bg-white border border-[var(--gray-200)] rounded-xl"
+              className="p-5 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
             >
               {editingId === value.id ? (
                 <div className="space-y-4">

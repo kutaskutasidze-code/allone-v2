@@ -95,7 +95,7 @@ export default function NewProjectPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-6 space-y-6">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 space-y-6">
           <Input
             label="Project Title"
             value={formData.title}

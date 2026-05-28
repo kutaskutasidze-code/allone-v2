@@ -211,12 +211,12 @@ function DemoDetailView({
           Engagement ({engagements.length})
         </h2>
         {engagements.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--gray-200)] bg-white p-5 text-sm text-[var(--gray-500)]">
+          <p className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--gray-500)]">
             No engagement events yet. Will appear after the lead opens or clicks
             the email.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-white">
+          <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)]">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--gray-200)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--gray-500)]">
@@ -255,7 +255,7 @@ function DemoDetailView({
 
 function KV({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[var(--gray-200)] bg-white p-4">
+    <div className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-4">
       <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--gray-500)]">
         {label}
       </p>
@@ -273,7 +273,7 @@ function PhaseTimeline({
 }) {
   if (history.length === 0) {
     return (
-      <p className="rounded-2xl border border-[var(--gray-200)] bg-white p-5 text-sm text-[var(--gray-500)]">
+      <p className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--gray-500)]">
         No phase events yet.
       </p>
     );
@@ -292,7 +292,7 @@ function PhaseTimeline({
             ? "border-emerald-200 bg-emerald-50/60"
             : p.status === "failed"
               ? "border-red-200 bg-red-50/60"
-              : "border-blue-200 bg-blue-50/60";
+              : "border-[var(--ao-accent-soft)] bg-[var(--ao-accent-soft)]/60";
         return (
           <li key={i} className={`rounded-xl border ${color} px-4 py-2.5`}>
             <div className="flex items-baseline justify-between gap-3">
@@ -306,14 +306,14 @@ function PhaseTimeline({
                   </>
                 )}
                 {isCurrent && (
-                  <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
+                  <span className="ml-2 rounded-full bg-[var(--ao-accent-soft)] px-2 py-0.5 text-[10px] font-medium text-[var(--ao-accent-hover)]">
                     running
                   </span>
                 )}
               </div>
             </div>
             {p.notes && Object.keys(p.notes).length > 0 && (
-              <pre className="mt-2 overflow-x-auto rounded-md bg-white/80 p-2 text-[11px] text-[var(--gray-700)]">
+              <pre className="mt-2 overflow-x-auto rounded-md bg-[var(--bg-surface)]/80 p-2 text-[11px] text-[var(--gray-700)]">
                 {JSON.stringify(p.notes, null, 2)}
               </pre>
             )}
@@ -333,7 +333,7 @@ function AuditDetail({
   audit: NonNullable<DemoJob["audit_results"]>;
 }) {
   return (
-    <div className="space-y-4 rounded-2xl border border-[var(--gray-200)] bg-white p-5">
+    <div className="space-y-4 rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
       {audit.scores && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           {Object.entries(audit.scores).map(([k, v]) => (

@@ -158,7 +158,7 @@ function CallModeContent() {
   if (isLoading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--allone-line)] border-t-gray-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -169,9 +169,9 @@ function CallModeContent() {
         <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
           <CheckCircle2 className="w-8 h-8 text-emerald-500" />
         </div>
-        <h1 className="text-xl font-semibold text-gray-900">No queue today</h1>
-        <p className="text-sm text-gray-500 max-w-sm">No leads have been assigned to you today yet. Ask your admin to assign some, or check back later.</p>
-        <Link href="/sales" className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:text-gray-700">
+        <h1 className="text-xl font-semibold text-[var(--ink-900)]">No queue today</h1>
+        <p className="text-sm text-[var(--ink-500)] max-w-sm">No leads have been assigned to you today yet. Ask your admin to assign some, or check back later.</p>
+        <Link href="/sales" className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--ink-900)] hover:text-[var(--ink-700)]">
           <ArrowLeft className="w-4 h-4" />
           Back to dashboard
         </Link>
@@ -185,9 +185,9 @@ function CallModeContent() {
         <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
           <CheckCircle2 className="w-8 h-8 text-emerald-500" />
         </div>
-        <h1 className="text-xl font-semibold text-gray-900">Queue cleared</h1>
-        <p className="text-sm text-gray-500">You've worked through all {leads.length} leads today. Nice work.</p>
-        <Link href="/sales" className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:text-gray-700">
+        <h1 className="text-xl font-semibold text-[var(--ink-900)]">Queue cleared</h1>
+        <p className="text-sm text-[var(--ink-500)]">You've worked through all {leads.length} leads today. Nice work.</p>
+        <Link href="/sales" className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--ink-900)] hover:text-[var(--ink-700)]">
           <ArrowLeft className="w-4 h-4" />
           Back to dashboard
         </Link>
@@ -198,23 +198,23 @@ function CallModeContent() {
   return (
     <div className="min-h-[80vh] flex flex-col -mx-5 lg:mx-0">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 lg:px-0 py-3 border-b border-gray-100 bg-white sticky top-0 z-10">
+      <div className="flex items-center justify-between px-5 lg:px-0 py-3 border-b border-[var(--allone-line-soft)] bg-[var(--bg-surface)] sticky top-0 z-10">
         <button
           onClick={() => router.push('/sales')}
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
+          className="inline-flex items-center gap-1 text-sm text-[var(--ink-500)] hover:text-[var(--ink-900)]"
         >
           <ArrowLeft className="w-4 h-4" />
           Exit
         </button>
         <div className="text-center">
-          <div className="text-xs text-gray-500">Lead {index + 1} of {leads.length}</div>
-          <div className="text-[11px] text-gray-400">{done} done · {remaining} left</div>
+          <div className="text-xs text-[var(--ink-500)]">Lead {index + 1} of {leads.length}</div>
+          <div className="text-[11px] text-[var(--ink-400)]">{done} done · {remaining} left</div>
         </div>
-        <div className="text-xs text-gray-500 tabular-nums">{Math.round((done / leads.length) * 100)}%</div>
+        <div className="text-xs text-[var(--ink-500)] tabular-nums">{Math.round((done / leads.length) * 100)}%</div>
       </div>
 
       {/* Progress bar */}
-      <div className="h-1 bg-gray-100">
+      <div className="h-1 bg-[var(--bg-sunken)]">
         <div
           className="h-full bg-emerald-500 transition-all duration-500"
           style={{ width: `${(done / leads.length) * 100}%` }}
@@ -250,15 +250,15 @@ function CallModeContent() {
             </div>
 
             {/* Name / company */}
-            <h2 className="text-2xl font-semibold text-center text-gray-900 mb-1">
+            <h2 className="text-2xl font-semibold text-center text-[var(--ink-900)] mb-1">
               {current.company || current.name}
             </h2>
             {current.company && current.name && (
-              <p className="text-sm text-center text-gray-500 mb-4">{current.name}</p>
+              <p className="text-sm text-center text-[var(--ink-500)] mb-4">{current.name}</p>
             )}
 
             {/* Meta */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-8 text-xs text-gray-500">
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-8 text-xs text-[var(--ink-500)]">
               {current.city && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{current.city}</span>}
               {current.industry && <span className="inline-flex items-center gap-1"><Building2 className="w-3 h-3" />{current.industry}</span>}
               {current.website && !INFOSHOP_PATTERN.test(current.website) ? (
@@ -285,7 +285,7 @@ function CallModeContent() {
                 </div>
               </a>
             ) : (
-              <div className="w-full mb-3 py-5 bg-gray-100 rounded-2xl text-center text-gray-400 text-sm">
+              <div className="w-full mb-3 py-5 bg-[var(--bg-sunken)] rounded-2xl text-center text-[var(--ink-400)] text-sm">
                 No phone number on file
               </div>
             )}
@@ -295,7 +295,7 @@ function CallModeContent() {
               {current.email && (
                 <a
                   href={`mailto:${current.email}`}
-                  className="flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-gray-50"
+                  className="flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
                 >
                   <Mail className="w-4 h-4" /> Email
                 </a>
@@ -305,7 +305,7 @@ function CallModeContent() {
                   href={current.facebook_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 hover:bg-gray-50"
+                  className="flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
                 >
                   <ExternalLink className="w-4 h-4" /> Facebook
                 </a>
@@ -314,7 +314,7 @@ function CallModeContent() {
 
             {/* Status buttons */}
             <div className="space-y-2 mb-6">
-              <p className="text-[11px] uppercase tracking-wider text-gray-400 mb-1">After the call</p>
+              <p className="text-[11px] uppercase tracking-wider text-[var(--ink-400)] mb-1">After the call</p>
               {POST_CALL_STATUSES.map(s => {
                 const active = current.status === s.value;
                 return (
@@ -324,8 +324,8 @@ function CallModeContent() {
                     onClick={() => setStatus(s.value)}
                     className={`w-full py-3.5 rounded-xl text-sm font-medium transition-all active:scale-[0.98] disabled:opacity-50 ${
                       active
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-400 hover:bg-gray-50'
+                        ? 'bg-[var(--ink-900)] text-white'
+                        : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-gray-400 hover:bg-[var(--bg-surface-alt)]'
                     }`}
                   >
                     {s.label}
@@ -339,26 +339,26 @@ function CallModeContent() {
               {!notesOpen ? (
                 <button
                   onClick={() => setNotesOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-white border border-dashed border-gray-300 rounded-xl text-sm text-gray-500 hover:border-gray-400"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-dashed border-[var(--allone-line-strong)] rounded-xl text-sm text-[var(--ink-500)] hover:border-gray-400"
                 >
                   <MessageSquare className="w-4 h-4" />
                   {current.notes ? 'Edit notes' : 'Add notes'}
                 </button>
               ) : (
-                <div className="bg-white border border-gray-200 rounded-xl p-3">
+                <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-3">
                   <textarea
                     value={notesDraft}
                     onChange={(e) => setNotesDraft(e.target.value)}
                     rows={3}
                     placeholder="What was discussed? Any next steps?"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none resize-none"
+                    className="w-full px-3 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:border-gray-400 focus:outline-none resize-none"
                   />
                   <div className="flex justify-end gap-2 mt-2">
-                    <button onClick={() => { setNotesDraft(current.notes || ''); setNotesOpen(false); }} className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-900">Cancel</button>
+                    <button onClick={() => { setNotesDraft(current.notes || ''); setNotesOpen(false); }} className="px-3 py-1.5 text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)]">Cancel</button>
                     <button
                       onClick={saveNotes}
                       disabled={busy}
-                      className="px-3 py-1.5 text-xs bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50"
+                      className="px-3 py-1.5 text-xs bg-[var(--ink-900)] text-white rounded-lg hover:bg-[var(--ink-800)] disabled:opacity-50"
                     >
                       Save
                     </button>
@@ -366,7 +366,7 @@ function CallModeContent() {
                 </div>
               )}
               {current.notes && !notesOpen && (
-                <p className="mt-2 text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">
+                <p className="mt-2 text-xs text-[var(--ink-700)] bg-[var(--bg-surface-alt)] rounded-lg px-3 py-2 whitespace-pre-wrap">
                   {current.notes}
                 </p>
               )}
@@ -384,12 +384,12 @@ function CallModeContent() {
       )}
 
       {/* Bottom nav */}
-      <div className="px-5 lg:px-0 py-3 border-t border-gray-100 bg-white sticky bottom-0 z-10">
+      <div className="px-5 lg:px-0 py-3 border-t border-[var(--allone-line-soft)] bg-[var(--bg-surface)] sticky bottom-0 z-10">
         <div className="max-w-md mx-auto flex items-center justify-between gap-3">
           <button
             onClick={() => setIndex(i => Math.max(0, i - 1))}
             disabled={index === 0}
-            className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-30 inline-flex items-center justify-center gap-1"
+            className="flex-1 py-3 rounded-xl border border-[var(--allone-line)] text-[var(--ink-700)] text-sm font-medium hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 inline-flex items-center justify-center gap-1"
           >
             <ChevronLeft className="w-4 h-4" />
             Prev
@@ -397,7 +397,7 @@ function CallModeContent() {
           <button
             onClick={advance}
             disabled={index >= leads.length - 1}
-            className="flex-1 py-3 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 disabled:opacity-30 inline-flex items-center justify-center gap-1"
+            className="flex-1 py-3 rounded-xl bg-[var(--ink-900)] text-white text-sm font-medium hover:bg-[var(--ink-800)] disabled:opacity-30 inline-flex items-center justify-center gap-1"
           >
             Next
             <ChevronRight className="w-4 h-4" />
@@ -412,7 +412,7 @@ export default function CallModePage() {
   return (
     <Suspense fallback={
       <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--allone-line)] border-t-gray-900 rounded-full animate-spin" />
       </div>
     }>
       <CallModeContent />

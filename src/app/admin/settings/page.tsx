@@ -72,7 +72,7 @@ export default function SettingsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-[var(--allone-line)] border-t-gray-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -81,13 +81,13 @@ export default function SettingsPage() {
     <div className="max-w-xl space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">Contact</h1>
-          <p className="mt-1.5 text-sm text-gray-500">Manage your website contact information</p>
+          <h1 className="text-xl font-semibold tracking-tight text-[var(--ink-900)] font-display">Contact</h1>
+          <p className="mt-1.5 text-sm text-[var(--ink-500)]">Manage your website contact information</p>
         </div>
         <button
           onClick={handleSave}
           disabled={isSaving || !formData.email || !formData.location}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm hover:bg-gray-800 active:scale-[0.98] disabled:opacity-50 transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg shadow-sm hover:bg-[var(--ink-800)] active:scale-[0.98] disabled:opacity-50 transition-all"
         >
           {saved ? (
             <>
@@ -114,10 +114,10 @@ export default function SettingsPage() {
       )}
 
       {/* Form */}
-      <div className="rounded-xl border border-gray-100 bg-white shadow-sm shadow-black/[0.02] p-6">
+      <div className="rounded-xl border border-[var(--allone-line-soft)] bg-[var(--bg-surface)] shadow-sm shadow-black/[0.02] p-6">
         <div className="space-y-5">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-2">
+            <label className="block text-xs font-medium text-[var(--ink-500)] mb-2">
               Email Address <span className="text-red-500">*</span>
             </label>
             <input
@@ -126,12 +126,12 @@ export default function SettingsPage() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="info@allonelabs.com"
               required
-              className="w-full px-0 py-2 text-sm bg-transparent border-0 border-b border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+              className="w-full px-0 py-2 text-sm bg-transparent border-0 border-b border-[var(--allone-line)] focus:border-gray-900 focus:outline-none transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-2">
+            <label className="block text-xs font-medium text-[var(--ink-500)] mb-2">
               Location <span className="text-red-500">*</span>
             </label>
             <input
@@ -140,20 +140,20 @@ export default function SettingsPage() {
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               placeholder="San Francisco, CA"
               required
-              className="w-full px-0 py-2 text-sm bg-transparent border-0 border-b border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+              className="w-full px-0 py-2 text-sm bg-transparent border-0 border-b border-[var(--allone-line)] focus:border-gray-900 focus:outline-none transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-2">
-              Phone Number <span className="text-gray-400">(optional)</span>
+            <label className="block text-xs font-medium text-[var(--ink-500)] mb-2">
+              Phone Number <span className="text-[var(--ink-400)]">(optional)</span>
             </label>
             <input
               type="tel"
               value={formData.phone || ''}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="+1 (555) 123-4567"
-              className="w-full px-0 py-2 text-sm bg-transparent border-0 border-b border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+              className="w-full px-0 py-2 text-sm bg-transparent border-0 border-b border-[var(--allone-line)] focus:border-gray-900 focus:outline-none transition-colors"
             />
           </div>
         </div>

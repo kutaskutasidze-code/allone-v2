@@ -153,7 +153,7 @@ export function DemoSection({
 
   if (!job) {
     return (
-      <div className="mb-8 rounded-2xl border border-[var(--gray-200)] bg-white p-6">
+      <div className="mb-8 rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6">
         <div className="flex items-start justify-between">
           <div>
             <h3 className="font-display text-xl text-[#071D2F]">
@@ -185,7 +185,7 @@ export function DemoSection({
 
   if (IN_PROGRESS.includes(job.status)) {
     return (
-      <div className="mb-8 rounded-2xl border border-[var(--gray-200)] bg-white p-6">
+      <div className="mb-8 rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6">
         <div className="flex items-center gap-3">
           <Loader2 className="h-5 w-5 animate-spin text-[#0ea5e9]" />
           <div className="flex-1">
@@ -224,7 +224,7 @@ export function DemoSection({
               type="button"
               onClick={retryDemo}
               disabled={isRetrying}
-              className="mt-3 inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:opacity-50"
+              className="mt-3 inline-flex items-center gap-2 rounded-lg border border-red-300 bg-[var(--bg-surface)] px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:opacity-50"
             >
               {isRetrying ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />

@@ -160,16 +160,16 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             'relative flex items-center rounded-lg text-[13px] font-medium transition-colors duration-150',
             collapsed ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2',
             active
-              ? 'text-gray-900 font-semibold'
-              : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+              ? 'text-[var(--ink-900)] font-semibold'
+              : 'text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)]'
           )}
         >
           {active && !collapsed && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-gray-900 rounded-full" />
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-[var(--ink-900)] rounded-full" />
           )}
           <Icon className={cn(
             'h-[18px] w-[18px] flex-shrink-0 transition-colors duration-150',
-            active ? 'text-gray-900' : 'text-gray-400'
+            active ? 'text-[var(--ink-900)]' : 'text-[var(--ink-400)]'
           )} />
           <span className={cn(
             'whitespace-nowrap transition-all duration-200 overflow-hidden',
@@ -179,7 +179,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
           </span>
         </Link>
         {collapsed && (
-          <div className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-[60]">
+          <div className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-[var(--ink-900)] text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-[60]">
             {item.name}
           </div>
         )}
@@ -191,7 +191,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
     <div className="flex h-full flex-col relative">
       {/* Logo */}
       <div className={cn(
-        "flex h-14 items-center border-b border-gray-100 transition-all duration-200",
+        "flex h-14 items-center border-b border-[var(--allone-line-soft)] transition-all duration-200",
         isCollapsed ? "justify-center px-2" : "px-5"
       )}>
         <Link href="/admin" className="flex items-center gap-3">
@@ -206,7 +206,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             />
           </div>
           <span className={cn(
-            'text-sm font-semibold tracking-tight text-gray-900 whitespace-nowrap transition-all duration-200 overflow-hidden',
+            'text-sm font-semibold tracking-tight text-[var(--ink-900)] whitespace-nowrap transition-all duration-200 overflow-hidden',
             isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
           )}>
             Allone
@@ -222,19 +222,19 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             const isOpen = isCollapsed || openSections[section.label] || hasActive;
             return (
               <div key={section.label}>
-                {idx > 0 && <div className="border-t border-gray-100 mb-3" />}
+                {idx > 0 && <div className="border-t border-[var(--allone-line-soft)] mb-3" />}
                 {!isCollapsed && (
                   <button
                     onClick={() => toggleSection(section.label)}
                     className="w-full flex items-center justify-between px-3 mb-1 group"
                     aria-expanded={isOpen}
                   >
-                    <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400 group-hover:text-gray-600 transition-colors">
+                    <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--ink-400)] group-hover:text-[var(--ink-700)] transition-colors">
                       {section.label}
                     </span>
                     <ChevronDown
                       className={cn(
-                        'h-3 w-3 text-gray-300 group-hover:text-gray-500 transition-transform duration-200',
+                        'h-3 w-3 text-[var(--ink-300)] group-hover:text-[var(--ink-500)] transition-transform duration-200',
                         !isOpen && '-rotate-90'
                       )}
                     />
@@ -264,13 +264,13 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-gray-100 p-3 space-y-0.5">
+      <div className="border-t border-[var(--allone-line-soft)] p-3 space-y-0.5">
         <div className="relative group">
           <Link
             href="/"
             target="_blank"
             className={cn(
-              "flex items-center rounded-lg text-[13px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-150",
+              "flex items-center rounded-lg text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150",
               isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
             )}
           >
@@ -283,7 +283,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             </span>
           </Link>
           {isCollapsed && (
-            <div className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-[60]">
+            <div className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-[var(--ink-900)] text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-[60]">
               View Website
             </div>
           )}
@@ -293,7 +293,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
           <button
             onClick={handleLogout}
             className={cn(
-              "flex w-full items-center rounded-lg text-[13px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-150",
+              "flex w-full items-center rounded-lg text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150",
               isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
             )}
           >
@@ -306,7 +306,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             </span>
           </button>
           {isCollapsed && (
-            <div className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-[60]">
+            <div className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-[var(--ink-900)] text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-[60]">
               Sign Out
             </div>
           )}
@@ -316,7 +316,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       {/* Collapse Toggle */}
       <button
         onClick={onToggle}
-        className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-900 hover:border-gray-300 transition-all duration-150 shadow-sm z-50"
+        className="absolute -right-3 top-20 w-6 h-6 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-full flex items-center justify-center text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:border-[var(--allone-line-strong)] transition-all duration-150 shadow-sm z-50"
       >
         <ChevronLeft className={cn("h-3.5 w-3.5 transition-transform duration-200", isCollapsed && "rotate-180")} />
       </button>
@@ -326,7 +326,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
   const mobileSidebarContent = (
     <div className="flex h-full flex-col">
       {/* Logo + close */}
-      <div className="flex h-14 items-center justify-between border-b border-gray-100 px-5">
+      <div className="flex h-14 items-center justify-between border-b border-[var(--allone-line-soft)] px-5">
         <Link href="/admin" className="flex items-center gap-3" onClick={handleNavClick}>
           <div className="w-8 h-8 rounded-lg overflow-hidden">
             <Image
@@ -338,13 +338,13 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
               priority
             />
           </div>
-          <span className="text-sm font-semibold tracking-tight text-gray-900">
+          <span className="text-sm font-semibold tracking-tight text-[var(--ink-900)]">
             Allone
           </span>
         </Link>
         <button
           onClick={onMobileClose}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
@@ -358,18 +358,18 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             const isOpen = openSections[section.label] || hasActive;
             return (
               <div key={section.label}>
-                {idx > 0 && <div className="border-t border-gray-100 mb-3" />}
+                {idx > 0 && <div className="border-t border-[var(--allone-line-soft)] mb-3" />}
                 <button
                   onClick={() => toggleSection(section.label)}
                   className="w-full flex items-center justify-between px-3 mb-1 group"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-gray-400 group-hover:text-gray-600 transition-colors">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--ink-400)] group-hover:text-[var(--ink-700)] transition-colors">
                     {section.label}
                   </span>
                   <ChevronDown
                     className={cn(
-                      'h-3 w-3 text-gray-300 group-hover:text-gray-500 transition-transform duration-200',
+                      'h-3 w-3 text-[var(--ink-300)] group-hover:text-[var(--ink-500)] transition-transform duration-200',
                       !isOpen && '-rotate-90'
                     )}
                   />
@@ -395,16 +395,16 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
                               className={cn(
                                 'relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors duration-150',
                                 active
-                                  ? 'text-gray-900 font-semibold'
-                                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                                  ? 'text-[var(--ink-900)] font-semibold'
+                                  : 'text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)]'
                               )}
                             >
                               {active && (
-                                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-gray-900 rounded-full" />
+                                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-[var(--ink-900)] rounded-full" />
                               )}
                               <Icon className={cn(
                                 'h-[18px] w-[18px]',
-                                active ? 'text-gray-900' : 'text-gray-400'
+                                active ? 'text-[var(--ink-900)]' : 'text-[var(--ink-400)]'
                               )} />
                               <span>{item.name}</span>
                             </Link>
@@ -421,19 +421,19 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-gray-100 p-3 space-y-0.5">
+      <div className="border-t border-[var(--allone-line-soft)] p-3 space-y-0.5">
         <Link
           href="/"
           target="_blank"
           onClick={handleNavClick}
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-150"
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150"
         >
           <ExternalLink className="h-[18px] w-[18px]" />
           <span>View Website</span>
         </Link>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-150"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150"
         >
           <LogOut className="h-[18px] w-[18px]" />
           <span>Sign Out</span>
@@ -447,7 +447,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen bg-white border-r border-gray-100 hidden lg:block transition-[width] duration-200 ease-out",
+          "fixed left-0 top-0 z-40 h-screen bg-[var(--bg-surface)] border-r border-[var(--allone-line-soft)] hidden lg:block transition-[width] duration-200 ease-out",
           isCollapsed ? "w-[72px]" : "w-64"
         )}
       >
@@ -457,7 +457,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-600 hover:text-gray-900 shadow-sm transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg flex items-center justify-center text-[var(--ink-700)] hover:text-[var(--ink-900)] shadow-sm transition-colors"
         aria-label="Open menu"
       >
         <Menu className="h-5 w-5" />
@@ -480,7 +480,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="lg:hidden fixed left-0 top-0 z-50 h-screen w-[280px] bg-white shadow-xl"
+              className="lg:hidden fixed left-0 top-0 z-50 h-screen w-[280px] bg-[var(--bg-surface)] shadow-xl"
             >
               {mobileSidebarContent}
             </motion.aside>

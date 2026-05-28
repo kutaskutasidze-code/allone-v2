@@ -16,12 +16,12 @@ const SOURCE_TYPE_LABELS: Record<string, string> = {
 };
 
 const SOURCE_TYPE_COLORS: Record<string, string> = {
-  maps: 'bg-blue-100 text-blue-600',
+  maps: 'bg-[var(--ao-accent-soft)] text-[var(--ao-accent)]',
   directory: 'bg-green-100 text-green-600',
   jobs: 'bg-purple-100 text-purple-600',
   registry: 'bg-orange-100 text-orange-600',
   search: 'bg-yellow-100 text-yellow-600',
-  manual: 'bg-gray-100 text-gray-600',
+  manual: 'bg-[var(--bg-sunken)] text-[var(--ink-700)]',
 };
 
 export default function SourcesPage() {
@@ -101,19 +101,19 @@ export default function SourcesPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-4">
           <p className="text-sm text-[var(--gray-500)]">Total Sources</p>
           <p className="text-2xl font-semibold">{sources.length}</p>
         </div>
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-4">
           <p className="text-sm text-[var(--gray-500)]">Active</p>
           <p className="text-2xl font-semibold text-green-600">{activeSources}</p>
         </div>
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-4">
           <p className="text-sm text-[var(--gray-500)]">Inactive</p>
           <p className="text-2xl font-semibold text-[var(--gray-400)]">{sources.length - activeSources}</p>
         </div>
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-4">
           <p className="text-sm text-[var(--gray-500)]">Total Leads</p>
           <p className="text-2xl font-semibold">{totalLeads.toLocaleString()}</p>
         </div>
@@ -127,7 +127,7 @@ export default function SourcesPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.03 }}
-            className={`p-4 bg-white border rounded-xl transition-colors ${
+            className={`p-4 bg-[var(--bg-surface)] border rounded-xl transition-colors ${
               source.is_active
                 ? 'border-[var(--gray-200)] hover:border-[var(--gray-300)]'
                 : 'border-[var(--gray-100)] opacity-60'
@@ -135,13 +135,13 @@ export default function SourcesPage() {
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-4">
-                <div className={`p-2.5 rounded-lg ${SOURCE_TYPE_COLORS[source.source_type] || 'bg-gray-100 text-gray-600'}`}>
+                <div className={`p-2.5 rounded-lg ${SOURCE_TYPE_COLORS[source.source_type] || 'bg-[var(--bg-sunken)] text-[var(--ink-700)]'}`}>
                   <Database className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-3 mb-1">
                     <h3 className="font-medium text-[var(--black)]">{source.name}</h3>
-                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${SOURCE_TYPE_COLORS[source.source_type] || 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${SOURCE_TYPE_COLORS[source.source_type] || 'bg-[var(--bg-sunken)] text-[var(--ink-700)]'}`}>
                       {SOURCE_TYPE_LABELS[source.source_type] || source.source_type}
                     </span>
                     <span

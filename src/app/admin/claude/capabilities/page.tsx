@@ -155,7 +155,7 @@ export default function CapabilitiesPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.02 }}
-                className="p-4 bg-white border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+                className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
@@ -191,7 +191,7 @@ export default function CapabilitiesPage() {
           })}
         </div>
       ) : (
-        <div className="p-8 bg-white border border-[var(--gray-200)] rounded-xl text-center">
+        <div className="p-8 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl text-center">
           <Filter className="h-8 w-8 text-[var(--gray-300)] mx-auto mb-3" />
           <p className="text-sm text-[var(--gray-500)]">No capabilities found</p>
         </div>

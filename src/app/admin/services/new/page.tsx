@@ -113,7 +113,7 @@ export default function NewServicePage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Info */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-6 space-y-6">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 space-y-6">
           <h2 className="text-lg font-semibold text-black border-b border-[var(--gray-200)] pb-3 -mt-1">Basic Information</h2>
 
           <Input
@@ -176,7 +176,7 @@ export default function NewServicePage() {
         </div>
 
         {/* Features & Stats */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-6 space-y-6">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 space-y-6">
           <h2 className="text-lg font-semibold text-black border-b border-[var(--gray-200)] pb-3 -mt-1">Features & Statistics</h2>
 
           <ArrayInput
@@ -198,7 +198,7 @@ export default function NewServicePage() {
         </div>
 
         {/* CTA & Footer */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-6 space-y-6">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 space-y-6">
           <h2 className="text-lg font-semibold text-black border-b border-[var(--gray-200)] pb-3 -mt-1">Call to Action & Footer</h2>
 
           <Input

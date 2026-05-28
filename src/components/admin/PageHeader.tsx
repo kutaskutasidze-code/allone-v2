@@ -16,17 +16,17 @@ interface PageHeaderProps {
   extras?: React.ReactNode;
 }
 
-const buttonClasses = 'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm hover:bg-gray-800 active:scale-[0.98] transition-all duration-150';
+const buttonClasses = 'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg shadow-sm hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all duration-150';
 
 export function PageHeader({ title, description, action, extras }: PageHeaderProps) {
   return (
     <div className="flex items-start justify-between mb-10">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">
+        <h1 className="text-xl font-semibold tracking-tight text-[var(--ink-900)] font-display">
           {title}
         </h1>
         {description && (
-          <p className="mt-1.5 text-sm text-gray-500">
+          <p className="mt-1.5 text-sm text-[var(--ink-500)]">
             {description}
           </p>
         )}

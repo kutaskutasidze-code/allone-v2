@@ -123,7 +123,7 @@ export default function NewCampaignPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-6 space-y-6">
+        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-6 space-y-6">
           <h3 className="font-medium text-[var(--black)]">Campaign Details</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -135,7 +135,7 @@ export default function NewCampaignPage() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
                 placeholder="e.g., Q1 AI Chatbot Outreach"
                 required
               />
@@ -147,7 +147,7 @@ export default function NewCampaignPage() {
               </label>
               <select
                 onChange={(e) => handleTemplateSelect(e.target.value)}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
               >
                 <option value="">Select a template...</option>
                 {templates.map((template) => (
@@ -167,7 +167,7 @@ export default function NewCampaignPage() {
               type="text"
               value={formData.subject}
               onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
-              className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+              className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
               placeholder="e.g., Automate {{company}} Customer Support with AI"
               required
             />
@@ -183,7 +183,7 @@ export default function NewCampaignPage() {
             <textarea
               value={formData.body_template}
               onChange={(e) => setFormData((prev) => ({ ...prev, body_template: e.target.value }))}
-              className="w-full px-4 py-3 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none font-mono"
+              className="w-full px-4 py-3 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none font-mono"
               rows={12}
               placeholder="Hi,&#10;&#10;I noticed {{company}} handles..."
               required
@@ -194,7 +194,7 @@ export default function NewCampaignPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-6 space-y-6">
+        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-6 space-y-6">
           <h3 className="font-medium text-[var(--black)]">Targeting</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -205,7 +205,7 @@ export default function NewCampaignPage() {
               <select
                 value={formData.target_service}
                 onChange={(e) => setFormData((prev) => ({ ...prev, target_service: e.target.value }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
               >
                 {SERVICES.map((service) => (
                   <option key={service.value} value={service.value}>
@@ -223,7 +223,7 @@ export default function NewCampaignPage() {
                 type="number"
                 value={formData.min_relevance_score}
                 onChange={(e) => setFormData((prev) => ({ ...prev, min_relevance_score: parseInt(e.target.value) || 0 }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
                 min={0}
                 max={100}
               />
@@ -243,7 +243,7 @@ export default function NewCampaignPage() {
                   className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
                     formData.target_countries.includes(country.code)
                       ? 'bg-[var(--black)] text-white border-[var(--black)]'
-                      : 'bg-white text-[var(--gray-600)] border-[var(--gray-200)] hover:border-[var(--gray-400)]'
+                      : 'bg-[var(--bg-surface)] text-[var(--gray-600)] border-[var(--gray-200)] hover:border-[var(--gray-400)]'
                   }`}
                 >
                   {country.name}
@@ -256,7 +256,7 @@ export default function NewCampaignPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-[var(--gray-200)] rounded-xl p-6 space-y-6">
+        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-6 space-y-6">
           <h3 className="font-medium text-[var(--black)]">Settings</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -268,7 +268,7 @@ export default function NewCampaignPage() {
                 type="number"
                 value={formData.daily_limit}
                 onChange={(e) => setFormData((prev) => ({ ...prev, daily_limit: parseInt(e.target.value) || 50 }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
                 min={1}
                 max={100}
               />

@@ -116,7 +116,7 @@ function CampaignsPageContent() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search campaigns..."
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
           />
           {search && (
             <button
@@ -135,7 +135,7 @@ function CampaignsPageContent() {
               onClick={() => setStatusFilter(status)}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all capitalize ${
                 statusFilter === status
-                  ? 'bg-white text-[var(--black)] shadow-sm'
+                  ? 'bg-[var(--bg-surface)] text-[var(--black)] shadow-sm'
                   : 'text-[var(--gray-500)] hover:text-[var(--black)]'
               }`}
             >
@@ -160,7 +160,7 @@ function CampaignsPageContent() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="p-4 bg-white border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+              className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -203,7 +203,7 @@ function CampaignsPageContent() {
                         <span className="font-semibold text-green-600">{campaign.emails_opened}</span> opened
                       </span>
                       <span className="text-[var(--gray-500)]">
-                        <span className="font-semibold text-blue-600">{campaign.emails_replied}</span> replied
+                        <span className="font-semibold text-[var(--ao-accent)]">{campaign.emails_replied}</span> replied
                       </span>
                     </div>
                   </div>

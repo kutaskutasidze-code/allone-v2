@@ -66,7 +66,7 @@ export function NotificationsContent({ sends }: { sends: Send[] }) {
               onClick={() => setFilter(b)}
               className={`rounded-full px-3 py-1 text-xs font-medium ${
                 filter === b
-                  ? "bg-white text-[color:var(--ink-900)] shadow-sm"
+                  ? "bg-[var(--bg-surface)] text-[color:var(--ink-900)] shadow-sm"
                   : "text-[color:var(--ink-500)]"
               }`}
             >

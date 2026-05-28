@@ -68,7 +68,7 @@ export default function ServicesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-[var(--allone-line)] border-t-gray-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -93,19 +93,19 @@ export default function ServicesPage() {
           {services.map((service) => (
             <div
               key={service.id}
-              className="group flex items-center gap-4 p-4 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+              className="group flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
             >
               {/* Icon */}
-              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-gray-50">
+              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--bg-surface-alt)]">
                 <span className="text-sm">{service.icon}</span>
               </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-gray-900">
+                <h3 className="text-sm font-medium text-[var(--ink-900)]">
                   {service.title}
                 </h3>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[var(--ink-500)]">
                   {service.features.length} feature{service.features.length !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -122,13 +122,13 @@ export default function ServicesPage() {
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Link
                   href={`/admin/services/${service.id}`}
-                  className="p-2 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                  className="p-2 rounded-lg text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
                 >
                   <Pencil className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={() => setDeleteId(service.id)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-lg text-[var(--ink-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

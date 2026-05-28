@@ -131,7 +131,7 @@ export default function StatsPage() {
           )}
           <button
             onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-white border border-[var(--gray-200)] rounded-lg hover:bg-white"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-lg hover:bg-[var(--bg-surface)]"
           >
             Add Stat
           </button>
@@ -142,7 +142,7 @@ export default function StatsPage() {
       {showAddForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/30" onClick={() => setShowAddForm(false)} />
-          <div className="relative z-10 w-full max-w-md bg-white rounded-xl p-6 mx-4 border border-[var(--gray-200)]">
+          <div className="relative z-10 w-full max-w-md bg-[var(--bg-surface)] rounded-xl p-6 mx-4 border border-[var(--gray-200)]">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-base font-medium text-[var(--black)]">Add Stat</h2>
               <button onClick={() => setShowAddForm(false)} className="text-[var(--gray-400)] hover:text-[var(--black)]">
@@ -199,7 +199,7 @@ export default function StatsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="p-4 bg-white border border-[var(--gray-200)] rounded-xl"
+              className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
             >
               <div className="space-y-3">
                 <input

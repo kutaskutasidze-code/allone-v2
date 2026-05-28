@@ -66,7 +66,7 @@ export function DemoDetailActions({
           href={demoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--black)] hover:bg-[var(--gray-50)]"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--black)] hover:bg-[var(--gray-50)]"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           Open demo
@@ -77,7 +77,7 @@ export function DemoDetailActions({
           type="button"
           onClick={retry}
           disabled={busy !== null}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--black)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--black)] hover:bg-[var(--gray-50)] disabled:opacity-50"
         >
           {busy === "retry" ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -92,7 +92,7 @@ export function DemoDetailActions({
           type="button"
           onClick={teardown}
           disabled={busy !== null}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
         >
           {busy === "teardown" ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />

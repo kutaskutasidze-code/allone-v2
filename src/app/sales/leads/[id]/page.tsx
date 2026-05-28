@@ -152,7 +152,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
       {/* Form */}
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         {/* Contact Information */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">
             Contact Information
           </h2>
@@ -198,7 +198,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
         </div>
 
         {/* Lead Details */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">
             Lead Details
           </h2>
@@ -244,7 +244,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
         </div>
 
         {/* Notes */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">
             Notes
           </h2>

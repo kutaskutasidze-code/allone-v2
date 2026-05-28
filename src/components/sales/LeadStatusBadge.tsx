@@ -4,12 +4,12 @@ import { cn } from '@/lib/utils';
 import type { LeadStatus } from '@/types/database';
 
 const STATUS_STYLES: Record<LeadStatus, string> = {
-  new: 'bg-blue-100 text-blue-700',
+  new: 'bg-[var(--ao-accent-soft)] text-[var(--ao-accent-hover)]',
   contacted: 'bg-yellow-100 text-yellow-700',
   callback: 'bg-teal-100 text-teal-700',
   qualified: 'bg-purple-100 text-purple-700',
   won: 'bg-green-100 text-green-700',
-  lost: 'bg-gray-100 text-gray-500',
+  lost: 'bg-[var(--bg-sunken)] text-[var(--ink-500)]',
   not_interested: 'bg-red-100 text-red-700',
   unavailable: 'bg-orange-100 text-orange-700',
 };

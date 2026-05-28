@@ -49,11 +49,11 @@ const STATUS_STYLE: Record<
   string,
   { bg: string; fg: string; Icon: typeof Clock }
 > = {
-  draft_ready: { bg: "bg-blue-50", fg: "text-blue-700", Icon: CheckCircle2 },
+  draft_ready: { bg: "bg-[var(--ao-accent-soft)]", fg: "text-[var(--ao-accent-hover)]", Icon: CheckCircle2 },
   sent: { bg: "bg-emerald-50", fg: "text-emerald-700", Icon: CheckCircle2 },
   failed: { bg: "bg-red-50", fg: "text-red-700", Icon: AlertCircle },
-  expired: { bg: "bg-slate-100", fg: "text-slate-600", Icon: Clock },
-  deleted: { bg: "bg-slate-100", fg: "text-slate-500", Icon: Clock },
+  expired: { bg: "bg-[var(--bg-sunken)]", fg: "text-slate-600", Icon: Clock },
+  deleted: { bg: "bg-[var(--bg-sunken)]", fg: "text-[var(--ink-500)]", Icon: Clock },
 };
 
 const PHASE_LABEL: Record<string, string> = {
@@ -115,7 +115,7 @@ export function DemosOverviewContent({
         <div className="flex items-center gap-3 text-sm">
           <Link
             href="/sales/demos/references"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)]"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)]"
           >
             Reference library
           </Link>
@@ -140,7 +140,7 @@ export function DemosOverviewContent({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search lead, company, email…"
-            className="w-full rounded-lg border border-[var(--gray-200)] bg-white py-2 pl-9 pr-3 text-sm focus:border-[#0ea5e9] focus:outline-none"
+            className="w-full rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] py-2 pl-9 pr-3 text-sm focus:border-[#0ea5e9] focus:outline-none"
           />
         </div>
         {STATUS_BUCKETS.map((b) => (
@@ -151,7 +151,7 @@ export function DemosOverviewContent({
             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
               bucket === b.value
                 ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
-                : "border-[var(--gray-200)] bg-white text-[var(--gray-600)] hover:bg-[var(--gray-50)]"
+                : "border-[var(--gray-200)] bg-[var(--bg-surface)] text-[var(--gray-600)] hover:bg-[var(--gray-50)]"
             }`}
           >
             {b.label}
@@ -164,14 +164,14 @@ export function DemosOverviewContent({
 
       {/* Table */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--gray-200)] bg-white p-12 text-center">
+        <div className="rounded-2xl border border-dashed border-[var(--gray-200)] bg-[var(--bg-surface)] p-12 text-center">
           <Sparkles className="mx-auto h-8 w-8 text-[var(--gray-300)]" />
           <p className="mt-3 text-sm text-[var(--gray-500)]">
             No demo jobs match this filter.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-white">
+        <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)]">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--gray-200)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--gray-500)]">
@@ -217,10 +217,10 @@ function Row({ job }: { job: Job }) {
       </td>
       <td className="px-5 py-3">
         {inProgress ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ao-accent-soft)] px-2.5 py-0.5 text-xs font-medium text-[var(--ao-accent-hover)]">
             <Loader2 className="h-3 w-3 animate-spin" />
             {PHASE_LABEL[job.current_phase ?? job.status] ?? job.status}
-            <span className="text-blue-500">· {job.progress}%</span>
+            <span className="text-[var(--ao-accent)]">· {job.progress}%</span>
           </span>
         ) : style ? (
           <span

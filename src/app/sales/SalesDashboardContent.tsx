@@ -104,10 +104,10 @@ export function SalesDashboardContent({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">
+        <h1 className="text-xl font-semibold tracking-tight text-[var(--ink-900)] font-display">
           Dashboard
         </h1>
-        <p className="mt-1.5 text-sm text-gray-500">
+        <p className="mt-1.5 text-sm text-[var(--ink-500)]">
           Welcome back, {salesUser.name.split(" ")[0]}. Here&apos;s your
           pipeline overview.
         </p>
@@ -119,25 +119,25 @@ export function SalesDashboardContent({
           className={`p-5 rounded-xl shadow-sm transition-shadow block ${
             todaysQueue > 0
               ? "bg-emerald-500 text-white border border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/20"
-              : "bg-white border border-gray-100 text-gray-900 shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04]"
+              : "bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] text-[var(--ink-900)] shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04]"
           }`}
         >
           <div className="flex items-center gap-2 mb-3">
             <Phone
-              className={`h-4 w-4 ${todaysQueue > 0 ? "text-white" : "text-blue-500"}`}
+              className={`h-4 w-4 ${todaysQueue > 0 ? "text-white" : "text-[var(--ao-accent)]"}`}
             />
             <span className="text-sm font-semibold">Today&apos;s Queue</span>
           </div>
           <div className="flex items-end gap-3 mb-3">
             <span className="text-4xl font-bold">{todaysQueue}</span>
             <span
-              className={`text-sm mb-1 ${todaysQueue > 0 ? "text-white/80" : "text-gray-400"}`}
+              className={`text-sm mb-1 ${todaysQueue > 0 ? "text-white/80" : "text-[var(--ink-400)]"}`}
             >
               leads to call
             </span>
           </div>
           <p
-            className={`text-xs mt-2 ${todaysQueue > 0 ? "text-white/80" : "text-gray-400"}`}
+            className={`text-xs mt-2 ${todaysQueue > 0 ? "text-white/80" : "text-[var(--ink-400)]"}`}
           >
             {todaysQueue === 0
               ? "No new leads in your queue yet. Check back later or ask your admin."
@@ -145,44 +145,44 @@ export function SalesDashboardContent({
           </p>
         </Link>
 
-        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
           <div className="flex items-center gap-2 mb-3">
-            <Phone className="h-4 w-4 text-blue-500" />
-            <span className="text-sm font-semibold text-gray-900">
+            <Phone className="h-4 w-4 text-[var(--ao-accent)]" />
+            <span className="text-sm font-semibold text-[var(--ink-900)]">
               Today&apos;s Calls
             </span>
           </div>
           <div className="flex items-end gap-3 mb-3">
-            <span className="text-4xl font-bold text-gray-900">
+            <span className="text-4xl font-bold text-[var(--ink-900)]">
               {todaysCalls}
             </span>
-            <span className="text-sm text-gray-400 mb-1">/ {callTarget}</span>
+            <span className="text-sm text-[var(--ink-400)] mb-1">/ {callTarget}</span>
           </div>
-          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-[var(--bg-sunken)] rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${
                 callProgress >= 100
                   ? "bg-green-500"
                   : callProgress >= 50
-                    ? "bg-blue-500"
+                    ? "bg-[var(--ao-accent)]"
                     : "bg-amber-500"
               }`}
               style={{ width: `${callProgress}%` }}
             />
           </div>
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-[var(--ink-400)] mt-2">
             {callProgress >= 100
               ? "Queue cleared. Great work!"
               : `${Math.max(0, callTarget - todaysCalls)} more to clear your queue`}
           </p>
         </div>
 
-        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle
               className={`h-4 w-4 ${overdueCallbacks.length > 0 ? "text-red-500" : "text-green-500"}`}
             />
-            <span className="text-sm font-semibold text-gray-900">
+            <span className="text-sm font-semibold text-[var(--ink-900)]">
               Overdue Callbacks
             </span>
             {overdueCallbacks.length > 0 && (
@@ -192,7 +192,7 @@ export function SalesDashboardContent({
             )}
           </div>
           {overdueCallbacks.length === 0 ? (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-[var(--ink-400)]">
               No overdue callbacks. You&apos;re all caught up!
             </p>
           ) : (
@@ -200,16 +200,16 @@ export function SalesDashboardContent({
               {overdueCallbacks.map((cb) => (
                 <div
                   key={cb.id}
-                  className="flex items-center justify-between gap-2 py-1.5 border-b border-gray-50 last:border-0"
+                  className="flex items-center justify-between gap-2 py-1.5 border-b border-[var(--allone-line-soft)] last:border-0"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-[var(--ink-900)] truncate">
                       {cb.company || cb.name}
                     </p>
                     {cb.phone && (
                       <a
                         href={`tel:${cb.phone}`}
-                        className="text-xs text-blue-600 hover:underline"
+                        className="text-xs text-[var(--ao-accent)] hover:underline"
                       >
                         {cb.phone}
                       </a>
@@ -233,22 +233,22 @@ export function SalesDashboardContent({
       </div>
 
       {demoStats && (
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm shadow-black/[0.02]">
+        <div className="rounded-2xl border border-[var(--allone-line-soft)] bg-[var(--bg-surface)] p-5 shadow-sm shadow-black/[0.02]">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--ao-accent-soft)] text-[var(--ao-accent)]">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-gray-900">
+                <h2 className="text-sm font-semibold text-[var(--ink-900)]">
                   Demo pipeline
                 </h2>
-                <p className="text-xs text-gray-400">last 7 days</p>
+                <p className="text-xs text-[var(--ink-400)]">last 7 days</p>
               </div>
             </div>
             <Link
               href="/sales/demos"
-              className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-gray-900"
+              className="inline-flex items-center gap-1 text-xs font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)]"
             >
               View all <ArrowRight className="h-3 w-3" />
             </Link>
@@ -271,16 +271,16 @@ export function SalesDashboardContent({
               <Link
                 key={m.label}
                 href="/sales/demos"
-                className={`block rounded-xl border px-4 py-3 transition hover:border-gray-300 ${
+                className={`block rounded-xl border px-4 py-3 transition hover:border-[var(--allone-line-strong)] ${
                   m.highlight
-                    ? "border-blue-200 bg-blue-50/60"
+                    ? "border-[var(--ao-accent-soft)] bg-[var(--ao-accent-soft)]/60"
                     : m.positive
                       ? "border-emerald-200 bg-emerald-50/60"
-                      : "border-gray-200 bg-white"
+                      : "border-[var(--allone-line)] bg-[var(--bg-surface)]"
                 }`}
               >
-                <div className="text-xs text-gray-500">{m.label}</div>
-                <div className="mt-0.5 text-xl font-semibold text-gray-900">
+                <div className="text-xs text-[var(--ink-500)]">{m.label}</div>
+                <div className="mt-0.5 text-xl font-semibold text-[var(--ink-900)]">
                   {m.value}
                 </div>
               </Link>
@@ -294,13 +294,13 @@ export function SalesDashboardContent({
           <Link
             key={stat.label}
             href={stat.href}
-            className="group block p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+            className="group block p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs text-gray-500">{stat.label}</span>
-              <ArrowRight className="h-4 w-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="text-xs text-[var(--ink-500)]">{stat.label}</span>
+              <ArrowRight className="h-4 w-4 text-[var(--ink-300)] opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <div className="text-2xl font-semibold text-gray-900">
+            <div className="text-2xl font-semibold text-[var(--ink-900)]">
               {stat.count}
             </div>
           </Link>
@@ -308,33 +308,33 @@ export function SalesDashboardContent({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
-          <p className="text-xs text-gray-500 mb-2">Pipeline Value</p>
-          <p className="text-2xl font-semibold text-gray-900">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+          <p className="text-xs text-[var(--ink-500)] mb-2">Pipeline Value</p>
+          <p className="text-2xl font-semibold text-[var(--ink-900)]">
             {formatCurrency(stats.pipelineValue)}
           </p>
-          <p className="text-xs text-gray-400 mt-1">From active leads</p>
+          <p className="text-xs text-[var(--ink-400)] mt-1">From active leads</p>
         </div>
-        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
-          <p className="text-xs text-gray-500 mb-2">Won Revenue</p>
-          <p className="text-2xl font-semibold text-gray-900">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+          <p className="text-xs text-[var(--ink-500)] mb-2">Won Revenue</p>
+          <p className="text-2xl font-semibold text-[var(--ink-900)]">
             {formatCurrency(stats.wonValue)}
           </p>
-          <p className="text-xs text-gray-400 mt-1">Closed deals</p>
+          <p className="text-xs text-[var(--ink-400)] mt-1">Closed deals</p>
         </div>
-        <div className="p-5 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02]">
-          <p className="text-xs text-gray-500 mb-2">Conversion Rate</p>
-          <p className="text-2xl font-semibold text-gray-900">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+          <p className="text-xs text-[var(--ink-500)] mb-2">Conversion Rate</p>
+          <p className="text-2xl font-semibold text-[var(--ink-900)]">
             {conversionRate}%
           </p>
-          <p className="text-xs text-gray-400 mt-1">Won / Total</p>
+          <p className="text-xs text-[var(--ink-400)] mt-1">Won / Total</p>
         </div>
       </div>
 
       <CommissionWidget />
 
       <div>
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">
+        <h2 className="text-sm font-semibold text-[var(--ink-900)] mb-3">
           Quick Actions
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -357,12 +357,12 @@ export function SalesDashboardContent({
               <Link
                 key={action.label}
                 href={action.href}
-                className="group flex items-center gap-3 p-4 bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+                className="group flex items-center gap-3 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
               >
-                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50">
-                  <Icon className="h-4 w-4 text-gray-600" />
+                <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-surface-alt)]">
+                  <Icon className="h-4 w-4 text-[var(--ink-700)]" />
                 </div>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-[var(--ink-700)]">
                   {action.label}
                 </span>
               </Link>
@@ -373,42 +373,42 @@ export function SalesDashboardContent({
 
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-gray-900">Recent Leads</h2>
+          <h2 className="text-sm font-semibold text-[var(--ink-900)]">Recent Leads</h2>
           <Link
             href="/sales/leads"
-            className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
+            className="text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)] transition-colors"
           >
             View all
           </Link>
         </div>
 
         {recentLeads.length === 0 ? (
-          <div className="p-8 bg-white border border-dashed border-gray-200 rounded-2xl text-center">
-            <Users className="h-8 w-8 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm text-gray-500">No leads yet</p>
+          <div className="p-8 bg-[var(--bg-surface)] border border-dashed border-[var(--allone-line)] rounded-2xl text-center">
+            <Users className="h-8 w-8 text-[var(--ink-300)] mx-auto mb-3" />
+            <p className="text-sm text-[var(--ink-500)]">No leads yet</p>
             <Link
               href="/sales/leads/new"
-              className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-gray-900 hover:underline"
+              className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-[var(--ink-900)] hover:underline"
             >
               <Plus className="h-4 w-4" />
               Add your first lead
             </Link>
           </div>
         ) : (
-          <div className="bg-white border border-gray-100 rounded-xl shadow-sm shadow-black/[0.02] overflow-x-auto">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] overflow-x-auto">
             <table className="w-full min-w-[500px]">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">
+                <tr className="border-b border-[var(--allone-line-soft)]">
+                  <th className="text-left text-[11px] font-medium text-[var(--ink-400)] uppercase tracking-wider px-4 py-3">
                     Lead
                   </th>
-                  <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">
+                  <th className="text-left text-[11px] font-medium text-[var(--ink-400)] uppercase tracking-wider px-4 py-3">
                     Company
                   </th>
-                  <th className="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">
+                  <th className="text-left text-[11px] font-medium text-[var(--ink-400)] uppercase tracking-wider px-4 py-3">
                     Status
                   </th>
-                  <th className="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wider px-4 py-3">
+                  <th className="text-right text-[11px] font-medium text-[var(--ink-400)] uppercase tracking-wider px-4 py-3">
                     Value
                   </th>
                 </tr>
@@ -417,27 +417,27 @@ export function SalesDashboardContent({
                 {recentLeads.map((lead, index) => (
                   <tr
                     key={lead.id}
-                    className={`hover:bg-gray-50/50 transition-colors ${
+                    className={`hover:bg-[var(--bg-surface-alt)]/50 transition-colors ${
                       index !== recentLeads.length - 1
-                        ? "border-b border-gray-50"
+                        ? "border-b border-[var(--allone-line-soft)]"
                         : ""
                     }`}
                   >
                     <td className="px-4 py-3">
-                      <span className="font-medium text-sm text-gray-900">
+                      <span className="font-medium text-sm text-[var(--ink-900)]">
                         {lead.company || lead.name}
                       </span>
                       {lead.email && (
-                        <p className="text-xs text-gray-500">{lead.email}</p>
+                        <p className="text-xs text-[var(--ink-500)]">{lead.email}</p>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">
+                    <td className="px-4 py-3 text-sm text-[var(--ink-500)]">
                       {(lead as Lead & { industry?: string }).industry || "-"}
                     </td>
                     <td className="px-4 py-3">
                       <LeadStatusBadge status={lead.status} />
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 font-medium text-right">
+                    <td className="px-4 py-3 text-sm text-[var(--ink-900)] font-medium text-right">
                       {formatCurrency(lead.value)}
                     </td>
                   </tr>

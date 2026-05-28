@@ -161,14 +161,14 @@ export default function CategoriesPage() {
 
       {/* Add Category Form */}
       {isAdding && (
-        <div className="p-4 bg-white border border-[var(--gray-200)] rounded-xl">
+        <div className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl">
           <div className="flex gap-3">
             <input
               type="text"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder="Category name..."
-              className="flex-1 px-3 py-2 text-sm rounded-lg bg-white border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+              className="flex-1 px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             />
@@ -207,7 +207,7 @@ export default function CategoriesPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="flex items-center gap-4 p-4 bg-white border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+              className="flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
             >
               {/* Order Badge */}
               <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--gray-100)] text-sm font-medium text-[var(--gray-500)]">

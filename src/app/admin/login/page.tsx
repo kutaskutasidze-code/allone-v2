@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="bg-white rounded-2xl shadow-xl shadow-black/[0.04] border border-gray-100 p-10">
+        <div className="bg-[var(--bg-surface)] rounded-2xl shadow-xl shadow-black/[0.04] border border-[var(--allone-line-soft)] p-10">
           {/* Logo */}
           <div className="mb-10">
             <AnimatedLogoHero />
@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block text-xs font-medium text-[var(--ink-500)] mb-2">
                 Email Address
               </label>
               <input
@@ -67,12 +67,12 @@ export default function AdminLoginPage() {
                 placeholder="admin@allone.ai"
                 required
                 autoComplete="email"
-                className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-150 text-sm"
+                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] text-[var(--ink-900)] placeholder:text-[var(--ink-400)] focus:outline-none focus:border-gray-400 focus:bg-[var(--bg-surface)] transition-all duration-150 text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block text-xs font-medium text-[var(--ink-500)] mb-2">
                 Password
               </label>
               <input
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
-                className="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-150 text-sm"
+                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] text-[var(--ink-900)] placeholder:text-[var(--ink-400)] focus:outline-none focus:border-gray-400 focus:bg-[var(--bg-surface)] transition-all duration-150 text-sm"
               />
             </div>
 
@@ -105,7 +105,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-6 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 active:scale-[0.98] transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
+              className="w-full py-3 px-6 bg-[var(--ink-900)] text-white font-medium rounded-lg hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
             >
               <span className="flex items-center justify-center gap-2">
                 {isLoading ? (
@@ -124,7 +124,7 @@ export default function AdminLoginPage() {
           </form>
         </div>
 
-        <p className="mt-8 text-center text-xs text-gray-400">
+        <p className="mt-8 text-center text-xs text-[var(--ink-400)]">
           Protected area. Unauthorized access is prohibited.
         </p>
       </motion.div>

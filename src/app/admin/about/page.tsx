@@ -123,7 +123,7 @@ export default function AboutPage() {
 
       <div className="space-y-4">
         {/* Hero Section */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">Hero Section</h2>
           <div className="space-y-4">
             <Input
@@ -147,7 +147,7 @@ export default function AboutPage() {
         </div>
 
         {/* Story Section */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">Story Section</h2>
           <div className="space-y-4">
             <Input
@@ -179,7 +179,7 @@ export default function AboutPage() {
         </div>
 
         {/* Values Section Headers */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">Values Section</h2>
           <div className="space-y-4">
             <Input

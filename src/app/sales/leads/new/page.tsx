@@ -82,7 +82,7 @@ export default function NewLeadPage() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Contact Information */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">Contact Information</h2>
           <div className="space-y-4">
             <Input
@@ -118,7 +118,7 @@ export default function NewLeadPage() {
         </div>
 
         {/* Lead Details */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">Lead Details</h2>
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -150,7 +150,7 @@ export default function NewLeadPage() {
         </div>
 
         {/* Notes */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-white p-5">
+        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--black)] mb-4">Notes</h2>
           <Textarea
             label="Notes"

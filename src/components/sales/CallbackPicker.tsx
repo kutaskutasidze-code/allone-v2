@@ -62,14 +62,14 @@ export function CallbackPicker({ onCancel, onPick }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
-      <div className="bg-white border border-gray-200 rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md p-5 max-h-[90vh] overflow-y-auto">
+      <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md p-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-1">
-          <h2 className="text-base font-semibold text-gray-900">Schedule callback</h2>
-          <button onClick={onCancel} className="text-gray-400 hover:text-gray-900">
+          <h2 className="text-base font-semibold text-[var(--ink-900)]">Schedule callback</h2>
+          <button onClick={onCancel} className="text-[var(--ink-400)] hover:text-[var(--ink-900)]">
             <X className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-xs text-gray-500 mb-4">When should you call this lead back?</p>
+        <p className="text-xs text-[var(--ink-500)] mb-4">When should you call this lead back?</p>
 
         <div className="space-y-2 mb-5">
           {PRESETS.map(p => {
@@ -78,29 +78,29 @@ export function CallbackPicker({ onCancel, onPick }: Props) {
               <button
                 key={p.label}
                 onClick={() => onPick(p.get())}
-                className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 hover:border-gray-400 hover:bg-gray-50 transition-all"
+                className="w-full flex items-center gap-3 px-4 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-sm text-[var(--ink-800)] hover:border-gray-400 hover:bg-[var(--bg-surface-alt)] transition-all"
               >
-                <Icon className="w-4 h-4 text-gray-400" />
+                <Icon className="w-4 h-4 text-[var(--ink-400)]" />
                 <span className="flex-1 text-left">{p.label}</span>
               </button>
             );
           })}
         </div>
 
-        <div className="border-t border-gray-100 pt-4">
-          <label className="block text-xs font-medium text-gray-700 mb-2">Or pick a custom time</label>
+        <div className="border-t border-[var(--allone-line-soft)] pt-4">
+          <label className="block text-xs font-medium text-[var(--ink-700)] mb-2">Or pick a custom time</label>
           <input
             type="datetime-local"
             value={customValue}
             onChange={(e) => setCustomValue(e.target.value)}
-            className="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-200 focus:border-gray-400 focus:outline-none"
+            className="w-full px-3 py-2.5 text-sm rounded-lg border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
           />
           <button
             onClick={() => {
               if (!customValue) return;
               onPick(new Date(customValue).toISOString());
             }}
-            className="w-full mt-3 py-3 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-all"
+            className="w-full mt-3 py-3 bg-[var(--ink-900)] text-white text-sm font-medium rounded-xl hover:bg-[var(--ink-800)] transition-all"
           >
             Save callback
           </button>

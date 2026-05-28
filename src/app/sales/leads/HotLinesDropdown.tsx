@@ -72,7 +72,7 @@ export function HotLinesDropdown({
         className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
           active
             ? activeClassName
-            : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300'
+            : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'
         }`}
       >
         <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : iconClassName}`} />
@@ -82,37 +82,37 @@ export function HotLinesDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg shadow-black/[0.08] py-1 min-w-[240px] max-h-[420px] overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 z-20 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-lg shadow-black/[0.08] py-1 min-w-[240px] max-h-[420px] overflow-y-auto">
             {isLoading ? (
               <div className="px-3 py-6 flex justify-center">
-                <div className="w-4 h-4 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-[var(--allone-line)] border-t-gray-900 rounded-full animate-spin" />
               </div>
             ) : (
               <>
                 <button
                   onClick={() => { onSelect(null); setOpen(false); }}
-                  className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left text-xs hover:bg-gray-50 transition-colors ${
+                  className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-surface-alt)] transition-colors ${
                     selectedIndustry === null ? 'font-semibold' : ''
                   }`}
                 >
                   <span>All</span>
-                  <span className="text-[10px] text-gray-400 tabular-nums">{total.toLocaleString()}</span>
+                  <span className="text-[10px] text-[var(--ink-400)] tabular-nums">{total.toLocaleString()}</span>
                 </button>
-                {rows.length > 0 && <div className="my-1 mx-2 h-px bg-gray-100" />}
+                {rows.length > 0 && <div className="my-1 mx-2 h-px bg-[var(--bg-sunken)]" />}
                 {rows.map((r) => (
                   <button
                     key={r.industry}
                     onClick={() => { onSelect(r.industry); setOpen(false); }}
-                    className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left text-xs hover:bg-gray-50 transition-colors ${
+                    className={`w-full flex items-center justify-between gap-2 px-3 py-1.5 text-left text-xs hover:bg-[var(--bg-surface-alt)] transition-colors ${
                       selectedIndustry === r.industry ? 'font-semibold' : ''
                     }`}
                   >
                     <span className="truncate">{r.industry}</span>
-                    <span className="text-[10px] text-gray-400 tabular-nums shrink-0">{r.count.toLocaleString()}</span>
+                    <span className="text-[10px] text-[var(--ink-400)] tabular-nums shrink-0">{r.count.toLocaleString()}</span>
                   </button>
                 ))}
                 {!isLoading && rows.length === 0 && (
-                  <div className="px-3 py-4 text-xs text-gray-400 text-center">No industries yet</div>
+                  <div className="px-3 py-4 text-xs text-[var(--ink-400)] text-center">No industries yet</div>
                 )}
               </>
             )}

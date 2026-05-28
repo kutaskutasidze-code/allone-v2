@@ -33,22 +33,22 @@ const HIDDEN_TAGS = new Set(['enrich_attempted', 'website_audited']);
 
 function LeadCardSkeleton() {
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm shadow-black/[0.02] animate-pulse">
+    <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl p-4 shadow-sm shadow-black/[0.02] animate-pulse">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0 space-y-2">
           <div className="flex items-center gap-2">
-            <div className="h-4 w-40 rounded bg-gray-100" />
-            <div className="h-3 w-16 rounded bg-gray-100" />
+            <div className="h-4 w-40 rounded bg-[var(--bg-sunken)]" />
+            <div className="h-3 w-16 rounded bg-[var(--bg-sunken)]" />
           </div>
           <div className="flex items-center gap-3">
-            <div className="h-3 w-28 rounded bg-gray-100" />
-            <div className="h-3 w-32 rounded bg-gray-100" />
-            <div className="h-3 w-20 rounded bg-gray-100" />
+            <div className="h-3 w-28 rounded bg-[var(--bg-sunken)]" />
+            <div className="h-3 w-32 rounded bg-[var(--bg-sunken)]" />
+            <div className="h-3 w-20 rounded bg-[var(--bg-sunken)]" />
           </div>
-          <div className="h-3 w-48 rounded bg-gray-100" />
+          <div className="h-3 w-48 rounded bg-[var(--bg-sunken)]" />
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <div className="h-6 w-20 rounded-full bg-gray-100" />
+          <div className="h-6 w-20 rounded-full bg-[var(--bg-sunken)]" />
         </div>
       </div>
     </div>
@@ -70,12 +70,12 @@ function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; c
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg shadow-black/[0.08] py-1 min-w-[120px]">
+          <div className="absolute top-full left-0 mt-1 z-20 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-lg shadow-black/[0.08] py-1 min-w-[120px]">
             {LEAD_STATUSES.map(s => (
               <button
                 key={s.value}
                 onClick={() => { onUpdate(leadId, s.value); setOpen(false); }}
-                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors ${currentStatus === s.value ? 'font-semibold' : ''}`}
+                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--bg-surface-alt)] transition-colors ${currentStatus === s.value ? 'font-semibold' : ''}`}
               >
                 <span className={`inline-block w-2 h-2 rounded-full mr-2 ${LEAD_STATUS_STYLES[s.value]?.split(' ')[0]}`} />
                 {s.label}
@@ -102,7 +102,7 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
 
   return (
     <>
-      <button onClick={() => setOpen(!open)} className="p-1 rounded hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-colors" title="Notes">
+      <button onClick={() => setOpen(!open)} className="p-1 rounded hover:bg-[var(--bg-surface-alt)] text-[var(--ink-400)] hover:text-[var(--ink-900)] transition-colors" title="Notes">
         <MessageSquare className="w-3.5 h-3.5" />
       </button>
       <AnimatePresence>
@@ -113,20 +113,20 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
             exit={{ opacity: 0, height: 0 }}
             className="col-span-full overflow-hidden"
           >
-            <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
+            <div className="px-4 py-3 bg-[var(--bg-surface-alt)] border-t border-[var(--allone-line-soft)]">
               <textarea
                 value={notes}
                 onChange={e => { setNotes(e.target.value); setSaved(false); }}
                 onBlur={handleSave}
                 placeholder="Add notes about this lead..."
                 rows={2}
-                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none resize-none"
+                className="w-full px-3 py-2 text-sm bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg focus:border-gray-400 focus:outline-none resize-none"
               />
               <div className="flex justify-end gap-2 mt-2">
-                <button onClick={() => setOpen(false)} className="px-3 py-1 text-xs text-gray-500 hover:text-gray-900">Close</button>
+                <button onClick={() => setOpen(false)} className="px-3 py-1 text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)]">Close</button>
                 <button
                   onClick={() => { handleSave(); setOpen(false); }}
-                  className={`px-3 py-1 text-xs rounded-md ${saved ? 'bg-gray-200 text-gray-500' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
+                  className={`px-3 py-1 text-xs rounded-md ${saved ? 'bg-[var(--bg-sunken)] text-[var(--ink-500)]' : 'bg-[var(--ink-900)] text-white hover:bg-[var(--ink-800)]'}`}
                 >
                   {saved ? 'Saved' : 'Save'}
                 </button>
@@ -172,15 +172,15 @@ function AddLeadModal({ onClose, onAdded }: { onClose: () => void; onAdded: () =
     }
   };
 
-  const inputClass = "w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:border-gray-400 focus:outline-none";
+  const inputClass = "w-full px-3 py-2 text-sm bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg focus:border-gray-400 focus:outline-none";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-lg bg-white rounded-xl shadow-xl shadow-black/[0.08] p-6 mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative z-10 w-full max-w-lg bg-[var(--bg-surface)] rounded-xl shadow-xl shadow-black/[0.08] p-6 mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-base font-semibold text-gray-900">Add Lead</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-900"><X className="h-5 w-5" /></button>
+          <h2 className="text-base font-semibold text-[var(--ink-900)]">Add Lead</h2>
+          <button onClick={onClose} className="text-[var(--ink-400)] hover:text-[var(--ink-900)]"><X className="h-5 w-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           {formError && (
@@ -188,31 +188,31 @@ function AddLeadModal({ onClose, onAdded }: { onClose: () => void; onAdded: () =
           )}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Name *</label>
+              <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">Name *</label>
               <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required className={inputClass} placeholder="Business name" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Phone</label>
+              <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">Phone</label>
               <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className={inputClass} placeholder="+995..." />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
+              <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">Email</label>
               <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className={inputClass} placeholder="email@company.com" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Company</label>
+              <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">Company</label>
               <input value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} className={inputClass} placeholder="Company name" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">City</label>
+              <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">City</label>
               <input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} className={inputClass} placeholder="Tbilisi" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Service</label>
+              <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">Service</label>
               <select value={form.matched_service} onChange={e => setForm({ ...form, matched_service: e.target.value })} className={inputClass}>
                 <option value="">Select...</option>
                 <option value="website">Website</option>
@@ -224,16 +224,16 @@ function AddLeadModal({ onClose, onAdded }: { onClose: () => void; onAdded: () =
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Website</label>
+            <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">Website</label>
             <input value={form.website} onChange={e => setForm({ ...form, website: e.target.value })} className={inputClass} placeholder="https://..." />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Notes</label>
+            <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">Notes</label>
             <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2} className={`${inputClass} resize-none`} placeholder="Additional notes..." />
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">Cancel</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 active:scale-[0.98] transition-all disabled:opacity-50">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--ink-700)] hover:text-[var(--ink-900)]">Cancel</button>
+            <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all disabled:opacity-50">
               {saving ? 'Adding...' : 'Add Lead'}
             </button>
           </div>
@@ -354,27 +354,27 @@ function AdminLeadsPageContent() {
     <div className="space-y-6">
       <div className="flex items-start justify-between mb-10">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 font-display">Sales Leads</h1>
-          <p className="mt-1.5 text-sm text-gray-500">{total} total leads</p>
+          <h1 className="text-xl font-semibold tracking-tight text-[var(--ink-900)] font-display">Sales Leads</h1>
+          <p className="mt-1.5 text-sm text-[var(--ink-500)]">{total} total leads</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="inline-flex items-center justify-center w-10 h-10 text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 active:scale-[0.98] transition-all duration-150"
+            className="inline-flex items-center justify-center w-10 h-10 text-[var(--ink-700)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-sm hover:border-[var(--allone-line-strong)] active:scale-[0.98] transition-all duration-150"
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           <Link
             href="/admin/leads/analytics"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 active:scale-[0.98] transition-all duration-150"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--ink-700)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-sm hover:border-[var(--allone-line-strong)] active:scale-[0.98] transition-all duration-150"
           >
             <BarChart3 className="h-4 w-4" />
             Analytics
           </Link>
           <button
             onClick={() => setShowAddLead(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm hover:bg-gray-800 active:scale-[0.98] transition-all duration-150"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg shadow-sm hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all duration-150"
           >
             Add Lead
           </button>
@@ -396,15 +396,15 @@ function AdminLeadsPageContent() {
       )}
 
       {/* Sticky filter bar — pins to the top of the scroll area on scroll */}
-      <div className="sticky top-0 z-20 -mx-5 lg:-mx-10 px-5 lg:px-10 py-3 bg-[#FAFAFA]/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-100 dark:border-slate-800 space-y-3">
+      <div className="sticky top-0 z-20 -mx-5 lg:-mx-10 px-5 lg:px-10 py-3 bg-[#FAFAFA]/90 dark:bg-[var(--ink-900)]/90 backdrop-blur-md border-b border-[var(--allone-line-soft)] dark:border-slate-800 space-y-3">
         {/* Status Filter */}
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => { setStatusFilter('all'); setPage(1); }}
             className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
               statusFilter === 'all'
-                ? 'bg-gray-900 text-white shadow-sm'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
+                ? 'bg-[var(--ink-900)] text-white shadow-sm'
+                : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'
             }`}
           >
             <span className="text-base font-semibold mr-1.5">{statusCounts.all ?? '-'}</span>
@@ -416,8 +416,8 @@ function AdminLeadsPageContent() {
               onClick={() => { setStatusFilter(s.value); setPage(1); }}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                 statusFilter === s.value
-                  ? 'bg-gray-900 text-white shadow-sm'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-300'
+                  ? 'bg-[var(--ink-900)] text-white shadow-sm'
+                  : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'
               }`}
             >
               <span className="text-base font-semibold mr-1.5">{statusCounts[s.value] ?? '-'}</span>
@@ -431,7 +431,7 @@ function AdminLeadsPageContent() {
           <select
             value={websiteFilter}
             onChange={(e) => { setWebsiteFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+            className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
           >
             <option value="all">All Leads</option>
             <option value="yes">Has Website</option>
@@ -440,7 +440,7 @@ function AdminLeadsPageContent() {
           <select
             value={sourceFilter}
             onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+            className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
           >
             <option value="all">All Sources</option>
             <option value="yes">Has Source / Facebook</option>
@@ -449,7 +449,7 @@ function AdminLeadsPageContent() {
           <select
             value={serviceFilter}
             onChange={(e) => { setServiceFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none cursor-pointer"
+            className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
           >
             <option value="all">All Services</option>
             <option value="website">Website</option>
@@ -475,7 +475,7 @@ function AdminLeadsPageContent() {
                 handleIndustrySelect(null);
                 setPage(1);
               }}
-              className="text-xs text-gray-500 hover:text-gray-900"
+              className="text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)]"
             >
               Clear
             </button>
@@ -484,16 +484,16 @@ function AdminLeadsPageContent() {
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--ink-400)]" />
           <input
             type="text"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search by name, email, phone, company, city..."
-            className="w-full pl-10 pr-10 py-2.5 text-sm rounded-lg bg-white border border-gray-200 focus:border-gray-400 focus:outline-none transition-colors"
+            className="w-full pl-10 pr-10 py-2.5 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none transition-colors"
           />
           {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900">
+            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-400)] hover:text-[var(--ink-900)]">
               <X className="h-4 w-4" />
             </button>
           )}
@@ -514,23 +514,23 @@ function AdminLeadsPageContent() {
           {leads.map((lead) => (
             <div
               key={lead.id}
-              className="group bg-white border border-gray-100 rounded-xl p-4 shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+              className="group bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl p-4 shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
             >
               <div className="flex items-start justify-between gap-3">
                 {/* Lead info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-medium text-sm text-gray-900 truncate">{lead.company || lead.name}</h3>
+                    <h3 className="font-medium text-sm text-[var(--ink-900)] truncate">{lead.company || lead.name}</h3>
                     {lead.industry && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium">{lead.industry}</span>}
                   </div>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
                     {lead.phone && (
-                      <a href={`tel:${lead.phone}`} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                      <a href={`tel:${lead.phone}`} className="inline-flex items-center gap-1 text-xs text-[var(--ao-accent)] hover:underline">
                         <Phone className="w-3 h-3" />{lead.phone}
                       </a>
                     )}
                     {lead.email && (
-                      <a href={`mailto:${lead.email}`} className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                      <a href={`mailto:${lead.email}`} className="inline-flex items-center gap-1 text-xs text-[var(--ao-accent)] hover:underline">
                         <Mail className="w-3 h-3" />{lead.email}
                       </a>
                     )}
@@ -542,17 +542,17 @@ function AdminLeadsPageContent() {
                       <span className="inline-flex items-center gap-1 text-xs text-red-400"><Globe className="w-3 h-3" />No website</span>
                     )}
                     {lead.facebook_url && (
-                      <a href={lead.facebook_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-blue-500 hover:underline">
+                      <a href={lead.facebook_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[var(--ao-accent)] hover:underline">
                         <ExternalLink className="w-3 h-3" />Facebook
                       </a>
                     )}
                     {lead.source_url && !INFOSHOP_PATTERN.test(lead.source_url) && (
-                      <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
+                      <a href={lead.source_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[var(--ink-500)] hover:text-[var(--ao-accent)]">
                         <ExternalLink className="w-3 h-3" />Source
                       </a>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                  <div className="flex items-center gap-2 mt-2 text-xs text-[var(--ink-400)]">
                     {lead.city && <span>{lead.city}</span>}
                     {lead.matched_service && <span>· {lead.matched_service}</span>}
                     <span>· {formatDate(lead.created_at)}</span>
@@ -568,7 +568,7 @@ function AdminLeadsPageContent() {
                     </div>
                   )}
                   {lead.notes && (
-                    <div className="mt-2 text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-2 whitespace-pre-wrap">
+                    <div className="mt-2 text-xs text-[var(--ink-700)] bg-[var(--bg-surface-alt)] rounded-lg px-3 py-2 whitespace-pre-wrap">
                       {lead.notes}
                     </div>
                   )}
@@ -588,7 +588,7 @@ function AdminLeadsPageContent() {
                   />
                   <button
                     onClick={() => deleteLead(lead.id)}
-                    className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                    className="p-1 rounded hover:bg-red-50 text-[var(--ink-400)] hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                     title="Delete"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -601,25 +601,25 @@ function AdminLeadsPageContent() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-[var(--ink-500)]">
                 {total} leads
               </span>
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setPage(1)}
                   disabled={page === 1}
-                  className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors"
                 >
                   First
                 </button>
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors"
                 >
                   Prev
                 </button>
-                <div className="flex items-center gap-1 text-xs text-gray-500">
+                <div className="flex items-center gap-1 text-xs text-[var(--ink-500)]">
                   <input
                     type="number"
                     min={1}
@@ -636,21 +636,21 @@ function AdminLeadsPageContent() {
                       const v = parseInt(e.target.value);
                       if (v >= 1 && v <= totalPages) setPage(v);
                     }}
-                    className="w-12 py-1.5 text-center text-xs rounded-lg border border-gray-200 focus:border-gray-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-12 py-1.5 text-center text-xs rounded-lg border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <span>of {totalPages}</span>
                 </div>
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors"
                 >
                   Next
                 </button>
                 <button
                   onClick={() => setPage(totalPages)}
                   disabled={page === totalPages}
-                  className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+                  className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors"
                 >
                   Last
                 </button>
@@ -667,7 +667,7 @@ export default function AdminLeadsPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center h-64">
-        <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-[var(--allone-line)] border-t-gray-900 rounded-full animate-spin" />
       </div>
     }>
       <AdminLeadsPageContent />

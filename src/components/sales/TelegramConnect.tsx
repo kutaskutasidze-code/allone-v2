@@ -72,7 +72,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-[var(--gray-200)] bg-white p-5">
+    <div className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
@@ -94,7 +94,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
               type="button"
               onClick={disconnect}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
             >
               {busy ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />

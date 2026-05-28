@@ -60,7 +60,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-white lg:col-span-2">
+    <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] lg:col-span-2">
       <div className="flex items-center justify-between border-b border-[var(--gray-200)] px-5 py-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--gray-500)]">
@@ -82,7 +82,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
             onClick={() => setView("preview")}
             className={`rounded-md px-3 py-1 text-xs font-medium ${
               view === "preview"
-                ? "bg-white shadow-sm text-[#071D2F]"
+                ? "bg-[var(--bg-surface)] shadow-sm text-[#071D2F]"
                 : "text-[var(--gray-500)]"
             }`}
           >
@@ -93,7 +93,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
             onClick={() => setView("edit")}
             className={`rounded-md px-3 py-1 text-xs font-medium ${
               view === "edit"
-                ? "bg-white shadow-sm text-[#071D2F]"
+                ? "bg-[var(--bg-surface)] shadow-sm text-[#071D2F]"
                 : "text-[var(--gray-500)]"
             }`}
           >

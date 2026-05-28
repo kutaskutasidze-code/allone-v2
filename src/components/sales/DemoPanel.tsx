@@ -18,7 +18,7 @@ export function DemoPanel({
   const canRegenerate = ["draft_ready", "failed", "expired"].includes(status);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-white">
+    <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)]">
       <div className="flex items-center justify-between border-b border-[var(--gray-200)] px-5 py-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--gray-500)]">
