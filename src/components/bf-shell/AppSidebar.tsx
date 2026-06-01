@@ -7,6 +7,7 @@ import { useLocale } from "@/lib/i18n/useLocale";
 import type { TranslationKey } from "@/lib/i18n/dict";
 import {
   BarChart3,
+  Bell,
   Briefcase,
   Building,
   Calendar,
@@ -64,6 +65,7 @@ const ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
   users: Users,
   "dollar-sign": DollarSign,
   briefcase: Briefcase,
+  bell: Bell,
 };
 
 // href → translation key (e.g. "/app/avia" → "nav.avia",
@@ -262,7 +264,7 @@ export function AppSidebar() {
       </nav>
 
       {/* Footer — BF defaults, translated */}
-      <div className="border-t border-[var(--allonce-line-soft)] px-2 py-3">
+      <div className="px-2 py-3">
         <ul className="space-y-0.5">
           {tourismFooter.map((item) => {
             const label = FOOTER_KEY[item.href]
