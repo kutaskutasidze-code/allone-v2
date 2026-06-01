@@ -114,7 +114,7 @@ export function DemosOverviewContent({
         </div>
         <div className="flex items-center gap-3 text-sm">
           <Link
-            href="/sales/demos/references"
+            href="/admin/references"
             className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
           >
             Reference library

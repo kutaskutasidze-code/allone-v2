@@ -57,18 +57,18 @@ export const tourismNav: NavConfig = {
       items: [
         {
           label: "References",
-          href: "/sales/demos/references",
+          href: "/admin/references",
           icon: "briefcase",
         },
-        { label: "Templates", href: "/sales/templates", icon: "file-text" },
-        { label: "Sources", href: "/sales/sources", icon: "plug" },
+        { label: "Templates", href: "/admin/templates", icon: "file-text" },
+        { label: "Sources", href: "/admin/sources", icon: "plug" },
       ],
     },
     {
       label: "Insights",
       items: [
         { label: "Notifications", href: "/sales/notifications", icon: "bell" },
-        { label: "Team", href: "/sales/team", icon: "user-check" },
+        { label: "Team", href: "/admin/team", icon: "user-check" },
       ],
     },
     {
@@ -108,7 +108,7 @@ export const tourismNav: NavConfig = {
       label: "Admin · Tools",
       items: [
         { label: "Claude", href: "/admin/claude", icon: "plug" },
-        { label: "Aim overrides", href: "/sales/admin/aims", icon: "compass" },
+        { label: "Aim overrides", href: "/admin/aims", icon: "compass" },
       ],
     },
   ],
