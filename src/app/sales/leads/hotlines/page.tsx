@@ -28,7 +28,7 @@ function StatusDropdown({ leadId, currentStatus, onUpdate }: { leadId: string; c
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 z-20 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-lg shadow-black/[0.08] py-1 min-w-[120px]">
+          <div className="absolute top-full left-0 mt-1 z-20 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-md)] shadow-black/[0.08] py-1 min-w-[120px]">
             {LEAD_STATUSES.map(s => (
               <button
                 key={s.value}
@@ -78,13 +78,13 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
                 onBlur={handleSave}
                 placeholder="Add notes about this lead..."
                 rows={2}
-                className="w-full px-3 py-2 text-sm bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg focus:border-gray-400 focus:outline-none resize-none"
+                className="w-full px-3 py-2 text-sm bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:border-gray-400 focus:outline-none resize-none"
               />
               <div className="flex justify-end gap-2 mt-2">
                 <button onClick={() => setOpen(false)} className="px-3 py-1 text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)]">Close</button>
                 <button
                   onClick={() => { handleSave(); setOpen(false); }}
-                  className={`px-3 py-1 text-xs rounded-md ${saved ? 'bg-[var(--bg-sunken)] text-[var(--ink-500)]' : 'bg-[var(--ink-900)] text-white hover:bg-[var(--ink-800)]'}`}
+                  className={`px-3 py-1 text-xs rounded-[var(--radius-xs)] ${saved ? 'bg-[var(--bg-sunken)] text-[var(--ink-500)]' : 'bg-[var(--ink-900)] text-white hover:bg-[var(--ink-800)]'}`}
                 >
                   {saved ? 'Saved' : 'Save'}
                 </button>
@@ -192,7 +192,7 @@ function HotLinesPageContent() {
       />
 
       {error && (
-        <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
+        <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-600 text-sm">
           <span className="flex-1">{error}</span>
           <button onClick={() => setError('')}><X className="w-4 h-4" /></button>
         </div>
@@ -202,7 +202,7 @@ function HotLinesPageContent() {
         <select
           value={websiteFilter}
           onChange={(e) => { setWebsiteFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 text-xs rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer font-medium"
+          className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer font-medium"
         >
           <option value="all">All Leads</option>
           <option value="yes">Has Website</option>
@@ -211,7 +211,7 @@ function HotLinesPageContent() {
         <select
           value={sourceFilter}
           onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 text-xs rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer font-medium"
+          className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer font-medium"
         >
           <option value="all">All Sources</option>
           <option value="yes">Has Source</option>
@@ -220,13 +220,13 @@ function HotLinesPageContent() {
         <HotLinesDropdown selectedIndustry={industryFilter} onSelect={handleIndustrySelect} phonePrefix={HOTLINE_PHONE_PREFIX_PARAM} />
         <button
           onClick={() => { setStatusFilter('all'); setPage(1); }}
-          className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${statusFilter === 'all' ? 'bg-[var(--ink-900)] text-white shadow-sm' : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
+          className={`px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium transition-all ${statusFilter === 'all' ? 'bg-[var(--ink-900)] text-white shadow-[var(--shadow-xs)]' : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
         >All</button>
         {LEAD_STATUSES.map(s => (
           <button
             key={s.value}
             onClick={() => { setStatusFilter(s.value); setPage(1); }}
-            className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${statusFilter === s.value ? 'bg-[var(--ink-900)] text-white shadow-sm' : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
+            className={`px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium transition-all ${statusFilter === s.value ? 'bg-[var(--ink-900)] text-white shadow-[var(--shadow-xs)]' : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
           >{s.label}</button>
         ))}
       </div>
@@ -238,7 +238,7 @@ function HotLinesPageContent() {
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           placeholder="Search by name, email, phone, company..."
-          className="w-full pl-10 pr-10 py-2.5 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none transition-colors"
+          className="w-full pl-10 pr-10 py-2.5 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none transition-colors"
         />
         {search && (
           <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-400)] hover:text-[var(--ink-900)]">
@@ -262,7 +262,7 @@ function HotLinesPageContent() {
             return (
               <div
                 key={l.id as string}
-                className="group bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl p-4 shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+                className="group bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] p-4 shadow-[var(--shadow-xs)] shadow-black/[0.02] hover:shadow-[var(--shadow-sm)] hover:shadow-black/[0.04] transition-shadow duration-200"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
@@ -313,7 +313,7 @@ function HotLinesPageContent() {
                       </div>
                     )}
                     {l.notes && (
-                      <div className="mt-2 text-xs text-[var(--ink-700)] bg-[var(--bg-surface-alt)] rounded-lg px-3 py-2 whitespace-pre-wrap">
+                      <div className="mt-2 text-xs text-[var(--ink-700)] bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)] px-3 py-2 whitespace-pre-wrap">
                         {l.notes as string}
                       </div>
                     )}
@@ -347,19 +347,19 @@ function HotLinesPageContent() {
             <div className="flex items-center justify-between pt-4">
               <span className="text-xs text-[var(--ink-500)]">{total.toLocaleString()} leads</span>
               <div className="flex items-center gap-1.5">
-                <button onClick={() => setPage(1)} disabled={page === 1} className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors">First</button>
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors">Prev</button>
+                <button onClick={() => setPage(1)} disabled={page === 1} className="px-2.5 py-1.5 text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors">First</button>
+                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1.5 text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors">Prev</button>
                 <div className="flex items-center gap-1 text-xs text-[var(--ink-500)]">
                   <input
                     type="number" min={1} max={totalPages} defaultValue={page} key={page}
                     onKeyDown={(e) => { if (e.key === 'Enter') { const v = parseInt((e.target as HTMLInputElement).value); if (v >= 1 && v <= totalPages) setPage(v); } }}
                     onBlur={(e) => { const v = parseInt(e.target.value); if (v >= 1 && v <= totalPages) setPage(v); }}
-                    className="w-12 py-1.5 text-center text-xs rounded-lg border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-12 py-1.5 text-center text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <span>of {totalPages}</span>
                 </div>
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors">Next</button>
-                <button onClick={() => setPage(totalPages)} disabled={page === totalPages} className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors">Last</button>
+                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1.5 text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors">Next</button>
+                <button onClick={() => setPage(totalPages)} disabled={page === totalPages} className="px-2.5 py-1.5 text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors">Last</button>
               </div>
             </div>
           )}

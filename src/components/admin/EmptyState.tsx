@@ -14,12 +14,12 @@ interface EmptyStateProps {
   };
 }
 
-const buttonClasses = 'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg shadow-sm hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all duration-150';
+const buttonClasses = 'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all duration-150';
 
 export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-4 border border-dashed border-[var(--allone-line)] rounded-2xl">
-      <div className="w-14 h-14 rounded-2xl bg-[var(--bg-surface-alt)] flex items-center justify-center mb-4">
+    <div className="flex flex-col items-center justify-center py-20 px-4 border border-dashed border-[var(--allone-line)] rounded-[var(--radius-lg)]">
+      <div className="w-14 h-14 rounded-[var(--radius-lg)] bg-[var(--bg-surface-alt)] flex items-center justify-center mb-4">
         <Icon className="h-6 w-6 text-[var(--ink-400)]" />
       </div>
       <h3 className="text-sm font-semibold text-[var(--ink-900)] mb-1">{title}</h3>

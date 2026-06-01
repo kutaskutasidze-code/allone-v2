@@ -57,7 +57,7 @@ const roleBadge: Record<string, string> = {
 
 function KpiCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+    <div className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
       <p className="text-xs text-[var(--ink-500)] mb-1.5">{label}</p>
       <p className="text-2xl font-semibold text-[var(--ink-900)] tabular-nums">{value}</p>
       {sub && <p className="text-xs text-[var(--ink-400)] mt-1">{sub}</p>}
@@ -173,12 +173,12 @@ function AddRepModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
     }
   };
 
-  const input = "w-full px-3 py-2 text-sm bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg focus:border-gray-400 focus:outline-none";
+  const input = "w-full px-3 py-2 text-sm bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:border-gray-400 focus:outline-none";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-[var(--bg-surface)] rounded-2xl shadow-xl p-6">
+      <div className="relative w-full max-w-md bg-[var(--bg-surface)] rounded-[var(--radius-lg)] shadow-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-semibold text-[var(--ink-900)]">Add sales rep</h2>
           <button onClick={onClose} className="text-[var(--ink-400)] hover:text-[var(--ink-900)]"><X className="h-4 w-4" /></button>
@@ -188,7 +188,7 @@ function AddRepModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
         </p>
         <form onSubmit={submit} className="space-y-4">
           {error && (
-            <div className="flex items-center gap-2 p-2.5 bg-red-50 border border-red-100 rounded-lg text-red-700 text-xs">
+            <div className="flex items-center gap-2 p-2.5 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-700 text-xs">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" />
               <span>{error}</span>
             </div>
@@ -215,7 +215,7 @@ function AddRepModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
           </div>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--ink-700)] hover:text-[var(--ink-900)]">Cancel</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--ink-800)] disabled:opacity-50">
+            <button type="submit" disabled={saving} className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--ink-800)] disabled:opacity-50">
               {saving ? 'Adding…' : 'Add rep'}
             </button>
           </div>
@@ -284,7 +284,7 @@ function IndustriesCell({ rep, onSave }: { rep: RepStats; onSave: (industries: s
         )}
       </button>
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-40 w-80 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-lg p-3">
+        <div className="absolute left-0 top-full mt-1 z-40 w-80 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-md)] p-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-[var(--ink-700)]">Industries for {rep.name}</span>
             <span className="text-[11px] text-[var(--ink-500)]">{draft.size} selected</span>
@@ -370,7 +370,7 @@ function RowActions({ rep, onChanged }: { rep: RepStats; onChanged: () => void }
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1 z-40 w-44 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-lg py-1 text-sm">
+          <div className="absolute right-0 top-full mt-1 z-40 w-44 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-md)] py-1 text-sm">
             <button onClick={renameRep} className="w-full text-left px-3 py-1.5 hover:bg-[var(--bg-surface-alt)] text-[var(--ink-700)]">
               Rename
             </button>
@@ -427,7 +427,7 @@ export function TeamContent() {
         </div>
         <button
           onClick={() => setShowAdd(true)}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg shadow-sm hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all"
         >
           <UserPlus className="w-4 h-4" />
           Add rep
@@ -440,9 +440,9 @@ export function TeamContent() {
           <button
             key={p.value}
             onClick={() => setPeriod(p.value)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-[var(--radius-sm)] transition-all ${
               period === p.value
-                ? 'bg-[var(--ink-900)] text-white shadow-sm'
+                ? 'bg-[var(--ink-900)] text-white shadow-[var(--shadow-xs)]'
                 : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'
             }`}
           >
@@ -452,7 +452,7 @@ export function TeamContent() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-lg text-red-700 text-sm">
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-700 text-sm">
           <AlertCircle className="w-4 h-4" />
           <span className="flex-1">{error}</span>
           <button onClick={load} className="text-xs text-red-700 underline">Retry</button>
@@ -470,7 +470,7 @@ export function TeamContent() {
       )}
 
       {/* Team table */}
-      <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] overflow-x-auto">
+      <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] overflow-x-auto">
         <table className="w-full min-w-[900px] text-sm">
           <thead>
             <tr className="bg-[var(--bg-surface-alt)] text-[11px] text-[var(--ink-500)] uppercase tracking-wider">

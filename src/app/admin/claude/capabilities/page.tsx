@@ -83,7 +83,7 @@ export default function CapabilitiesPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/admin/claude"
-          className="p-2 hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
+          className="p-2 hover:bg-[var(--bg-sunken)] rounded-[var(--radius-sm)] transition-colors"
         >
           <ArrowLeft className="h-5 w-5 text-[var(--ink-500)]" />
         </Link>
@@ -106,14 +106,14 @@ export default function CapabilitiesPage() {
             placeholder="Search capabilities..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
+            className="w-full pl-10 pr-4 py-2 text-sm border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
+            className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
           >
             <option value="">All Categories</option>
             {categories.map((cat) => (
@@ -125,7 +125,7 @@ export default function CapabilitiesPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
+            className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -141,7 +141,7 @@ export default function CapabilitiesPage() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="h-32 bg-[var(--bg-sunken)] rounded-xl animate-pulse"
+              className="h-32 bg-[var(--bg-sunken)] rounded-[var(--radius-md)] animate-pulse"
             />
           ))}
         </div>
@@ -155,10 +155,10 @@ export default function CapabilitiesPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.02 }}
-                className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+                className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] hover:border-[var(--gray-300)] transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-sunken)]">
+                  <div className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-sunken)]">
                     <Icon className="h-4 w-4 text-[var(--ink-500)]" />
                   </div>
                   <span
@@ -191,7 +191,7 @@ export default function CapabilitiesPage() {
           })}
         </div>
       ) : (
-        <div className="p-8 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-center">
+        <div className="p-8 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-center">
           <Filter className="h-8 w-8 text-[var(--gray-300)] mx-auto mb-3" />
           <p className="text-sm text-[var(--ink-500)]">No capabilities found</p>
         </div>

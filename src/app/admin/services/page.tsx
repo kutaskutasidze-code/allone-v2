@@ -93,10 +93,10 @@ export default function ServicesPage() {
           {services.map((service) => (
             <div
               key={service.id}
-              className="group flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+              className="group flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] hover:shadow-[var(--shadow-sm)] hover:shadow-black/[0.04] transition-shadow duration-200"
             >
               {/* Icon */}
-              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-[var(--bg-surface-alt)]">
+              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)]">
                 <span className="text-sm">{service.icon}</span>
               </div>
 
@@ -122,13 +122,13 @@ export default function ServicesPage() {
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Link
                   href={`/admin/services/${service.id}`}
-                  className="p-2 rounded-lg text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
+                  className="p-2 rounded-[var(--radius-sm)] text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
                 >
                   <Pencil className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={() => setDeleteId(service.id)}
-                  className="p-2 rounded-lg text-[var(--ink-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-[var(--radius-sm)] text-[var(--ink-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

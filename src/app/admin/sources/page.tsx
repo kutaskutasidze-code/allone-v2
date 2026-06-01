@@ -94,26 +94,26 @@ export default function SourcesPage() {
       />
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        <div className="p-4 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
           {error}
         </div>
       )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] p-4">
           <p className="text-sm text-[var(--ink-500)]">Total Sources</p>
           <p className="text-2xl font-semibold">{sources.length}</p>
         </div>
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] p-4">
           <p className="text-sm text-[var(--ink-500)]">Active</p>
           <p className="text-2xl font-semibold text-green-600">{activeSources}</p>
         </div>
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] p-4">
           <p className="text-sm text-[var(--ink-500)]">Inactive</p>
           <p className="text-2xl font-semibold text-[var(--gray-400)]">{sources.length - activeSources}</p>
         </div>
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] p-4">
           <p className="text-sm text-[var(--ink-500)]">Total Leads</p>
           <p className="text-2xl font-semibold">{totalLeads.toLocaleString()}</p>
         </div>
@@ -127,7 +127,7 @@ export default function SourcesPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.03 }}
-            className={`p-4 bg-[var(--bg-surface)] border rounded-xl transition-colors ${
+            className={`p-4 bg-[var(--bg-surface)] border rounded-[var(--radius-md)] transition-colors ${
               source.is_active
                 ? 'border-[var(--allone-line)] hover:border-[var(--gray-300)]'
                 : 'border-[var(--bg-sunken)] opacity-60'
@@ -135,7 +135,7 @@ export default function SourcesPage() {
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-4">
-                <div className={`p-2.5 rounded-lg ${SOURCE_TYPE_COLORS[source.source_type] || 'bg-[var(--bg-sunken)] text-[var(--ink-700)]'}`}>
+                <div className={`p-2.5 rounded-[var(--radius-sm)] ${SOURCE_TYPE_COLORS[source.source_type] || 'bg-[var(--bg-sunken)] text-[var(--ink-700)]'}`}>
                   <Database className="w-5 h-5" />
                 </div>
                 <div>
@@ -145,7 +145,7 @@ export default function SourcesPage() {
                       {SOURCE_TYPE_LABELS[source.source_type] || source.source_type}
                     </span>
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
+                      className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-[var(--radius-xs)] ${
                         source.is_active
                           ? 'bg-green-100 text-green-700'
                           : 'bg-[var(--bg-sunken)] text-[var(--gray-600)]'
@@ -175,7 +175,7 @@ export default function SourcesPage() {
 
               <button
                 onClick={() => toggleSource(source)}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-2 rounded-[var(--radius-sm)] transition-colors ${
                   source.is_active
                     ? 'text-green-600 hover:bg-green-50'
                     : 'text-[var(--gray-400)] hover:bg-[var(--bg-sunken)]'

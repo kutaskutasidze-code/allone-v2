@@ -95,7 +95,7 @@ export default function AboutPage() {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--gray-800)] disabled:opacity-50"
         >
           {saved ? (
             <>
@@ -113,7 +113,7 @@ export default function AboutPage() {
 
       {/* Error Message */}
       {error && (
-        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
           <span className="flex-1">{error}</span>
           <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">
             <X className="w-4 h-4" />
@@ -123,7 +123,7 @@ export default function AboutPage() {
 
       <div className="space-y-4">
         {/* Hero Section */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Hero Section</h2>
           <div className="space-y-4">
             <Input
@@ -147,7 +147,7 @@ export default function AboutPage() {
         </div>
 
         {/* Story Section */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Story Section</h2>
           <div className="space-y-4">
             <Input
@@ -179,7 +179,7 @@ export default function AboutPage() {
         </div>
 
         {/* Values Section Headers */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Values Section</h2>
           <div className="space-y-4">
             <Input

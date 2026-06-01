@@ -157,7 +157,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
           href={item.href}
           onClick={handleNavClick}
           className={cn(
-            'relative flex items-center rounded-lg text-[13px] font-medium transition-colors duration-150',
+            'relative flex items-center rounded-[var(--radius-sm)] text-[13px] font-medium transition-colors duration-150',
             collapsed ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2',
             active
               ? 'text-[var(--ink-900)] font-semibold'
@@ -195,7 +195,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
         isCollapsed ? "justify-center px-2" : "px-5"
       )}>
         <Link href="/admin" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+          <div className="w-8 h-8 rounded-[var(--radius-sm)] overflow-hidden flex-shrink-0">
             <Image
               src="/images/allone-logo.png"
               alt="Allone"
@@ -270,7 +270,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
             href="/"
             target="_blank"
             className={cn(
-              "flex items-center rounded-lg text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150",
+              "flex items-center rounded-[var(--radius-sm)] text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150",
               isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
             )}
           >
@@ -293,7 +293,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
           <button
             onClick={handleLogout}
             className={cn(
-              "flex w-full items-center rounded-lg text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150",
+              "flex w-full items-center rounded-[var(--radius-sm)] text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150",
               isCollapsed ? "justify-center px-2 py-2.5" : "gap-3 px-3 py-2"
             )}
           >
@@ -316,7 +316,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       {/* Collapse Toggle */}
       <button
         onClick={onToggle}
-        className="absolute -right-3 top-20 w-6 h-6 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-full flex items-center justify-center text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:border-[var(--allone-line-strong)] transition-all duration-150 shadow-sm z-50"
+        className="absolute -right-3 top-20 w-6 h-6 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-full flex items-center justify-center text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:border-[var(--allone-line-strong)] transition-all duration-150 shadow-[var(--shadow-xs)] z-50"
       >
         <ChevronLeft className={cn("h-3.5 w-3.5 transition-transform duration-200", isCollapsed && "rotate-180")} />
       </button>
@@ -328,7 +328,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       {/* Logo + close */}
       <div className="flex h-14 items-center justify-between border-b border-[var(--allone-line-soft)] px-5">
         <Link href="/admin" className="flex items-center gap-3" onClick={handleNavClick}>
-          <div className="w-8 h-8 rounded-lg overflow-hidden">
+          <div className="w-8 h-8 rounded-[var(--radius-sm)] overflow-hidden">
             <Image
               src="/images/allone-logo.png"
               alt="Allone"
@@ -344,7 +344,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
         </Link>
         <button
           onClick={onMobileClose}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
@@ -393,7 +393,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
                               href={item.href}
                               onClick={handleNavClick}
                               className={cn(
-                                'relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors duration-150',
+                                'relative flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-[13px] font-medium transition-colors duration-150',
                                 active
                                   ? 'text-[var(--ink-900)] font-semibold'
                                   : 'text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)]'
@@ -426,14 +426,14 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
           href="/"
           target="_blank"
           onClick={handleNavClick}
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150"
+          className="flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150"
         >
           <ExternalLink className="h-[18px] w-[18px]" />
           <span>View Website</span>
         </Link>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150"
+          className="flex w-full items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-[13px] font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors duration-150"
         >
           <LogOut className="h-[18px] w-[18px]" />
           <span>Sign Out</span>
@@ -457,7 +457,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobileOpen, onMobileClos
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg flex items-center justify-center text-[var(--ink-700)] hover:text-[var(--ink-900)] shadow-sm transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] flex items-center justify-center text-[var(--ink-700)] hover:text-[var(--ink-900)] shadow-[var(--shadow-xs)] transition-colors"
         aria-label="Open menu"
       >
         <Menu className="h-5 w-5" />

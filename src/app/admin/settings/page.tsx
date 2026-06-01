@@ -87,7 +87,7 @@ export default function SettingsPage() {
         <button
           onClick={handleSave}
           disabled={isSaving || !formData.email || !formData.location}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg shadow-sm hover:bg-[var(--ink-800)] active:scale-[0.98] disabled:opacity-50 transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] hover:bg-[var(--ink-800)] active:scale-[0.98] disabled:opacity-50 transition-all"
         >
           {saved ? (
             <>
@@ -105,7 +105,7 @@ export default function SettingsPage() {
 
       {/* Error Message */}
       {error && (
-        <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
+        <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-600 text-sm">
           <span className="flex-1">{error}</span>
           <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">
             <X className="w-4 h-4" />
@@ -114,7 +114,7 @@ export default function SettingsPage() {
       )}
 
       {/* Form */}
-      <div className="rounded-xl border border-[var(--allone-line-soft)] bg-[var(--bg-surface)] shadow-sm shadow-black/[0.02] p-6">
+      <div className="rounded-[var(--radius-md)] border border-[var(--allone-line-soft)] bg-[var(--bg-surface)] shadow-[var(--shadow-xs)] shadow-black/[0.02] p-6">
         <div className="space-y-5">
           <div>
             <label className="block text-xs font-medium text-[var(--ink-500)] mb-2">

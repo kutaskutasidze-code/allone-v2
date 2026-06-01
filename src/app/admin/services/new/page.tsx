@@ -113,7 +113,7 @@ export default function NewServicePage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Info */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
           <h2 className="text-lg font-semibold text-black border-b border-[var(--allone-line)] pb-3 -mt-1">Basic Information</h2>
 
           <Input
@@ -176,7 +176,7 @@ export default function NewServicePage() {
         </div>
 
         {/* Features & Stats */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
           <h2 className="text-lg font-semibold text-black border-b border-[var(--allone-line)] pb-3 -mt-1">Features & Statistics</h2>
 
           <ArrayInput
@@ -198,7 +198,7 @@ export default function NewServicePage() {
         </div>
 
         {/* CTA & Footer */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
           <h2 className="text-lg font-semibold text-black border-b border-[var(--allone-line)] pb-3 -mt-1">Call to Action & Footer</h2>
 
           <Input
@@ -249,7 +249,7 @@ export default function NewServicePage() {
         </div>
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+          <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-[var(--radius-sm)]">
             {error}
           </div>
         )}
@@ -264,7 +264,7 @@ export default function NewServicePage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 rounded-lg bg-black px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--gray-800)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-black px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--gray-800)] disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {isSubmitting ? 'Creating...' : 'Create Service'}

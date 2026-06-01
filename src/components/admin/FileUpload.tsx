@@ -107,7 +107,7 @@ export function FileUpload({
       </label>
 
       {value ? (
-        <div className="flex items-center gap-3 p-3 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+        <div className="flex items-center gap-3 p-3 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
           <FileText className="h-5 w-5 text-[var(--ink-500)] flex-shrink-0" />
           <span className="flex-1 text-sm text-[var(--ink-700)] truncate">
             {getFileName(value)}
@@ -133,7 +133,7 @@ export function FileUpload({
       ) : (
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="relative flex items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-[var(--gray-300)] bg-[var(--bg-surface)] cursor-pointer hover:border-[var(--gray-400)] hover:bg-[var(--bg-sunken)] transition-colors"
+          className="relative flex items-center justify-center gap-2 p-4 rounded-[var(--radius-sm)] border-2 border-dashed border-[var(--gray-300)] bg-[var(--bg-surface)] cursor-pointer hover:border-[var(--gray-400)] hover:bg-[var(--bg-sunken)] transition-colors"
         >
           {isUploading ? (
             <>

@@ -71,7 +71,7 @@ export default function NewLeadPage() {
 
       {/* Error Message */}
       {error && (
-        <div className="flex items-center gap-3 p-4 mb-6 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        <div className="flex items-center gap-3 p-4 mb-6 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
           <span className="flex-1">{error}</span>
           <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">
             <X className="w-4 h-4" />
@@ -82,7 +82,7 @@ export default function NewLeadPage() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Contact Information */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Contact Information</h2>
           <div className="space-y-4">
             <Input
@@ -118,7 +118,7 @@ export default function NewLeadPage() {
         </div>
 
         {/* Lead Details */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Lead Details</h2>
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -150,7 +150,7 @@ export default function NewLeadPage() {
         </div>
 
         {/* Notes */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Notes</h2>
           <Textarea
             label="Notes"
@@ -172,7 +172,7 @@ export default function NewLeadPage() {
           <button
             type="submit"
             disabled={isSubmitting || !formData.name}
-            className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--gray-800)] disabled:opacity-50"
           >
             {isSubmitting ? 'Creating...' : 'Create Lead'}
           </button>

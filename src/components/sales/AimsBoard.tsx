@@ -49,25 +49,25 @@ export function AimsBoard() {
   const current = data?.[tab] ?? [];
 
   return (
-    <div className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+    <div className="rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] bg-amber-50 text-amber-600">
             <Sparkles className="h-4 w-4" />
           </div>
           <h2 className="text-sm font-semibold text-[var(--ink-900)]">
             Aims & results
           </h2>
         </div>
-        <div className="flex items-center gap-1 rounded-lg bg-[var(--bg-surface-alt)] p-1">
+        <div className="flex items-center gap-1 rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-1">
           {TABS.map((t) => (
             <button
               key={t.key}
               type="button"
               onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition ${
+              className={`flex items-center gap-1.5 rounded-[var(--radius-xs)] px-3 py-1 text-xs font-medium transition ${
                 tab === t.key
-                  ? "bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-sm"
+                  ? "bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-[var(--shadow-xs)]"
                   : "text-[var(--ink-500)] hover:text-[var(--ink-900)]"
               }`}
             >
@@ -79,7 +79,7 @@ export function AimsBoard() {
       </div>
 
       {error && (
-        <div className="mb-3 rounded-md border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
+        <div className="mb-3 rounded-[var(--radius-xs)] border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
           {error}
         </div>
       )}
@@ -113,7 +113,7 @@ function AimCard({ aim }: { aim: AimResult }) {
         : "bg-amber-500";
 
   return (
-    <div className="rounded-xl border border-[var(--bg-sunken)] p-3">
+    <div className="rounded-[var(--radius-md)] border border-[var(--bg-sunken)] p-3">
       <div className="flex items-baseline justify-between">
         <p className="text-xs font-medium text-[var(--gray-600)]">{label}</p>
         <p className="text-xs font-mono text-[var(--ink-500)]">{pct}%</p>

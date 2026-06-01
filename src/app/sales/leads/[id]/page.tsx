@@ -138,7 +138,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
 
       {/* Error Message */}
       {error && (
-        <div className="flex items-center gap-3 p-4 mb-6 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        <div className="flex items-center gap-3 p-4 mb-6 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
           <span className="flex-1">{error}</span>
           <button
             onClick={() => setError("")}
@@ -152,7 +152,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
       {/* Form */}
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         {/* Contact Information */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">
             Contact Information
           </h2>
@@ -198,7 +198,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
         </div>
 
         {/* Lead Details */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">
             Lead Details
           </h2>
@@ -244,7 +244,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
         </div>
 
         {/* Notes */}
-        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+        <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
           <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">
             Notes
           </h2>
@@ -270,7 +270,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
           <button
             type="submit"
             disabled={isSubmitting || !formData.name}
-            className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--gray-800)] disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </button>

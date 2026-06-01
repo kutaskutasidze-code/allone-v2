@@ -115,7 +115,7 @@ export function DemosOverviewContent({
         <div className="flex items-center gap-3 text-sm">
           <Link
             href="/admin/references"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
+            className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
           >
             Reference library
           </Link>
@@ -126,7 +126,7 @@ export function DemosOverviewContent({
       </div>
 
       {errorMessage && (
-        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-[var(--radius-md)] border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
           {errorMessage}
         </div>
       )}
@@ -140,7 +140,7 @@ export function DemosOverviewContent({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search lead, company, email…"
-            className="w-full rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] py-2 pl-9 pr-3 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
+            className="w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] py-2 pl-9 pr-3 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           />
         </div>
         {STATUS_BUCKETS.map((b) => (
@@ -164,14 +164,14 @@ export function DemosOverviewContent({
 
       {/* Table */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--allone-line)] bg-[var(--bg-surface)] p-12 text-center">
+        <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--allone-line)] bg-[var(--bg-surface)] p-12 text-center">
           <Sparkles className="mx-auto h-8 w-8 text-[var(--gray-300)]" />
           <p className="mt-3 text-sm text-[var(--ink-500)]">
             No demo jobs match this filter.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--allone-line)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">

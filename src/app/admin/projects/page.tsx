@@ -137,7 +137,7 @@ export default function ProjectsPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search projects..."
-            className="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none transition-colors"
+            className="w-full pl-9 pr-8 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none transition-colors"
           />
           {searchQuery && (
             <button
@@ -152,7 +152,7 @@ export default function ProjectsPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+          className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
         >
           <option value="all">All Categories</option>
           {categories.map((cat) => (
@@ -160,7 +160,7 @@ export default function ProjectsPage() {
           ))}
         </select>
 
-        <div className="flex rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] overflow-hidden">
+        <div className="flex rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] overflow-hidden">
           {(['all', 'published', 'draft'] as const).map((status) => (
             <button
               key={status}
@@ -215,10 +215,10 @@ export default function ProjectsPage() {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="group flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+              className="group flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] hover:shadow-[var(--shadow-sm)] hover:shadow-black/[0.04] transition-shadow duration-200"
             >
               {/* Image */}
-              <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-[var(--bg-surface-alt)] overflow-hidden">
+              <div className="flex-shrink-0 w-14 h-14 rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] overflow-hidden">
                 {project.image_url ? (
                   <Image
                     src={project.image_url}
@@ -261,13 +261,13 @@ export default function ProjectsPage() {
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Link
                   href={`/admin/projects/${project.id}`}
-                  className="p-2 rounded-lg text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
+                  className="p-2 rounded-[var(--radius-sm)] text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
                 >
                   <Pencil className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={() => setDeleteId(project.id)}
-                  className="p-2 rounded-lg text-[var(--ink-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-[var(--radius-sm)] text-[var(--ink-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

@@ -72,10 +72,10 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+    <div className="rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+          <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] bg-sky-50 text-sky-600">
             <Send className="h-4 w-4" />
           </div>
           <div>
@@ -94,7 +94,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
               type="button"
               onClick={disconnect}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
             >
               {busy ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -108,7 +108,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
               type="button"
               onClick={startConnect}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-600 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-sky-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-600 disabled:opacity-50"
             >
               {busy ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -172,7 +172,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
       )}
 
       {error && (
-        <p className="mt-3 rounded-md border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
+        <p className="mt-3 rounded-[var(--radius-xs)] border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
           {error}
         </p>
       )}

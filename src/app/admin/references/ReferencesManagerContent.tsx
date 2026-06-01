@@ -102,27 +102,27 @@ export function ReferencesManagerContent({
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-[var(--ao-accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--ao-accent-hover)]"
+          className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--ao-accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--ao-accent-hover)]"
         >
           <Plus className="h-4 w-4" /> Add reference
         </button>
       </div>
 
       {errorMessage && (
-        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-[var(--radius-md)] border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
           {errorMessage}
         </div>
       )}
 
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--allone-line)] bg-[var(--bg-surface)] p-12 text-center">
+        <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--allone-line)] bg-[var(--bg-surface)] p-12 text-center">
           <Sparkles className="mx-auto h-8 w-8 text-[var(--gray-300)]" />
           <p className="mt-3 text-sm text-[var(--ink-500)]">
             No reference templates yet. Add one to seed the library.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--allone-line)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
@@ -190,7 +190,7 @@ export function ReferencesManagerContent({
                         type="button"
                         onClick={() => refreshOne(r.id)}
                         disabled={busyId === r.id}
-                        className="inline-flex items-center gap-1 rounded-md border border-[var(--allone-line)] px-2 py-1 text-xs text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
+                        className="inline-flex items-center gap-1 rounded-[var(--radius-xs)] border border-[var(--allone-line)] px-2 py-1 text-xs text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
                       >
                         {busyId === r.id ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
@@ -203,7 +203,7 @@ export function ReferencesManagerContent({
                         type="button"
                         onClick={() => toggleActive(r)}
                         disabled={busyId === r.id}
-                        className="inline-flex items-center gap-1 rounded-md border border-[var(--allone-line)] px-2 py-1 text-xs text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
+                        className="inline-flex items-center gap-1 rounded-[var(--radius-xs)] border border-[var(--allone-line)] px-2 py-1 text-xs text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
                       >
                         <Power className="h-3 w-3" />
                         {r.is_active ? "Archive" : "Activate"}
@@ -287,7 +287,7 @@ function AddReferenceModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
       <form
         onSubmit={submit}
-        className="w-full max-w-md space-y-4 rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 shadow-xl"
+        className="w-full max-w-md space-y-4 rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 shadow-xl"
       >
         <div className="flex items-start justify-between">
           <h2 className="text-lg font-semibold text-[var(--ink-900)]">
@@ -311,7 +311,7 @@ function AddReferenceModal({
             onChange={(e) =>
               setSegment(e.target.value as (typeof SEGMENTS)[number])
             }
-            className="mt-1 w-full rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
+            className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           >
             {SEGMENTS.map((s) => (
               <option key={s} value={s}>
@@ -331,7 +331,7 @@ function AddReferenceModal({
             onChange={(e) => setSourceUrl(e.target.value)}
             placeholder="https://www.example.com"
             required
-            className="mt-1 w-full rounded-lg border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
+            className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           />
         </label>
 
@@ -344,7 +344,7 @@ function AddReferenceModal({
             value={sourceLabel}
             onChange={(e) => setSourceLabel(e.target.value)}
             placeholder="Awwwards SOTD 2025-04"
-            className="mt-1 w-full rounded-lg border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
+            className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           />
         </label>
 
@@ -358,12 +358,12 @@ function AddReferenceModal({
             max={5}
             value={tier}
             onChange={(e) => setTier(parseInt(e.target.value) || 4)}
-            className="mt-1 w-full rounded-lg border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
+            className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           />
         </label>
 
         {error && (
-          <p className="rounded-md border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
+          <p className="rounded-[var(--radius-xs)] border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
             {error}
           </p>
         )}
@@ -372,14 +372,14 @@ function AddReferenceModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-[var(--allone-line)] px-3 py-1.5 text-sm font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
+            className="rounded-[var(--radius-sm)] border border-[var(--allone-line)] px-3 py-1.5 text-sm font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting || !sourceUrl}
-            className="inline-flex items-center gap-2 rounded-lg bg-[var(--ao-accent)] px-4 py-1.5 text-sm font-medium text-white hover:bg-[var(--ao-accent-hover)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--ao-accent)] px-4 py-1.5 text-sm font-medium text-white hover:bg-[var(--ao-accent-hover)] disabled:opacity-50"
           >
             {isSubmitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />

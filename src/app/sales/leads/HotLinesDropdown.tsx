@@ -29,7 +29,7 @@ export function HotLinesDropdown({
   label = 'Hot Lines',
   icon: Icon = Flame,
   iconClassName = 'text-amber-500',
-  activeClassName = 'bg-amber-500 text-white shadow-sm',
+  activeClassName = 'bg-amber-500 text-white shadow-[var(--shadow-xs)]',
 }: HotLinesDropdownProps) {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<IndustryRow[]>([]);
@@ -69,7 +69,7 @@ export function HotLinesDropdown({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium transition-all ${
           active
             ? activeClassName
             : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'
@@ -82,7 +82,7 @@ export function HotLinesDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 z-20 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-lg shadow-black/[0.08] py-1 min-w-[240px] max-h-[420px] overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 z-20 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-md)] shadow-black/[0.08] py-1 min-w-[240px] max-h-[420px] overflow-y-auto">
             {isLoading ? (
               <div className="px-3 py-6 flex justify-center">
                 <div className="w-4 h-4 border-2 border-[var(--allone-line)] border-t-gray-900 rounded-full animate-spin" />

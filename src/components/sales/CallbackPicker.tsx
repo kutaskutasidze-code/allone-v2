@@ -62,7 +62,7 @@ export function CallbackPicker({ onCancel, onPick }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
-      <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md p-5 max-h-[90vh] overflow-y-auto">
+      <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-t-2xl sm:rounded-[var(--radius-lg)] shadow-xl w-full sm:max-w-md p-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-base font-semibold text-[var(--ink-900)]">Schedule callback</h2>
           <button onClick={onCancel} className="text-[var(--ink-400)] hover:text-[var(--ink-900)]">
@@ -78,7 +78,7 @@ export function CallbackPicker({ onCancel, onPick }: Props) {
               <button
                 key={p.label}
                 onClick={() => onPick(p.get())}
-                className="w-full flex items-center gap-3 px-4 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-sm text-[var(--ink-800)] hover:border-gray-400 hover:bg-[var(--bg-surface-alt)] transition-all"
+                className="w-full flex items-center gap-3 px-4 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-sm text-[var(--ink-800)] hover:border-gray-400 hover:bg-[var(--bg-surface-alt)] transition-all"
               >
                 <Icon className="w-4 h-4 text-[var(--ink-400)]" />
                 <span className="flex-1 text-left">{p.label}</span>
@@ -93,14 +93,14 @@ export function CallbackPicker({ onCancel, onPick }: Props) {
             type="datetime-local"
             value={customValue}
             onChange={(e) => setCustomValue(e.target.value)}
-            className="w-full px-3 py-2.5 text-sm rounded-lg border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
+            className="w-full px-3 py-2.5 text-sm rounded-[var(--radius-sm)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
           />
           <button
             onClick={() => {
               if (!customValue) return;
               onPick(new Date(customValue).toISOString());
             }}
-            className="w-full mt-3 py-3 bg-[var(--ink-900)] text-white text-sm font-medium rounded-xl hover:bg-[var(--ink-800)] transition-all"
+            className="w-full mt-3 py-3 bg-[var(--ink-900)] text-white text-sm font-medium rounded-[var(--radius-md)] hover:bg-[var(--ink-800)] transition-all"
           >
             Save callback
           </button>

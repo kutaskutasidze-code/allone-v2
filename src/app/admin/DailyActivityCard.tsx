@@ -134,20 +134,20 @@ export function DailyActivityCard() {
   const showsAllTime = range === "all";
 
   return (
-    <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] overflow-hidden">
+    <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] overflow-hidden">
       <div className="flex items-center justify-between gap-3 flex-wrap px-5 py-4 border-b border-[var(--allone-line-soft)]">
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-[var(--ink-400)]" />
           <h2 className="text-sm font-semibold text-[var(--ink-900)]">Call activity</h2>
         </div>
-        <div className="flex items-center gap-1 rounded-md bg-[var(--bg-surface-alt)] p-0.5">
+        <div className="flex items-center gap-1 rounded-[var(--radius-xs)] bg-[var(--bg-surface-alt)] p-0.5">
           {RANGES.map((r) => (
             <button
               key={r.value}
               onClick={() => setRange(r.value)}
               className={`px-2.5 py-1 text-xs rounded transition-colors ${
                 range === r.value
-                  ? "bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-sm"
+                  ? "bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-[var(--shadow-xs)]"
                   : "text-[var(--ink-500)] hover:text-[var(--ink-900)]"
               }`}
             >

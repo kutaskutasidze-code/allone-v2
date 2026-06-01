@@ -100,7 +100,7 @@ function CampaignsPageContent() {
       />
 
       {error && (
-        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
           <span className="flex-1">{error}</span>
           <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">
             <X className="w-4 h-4" />
@@ -116,7 +116,7 @@ function CampaignsPageContent() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search campaigns..."
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
+            className="w-full pl-10 pr-4 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
           />
           {search && (
             <button
@@ -128,14 +128,14 @@ function CampaignsPageContent() {
           )}
         </div>
 
-        <div className="flex rounded-lg bg-[var(--bg-sunken)] p-0.5">
+        <div className="flex rounded-[var(--radius-sm)] bg-[var(--bg-sunken)] p-0.5">
           {(['all', 'active', 'inactive'] as const).map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all capitalize ${
+              className={`px-3 py-1.5 text-xs font-medium rounded-[var(--radius-xs)] transition-all capitalize ${
                 statusFilter === status
-                  ? 'bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-sm'
+                  ? 'bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-[var(--shadow-xs)]'
                   : 'text-[var(--ink-500)] hover:text-[var(--ink-900)]'
               }`}
             >
@@ -160,7 +160,7 @@ function CampaignsPageContent() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+              className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] hover:border-[var(--gray-300)] transition-colors"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -172,7 +172,7 @@ function CampaignsPageContent() {
                       {campaign.name}
                     </Link>
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
+                      className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-[var(--radius-xs)] ${
                         campaign.is_active
                           ? 'bg-green-100 text-green-700'
                           : 'bg-[var(--bg-sunken)] text-[var(--gray-600)]'
@@ -211,7 +211,7 @@ function CampaignsPageContent() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => toggleActive(campaign)}
-                      className={`p-2 rounded-lg transition-colors ${
+                      className={`p-2 rounded-[var(--radius-sm)] transition-colors ${
                         campaign.is_active
                           ? 'text-green-600 hover:bg-green-50'
                           : 'text-[var(--gray-400)] hover:bg-[var(--bg-sunken)]'
@@ -222,13 +222,13 @@ function CampaignsPageContent() {
                     </button>
                     <Link
                       href={`/sales/campaigns/${campaign.id}`}
-                      className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
+                      className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-[var(--radius-sm)] transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                     </Link>
                     <button
                       onClick={() => setDeleteConfirm(campaign)}
-                      className="p-2 text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50 rounded-[var(--radius-sm)] transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

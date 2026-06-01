@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="bg-[var(--bg-surface)] rounded-2xl shadow-xl shadow-black/[0.04] border border-[var(--allone-line-soft)] p-10">
+        <div className="bg-[var(--bg-surface)] rounded-[var(--radius-lg)] shadow-xl shadow-black/[0.04] border border-[var(--allone-line-soft)] p-10">
           {/* Logo */}
           <div className="mb-10">
             <AnimatedLogoHero />
@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
                 placeholder="admin@allone.ai"
                 required
                 autoComplete="email"
-                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] text-[var(--ink-900)] placeholder:text-[var(--ink-400)] focus:outline-none focus:border-gray-400 focus:bg-[var(--bg-surface)] transition-all duration-150 text-sm"
+                className="w-full px-4 py-3 rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] text-[var(--ink-900)] placeholder:text-[var(--ink-400)] focus:outline-none focus:border-gray-400 focus:bg-[var(--bg-surface)] transition-all duration-150 text-sm"
               />
             </div>
 
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
-                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] text-[var(--ink-900)] placeholder:text-[var(--ink-400)] focus:outline-none focus:border-gray-400 focus:bg-[var(--bg-surface)] transition-all duration-150 text-sm"
+                className="w-full px-4 py-3 rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] text-[var(--ink-900)] placeholder:text-[var(--ink-400)] focus:outline-none focus:border-gray-400 focus:bg-[var(--bg-surface)] transition-all duration-150 text-sm"
               />
             </div>
 
@@ -93,7 +93,7 @@ export default function AdminLoginPage() {
                   initial={{ opacity: 0, y: -10, height: 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
                   exit={{ opacity: 0, y: -10, height: 0 }}
-                  className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm"
+                  className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-600 text-sm"
                 >
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{error}</span>
@@ -105,7 +105,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-6 bg-[var(--ink-900)] text-white font-medium rounded-lg hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
+              className="w-full py-3 px-6 bg-[var(--ink-900)] text-white font-medium rounded-[var(--radius-sm)] hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
             >
               <span className="flex items-center justify-center gap-2">
                 {isLoading ? (

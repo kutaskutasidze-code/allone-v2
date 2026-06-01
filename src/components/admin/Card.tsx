@@ -20,9 +20,9 @@ export function Card({ children, className, padding = 'md', hover = false }: Car
   return (
     <div
       className={cn(
-        'bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]',
+        'bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]',
         paddingStyles[padding],
-        hover && 'hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200',
+        hover && 'hover:shadow-[var(--shadow-sm)] hover:shadow-black/[0.04] transition-shadow duration-200',
         className
       )}
     >

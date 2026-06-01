@@ -19,7 +19,7 @@ export function LeadContextPanel({ lead }: LeadContextPanelProps) {
   const url = domain ? `https://${domain}` : null;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] lg:col-span-2">
+    <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] lg:col-span-2">
       <div className="border-b border-[var(--allone-line)] px-5 py-3">
         <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
           Lead

@@ -31,7 +31,7 @@ export function AuditPanel({ audit }: AuditPanelProps) {
   const issues = audit?.topIssues ?? [];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+    <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
       <div className="flex items-center justify-between border-b border-[var(--allone-line)] px-5 py-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
@@ -53,7 +53,7 @@ export function AuditPanel({ audit }: AuditPanelProps) {
             const Icon = ICONS[sev] ?? Info;
             const color = COLORS[sev] ?? COLORS.info;
             return (
-              <div key={i} className={`rounded-lg border px-3 py-2.5 ${color}`}>
+              <div key={i} className={`rounded-[var(--radius-sm)] border px-3 py-2.5 ${color}`}>
                 <div className="flex items-start gap-2">
                   <Icon className="mt-0.5 h-4 w-4 shrink-0" />
                   <div className="min-w-0 flex-1">

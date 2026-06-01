@@ -134,7 +134,7 @@ export default function AdminAuditPage() {
           <select
             value={repId}
             onChange={(e) => resetPageAnd(setRepId)(e.target.value)}
-            className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+            className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
           >
             <option value="all">All reps</option>
             {reps.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
@@ -143,7 +143,7 @@ export default function AdminAuditPage() {
           <select
             value={fromStatus}
             onChange={(e) => resetPageAnd(setFromStatus)(e.target.value)}
-            className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+            className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
           >
             <option value="all">From: any</option>
             {LEAD_STATUSES.map(s => <option key={s.value} value={s.value}>From: {s.label}</option>)}
@@ -152,7 +152,7 @@ export default function AdminAuditPage() {
           <select
             value={toStatus}
             onChange={(e) => resetPageAnd(setToStatus)(e.target.value)}
-            className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+            className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
           >
             <option value="all">To: any</option>
             {LEAD_STATUSES.map(s => <option key={s.value} value={s.value}>To: {s.label}</option>)}
@@ -162,7 +162,7 @@ export default function AdminAuditPage() {
             type="date"
             value={since}
             onChange={(e) => resetPageAnd(setSince)(e.target.value)}
-            className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
+            className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
             placeholder="From date"
           />
           <span className="text-xs text-[var(--ink-400)]">→</span>
@@ -170,7 +170,7 @@ export default function AdminAuditPage() {
             type="date"
             value={until}
             onChange={(e) => resetPageAnd(setUntil)(e.target.value)}
-            className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
+            className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
             placeholder="To date"
           />
 
@@ -188,7 +188,7 @@ export default function AdminAuditPage() {
             value={search}
             onChange={(e) => resetPageAnd(setSearch)(e.target.value)}
             placeholder="Search by lead name or company..."
-            className="w-full pl-10 pr-10 py-2.5 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
+            className="w-full pl-10 pr-10 py-2.5 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
           />
           {search && (
             <button onClick={() => resetPageAnd(setSearch)('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-400)] hover:text-[var(--ink-900)]">
@@ -199,7 +199,7 @@ export default function AdminAuditPage() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-lg text-red-700 text-sm">
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-700 text-sm">
           <AlertCircle className="w-4 h-4" />
           <span className="flex-1">{error}</span>
           <button onClick={load} className="text-xs text-red-700 underline">Retry</button>
@@ -207,7 +207,7 @@ export default function AdminAuditPage() {
       )}
 
       {/* Table */}
-      <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] overflow-x-auto">
+      <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] overflow-x-auto">
         <table className="w-full min-w-[700px] text-sm">
           <thead>
             <tr className="bg-[var(--bg-surface-alt)] text-[11px] text-[var(--ink-500)] uppercase tracking-wider">
@@ -269,7 +269,7 @@ export default function AdminAuditPage() {
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-2.5 py-1.5 rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors"
+              className="px-2.5 py-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors"
             >
               Prev
             </button>
@@ -277,7 +277,7 @@ export default function AdminAuditPage() {
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-2.5 py-1.5 rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors"
+              className="px-2.5 py-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors"
             >
               Next
             </button>

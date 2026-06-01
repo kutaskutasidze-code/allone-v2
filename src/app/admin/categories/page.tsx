@@ -151,7 +151,7 @@ export default function CategoriesPage() {
 
       {/* Error Message */}
       {error && (
-        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
           <span className="flex-1">{error}</span>
           <button onClick={() => setError('')} className="text-red-400 hover:text-red-600">
             <X className="w-4 h-4" />
@@ -161,20 +161,20 @@ export default function CategoriesPage() {
 
       {/* Add Category Form */}
       {isAdding && (
-        <div className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl">
+        <div className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)]">
           <div className="flex gap-3">
             <input
               type="text"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder="Category name..."
-              className="flex-1 px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
+              className="flex-1 px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             />
             <button
               onClick={handleAdd}
-              className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)]"
+              className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--gray-800)]"
             >
               Save
             </button>
@@ -207,10 +207,10 @@ export default function CategoriesPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+              className="flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] hover:border-[var(--gray-300)] transition-colors"
             >
               {/* Order Badge */}
-              <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-sunken)] text-sm font-medium text-[var(--ink-500)]">
+              <div className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-sunken)] text-sm font-medium text-[var(--ink-500)]">
                 {index + 1}
               </div>
 
@@ -221,7 +221,7 @@ export default function CategoriesPage() {
                     type="text"
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
-                    className="w-full px-3 py-1.5 text-sm rounded-lg border border-[var(--gray-300)] focus:border-[var(--gray-400)] focus:outline-none"
+                    className="w-full px-3 py-1.5 text-sm rounded-[var(--radius-sm)] border border-[var(--gray-300)] focus:border-[var(--gray-400)] focus:outline-none"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleUpdate(category.id);
@@ -249,7 +249,7 @@ export default function CategoriesPage() {
                   <>
                     <button
                       onClick={() => handleUpdate(category.id)}
-                      className="p-2 text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-lg"
+                      className="p-2 text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-[var(--radius-sm)]"
                     >
                       <Save className="w-4 h-4" />
                     </button>
@@ -258,7 +258,7 @@ export default function CategoriesPage() {
                         setEditingId(null);
                         setEditValue('');
                       }}
-                      className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-lg"
+                      className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-[var(--radius-sm)]"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -267,13 +267,13 @@ export default function CategoriesPage() {
                   <>
                     <button
                       onClick={() => startEdit(category)}
-                      className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
+                      className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-[var(--radius-sm)] transition-colors"
                     >
                       <Tag className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setDeleteConfirm(category)}
-                      className="p-2 text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50 rounded-[var(--radius-sm)] transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

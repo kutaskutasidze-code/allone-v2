@@ -153,7 +153,7 @@ export function DemoSection({
 
   if (!job) {
     return (
-      <div className="mb-8 rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6">
+      <div className="mb-8 rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6">
         <div className="flex items-start justify-between">
           <div>
             <h3 className="font-display text-xl text-[var(--ink-900)]">
@@ -169,7 +169,7 @@ export function DemoSection({
             type="button"
             onClick={startDemo}
             disabled={isStarting}
-            className="inline-flex items-center gap-2 rounded-lg bg-[var(--ao-accent)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--ao-accent-hover)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--ao-accent)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--ao-accent-hover)] disabled:opacity-50"
           >
             {isStarting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -185,7 +185,7 @@ export function DemoSection({
 
   if (IN_PROGRESS.includes(job.status)) {
     return (
-      <div className="mb-8 rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6">
+      <div className="mb-8 rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6">
         <div className="flex items-center gap-3">
           <Loader2 className="h-5 w-5 animate-spin text-[var(--ao-accent)]" />
           <div className="flex-1">
@@ -211,7 +211,7 @@ export function DemoSection({
 
   if (job.status === "failed") {
     return (
-      <div className="mb-8 rounded-2xl border border-red-100 bg-red-50/50 p-6">
+      <div className="mb-8 rounded-[var(--radius-lg)] border border-red-100 bg-red-50/50 p-6">
         <div className="flex items-start gap-3">
           <AlertCircle className="mt-0.5 h-5 w-5 text-red-600" />
           <div className="flex-1">
@@ -224,7 +224,7 @@ export function DemoSection({
               type="button"
               onClick={retryDemo}
               disabled={isRetrying}
-              className="mt-3 inline-flex items-center gap-2 rounded-lg border border-red-300 bg-[var(--bg-surface)] px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:opacity-50"
+              className="mt-3 inline-flex items-center gap-2 rounded-[var(--radius-sm)] border border-red-300 bg-[var(--bg-surface)] px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:opacity-50"
             >
               {isRetrying ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />

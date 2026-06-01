@@ -165,7 +165,7 @@ export function ClaudeDashboardContent({
         </div>
         <Link
           href="/admin/claude/capabilities"
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--ink-900)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--ink-900)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] hover:bg-[var(--bg-surface)] transition-colors"
         >
           View All
           <ArrowRight className="h-4 w-4" />
@@ -182,10 +182,10 @@ export function ClaudeDashboardContent({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
+              className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)]"
             >
               <div className="flex items-center justify-between mb-3">
-                <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${stat.color}`}>
+                <div className={`w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] ${stat.color}`}>
                   <Icon className={`h-4 w-4 ${stat.textColor || 'text-[var(--ink-500)]'}`} />
                 </div>
               </div>
@@ -206,7 +206,7 @@ export function ClaudeDashboardContent({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 + index * 0.05 }}
-            className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
+            className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)]"
           >
             <div className="text-2xl font-semibold text-[var(--ink-900)]">{stat.value}</div>
             <div className="text-xs text-[var(--ink-500)] mt-0.5">{stat.title}</div>
@@ -221,10 +221,10 @@ export function ClaudeDashboardContent({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
+          className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)]"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-sunken)]">
+            <div className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-sunken)]">
               <Activity className="h-4 w-4 text-[var(--ink-500)]" />
             </div>
             <div>
@@ -271,10 +271,10 @@ export function ClaudeDashboardContent({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
+          className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)]"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-sunken)]">
+            <div className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-sunken)]">
               <Package className="h-4 w-4 text-[var(--ink-500)]" />
             </div>
             <div>
@@ -332,7 +332,7 @@ export function ClaudeDashboardContent({
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-sunken)]">
+            <div className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-sunken)]">
               <Clock className="h-4 w-4 text-[var(--ink-500)]" />
             </div>
             <div>
@@ -351,7 +351,7 @@ export function ClaudeDashboardContent({
         </div>
 
         {upgrades.length > 0 ? (
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl divide-y divide-[var(--bg-sunken)]">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] divide-y divide-[var(--bg-sunken)]">
             {upgrades.slice(0, 5).map((upgrade) => {
               const ActionIcon = ACTION_ICONS[upgrade.action] || CheckCircle2;
               return (
@@ -360,7 +360,7 @@ export function ClaudeDashboardContent({
                   className="flex items-center gap-4 p-4 hover:bg-[var(--bg-surface)] transition-colors"
                 >
                   <div
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg ${
+                    className={`w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] ${
                       upgrade.verified ? 'bg-green-50' : 'bg-yellow-50'
                     }`}
                   >
@@ -402,7 +402,7 @@ export function ClaudeDashboardContent({
             })}
           </div>
         ) : (
-          <div className="p-8 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-center">
+          <div className="p-8 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-center">
             <p className="text-sm text-[var(--gray-400)]">No upgrades recorded yet</p>
           </div>
         )}

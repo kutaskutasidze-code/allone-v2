@@ -165,7 +165,7 @@ function DemoDetailView({
       />
 
       {job.error_message && (
-        <div className="rounded-2xl border border-red-100 bg-red-50/60 p-5">
+        <div className="rounded-[var(--radius-lg)] border border-red-100 bg-red-50/60 p-5">
           <p className="text-sm font-medium text-red-900">
             Failed at: {job.current_phase ?? "unknown phase"}
           </p>
@@ -211,12 +211,12 @@ function DemoDetailView({
           Engagement ({engagements.length})
         </h2>
         {engagements.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--ink-500)]">
+          <p className="rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--ink-500)]">
             No engagement events yet. Will appear after the lead opens or clicks
             the email.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+          <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--allone-line)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
@@ -255,7 +255,7 @@ function DemoDetailView({
 
 function KV({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-4">
+    <div className="rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-4">
       <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
         {label}
       </p>
@@ -273,7 +273,7 @@ function PhaseTimeline({
 }) {
   if (history.length === 0) {
     return (
-      <p className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--ink-500)]">
+      <p className="rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--ink-500)]">
         No phase events yet.
       </p>
     );
@@ -294,7 +294,7 @@ function PhaseTimeline({
               ? "border-red-200 bg-red-50/60"
               : "border-[var(--ao-accent-soft)] bg-[var(--ao-accent-soft)]/60";
         return (
-          <li key={i} className={`rounded-xl border ${color} px-4 py-2.5`}>
+          <li key={i} className={`rounded-[var(--radius-md)] border ${color} px-4 py-2.5`}>
             <div className="flex items-baseline justify-between gap-3">
               <div className="font-medium text-[var(--ink-900)]">{p.phase}</div>
               <div className="text-xs text-[var(--ink-500)]">
@@ -313,7 +313,7 @@ function PhaseTimeline({
               </div>
             </div>
             {p.notes && Object.keys(p.notes).length > 0 && (
-              <pre className="mt-2 overflow-x-auto rounded-md bg-[var(--bg-surface)]/80 p-2 text-[11px] text-[var(--ink-700)]">
+              <pre className="mt-2 overflow-x-auto rounded-[var(--radius-xs)] bg-[var(--bg-surface)]/80 p-2 text-[11px] text-[var(--ink-700)]">
                 {JSON.stringify(p.notes, null, 2)}
               </pre>
             )}
@@ -333,13 +333,13 @@ function AuditDetail({
   audit: NonNullable<DemoJob["audit_results"]>;
 }) {
   return (
-    <div className="space-y-4 rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+    <div className="space-y-4 rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
       {audit.scores && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           {Object.entries(audit.scores).map(([k, v]) => (
             <div
               key={k}
-              className="rounded-lg border border-[var(--bg-sunken)] p-3"
+              className="rounded-[var(--radius-sm)] border border-[var(--bg-sunken)] p-3"
             >
               <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
                 {k}
@@ -354,7 +354,7 @@ function AuditDetail({
           {audit.topIssues.map((i, n) => (
             <li
               key={n}
-              className="rounded-lg border border-[var(--bg-sunken)] px-3 py-2 text-sm"
+              className="rounded-[var(--radius-sm)] border border-[var(--bg-sunken)] px-3 py-2 text-sm"
             >
               <div className="flex items-baseline justify-between">
                 <span className="font-medium text-[var(--ink-900)]">

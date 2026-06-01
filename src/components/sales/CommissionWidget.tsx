@@ -35,7 +35,7 @@ export function CommissionWidget() {
 
   if (error) {
     return (
-      <div className="p-5 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+      <div className="p-5 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
         {error}
       </div>
     );
@@ -43,7 +43,7 @@ export function CommissionWidget() {
 
   if (!periods) {
     return (
-      <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+      <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
         <div className="h-4 w-24 bg-[var(--bg-sunken)] rounded animate-pulse mb-3" />
         <div className="h-8 w-32 bg-[var(--bg-sunken)] rounded animate-pulse" />
       </div>
@@ -55,9 +55,9 @@ export function CommissionWidget() {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+      <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-50">
+          <div className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] bg-emerald-50">
             <DollarSign className="h-4 w-4 text-emerald-600" />
           </div>
           <div>
@@ -80,9 +80,9 @@ export function CommissionWidget() {
         )}
       </div>
 
-      <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+      <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-surface-alt)]">
+          <div className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)]">
             <Users className="h-4 w-4 text-[var(--ink-700)]" />
           </div>
           <div>

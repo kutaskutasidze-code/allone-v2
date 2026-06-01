@@ -18,7 +18,7 @@ export function DemoPanel({
   const canRegenerate = ["draft_ready", "failed", "expired"].includes(status);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+    <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
       <div className="flex items-center justify-between border-b border-[var(--allone-line)] px-5 py-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
@@ -34,7 +34,7 @@ export function DemoPanel({
               href={demoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] px-3 py-1.5 text-xs font-medium text-[var(--ink-900)] transition hover:bg-[var(--bg-surface-alt)]"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] px-3 py-1.5 text-xs font-medium text-[var(--ink-900)] transition hover:bg-[var(--bg-surface-alt)]"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Open
@@ -45,7 +45,7 @@ export function DemoPanel({
               type="button"
               onClick={onRegenerate}
               disabled={isRegenerating}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] px-3 py-1.5 text-xs font-medium text-[var(--ink-900)] transition hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] px-3 py-1.5 text-xs font-medium text-[var(--ink-900)] transition hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
             >
               {isRegenerating ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />

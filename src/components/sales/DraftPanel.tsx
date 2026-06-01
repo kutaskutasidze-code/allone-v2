@@ -60,7 +60,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] lg:col-span-2">
+    <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] lg:col-span-2">
       <div className="flex items-center justify-between border-b border-[var(--allone-line)] px-5 py-3">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
@@ -76,13 +76,13 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
             )}
           </p>
         </div>
-        <div className="flex items-center gap-1 rounded-lg bg-[var(--bg-surface-alt)] p-1">
+        <div className="flex items-center gap-1 rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-1">
           <button
             type="button"
             onClick={() => setView("preview")}
-            className={`rounded-md px-3 py-1 text-xs font-medium ${
+            className={`rounded-[var(--radius-xs)] px-3 py-1 text-xs font-medium ${
               view === "preview"
-                ? "bg-[var(--bg-surface)] shadow-sm text-[var(--ink-900)]"
+                ? "bg-[var(--bg-surface)] shadow-[var(--shadow-xs)] text-[var(--ink-900)]"
                 : "text-[var(--ink-500)]"
             }`}
           >
@@ -91,9 +91,9 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
           <button
             type="button"
             onClick={() => setView("edit")}
-            className={`rounded-md px-3 py-1 text-xs font-medium ${
+            className={`rounded-[var(--radius-xs)] px-3 py-1 text-xs font-medium ${
               view === "edit"
-                ? "bg-[var(--bg-surface)] shadow-sm text-[var(--ink-900)]"
+                ? "bg-[var(--bg-surface)] shadow-[var(--shadow-xs)] text-[var(--ink-900)]"
                 : "text-[var(--ink-500)]"
             }`}
           >
@@ -113,7 +113,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full rounded-md border border-[var(--allone-line)] px-3 py-1.5 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--allone-line)] px-3 py-1.5 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
                 disabled={sent}
               />
             ) : (
@@ -125,7 +125,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
               <textarea
                 value={bodyHtml}
                 onChange={(e) => setBodyHtml(e.target.value)}
-                className="h-72 w-full resize-none rounded-md border border-[var(--allone-line)] px-3 py-2 font-mono text-xs focus:border-[var(--ao-accent)] focus:outline-none"
+                className="h-72 w-full resize-none rounded-[var(--radius-xs)] border border-[var(--allone-line)] px-3 py-2 font-mono text-xs focus:border-[var(--ao-accent)] focus:outline-none"
                 disabled={sent}
               />
             ) : (
@@ -144,7 +144,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
                 <button
                   type="button"
                   onClick={discard}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] px-3 py-1.5 text-xs font-medium text-[var(--gray-600)] transition hover:bg-[var(--bg-surface-alt)]"
+                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] px-3 py-1.5 text-xs font-medium text-[var(--gray-600)] transition hover:bg-[var(--bg-surface-alt)]"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Discard
@@ -154,7 +154,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
                     type="button"
                     onClick={save}
                     disabled={isSaving}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] px-3 py-1.5 text-xs font-medium text-[var(--ink-900)] transition hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] px-3 py-1.5 text-xs font-medium text-[var(--ink-900)] transition hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
                   >
                     {isSaving ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -168,7 +168,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
                   type="button"
                   onClick={send}
                   disabled={isSending}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--ink-900)] px-4 py-1.5 text-xs font-medium text-white transition hover:bg-[var(--ink-900)] disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--ink-900)] px-4 py-1.5 text-xs font-medium text-white transition hover:bg-[var(--ink-900)] disabled:opacity-50"
                 >
                   {isSending ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />

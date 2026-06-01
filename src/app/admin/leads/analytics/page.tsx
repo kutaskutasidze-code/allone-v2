@@ -115,7 +115,7 @@ export default function LeadsAnalyticsPage() {
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
+        <div className="p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-600 text-sm">
           {error}
         </div>
       )}
@@ -125,7 +125,7 @@ export default function LeadsAnalyticsPage() {
         {LEAD_STATUSES.map((s) => (
           <div
             key={s.value}
-            className="p-3 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-lg shadow-sm shadow-black/[0.02]"
+            className="p-3 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] shadow-black/[0.02]"
           >
             <div className="flex items-center gap-1.5 mb-1">
               <span
@@ -143,7 +143,7 @@ export default function LeadsAnalyticsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Call Activity Chart */}
-        <div className="lg:col-span-2 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] p-4">
+        <div className="lg:col-span-2 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-[var(--ink-900)]">Daily Call Activity</h2>
             <span className="text-xs text-[var(--ink-500)]">{totalCalls} total calls</span>
@@ -175,7 +175,7 @@ export default function LeadsAnalyticsPage() {
         </div>
 
         {/* Status Distribution Pie */}
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] p-4">
           <h2 className="text-sm font-semibold text-[var(--ink-900)] mb-4">Status Distribution</h2>
           <div style={{ width: '100%', height: 280 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -210,7 +210,7 @@ export default function LeadsAnalyticsPage() {
       {/* Daily New Leads + All Status Changes */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* New Leads Line Chart */}
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-[var(--ink-900)]">New Leads per Day</h2>
             <span className="text-xs text-[var(--ink-500)]">
@@ -246,7 +246,7 @@ export default function LeadsAnalyticsPage() {
         </div>
 
         {/* All Status Changes Stacked Bar */}
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] p-4">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-[var(--ink-900)]">All Status Changes</h2>
             <span className="text-xs text-[var(--ink-500)]">{grandTotal} total transitions</span>

@@ -449,7 +449,7 @@ function AssignLeadsContent() {
       <PageHeader title="Assign Leads" description={`${total} lead${total === 1 ? '' : 's'} in ${tab === 'unassigned' ? 'the unassigned pool' : 'the assigned view'}`} />
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-600 text-sm">
           <AlertCircle className="w-4 h-4" />
           <span className="flex-1">{error}</span>
           <button onClick={() => setError('')}><X className="w-4 h-4" /></button>
@@ -457,7 +457,7 @@ function AssignLeadsContent() {
       )}
 
       {flash && (
-        <div className={`flex items-center gap-2 p-3 rounded-lg text-sm border ${flash.type === 'ok' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-amber-50 border-amber-100 text-amber-700'}`}>
+        <div className={`flex items-center gap-2 p-3 rounded-[var(--radius-sm)] text-sm border ${flash.type === 'ok' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-amber-50 border-amber-100 text-amber-700'}`}>
           <CheckCircle2 className="w-4 h-4" />
           <span className="flex-1">{flash.msg}</span>
           <button onClick={() => setFlash(null)}><X className="w-4 h-4" /></button>
@@ -467,13 +467,13 @@ function AssignLeadsContent() {
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => { setTab('unassigned'); setPage(1); }}
-          className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${tab === 'unassigned' ? 'bg-[var(--ink-900)] text-white shadow-sm' : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
+          className={`px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium transition-all ${tab === 'unassigned' ? 'bg-[var(--ink-900)] text-white shadow-[var(--shadow-xs)]' : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
         >
           Pool · unassigned
         </button>
         <button
           onClick={() => { setTab('assigned'); setPage(1); }}
-          className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${tab === 'assigned' ? 'bg-[var(--ink-900)] text-white shadow-sm' : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
+          className={`px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium transition-all ${tab === 'assigned' ? 'bg-[var(--ink-900)] text-white shadow-[var(--shadow-xs)]' : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
         >
           Currently assigned
         </button>
@@ -484,14 +484,14 @@ function AssignLeadsContent() {
           <>
             <button
               onClick={() => setSpecialtyOpen(true)}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-sky-600 text-white shadow-sm hover:bg-sky-700 active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium bg-sky-600 text-white shadow-[var(--shadow-xs)] hover:bg-sky-700 active:scale-[0.98] transition-all"
             >
               <Tag className="w-3.5 h-3.5" />
               Distribute by specialty
             </button>
             <button
               onClick={() => { setDistributeOpen(true); setDistributeRepIds(new Set()); }}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium bg-emerald-600 text-white shadow-[var(--shadow-xs)] hover:bg-emerald-700 active:scale-[0.98] transition-all"
             >
               <Shuffle className="w-3.5 h-3.5" />
               Distribute pool
@@ -503,7 +503,7 @@ function AssignLeadsContent() {
           <button
             onClick={() => setRebalanceOpen(true)}
             disabled={!repLoads || repLoads.totals.activeReps === 0}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-amber-600 text-white shadow-sm hover:bg-amber-700 disabled:opacity-50 active:scale-[0.98] transition-all"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium bg-amber-600 text-white shadow-[var(--shadow-xs)] hover:bg-amber-700 disabled:opacity-50 active:scale-[0.98] transition-all"
           >
             <Scale className="w-3.5 h-3.5" />
             Rebalance everyone
@@ -514,10 +514,10 @@ function AssignLeadsContent() {
       {/* Distribute modal */}
       {distributeOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-md w-full p-6">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-emerald-50 flex items-center justify-center">
                   <Shuffle className="w-4 h-4 text-emerald-600" />
                 </div>
                 <h2 className="text-base font-semibold text-[var(--ink-900)]">Distribute the pool</h2>
@@ -537,7 +537,7 @@ function AssignLeadsContent() {
                 <button
                   key={n}
                   onClick={() => setDistributePerRep(n)}
-                  className={`px-3 py-1.5 text-xs rounded-lg border ${distributePerRep === n ? 'bg-[var(--ink-900)] text-white border-gray-900' : 'bg-[var(--bg-surface)] text-[var(--ink-700)] border-[var(--allone-line)] hover:border-gray-400'}`}
+                  className={`px-3 py-1.5 text-xs rounded-[var(--radius-sm)] border ${distributePerRep === n ? 'bg-[var(--ink-900)] text-white border-gray-900' : 'bg-[var(--bg-surface)] text-[var(--ink-700)] border-[var(--allone-line)] hover:border-gray-400'}`}
                 >
                   {n}
                 </button>
@@ -548,7 +548,7 @@ function AssignLeadsContent() {
                 max={1000}
                 value={distributePerRep}
                 onChange={(e) => setDistributePerRep(Math.max(1, Math.min(1000, parseInt(e.target.value) || 0)))}
-                className="w-20 px-2 py-1.5 text-xs text-right rounded-lg border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
+                className="w-20 px-2 py-1.5 text-xs text-right rounded-[var(--radius-sm)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
               />
             </div>
 
@@ -560,7 +560,7 @@ function AssignLeadsContent() {
               {reps.filter(r => r.is_active !== false).map(rep => {
                 const checked = distributeRepIds.has(rep.id);
                 return (
-                  <label key={rep.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[var(--bg-surface-alt)] cursor-pointer text-sm">
+                  <label key={rep.id} className="flex items-center gap-2 px-2 py-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--bg-surface-alt)] cursor-pointer text-sm">
                     <input
                       type="checkbox"
                       checked={checked}
@@ -581,16 +581,16 @@ function AssignLeadsContent() {
               })}
             </div>
 
-            <div className="bg-[var(--bg-surface-alt)] rounded-lg px-3 py-2 text-[11px] text-[var(--ink-500)] mb-5">
+            <div className="bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)] px-3 py-2 text-[11px] text-[var(--ink-500)] mb-5">
               About to assign up to <strong className="text-[var(--ink-900)]">{distributePerRep * (distributeRepIds.size || reps.filter(r => r.is_active !== false).length)}</strong> leads total.
             </div>
 
             <div className="flex justify-end gap-2">
-              <button onClick={() => setDistributeOpen(false)} className="px-4 py-2 text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] rounded-lg">Cancel</button>
+              <button onClick={() => setDistributeOpen(false)} className="px-4 py-2 text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)]">Cancel</button>
               <button
                 onClick={doDistribute}
                 disabled={distributing}
-                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 rounded-lg inline-flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 rounded-[var(--radius-sm)] inline-flex items-center gap-2"
               >
                 {distributing && <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                 {distributing ? 'Distributing…' : 'Distribute'}
@@ -603,10 +603,10 @@ function AssignLeadsContent() {
       {/* Rebalance modal */}
       {rebalanceOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-md w-full p-6">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-amber-50 flex items-center justify-center">
                   <Scale className="w-4 h-4 text-amber-600" />
                 </div>
                 <h2 className="text-base font-semibold text-[var(--ink-900)]">Rebalance to pool</h2>
@@ -627,14 +627,14 @@ function AssignLeadsContent() {
                 max={10000}
                 value={rebalanceTarget}
                 onChange={(e) => setRebalanceTarget(Math.max(0, Math.min(10000, parseInt(e.target.value) || 0)))}
-                className="w-24 px-3 py-2 text-sm rounded-lg border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
+                className="w-24 px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
               />
               <span className="text-xs text-[var(--ink-500)]">
                 Suggested: floor of the mean across active reps.
               </span>
             </div>
 
-            <div className="bg-[var(--bg-surface-alt)] rounded-lg p-3 mb-5 max-h-48 overflow-y-auto">
+            <div className="bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)] p-3 mb-5 max-h-48 overflow-y-auto">
               {!rebalancePreview ? (
                 <p className="text-[11px] text-[var(--ink-400)]">Calculating preview…</p>
               ) : rebalancePreview.totalMovedToPool === 0 ? (
@@ -660,11 +660,11 @@ function AssignLeadsContent() {
             </div>
 
             <div className="flex justify-end gap-2">
-              <button onClick={() => setRebalanceOpen(false)} className="px-4 py-2 text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] rounded-lg">Cancel</button>
+              <button onClick={() => setRebalanceOpen(false)} className="px-4 py-2 text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)]">Cancel</button>
               <button
                 onClick={doRebalance}
                 disabled={rebalancing || !rebalancePreview || rebalancePreview.totalMovedToPool === 0}
-                className="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded-lg inline-flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded-[var(--radius-sm)] inline-flex items-center gap-2"
               >
                 {rebalancing && <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                 {rebalancing ? 'Moving…' : 'Send to pool'}
@@ -677,10 +677,10 @@ function AssignLeadsContent() {
       {/* Distribute-by-specialty modal */}
       {specialtyOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-2xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-sky-50 flex items-center justify-center">
                   <Tag className="w-4 h-4 text-sky-600" />
                 </div>
                 <h2 className="text-base font-semibold text-[var(--ink-900)]">Distribute by specialty</h2>
@@ -703,7 +703,7 @@ function AssignLeadsContent() {
                 value={specialtyPerRep}
                 onChange={(e) => setSpecialtyPerRep(e.target.value)}
                 placeholder="Uncapped"
-                className="w-32 px-3 py-2 text-sm rounded-lg border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
+                className="w-32 px-3 py-2 text-sm rounded-[var(--radius-sm)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
               />
               <span className="text-xs text-[var(--ink-500)]">Leave empty to assign every covered lead.</span>
             </div>
@@ -714,7 +714,7 @@ function AssignLeadsContent() {
             ) : (
               <>
                 {/* Per-rep what they'd receive */}
-                <div className="bg-[var(--bg-surface-alt)] rounded-lg p-3 mb-4">
+                <div className="bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)] p-3 mb-4">
                   {Object.keys(specialtyPreview.perRep).length === 0 ? (
                     <p className="text-[11px] text-[var(--ink-500)]">
                       {specialtyPreview.reason || 'No covered leads to assign.'}
@@ -747,7 +747,7 @@ function AssignLeadsContent() {
 
                 {/* Coverage-gap warning */}
                 {specialtyPreview.uncovered.total > 0 && (
-                  <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 mb-4">
+                  <div className="bg-amber-50 border border-amber-100 rounded-[var(--radius-sm)] p-3 mb-4">
                     <div className="flex items-start gap-2">
                       <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                       <div className="flex-1">
@@ -778,11 +778,11 @@ function AssignLeadsContent() {
             )}
 
             <div className="flex justify-end gap-2">
-              <button onClick={() => setSpecialtyOpen(false)} className="px-4 py-2 text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] rounded-lg">Cancel</button>
+              <button onClick={() => setSpecialtyOpen(false)} className="px-4 py-2 text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)]">Cancel</button>
               <button
                 onClick={doDistributeBySpecialty}
                 disabled={distributingSpecialty || !specialtyPreview || specialtyPreview.totalAssigned === 0}
-                className="px-4 py-2 text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 disabled:opacity-50 rounded-lg inline-flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 disabled:opacity-50 rounded-[var(--radius-sm)] inline-flex items-center gap-2"
               >
                 {distributingSpecialty && <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                 {distributingSpecialty ? 'Distributing…' : 'Distribute'}
@@ -803,7 +803,7 @@ function AssignLeadsContent() {
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 placeholder="Search name, company, phone, city..."
-                className="w-full pl-10 pr-9 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
+                className="w-full pl-10 pr-9 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none"
               />
               {search && (
                 <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-400)] hover:text-[var(--ink-900)]">
@@ -823,7 +823,7 @@ function AssignLeadsContent() {
                 // it back off manually.
                 if (next !== 'all' && !includeHotlines) setIncludeHotlines(true);
               }}
-              className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+              className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
             >
               <option value="all">All categories</option>
               {LEAD_INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
@@ -832,7 +832,7 @@ function AssignLeadsContent() {
               <select
                 value={assignedToFilter}
                 onChange={(e) => { setAssignedToFilter(e.target.value); setPage(1); }}
-                className="px-3 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+                className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
               >
                 <option value="all">All reps</option>
                 {reps.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
@@ -841,7 +841,7 @@ function AssignLeadsContent() {
             <button
               type="button"
               onClick={() => { setIncludeHotlines(v => !v); setPage(1); }}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all ${includeHotlines ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-[var(--bg-surface)] border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[var(--radius-sm)] text-xs font-medium border transition-all ${includeHotlines ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-[var(--bg-surface)] border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'}`}
               title="Hotlines = Georgian landlines (+9953/+9954). Most law-firm leads live here. Off by default to avoid double-distribution with /admin/leads/hotlines."
             >
               <Flame className="w-3.5 h-3.5" />
@@ -850,7 +850,7 @@ function AssignLeadsContent() {
           </div>
 
           {tab === 'assigned' && repLoads && repLoads.reps.filter(r => r.isActive).length > 0 && (
-            <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] overflow-hidden">
+            <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] overflow-hidden">
               <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--allone-line-soft)] bg-[var(--bg-surface-alt)]">
                 <div className="text-xs font-medium text-[var(--ink-700)]">
                   Rep loads
@@ -896,7 +896,7 @@ function AssignLeadsContent() {
                                 setTakeCount(Math.min(rep.untouchedCount, 10));
                               }}
                               disabled={rep.untouchedCount === 0}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-amber-700 hover:bg-amber-100 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+                              className="inline-flex items-center gap-1 px-2 py-1 rounded-[var(--radius-xs)] text-[11px] font-medium text-amber-700 hover:bg-amber-100 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
                               title={rep.untouchedCount === 0 ? 'No untouched leads to move' : 'Take N from this rep'}
                             >
                               <MinusCircle className="w-3 h-3" />
@@ -905,7 +905,7 @@ function AssignLeadsContent() {
                             {popoverOpen && (
                               <div
                                 ref={takePopoverRef}
-                                className="absolute right-0 top-full mt-1 z-40 w-60 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg shadow-lg p-3"
+                                className="absolute right-0 top-full mt-1 z-40 w-60 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-md)] p-3"
                               >
                                 <p className="text-[11px] text-[var(--ink-700)] mb-2">
                                   Send the oldest <strong>N untouched</strong> leads from {rep.name} back to the pool.
@@ -924,7 +924,7 @@ function AssignLeadsContent() {
                                   <button
                                     onClick={() => doTakeFromRep(rep.id, takeCount)}
                                     disabled={taking || takeCount < 1 || takeCount > rep.untouchedCount}
-                                    className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50"
+                                    className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-[var(--radius-xs)] text-xs font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50"
                                   >
                                     <ArrowDownToLine className="w-3 h-3" />
                                     {taking ? 'Moving…' : 'Send to pool'}
@@ -942,7 +942,7 @@ function AssignLeadsContent() {
             </div>
           )}
 
-          <div className="flex items-center gap-3 px-3 py-2 bg-[var(--bg-surface-alt)] border border-[var(--allone-line-soft)] rounded-lg text-xs">
+          <div className="flex items-center gap-3 px-3 py-2 bg-[var(--bg-surface-alt)] border border-[var(--allone-line-soft)] rounded-[var(--radius-sm)] text-xs">
             <input
               type="checkbox"
               checked={selected.size === leads.length && leads.length > 0}
@@ -969,7 +969,7 @@ function AssignLeadsContent() {
                 return (
                   <div
                     key={l.id}
-                    className={`group bg-[var(--bg-surface)] border rounded-xl p-3 shadow-sm shadow-black/[0.02] transition-all ${isSelected ? 'border-gray-900' : 'border-[var(--allone-line-soft)]'}`}
+                    className={`group bg-[var(--bg-surface)] border rounded-[var(--radius-md)] p-3 shadow-[var(--shadow-xs)] shadow-black/[0.02] transition-all ${isSelected ? 'border-gray-900' : 'border-[var(--allone-line-soft)]'}`}
                   >
                     <div className="flex items-start gap-3">
                       <input
@@ -1015,8 +1015,8 @@ function AssignLeadsContent() {
                 <div className="flex items-center justify-between pt-3">
                   <span className="text-xs text-[var(--ink-500)]">Page {page} of {totalPages}</span>
                   <div className="flex items-center gap-1.5">
-                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30">Prev</button>
-                    <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1.5 text-xs rounded-lg border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30">Next</button>
+                    <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1.5 text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30">Prev</button>
+                    <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1.5 text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30">Next</button>
                   </div>
                 </div>
               )}
@@ -1026,7 +1026,7 @@ function AssignLeadsContent() {
 
         {/* Action panel */}
         <aside className="lg:sticky lg:top-4 h-fit space-y-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl p-4 shadow-sm shadow-black/[0.02]">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] p-4 shadow-[var(--shadow-xs)] shadow-black/[0.02]">
             <h2 className="text-sm font-semibold text-[var(--ink-900)] mb-1">
               {tab === 'unassigned' ? 'Assign to rep' : 'Reassign / return to pool'}
             </h2>
@@ -1041,7 +1041,7 @@ function AssignLeadsContent() {
                 <p className="text-xs text-[var(--ink-400)]">No sales reps available.</p>
               )}
               {reps.map(rep => (
-                <label key={rep.id} className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer text-sm border ${targetRepId === rep.id ? 'border-gray-900 bg-[var(--bg-surface-alt)]' : 'border-transparent hover:bg-[var(--bg-surface-alt)]'}`}>
+                <label key={rep.id} className={`flex items-center gap-2 p-2 rounded-[var(--radius-sm)] cursor-pointer text-sm border ${targetRepId === rep.id ? 'border-gray-900 bg-[var(--bg-surface-alt)]' : 'border-transparent hover:bg-[var(--bg-surface-alt)]'}`}>
                   <input
                     type="radio"
                     name="targetRep"
@@ -1059,7 +1059,7 @@ function AssignLeadsContent() {
             <button
               onClick={doAssign}
               disabled={selected.size === 0 || !targetRepId || isAssigning}
-              className="w-full py-2 px-4 bg-[var(--ink-900)] text-white text-sm font-medium rounded-lg hover:bg-[var(--ink-800)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              className="w-full py-2 px-4 bg-[var(--ink-900)] text-white text-sm font-medium rounded-[var(--radius-sm)] hover:bg-[var(--ink-800)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
               {isAssigning ? 'Assigning…' : `Assign ${selected.size || ''} lead${selected.size === 1 ? '' : 's'}`}
             </button>
@@ -1068,7 +1068,7 @@ function AssignLeadsContent() {
               <button
                 onClick={doUnassign}
                 disabled={selected.size === 0 || isAssigning}
-                className="w-full mt-2 py-2 px-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] text-sm font-medium rounded-lg hover:bg-[var(--bg-surface-alt)] disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center justify-center gap-2"
+                className="w-full mt-2 py-2 px-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] text-sm font-medium rounded-[var(--radius-sm)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center justify-center gap-2"
               >
                 <Undo2 className="w-4 h-4" />
                 Return to pool
@@ -1076,7 +1076,7 @@ function AssignLeadsContent() {
             )}
           </div>
 
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl p-4 shadow-sm shadow-black/[0.02] text-xs text-[var(--ink-500)] space-y-2">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] p-4 shadow-[var(--shadow-xs)] shadow-black/[0.02] text-xs text-[var(--ink-500)] space-y-2">
             <p className="font-medium text-[var(--ink-700)]">How this works</p>
             <p>Only leads with status <strong>new</strong> can be reassigned. Once a rep updates a lead's status (e.g. contacted, callback), the lead is permanently theirs.</p>
             <p>Reps only see leads assigned to them. Use the Pool tab to distribute fresh leads each morning.</p>

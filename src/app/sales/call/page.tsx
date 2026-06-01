@@ -222,7 +222,7 @@ function CallModeContent() {
       </div>
 
       {error && (
-        <div className="mx-5 lg:mx-0 mt-3 flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">
+        <div className="mx-5 lg:mx-0 mt-3 flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-600 text-sm">
           <AlertCircle className="w-4 h-4" />
           <span className="flex-1">{error}</span>
         </div>
@@ -274,7 +274,7 @@ function CallModeContent() {
             {current.phone ? (
               <a
                 href={`tel:${current.phone}`}
-                className="block w-full mb-3 py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] transition-all rounded-2xl text-white text-center"
+                className="block w-full mb-3 py-5 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] transition-all rounded-[var(--radius-lg)] text-white text-center"
               >
                 <div className="flex items-center justify-center gap-3">
                   <Phone className="w-6 h-6" />
@@ -285,7 +285,7 @@ function CallModeContent() {
                 </div>
               </a>
             ) : (
-              <div className="w-full mb-3 py-5 bg-[var(--bg-sunken)] rounded-2xl text-center text-[var(--ink-400)] text-sm">
+              <div className="w-full mb-3 py-5 bg-[var(--bg-sunken)] rounded-[var(--radius-lg)] text-center text-[var(--ink-400)] text-sm">
                 No phone number on file
               </div>
             )}
@@ -295,7 +295,7 @@ function CallModeContent() {
               {current.email && (
                 <a
                   href={`mailto:${current.email}`}
-                  className="flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
+                  className="flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
                 >
                   <Mail className="w-4 h-4" /> Email
                 </a>
@@ -305,7 +305,7 @@ function CallModeContent() {
                   href={current.facebook_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
+                  className="flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
                 >
                   <ExternalLink className="w-4 h-4" /> Facebook
                 </a>
@@ -322,7 +322,7 @@ function CallModeContent() {
                     key={s.value}
                     disabled={busy}
                     onClick={() => setStatus(s.value)}
-                    className={`w-full py-3.5 rounded-xl text-sm font-medium transition-all active:scale-[0.98] disabled:opacity-50 ${
+                    className={`w-full py-3.5 rounded-[var(--radius-md)] text-sm font-medium transition-all active:scale-[0.98] disabled:opacity-50 ${
                       active
                         ? 'bg-[var(--ink-900)] text-white'
                         : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-gray-400 hover:bg-[var(--bg-surface-alt)]'
@@ -339,26 +339,26 @@ function CallModeContent() {
               {!notesOpen ? (
                 <button
                   onClick={() => setNotesOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-dashed border-[var(--allone-line-strong)] rounded-xl text-sm text-[var(--ink-500)] hover:border-gray-400"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-dashed border-[var(--allone-line-strong)] rounded-[var(--radius-md)] text-sm text-[var(--ink-500)] hover:border-gray-400"
                 >
                   <MessageSquare className="w-4 h-4" />
                   {current.notes ? 'Edit notes' : 'Add notes'}
                 </button>
               ) : (
-                <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-3">
+                <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] p-3">
                   <textarea
                     value={notesDraft}
                     onChange={(e) => setNotesDraft(e.target.value)}
                     rows={3}
                     placeholder="What was discussed? Any next steps?"
-                    className="w-full px-3 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:border-gray-400 focus:outline-none resize-none"
+                    className="w-full px-3 py-2 text-sm border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:border-gray-400 focus:outline-none resize-none"
                   />
                   <div className="flex justify-end gap-2 mt-2">
                     <button onClick={() => { setNotesDraft(current.notes || ''); setNotesOpen(false); }} className="px-3 py-1.5 text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)]">Cancel</button>
                     <button
                       onClick={saveNotes}
                       disabled={busy}
-                      className="px-3 py-1.5 text-xs bg-[var(--ink-900)] text-white rounded-lg hover:bg-[var(--ink-800)] disabled:opacity-50"
+                      className="px-3 py-1.5 text-xs bg-[var(--ink-900)] text-white rounded-[var(--radius-sm)] hover:bg-[var(--ink-800)] disabled:opacity-50"
                     >
                       Save
                     </button>
@@ -366,7 +366,7 @@ function CallModeContent() {
                 </div>
               )}
               {current.notes && !notesOpen && (
-                <p className="mt-2 text-xs text-[var(--ink-700)] bg-[var(--bg-surface-alt)] rounded-lg px-3 py-2 whitespace-pre-wrap">
+                <p className="mt-2 text-xs text-[var(--ink-700)] bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)] px-3 py-2 whitespace-pre-wrap">
                   {current.notes}
                 </p>
               )}
@@ -389,7 +389,7 @@ function CallModeContent() {
           <button
             onClick={() => setIndex(i => Math.max(0, i - 1))}
             disabled={index === 0}
-            className="flex-1 py-3 rounded-xl border border-[var(--allone-line)] text-[var(--ink-700)] text-sm font-medium hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 inline-flex items-center justify-center gap-1"
+            className="flex-1 py-3 rounded-[var(--radius-md)] border border-[var(--allone-line)] text-[var(--ink-700)] text-sm font-medium hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 inline-flex items-center justify-center gap-1"
           >
             <ChevronLeft className="w-4 h-4" />
             Prev
@@ -397,7 +397,7 @@ function CallModeContent() {
           <button
             onClick={advance}
             disabled={index >= leads.length - 1}
-            className="flex-1 py-3 rounded-xl bg-[var(--ink-900)] text-white text-sm font-medium hover:bg-[var(--ink-800)] disabled:opacity-30 inline-flex items-center justify-center gap-1"
+            className="flex-1 py-3 rounded-[var(--radius-md)] bg-[var(--ink-900)] text-white text-sm font-medium hover:bg-[var(--ink-800)] disabled:opacity-30 inline-flex items-center justify-center gap-1"
           >
             Next
             <ChevronRight className="w-4 h-4" />

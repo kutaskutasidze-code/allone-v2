@@ -109,7 +109,7 @@ export default function NewCampaignPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/sales/campaigns"
-          className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
+          className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-[var(--radius-sm)] transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -117,13 +117,13 @@ export default function NewCampaignPage() {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        <div className="p-4 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-6 space-y-6">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] p-6 space-y-6">
           <h3 className="font-medium text-[var(--ink-900)]">Campaign Details</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -135,7 +135,7 @@ export default function NewCampaignPage() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
                 placeholder="e.g., Q1 AI Chatbot Outreach"
                 required
               />
@@ -147,7 +147,7 @@ export default function NewCampaignPage() {
               </label>
               <select
                 onChange={(e) => handleTemplateSelect(e.target.value)}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
               >
                 <option value="">Select a template...</option>
                 {templates.map((template) => (
@@ -167,7 +167,7 @@ export default function NewCampaignPage() {
               type="text"
               value={formData.subject}
               onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
-              className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
+              className="w-full px-4 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
               placeholder="e.g., Automate {{company}} Customer Support with AI"
               required
             />
@@ -183,7 +183,7 @@ export default function NewCampaignPage() {
             <textarea
               value={formData.body_template}
               onChange={(e) => setFormData((prev) => ({ ...prev, body_template: e.target.value }))}
-              className="w-full px-4 py-3 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none font-mono"
+              className="w-full px-4 py-3 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none font-mono"
               rows={12}
               placeholder="Hi,&#10;&#10;I noticed {{company}} handles..."
               required
@@ -194,7 +194,7 @@ export default function NewCampaignPage() {
           </div>
         </div>
 
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-6 space-y-6">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] p-6 space-y-6">
           <h3 className="font-medium text-[var(--ink-900)]">Targeting</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -205,7 +205,7 @@ export default function NewCampaignPage() {
               <select
                 value={formData.target_service}
                 onChange={(e) => setFormData((prev) => ({ ...prev, target_service: e.target.value }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
               >
                 {SERVICES.map((service) => (
                   <option key={service.value} value={service.value}>
@@ -223,7 +223,7 @@ export default function NewCampaignPage() {
                 type="number"
                 value={formData.min_relevance_score}
                 onChange={(e) => setFormData((prev) => ({ ...prev, min_relevance_score: parseInt(e.target.value) || 0 }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
                 min={0}
                 max={100}
               />
@@ -240,7 +240,7 @@ export default function NewCampaignPage() {
                   key={country.code}
                   type="button"
                   onClick={() => handleCountryToggle(country.code)}
-                  className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                  className={`px-3 py-1.5 text-sm rounded-[var(--radius-sm)] border transition-colors ${
                     formData.target_countries.includes(country.code)
                       ? 'bg-[var(--ink-900)] text-white border-[var(--ink-900)]'
                       : 'bg-[var(--bg-surface)] text-[var(--gray-600)] border-[var(--allone-line)] hover:border-[var(--gray-400)]'
@@ -256,7 +256,7 @@ export default function NewCampaignPage() {
           </div>
         </div>
 
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-6 space-y-6">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] p-6 space-y-6">
           <h3 className="font-medium text-[var(--ink-900)]">Settings</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -268,7 +268,7 @@ export default function NewCampaignPage() {
                 type="number"
                 value={formData.daily_limit}
                 onChange={(e) => setFormData((prev) => ({ ...prev, daily_limit: parseInt(e.target.value) || 50 }))}
-                className="w-full px-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
+                className="w-full px-4 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
                 min={1}
                 max={100}
               />
@@ -303,7 +303,7 @@ export default function NewCampaignPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--gray-800)] disabled:opacity-50 transition-colors"
           >
             <Save className="w-4 h-4" />
             {isSubmitting ? 'Creating...' : 'Create Campaign'}

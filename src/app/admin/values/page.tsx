@@ -129,7 +129,7 @@ export default function ValuesPage() {
       {showAddForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/30" onClick={() => setShowAddForm(false)} />
-          <div className="relative z-10 w-full max-w-md bg-[var(--bg-surface)] rounded-xl p-6 mx-4 border border-[var(--allone-line)]">
+          <div className="relative z-10 w-full max-w-md bg-[var(--bg-surface)] rounded-[var(--radius-md)] p-6 mx-4 border border-[var(--allone-line)]">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-base font-medium text-[var(--ink-900)]">Add Value</h2>
               <button onClick={() => setShowAddForm(false)} className="text-[var(--gray-400)] hover:text-[var(--ink-900)]">
@@ -169,7 +169,7 @@ export default function ValuesPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)]"
+                  className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--gray-800)]"
                 >
                   Add Value
                 </button>
@@ -194,7 +194,7 @@ export default function ValuesPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
+              className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)]"
             >
               {editingId === value.id ? (
                 <div className="space-y-4">
@@ -223,7 +223,7 @@ export default function ValuesPage() {
                     </button>
                     <button
                       onClick={() => handleUpdate(value.id)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)]"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--gray-800)]"
                     >
                       <Save className="h-3.5 w-3.5" />
                       Save
@@ -239,13 +239,13 @@ export default function ValuesPage() {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => startEdit(value)}
-                        className="p-2 rounded-lg text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)]"
+                        className="p-2 rounded-[var(--radius-sm)] text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)]"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setDeleteId(value.id)}
-                        className="p-2 rounded-lg text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50"
+                        className="p-2 rounded-[var(--radius-sm)] text-[var(--gray-400)] hover:text-red-600 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

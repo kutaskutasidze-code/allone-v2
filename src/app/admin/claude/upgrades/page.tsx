@@ -108,7 +108,7 @@ export default function UpgradesPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/admin/claude"
-          className="p-2 hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
+          className="p-2 hover:bg-[var(--bg-sunken)] rounded-[var(--radius-sm)] transition-colors"
         >
           <ArrowLeft className="h-5 w-5 text-[var(--ink-500)]" />
         </Link>
@@ -127,7 +127,7 @@ export default function UpgradesPage() {
         <select
           value={verifiedFilter}
           onChange={(e) => setVerifiedFilter(e.target.value)}
-          className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
+          className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
         >
           <option value="">All Status</option>
           <option value="true">Verified</option>
@@ -136,7 +136,7 @@ export default function UpgradesPage() {
         <select
           value={actionFilter}
           onChange={(e) => setActionFilter(e.target.value)}
-          className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
+          className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
         >
           <option value="">All Actions</option>
           <option value="install">Install</option>
@@ -152,12 +152,12 @@ export default function UpgradesPage() {
           {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="h-24 bg-[var(--bg-sunken)] rounded-xl animate-pulse"
+              className="h-24 bg-[var(--bg-sunken)] rounded-[var(--radius-md)] animate-pulse"
             />
           ))}
         </div>
       ) : upgrades.length > 0 ? (
-        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl divide-y divide-[var(--bg-sunken)]">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] divide-y divide-[var(--bg-sunken)]">
           {upgrades.map((upgrade, index) => {
             const ActionIcon = ACTION_ICONS[upgrade.action] || CheckCircle2;
             return (
@@ -170,7 +170,7 @@ export default function UpgradesPage() {
               >
                 <div className="flex items-start gap-4">
                   <div
-                    className={`w-10 h-10 flex items-center justify-center rounded-lg ${ACTION_COLORS[upgrade.action] || ACTION_COLORS.install}`}
+                    className={`w-10 h-10 flex items-center justify-center rounded-[var(--radius-sm)] ${ACTION_COLORS[upgrade.action] || ACTION_COLORS.install}`}
                   >
                     <ActionIcon className="h-5 w-5" />
                   </div>
@@ -211,7 +211,7 @@ export default function UpgradesPage() {
                   </div>
                   <button
                     onClick={() => toggleVerification(upgrade)}
-                    className={`p-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-[var(--radius-sm)] transition-colors ${
                       upgrade.verified
                         ? 'bg-green-50 text-green-600 hover:bg-green-100'
                         : 'bg-[var(--bg-sunken)] text-[var(--gray-400)] hover:bg-[var(--allone-line)]'
@@ -230,7 +230,7 @@ export default function UpgradesPage() {
           })}
         </div>
       ) : (
-        <div className="p-8 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-center">
+        <div className="p-8 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-center">
           <Filter className="h-8 w-8 text-[var(--gray-300)] mx-auto mb-3" />
           <p className="text-sm text-[var(--ink-500)]">No upgrades found</p>
         </div>

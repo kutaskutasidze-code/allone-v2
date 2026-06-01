@@ -182,7 +182,7 @@ function Cell({
         value={val}
         onChange={(e) => setVal(e.target.value)}
         placeholder={String(defaultPct)}
-        className={`w-14 rounded-md border px-1.5 py-1 text-sm focus:outline-none ${
+        className={`w-14 rounded-[var(--radius-xs)] border px-1.5 py-1 text-sm focus:outline-none ${
           isOverridden
             ? "border-[color:var(--ao-accent)] bg-[color:var(--ao-accent-soft)] text-[color:var(--ao-accent)]"
             : "border-[color:var(--allone-line)] text-[color:var(--ink-700)]"
@@ -193,7 +193,7 @@ function Cell({
         onClick={() => isValid && onSave(parsed)}
         disabled={busy || !isValid || (isOverridden && parsed === currentPct)}
         aria-label="Save override"
-        className="rounded-md p-1 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)] disabled:opacity-30"
+        className="rounded-[var(--radius-xs)] p-1 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)] disabled:opacity-30"
       >
         {busy ? (
           <Loader2 className="h-3 w-3 animate-spin" />
@@ -207,7 +207,7 @@ function Cell({
           onClick={onReset}
           disabled={busy}
           aria-label="Reset to default"
-          className="rounded-md p-1 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)] disabled:opacity-30"
+          className="rounded-[var(--radius-xs)] p-1 text-[color:var(--ink-500)] hover:bg-[color:var(--bg-sunken)] disabled:opacity-30"
         >
           <RotateCcw className="h-3 w-3" />
         </button>

@@ -66,7 +66,7 @@ export default function TemplatesPage() {
       />
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        <div className="p-4 bg-red-50 border border-red-100 rounded-[var(--radius-md)] text-red-600 text-sm">
           {error}
         </div>
       )}
@@ -85,7 +85,7 @@ export default function TemplatesPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl overflow-hidden"
+              className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] overflow-hidden"
             >
               <button
                 onClick={() => setExpandedId(expandedId === template.id ? null : template.id)}
@@ -113,7 +113,7 @@ export default function TemplatesPage() {
                       e.stopPropagation();
                       copyToClipboard(template);
                     }}
-                    className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
+                    className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-[var(--radius-sm)] transition-colors"
                     title="Copy template"
                   >
                     {copiedId === template.id ? (
@@ -142,7 +142,7 @@ export default function TemplatesPage() {
                       <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">
                         Subject
                       </label>
-                      <p className="text-sm text-[var(--ink-900)] bg-[var(--bg-surface)] p-3 rounded-lg">
+                      <p className="text-sm text-[var(--ink-900)] bg-[var(--bg-surface)] p-3 rounded-[var(--radius-sm)]">
                         {template.subject}
                       </p>
                     </div>
@@ -150,7 +150,7 @@ export default function TemplatesPage() {
                       <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">
                         Body
                       </label>
-                      <pre className="text-sm text-[var(--ink-900)] bg-[var(--bg-surface)] p-3 rounded-lg whitespace-pre-wrap font-sans">
+                      <pre className="text-sm text-[var(--ink-900)] bg-[var(--bg-surface)] p-3 rounded-[var(--radius-sm)] whitespace-pre-wrap font-sans">
                         {template.body}
                       </pre>
                     </div>

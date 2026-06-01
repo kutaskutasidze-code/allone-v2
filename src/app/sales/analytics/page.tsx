@@ -102,7 +102,7 @@ export default function AnalyticsPage() {
           <h1 className="text-xl font-semibold tracking-tight text-[var(--ink-900)] font-display">Analytics</h1>
           <p className="mt-1.5 text-sm text-[var(--ink-500)]">Lead performance overview</p>
         </div>
-        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-sm">{error || 'Failed to load'}</div>
+        <div className="p-3 bg-red-50 border border-red-100 rounded-[var(--radius-sm)] text-red-600 text-sm">{error || 'Failed to load'}</div>
       </div>
     );
   }
@@ -126,9 +126,9 @@ export default function AnalyticsPage() {
             <button
               key={d}
               onClick={() => setDays(d)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+              className={`px-3 py-1.5 text-xs font-medium rounded-[var(--radius-sm)] transition-all ${
                 days === d
-                  ? 'bg-[var(--ink-900)] text-white shadow-sm'
+                  ? 'bg-[var(--ink-900)] text-white shadow-[var(--shadow-xs)]'
                   : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-[var(--allone-line-strong)]'
               }`}
             >
@@ -142,7 +142,7 @@ export default function AnalyticsPage() {
         {statCards.map(card => {
           const Icon = card.icon;
           return (
-            <div key={card.label} className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+            <div key={card.label} className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-[var(--ink-500)]">{card.label}</span>
                 <Icon className="h-4 w-4 text-[var(--ink-400)]" />
@@ -155,7 +155,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
           <div className="flex items-center gap-2 mb-4">
             <Target className="w-4 h-4 text-[var(--ink-400)]" />
             <h3 className="text-sm font-semibold text-[var(--ink-900)]">By Status</h3>
@@ -163,7 +163,7 @@ export default function AnalyticsPage() {
           <DistributionBar data={data.leads.byStatus} names={STATUS_NAMES} colors={STATUS_COLORS} />
         </div>
 
-        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
           <div className="flex items-center gap-2 mb-4">
             <Globe className="w-4 h-4 text-[var(--ink-400)]" />
             <h3 className="text-sm font-semibold text-[var(--ink-900)]">By Service</h3>
@@ -173,7 +173,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
           <h3 className="text-sm font-semibold text-[var(--ink-900)] mb-2">Data Quality</h3>
           <p className="text-xs text-[var(--ink-500)] mb-4">Contact information availability</p>
           <div className="space-y-3">
@@ -198,7 +198,7 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+        <div className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
           <h3 className="text-sm font-semibold text-[var(--ink-900)] mb-2">Daily Activity</h3>
           <p className="text-xs text-[var(--ink-500)] mb-4">New leads per day (last {data.period.days} days)</p>
           <div className="flex items-end gap-0.5 h-24">

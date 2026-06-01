@@ -66,7 +66,7 @@ export function NotificationsContent({ sends }: { sends: Send[] }) {
               onClick={() => setFilter(b)}
               className={`rounded-full px-3 py-1 text-xs font-medium ${
                 filter === b
-                  ? "bg-[var(--bg-surface)] text-[color:var(--ink-900)] shadow-sm"
+                  ? "bg-[var(--bg-surface)] text-[color:var(--ink-900)] shadow-[var(--shadow-xs)]"
                   : "text-[color:var(--ink-500)]"
               }`}
             >
@@ -77,7 +77,7 @@ export function NotificationsContent({ sends }: { sends: Send[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[color:var(--allone-line)] py-10 text-center text-sm text-[color:var(--ink-500)]">
+        <div className="rounded-[var(--radius-lg)] border border-dashed border-[color:var(--allone-line)] py-10 text-center text-sm text-[color:var(--ink-500)]">
           <Send className="mx-auto mb-2 h-5 w-5 text-[color:var(--ink-300)]" />
           No notifications yet for this filter.
         </div>
@@ -120,7 +120,7 @@ export function NotificationsContent({ sends }: { sends: Send[] }) {
                     )}
                   </div>
                   {s.error && (
-                    <p className="mt-1.5 rounded-md bg-red-50 px-2 py-1 text-xs text-red-700">
+                    <p className="mt-1.5 rounded-[var(--radius-xs)] bg-red-50 px-2 py-1 text-xs text-red-700">
                       {s.error}
                     </p>
                   )}

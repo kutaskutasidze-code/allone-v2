@@ -70,7 +70,7 @@ export function ConfirmDialog({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="relative z-10 w-full max-w-sm bg-[var(--bg-surface)] rounded-xl shadow-xl shadow-black/[0.08] mx-4"
+            className="relative z-10 w-full max-w-sm bg-[var(--bg-surface)] rounded-[var(--radius-md)] shadow-xl shadow-black/[0.08] mx-4"
           >
             <div className="p-6">
               <h3 className="text-base font-semibold text-[var(--ink-900)] mb-2">{title}</h3>
@@ -89,7 +89,7 @@ export function ConfirmDialog({
                 onClick={onConfirm}
                 disabled={isLoading}
                 className={cn(
-                  'px-4 py-2 text-sm font-medium text-white rounded-lg transition-all active:scale-[0.98] disabled:opacity-50',
+                  'px-4 py-2 text-sm font-medium text-white rounded-[var(--radius-sm)] transition-all active:scale-[0.98] disabled:opacity-50',
                   variant === 'danger'
                     ? 'bg-red-600 hover:bg-red-700'
                     : 'bg-[var(--ink-900)] hover:bg-[var(--ink-800)]'

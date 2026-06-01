@@ -182,7 +182,7 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
           <Link
             key={stat.title}
             href={stat.href}
-            className="group block p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+            className="group block p-5 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] hover:shadow-[var(--shadow-sm)] hover:shadow-black/[0.04] transition-shadow duration-200"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-[var(--ink-500)]">{stat.title}</span>
@@ -206,7 +206,7 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
       {/* Revenue Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Revenue Line Chart */}
-        <div className="lg:col-span-2 p-6 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+        <div className="lg:col-span-2 p-6 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
               <h2 className="text-sm font-semibold text-[var(--ink-900)]">Revenue</h2>
@@ -215,14 +215,14 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex rounded-lg bg-[var(--bg-sunken)] p-0.5">
+              <div className="flex rounded-[var(--radius-sm)] bg-[var(--bg-sunken)] p-0.5">
                 {(['month', 'year', 'lifetime'] as const).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPeriod(p)}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                    className={`px-3 py-1 text-xs font-medium rounded-[var(--radius-xs)] transition-all ${
                       period === p
-                        ? 'bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-sm'
+                        ? 'bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-[var(--shadow-xs)]'
                         : 'text-[var(--ink-500)] hover:text-[var(--ink-900)]'
                     }`}
                   >
@@ -234,7 +234,7 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  className="px-2 py-1 text-xs font-medium rounded-lg bg-[var(--bg-sunken)] border-0 cursor-pointer"
+                  className="px-2 py-1 text-xs font-medium rounded-[var(--radius-sm)] bg-[var(--bg-sunken)] border-0 cursor-pointer"
                 >
                   {availableYears.map((year) => (
                     <option key={year} value={year}>{year}</option>
@@ -303,7 +303,7 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
         </div>
 
         {/* Revenue by Category */}
-        <div className="p-6 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02]">
+        <div className="p-6 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
           <div className="mb-4">
             <h2 className="text-sm font-semibold text-[var(--ink-900)]">By Category</h2>
             <p className="text-xs text-[var(--ink-500)] mt-0.5">Revenue distribution</p>
@@ -385,7 +385,7 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
             {LEAD_STATUSES.map(({ value }) => (
               <div
                 key={value}
-                className="p-3 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-lg text-center shadow-sm shadow-black/[0.02]"
+                className="p-3 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-sm)] text-center shadow-[var(--shadow-xs)] shadow-black/[0.02]"
               >
                 <div className="text-lg font-semibold text-[var(--ink-900)]">
                   {leadsData.stats[value as keyof typeof leadsData.stats]}
@@ -397,7 +397,7 @@ export function DashboardContent({ counts, dailyRevenue, categoryRevenue, leadsD
 
           {/* Recent Leads Table */}
           {leadsData.recentLeads.length > 0 && (
-            <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] overflow-x-auto">
+            <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] overflow-x-auto">
               <table className="w-full min-w-[500px]">
                 <thead>
                   <tr className="border-b border-[var(--allone-line-soft)]">

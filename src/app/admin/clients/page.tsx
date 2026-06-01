@@ -162,7 +162,7 @@ export default function ClientsPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="relative z-10 w-full max-w-md bg-[var(--bg-surface)] rounded-xl shadow-xl shadow-black/[0.08] p-6 mx-4"
+              className="relative z-10 w-full max-w-md bg-[var(--bg-surface)] rounded-[var(--radius-md)] shadow-xl shadow-black/[0.08] p-6 mx-4"
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-base font-semibold text-[var(--ink-900)]">Add Client</h2>
@@ -195,7 +195,7 @@ export default function ClientsPage() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all"
+                    className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-[var(--radius-sm)] hover:bg-[var(--ink-800)] active:scale-[0.98] transition-all"
                   >
                     Add Client
                   </button>
@@ -218,31 +218,31 @@ export default function ClientsPage() {
           {clients.map((client) => (
             <div
               key={client.id}
-              className="group flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-xl shadow-sm shadow-black/[0.02] hover:shadow-md hover:shadow-black/[0.04] transition-shadow duration-200"
+              className="group flex items-center gap-4 p-4 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] hover:shadow-[var(--shadow-sm)] hover:shadow-black/[0.04] transition-shadow duration-200"
             >
               {editingId === client.id ? (
                 <div className="flex-1 flex items-center gap-3">
                   <input
                     value={editData.logo_text}
                     onChange={(e) => setEditData({ ...editData, logo_text: e.target.value })}
-                    className="w-20 px-2 py-1 text-sm border border-[var(--allone-line)] rounded-lg focus:border-gray-400 focus:outline-none"
+                    className="w-20 px-2 py-1 text-sm border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:border-gray-400 focus:outline-none"
                     placeholder="Logo"
                   />
                   <input
                     value={editData.name}
                     onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                    className="flex-1 px-2 py-1 text-sm border border-[var(--allone-line)] rounded-lg focus:border-gray-400 focus:outline-none"
+                    className="flex-1 px-2 py-1 text-sm border border-[var(--allone-line)] rounded-[var(--radius-sm)] focus:border-gray-400 focus:outline-none"
                     placeholder="Name"
                   />
                   <button
                     onClick={() => handleUpdate(client.id)}
-                    className="p-2 text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] rounded-lg transition-colors"
+                    className="p-2 text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)] transition-colors"
                   >
                     <Save className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setEditingId(null)}
-                    className="p-2 text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] rounded-lg transition-colors"
+                    className="p-2 text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] rounded-[var(--radius-sm)] transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -250,7 +250,7 @@ export default function ClientsPage() {
               ) : (
                 <>
                   {/* Logo Text */}
-                  <div className="w-16 h-10 flex items-center justify-center rounded-lg bg-[var(--bg-surface-alt)]">
+                  <div className="w-16 h-10 flex items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)]">
                     <span className="text-sm font-bold text-[var(--ink-700)]">{client.logo_text}</span>
                   </div>
 
@@ -271,13 +271,13 @@ export default function ClientsPage() {
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => startEdit(client)}
-                      className="p-2 rounded-lg text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
+                      className="p-2 rounded-[var(--radius-sm)] text-[var(--ink-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setDeleteId(client.id)}
-                      className="p-2 rounded-lg text-[var(--ink-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
+                      className="p-2 rounded-[var(--radius-sm)] text-[var(--ink-400)] hover:text-red-600 hover:bg-red-50 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
