@@ -1,25 +1,33 @@
-// /admin home — chat-native first page in the BF shell pattern. Mirrors
-// the operator-style entry of travelplace-bf + equivalenza-bf. The
-// numerical dashboard moved to /admin/dashboard.
+// /admin home — chat-native first page using BF's OverviewChat (the same
+// component /sales uses). The numerical dashboard lives at /admin/dashboard.
 
-import { ChatNativeHome, type QuickAction } from "@/components/bf-shell";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { OverviewChat } from "@/components/bf-shell/OverviewChat";
 
-const STARTERS: QuickAction[] = [
-  { label: "Open dashboard", href: "/admin/dashboard" },
-  { label: "Services", href: "/admin/services" },
-  { label: "Projects", href: "/admin/projects" },
-  { label: "Clients", href: "/admin/clients" },
-  { label: "Leads", href: "/admin/leads" },
+async function getAdmin() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.email) redirect("/admin/login");
+  // Middleware already gates on the ADMIN_EMAILS allowlist, so anyone who
+  // makes it here is OK. We just want the name for the greeting.
+  return {
+    firstName:
+      (user.user_metadata?.name as string | undefined)?.split(" ")[0] ??
+      user.email.split("@")[0],
+  };
+}
+
+const STARTERS: string[] = [
+  "Today's team call activity",
+  "Which reps are under target this week?",
+  "Show me the latest leads by source",
+  "Generate a demo for an unassigned hot lead",
 ];
 
-export default function AdminHomePage() {
-  return (
-    <ChatNativeHome
-      greeting="Allone Admin"
-      subhead="Ask anything about the marketing site, content, or sales pipeline. Or jump straight to a section."
-      starters={STARTERS}
-      apiPath="/api/sales/chat"
-      scopeLabel="Admin"
-    />
-  );
+export default async function AdminHomePage() {
+  const { firstName } = await getAdmin();
+  return <OverviewChat operatorFirstName={firstName} starters={STARTERS} />;
 }

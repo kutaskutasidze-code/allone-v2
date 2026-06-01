@@ -1,12 +1,11 @@
-// /sales home — chat-native first page in the BF shell pattern. Mirrors
-// travelplace-bf and equivalenza-bf where the operator's primary entry is
-// a chat with quick-action chips, not a dashboard. The numerical dashboard
-// moved to /sales/dashboard.
+// /sales home — chat-native first page using BF's real OverviewChat
+// (big greeting + starter chips + voice + streaming + attachments). The
+// numerical dashboard moved to /sales/dashboard.
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ChatNativeHome, type QuickAction } from "@/components/bf-shell";
+import { OverviewChat } from "@/components/bf-shell/OverviewChat";
 
 async function getSalesUser() {
   const supabase = await createClient();
@@ -24,41 +23,15 @@ async function getSalesUser() {
   return salesUser;
 }
 
-const STARTERS: QuickAction[] = [
-  {
-    label: "Today's aims",
-    prompt: "What are my aims today and how am I tracking against them?",
-  },
-  { label: "Open dashboard", href: "/sales/dashboard" },
-  { label: "See my leads", href: "/sales/leads" },
-  { label: "Pending demos", href: "/sales/demos" },
-  { label: "Reference library", href: "/sales/demos/references" },
-  { label: "New lead", href: "/sales/leads/new" },
+const STARTERS: string[] = [
+  "What are my aims today and how am I tracking against them?",
+  "Show me today's queue",
+  "Which leads need follow-up?",
+  "Draft an outreach email for my newest qualified lead",
 ];
 
 export default async function SalesHomePage() {
   const salesUser = await getSalesUser();
-  const first = (salesUser.name as string).split(" ")[0] || "there";
-  const hour = new Date().toLocaleString("en-US", {
-    timeZone: "Asia/Tbilisi",
-    hour: "numeric",
-    hour12: false,
-  });
-  const h = parseInt(hour, 10);
-  const greeting =
-    h < 11
-      ? `Good morning, ${first}.`
-      : h < 17
-        ? `Hi ${first}.`
-        : `Good evening, ${first}.`;
-
-  return (
-    <ChatNativeHome
-      greeting={greeting}
-      subhead="Ask me anything — pipeline, demos, today's aims, or jump straight to a section."
-      starters={STARTERS}
-      apiPath="/api/sales/chat"
-      scopeLabel="Sales"
-    />
-  );
+  const first = ((salesUser.name as string) || "").split(" ")[0] || "there";
+  return <OverviewChat operatorFirstName={first} starters={STARTERS} />;
 }
