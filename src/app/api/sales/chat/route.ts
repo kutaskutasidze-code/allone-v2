@@ -90,7 +90,11 @@ export async function POST(request: NextRequest) {
           "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
+          // Sonnet matches BF's chat quality. Haiku was making the
+          // replies feel terse + missing nuance the user complained about.
+          // If credit usage becomes a concern, swap to claude-sonnet-4-7
+          // when it lands, or wire the Claude-CLI Hetzner bridge.
+          model: "claude-sonnet-4-5-20250929",
           max_tokens: 1024,
           system,
           tools: TOOLS,
