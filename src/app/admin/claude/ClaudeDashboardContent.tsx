@@ -121,19 +121,19 @@ export function ClaudeDashboardContent({
       title: 'MCP Servers',
       count: capsByCategory.mcp_server || 0,
       icon: Server,
-      color: 'bg-[var(--gray-100)]',
+      color: 'bg-[var(--bg-sunken)]',
     },
     {
       title: 'Skills',
       count: capsByCategory.skill || 0,
       icon: Zap,
-      color: 'bg-[var(--gray-100)]',
+      color: 'bg-[var(--bg-sunken)]',
     },
     {
       title: 'Repositories',
       count: capsByCategory.repository || 0,
       icon: Package,
-      color: 'bg-[var(--gray-100)]',
+      color: 'bg-[var(--bg-sunken)]',
     },
     {
       title: 'Success Rate',
@@ -156,16 +156,16 @@ export function ClaudeDashboardContent({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">
             Allone&apos;s Claude
           </h1>
-          <p className="mt-1 text-sm text-[var(--gray-500)]">
+          <p className="mt-1 text-sm text-[var(--ink-500)]">
             {totalCapabilities} capabilities installed
           </p>
         </div>
         <Link
           href="/admin/claude/capabilities"
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--ink-900)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
         >
           View All
           <ArrowRight className="h-4 w-4" />
@@ -182,17 +182,17 @@ export function ClaudeDashboardContent({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
+              className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${stat.color}`}>
-                  <Icon className={`h-4 w-4 ${stat.textColor || 'text-[var(--gray-500)]'}`} />
+                  <Icon className={`h-4 w-4 ${stat.textColor || 'text-[var(--ink-500)]'}`} />
                 </div>
               </div>
-              <div className={`text-2xl font-semibold ${stat.textColor || 'text-[var(--black)]'}`}>
+              <div className={`text-2xl font-semibold ${stat.textColor || 'text-[var(--ink-900)]'}`}>
                 {stat.count}
               </div>
-              <div className="text-xs text-[var(--gray-500)] mt-0.5">{stat.title}</div>
+              <div className="text-xs text-[var(--ink-500)] mt-0.5">{stat.title}</div>
             </motion.div>
           );
         })}
@@ -206,10 +206,10 @@ export function ClaudeDashboardContent({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 + index * 0.05 }}
-            className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
+            className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
           >
-            <div className="text-2xl font-semibold text-[var(--black)]">{stat.value}</div>
-            <div className="text-xs text-[var(--gray-500)] mt-0.5">{stat.title}</div>
+            <div className="text-2xl font-semibold text-[var(--ink-900)]">{stat.value}</div>
+            <div className="text-xs text-[var(--ink-500)] mt-0.5">{stat.title}</div>
           </motion.div>
         ))}
       </div>
@@ -221,15 +221,15 @@ export function ClaudeDashboardContent({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="p-5 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
+          className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
-              <Activity className="h-4 w-4 text-[var(--gray-500)]" />
+            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-sunken)]">
+              <Activity className="h-4 w-4 text-[var(--ink-500)]" />
             </div>
             <div>
-              <h2 className="text-sm font-medium text-[var(--black)]">Most Used (7 days)</h2>
-              <p className="text-xs text-[var(--gray-500)]">Top capabilities by usage</p>
+              <h2 className="text-sm font-medium text-[var(--ink-900)]">Most Used (7 days)</h2>
+              <p className="text-xs text-[var(--ink-500)]">Top capabilities by usage</p>
             </div>
           </div>
           {usage.topCapabilities.length > 0 ? (
@@ -250,7 +250,7 @@ export function ClaudeDashboardContent({
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#fff',
-                      border: '1px solid var(--gray-200)',
+                      border: '1px solid var(--allone-line)',
                       borderRadius: '8px',
                       fontSize: '12px',
                     }}
@@ -271,15 +271,15 @@ export function ClaudeDashboardContent({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="p-5 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
+          className="p-5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
-              <Package className="h-4 w-4 text-[var(--gray-500)]" />
+            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-sunken)]">
+              <Package className="h-4 w-4 text-[var(--ink-500)]" />
             </div>
             <div>
-              <h2 className="text-sm font-medium text-[var(--black)]">By Category</h2>
-              <p className="text-xs text-[var(--gray-500)]">Capability distribution</p>
+              <h2 className="text-sm font-medium text-[var(--ink-900)]">By Category</h2>
+              <p className="text-xs text-[var(--ink-500)]">Capability distribution</p>
             </div>
           </div>
           {categoryChartData.length > 0 ? (
@@ -300,7 +300,7 @@ export function ClaudeDashboardContent({
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#fff',
-                      border: '1px solid var(--gray-200)',
+                      border: '1px solid var(--allone-line)',
                       borderRadius: '8px',
                       fontSize: '12px',
                     }}
@@ -332,26 +332,26 @@ export function ClaudeDashboardContent({
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--gray-100)]">
-              <Clock className="h-4 w-4 text-[var(--gray-500)]" />
+            <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--bg-sunken)]">
+              <Clock className="h-4 w-4 text-[var(--ink-500)]" />
             </div>
             <div>
-              <h2 className="text-sm font-medium text-[var(--black)]">Recent Upgrades</h2>
-              <p className="text-xs text-[var(--gray-500)]">
+              <h2 className="text-sm font-medium text-[var(--ink-900)]">Recent Upgrades</h2>
+              <p className="text-xs text-[var(--ink-500)]">
                 {verifiedCount} verified · {pendingCount} pending
               </p>
             </div>
           </div>
           <Link
             href="/admin/claude/upgrades"
-            className="text-xs text-[var(--gray-500)] hover:text-[var(--black)] transition-colors"
+            className="text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)] transition-colors"
           >
             View all
           </Link>
         </div>
 
         {upgrades.length > 0 ? (
-          <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl divide-y divide-[var(--gray-100)]">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl divide-y divide-[var(--bg-sunken)]">
             {upgrades.slice(0, 5).map((upgrade) => {
               const ActionIcon = ACTION_ICONS[upgrade.action] || CheckCircle2;
               return (
@@ -372,16 +372,16 @@ export function ClaudeDashboardContent({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[var(--black)] truncate">
+                      <span className="text-sm font-medium text-[var(--ink-900)] truncate">
                         {upgrade.capability_name || upgrade.action}
                       </span>
                       {upgrade.capability_category && (
-                        <span className="px-2 py-0.5 text-xs bg-[var(--gray-100)] text-[var(--gray-600)] rounded">
+                        <span className="px-2 py-0.5 text-xs bg-[var(--bg-sunken)] text-[var(--gray-600)] rounded">
                           {upgrade.capability_category}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-[var(--gray-500)] truncate">{upgrade.description}</p>
+                    <p className="text-xs text-[var(--ink-500)] truncate">{upgrade.description}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span
@@ -402,7 +402,7 @@ export function ClaudeDashboardContent({
             })}
           </div>
         ) : (
-          <div className="p-8 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl text-center">
+          <div className="p-8 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-center">
             <p className="text-sm text-[var(--gray-400)]">No upgrades recorded yet</p>
           </div>
         )}

@@ -62,7 +62,7 @@ export function ArrayInput({
             'placeholder:text-[var(--gray-400)]',
             'transition-all duration-300',
             'focus:outline-none focus:border-black',
-            'hover:border-[var(--gray-500)]'
+            'hover:border-[var(--ink-500)]'
           )}
         />
         <button
@@ -80,13 +80,13 @@ export function ArrayInput({
           {value.map((item, index) => (
             <span
               key={index}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[var(--gray-100)] text-sm rounded-full"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[var(--bg-sunken)] text-sm rounded-full"
             >
               {item}
               <button
                 type="button"
                 onClick={() => handleRemove(index)}
-                className="ml-1 text-[var(--gray-500)] hover:text-black transition-colors"
+                className="ml-1 text-[var(--ink-500)] hover:text-black transition-colors"
               >
                 <X className="h-3.5 w-3.5" />
               </button>

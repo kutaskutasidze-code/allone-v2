@@ -102,21 +102,21 @@ export function FileUpload({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-[var(--gray-700)] mb-2">
+      <label className="block text-sm font-medium text-[var(--ink-700)] mb-2">
         {label}
       </label>
 
       {value ? (
-        <div className="flex items-center gap-3 p-3 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)]">
-          <FileText className="h-5 w-5 text-[var(--gray-500)] flex-shrink-0" />
-          <span className="flex-1 text-sm text-[var(--gray-700)] truncate">
+        <div className="flex items-center gap-3 p-3 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+          <FileText className="h-5 w-5 text-[var(--ink-500)] flex-shrink-0" />
+          <span className="flex-1 text-sm text-[var(--ink-700)] truncate">
             {getFileName(value)}
           </span>
           <a
             href={value}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1.5 text-[var(--gray-500)] hover:text-[var(--gray-700)] transition-colors"
+            className="p-1.5 text-[var(--ink-500)] hover:text-[var(--ink-700)] transition-colors"
             title="Open file"
           >
             <ExternalLink className="h-4 w-4" />
@@ -124,7 +124,7 @@ export function FileUpload({
           <button
             type="button"
             onClick={handleRemove}
-            className="p-1.5 text-[var(--gray-500)] hover:text-red-600 transition-colors"
+            className="p-1.5 text-[var(--ink-500)] hover:text-red-600 transition-colors"
             title="Remove file"
           >
             <X className="h-4 w-4" />
@@ -133,16 +133,16 @@ export function FileUpload({
       ) : (
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="relative flex items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-[var(--gray-300)] bg-[var(--bg-surface)] cursor-pointer hover:border-[var(--gray-400)] hover:bg-[var(--gray-100)] transition-colors"
+          className="relative flex items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-[var(--gray-300)] bg-[var(--bg-surface)] cursor-pointer hover:border-[var(--gray-400)] hover:bg-[var(--bg-sunken)] transition-colors"
         >
           {isUploading ? (
             <>
-              <Loader2 className="h-5 w-5 text-[var(--gray-500)] animate-spin" />
+              <Loader2 className="h-5 w-5 text-[var(--ink-500)] animate-spin" />
               <span className="text-sm text-[var(--gray-600)]">Uploading...</span>
             </>
           ) : (
             <>
-              <Upload className="h-5 w-5 text-[var(--gray-500)]" />
+              <Upload className="h-5 w-5 text-[var(--ink-500)]" />
               <span className="text-sm text-[var(--gray-600)]">
                 Click to upload
               </span>
@@ -161,7 +161,7 @@ export function FileUpload({
       />
 
       {hint && !error && (
-        <p className="mt-1.5 text-xs text-[var(--gray-500)]">{hint}</p>
+        <p className="mt-1.5 text-xs text-[var(--ink-500)]">{hint}</p>
       )}
 
       {error && (

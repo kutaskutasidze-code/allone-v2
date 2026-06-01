@@ -72,17 +72,17 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
+    <div className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
             <Send className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-[var(--black)]">
+            <h2 className="text-sm font-semibold text-[var(--ink-900)]">
               Telegram
             </h2>
-            <p className="mt-0.5 text-xs text-[var(--gray-500)]">
+            <p className="mt-0.5 text-xs text-[var(--ink-500)]">
               Daily aim, EOD report, weekly + monthly summaries straight to your
               chat.
             </p>
@@ -94,7 +94,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
               type="button"
               onClick={disconnect}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
             >
               {busy ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -132,7 +132,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
               type="button"
               onClick={() => sendPreview("daily_aim")}
               disabled={busy}
-              className="rounded-full border border-[var(--gray-200)] px-2.5 py-1 text-[11px] font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+              className="rounded-full border border-[var(--allone-line)] px-2.5 py-1 text-[11px] font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
             >
               Preview daily aim
             </button>
@@ -140,7 +140,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
               type="button"
               onClick={() => sendPreview("daily_report")}
               disabled={busy}
-              className="rounded-full border border-[var(--gray-200)] px-2.5 py-1 text-[11px] font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+              className="rounded-full border border-[var(--allone-line)] px-2.5 py-1 text-[11px] font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
             >
               Preview EOD report
             </button>
@@ -148,7 +148,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
               type="button"
               onClick={() => sendPreview("weekly_report")}
               disabled={busy}
-              className="rounded-full border border-[var(--gray-200)] px-2.5 py-1 text-[11px] font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+              className="rounded-full border border-[var(--allone-line)] px-2.5 py-1 text-[11px] font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
             >
               Preview weekly report
             </button>
@@ -157,7 +157,7 @@ export function TelegramConnect({ initial }: TelegramConnectProps) {
       )}
 
       {deepLink && !connected && (
-        <p className="mt-3 text-xs text-[var(--gray-500)]">
+        <p className="mt-3 text-xs text-[var(--ink-500)]">
           Telegram should have opened.{" "}
           <a
             href={deepLink}

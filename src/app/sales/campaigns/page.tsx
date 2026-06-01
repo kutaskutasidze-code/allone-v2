@@ -86,7 +86,7 @@ function CampaignsPageContent() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--allone-line)] border-t-[var(--ink-900)] rounded-full animate-spin" />
       </div>
     );
   }
@@ -116,27 +116,27 @@ function CampaignsPageContent() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search campaigns..."
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--gray-200)] focus:border-[var(--gray-400)] focus:outline-none"
+            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-[var(--gray-400)] focus:outline-none"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray-400)] hover:text-[var(--black)]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gray-400)] hover:text-[var(--ink-900)]"
             >
               <X className="h-4 w-4" />
             </button>
           )}
         </div>
 
-        <div className="flex rounded-lg bg-[var(--gray-100)] p-0.5">
+        <div className="flex rounded-lg bg-[var(--bg-sunken)] p-0.5">
           {(['all', 'active', 'inactive'] as const).map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all capitalize ${
                 statusFilter === status
-                  ? 'bg-[var(--bg-surface)] text-[var(--black)] shadow-sm'
-                  : 'text-[var(--gray-500)] hover:text-[var(--black)]'
+                  ? 'bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-sm'
+                  : 'text-[var(--ink-500)] hover:text-[var(--ink-900)]'
               }`}
             >
               {status}
@@ -160,14 +160,14 @@ function CampaignsPageContent() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
+              className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl hover:border-[var(--gray-300)] transition-colors"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
                     <Link
                       href={`/sales/campaigns/${campaign.id}`}
-                      className="font-medium text-[var(--black)] hover:underline truncate"
+                      className="font-medium text-[var(--ink-900)] hover:underline truncate"
                     >
                       {campaign.name}
                     </Link>
@@ -175,13 +175,13 @@ function CampaignsPageContent() {
                       className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
                         campaign.is_active
                           ? 'bg-green-100 text-green-700'
-                          : 'bg-[var(--gray-100)] text-[var(--gray-600)]'
+                          : 'bg-[var(--bg-sunken)] text-[var(--gray-600)]'
                       }`}
                     >
                       {campaign.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--gray-500)] truncate mb-2">
+                  <p className="text-sm text-[var(--ink-500)] truncate mb-2">
                     Subject: {campaign.subject}
                   </p>
                   <div className="flex items-center gap-4 text-xs text-[var(--gray-400)]">
@@ -196,13 +196,13 @@ function CampaignsPageContent() {
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <div className="flex items-center gap-4 text-sm">
-                      <span className="text-[var(--gray-500)]">
-                        <span className="font-semibold text-[var(--black)]">{campaign.emails_sent}</span> sent
+                      <span className="text-[var(--ink-500)]">
+                        <span className="font-semibold text-[var(--ink-900)]">{campaign.emails_sent}</span> sent
                       </span>
-                      <span className="text-[var(--gray-500)]">
+                      <span className="text-[var(--ink-500)]">
                         <span className="font-semibold text-green-600">{campaign.emails_opened}</span> opened
                       </span>
-                      <span className="text-[var(--gray-500)]">
+                      <span className="text-[var(--ink-500)]">
                         <span className="font-semibold text-[var(--ao-accent)]">{campaign.emails_replied}</span> replied
                       </span>
                     </div>
@@ -214,7 +214,7 @@ function CampaignsPageContent() {
                       className={`p-2 rounded-lg transition-colors ${
                         campaign.is_active
                           ? 'text-green-600 hover:bg-green-50'
-                          : 'text-[var(--gray-400)] hover:bg-[var(--gray-100)]'
+                          : 'text-[var(--gray-400)] hover:bg-[var(--bg-sunken)]'
                       }`}
                       title={campaign.is_active ? 'Pause campaign' : 'Activate campaign'}
                     >
@@ -222,7 +222,7 @@ function CampaignsPageContent() {
                     </button>
                     <Link
                       href={`/sales/campaigns/${campaign.id}`}
-                      className="p-2 text-[var(--gray-400)] hover:text-[var(--black)] hover:bg-[var(--gray-100)] rounded-lg transition-colors"
+                      className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                     </Link>

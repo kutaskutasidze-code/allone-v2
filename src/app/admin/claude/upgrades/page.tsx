@@ -108,15 +108,15 @@ export default function UpgradesPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/admin/claude"
-          className="p-2 hover:bg-[var(--gray-100)] rounded-lg transition-colors"
+          className="p-2 hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
         >
-          <ArrowLeft className="h-5 w-5 text-[var(--gray-500)]" />
+          <ArrowLeft className="h-5 w-5 text-[var(--ink-500)]" />
         </Link>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">
             Upgrade History
           </h1>
-          <p className="mt-1 text-sm text-[var(--gray-500)]">
+          <p className="mt-1 text-sm text-[var(--ink-500)]">
             {upgrades.length} upgrades recorded
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function UpgradesPage() {
         <select
           value={verifiedFilter}
           onChange={(e) => setVerifiedFilter(e.target.value)}
-          className="px-3 py-2 text-sm border border-[var(--gray-200)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--gray-200)]"
+          className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
         >
           <option value="">All Status</option>
           <option value="true">Verified</option>
@@ -136,7 +136,7 @@ export default function UpgradesPage() {
         <select
           value={actionFilter}
           onChange={(e) => setActionFilter(e.target.value)}
-          className="px-3 py-2 text-sm border border-[var(--gray-200)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--gray-200)]"
+          className="px-3 py-2 text-sm border border-[var(--allone-line)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--allone-line)]"
         >
           <option value="">All Actions</option>
           <option value="install">Install</option>
@@ -152,12 +152,12 @@ export default function UpgradesPage() {
           {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="h-24 bg-[var(--gray-100)] rounded-xl animate-pulse"
+              className="h-24 bg-[var(--bg-sunken)] rounded-xl animate-pulse"
             />
           ))}
         </div>
       ) : upgrades.length > 0 ? (
-        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl divide-y divide-[var(--gray-100)]">
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl divide-y divide-[var(--bg-sunken)]">
           {upgrades.map((upgrade, index) => {
             const ActionIcon = ACTION_ICONS[upgrade.action] || CheckCircle2;
             return (
@@ -176,7 +176,7 @@ export default function UpgradesPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-[var(--black)]">
+                      <span className="font-medium text-[var(--ink-900)]">
                         {upgrade.action.charAt(0).toUpperCase() + upgrade.action.slice(1)}
                       </span>
                       {upgrade.capability_name && (
@@ -186,7 +186,7 @@ export default function UpgradesPage() {
                         </>
                       )}
                       {upgrade.capability_category && (
-                        <span className="px-2 py-0.5 text-xs bg-[var(--gray-100)] text-[var(--gray-600)] rounded">
+                        <span className="px-2 py-0.5 text-xs bg-[var(--bg-sunken)] text-[var(--gray-600)] rounded">
                           {upgrade.capability_category}
                         </span>
                       )}
@@ -197,7 +197,7 @@ export default function UpgradesPage() {
                         <summary className="cursor-pointer text-[var(--gray-400)] hover:text-[var(--gray-600)]">
                           View details
                         </summary>
-                        <pre className="mt-2 p-2 bg-[var(--gray-100)] rounded text-[var(--gray-600)] overflow-x-auto">
+                        <pre className="mt-2 p-2 bg-[var(--bg-sunken)] rounded text-[var(--gray-600)] overflow-x-auto">
                           {JSON.stringify(upgrade.details, null, 2)}
                         </pre>
                       </details>
@@ -214,7 +214,7 @@ export default function UpgradesPage() {
                     className={`p-2 rounded-lg transition-colors ${
                       upgrade.verified
                         ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                        : 'bg-[var(--gray-100)] text-[var(--gray-400)] hover:bg-[var(--gray-200)]'
+                        : 'bg-[var(--bg-sunken)] text-[var(--gray-400)] hover:bg-[var(--allone-line)]'
                     }`}
                     title={upgrade.verified ? 'Mark as unverified' : 'Mark as verified'}
                   >
@@ -230,9 +230,9 @@ export default function UpgradesPage() {
           })}
         </div>
       ) : (
-        <div className="p-8 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl text-center">
+        <div className="p-8 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl text-center">
           <Filter className="h-8 w-8 text-[var(--gray-300)] mx-auto mb-3" />
-          <p className="text-sm text-[var(--gray-500)]">No upgrades found</p>
+          <p className="text-sm text-[var(--ink-500)]">No upgrades found</p>
         </div>
       )}
     </div>

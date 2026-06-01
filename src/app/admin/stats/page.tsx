@@ -106,7 +106,7 @@ export default function StatsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--allone-line)] border-t-[var(--ink-900)] rounded-full animate-spin" />
       </div>
     );
   }
@@ -115,15 +115,15 @@ export default function StatsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">Stats</h1>
-          <p className="mt-1 text-sm text-[var(--gray-500)]">{stats.length} statistic{stats.length !== 1 ? 's' : ''}</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">Stats</h1>
+          <p className="mt-1 text-sm text-[var(--ink-500)]">{stats.length} statistic{stats.length !== 1 ? 's' : ''}</p>
         </div>
         <div className="flex items-center gap-2">
           {hasChanges && (
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--black)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {isSaving ? 'Saving...' : 'Save'}
@@ -131,7 +131,7 @@ export default function StatsPage() {
           )}
           <button
             onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--black)] bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-lg hover:bg-[var(--bg-surface)]"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--ink-900)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-lg hover:bg-[var(--bg-surface)]"
           >
             Add Stat
           </button>
@@ -142,10 +142,10 @@ export default function StatsPage() {
       {showAddForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/30" onClick={() => setShowAddForm(false)} />
-          <div className="relative z-10 w-full max-w-md bg-[var(--bg-surface)] rounded-xl p-6 mx-4 border border-[var(--gray-200)]">
+          <div className="relative z-10 w-full max-w-md bg-[var(--bg-surface)] rounded-xl p-6 mx-4 border border-[var(--allone-line)]">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-base font-medium text-[var(--black)]">Add Stat</h2>
-              <button onClick={() => setShowAddForm(false)} className="text-[var(--gray-400)] hover:text-[var(--black)]">
+              <h2 className="text-base font-medium text-[var(--ink-900)]">Add Stat</h2>
+              <button onClick={() => setShowAddForm(false)} className="text-[var(--gray-400)] hover:text-[var(--ink-900)]">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -168,13 +168,13 @@ export default function StatsPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2 text-sm text-[var(--gray-600)] hover:text-[var(--black)]"
+                  className="px-4 py-2 text-sm text-[var(--gray-600)] hover:text-[var(--ink-900)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-[var(--black)] rounded-lg hover:bg-[var(--gray-800)]"
+                  className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)]"
                 >
                   Add Stat
                 </button>
@@ -199,21 +199,21 @@ export default function StatsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="p-4 bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl"
+              className="p-4 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl"
             >
               <div className="space-y-3">
                 <input
                   type="text"
                   value={stat.value}
                   onChange={(e) => handleChange(stat.id, 'value', e.target.value)}
-                  className="w-full text-2xl font-semibold text-[var(--black)] bg-transparent border-0 border-b border-transparent focus:border-[var(--gray-300)] focus:outline-none"
+                  className="w-full text-2xl font-semibold text-[var(--ink-900)] bg-transparent border-0 border-b border-transparent focus:border-[var(--gray-300)] focus:outline-none"
                   placeholder="Value"
                 />
                 <input
                   type="text"
                   value={stat.label}
                   onChange={(e) => handleChange(stat.id, 'label', e.target.value)}
-                  className="w-full text-sm text-[var(--gray-500)] bg-transparent border-0 border-b border-transparent focus:border-[var(--gray-300)] focus:outline-none"
+                  className="w-full text-sm text-[var(--ink-500)] bg-transparent border-0 border-b border-transparent focus:border-[var(--gray-300)] focus:outline-none"
                   placeholder="Label"
                 />
                 <button

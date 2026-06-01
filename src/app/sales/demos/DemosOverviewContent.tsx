@@ -105,21 +105,21 @@ export function DemosOverviewContent({
     <div className="space-y-6">
       <div className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">
             Demos
           </h1>
-          <p className="mt-1 text-sm text-[var(--gray-500)]">
+          <p className="mt-1 text-sm text-[var(--ink-500)]">
             Personalized demo pipelines across your leads.
           </p>
         </div>
         <div className="flex items-center gap-3 text-sm">
           <Link
             href="/sales/demos/references"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)]"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
           >
             Reference library
           </Link>
-          <span className="text-[var(--gray-500)]">
+          <span className="text-[var(--ink-500)]">
             {filtered.length} of {jobs.length}
           </span>
         </div>
@@ -140,7 +140,7 @@ export function DemosOverviewContent({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search lead, company, email…"
-            className="w-full rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] py-2 pl-9 pr-3 text-sm focus:border-[#0ea5e9] focus:outline-none"
+            className="w-full rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] py-2 pl-9 pr-3 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           />
         </div>
         {STATUS_BUCKETS.map((b) => (
@@ -150,12 +150,12 @@ export function DemosOverviewContent({
             onClick={() => setBucket(b.value)}
             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
               bucket === b.value
-                ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
-                : "border-[var(--gray-200)] bg-[var(--bg-surface)] text-[var(--gray-600)] hover:bg-[var(--gray-50)]"
+                ? "border-[var(--ao-accent)] bg-[var(--ao-accent)]/10 text-[var(--ao-accent)]"
+                : "border-[var(--allone-line)] bg-[var(--bg-surface)] text-[var(--gray-600)] hover:bg-[var(--bg-surface-alt)]"
             }`}
           >
             {b.label}
-            <span className="rounded-full bg-[var(--gray-100)] px-1.5 py-0.5 text-[10px] text-[var(--gray-600)]">
+            <span className="rounded-full bg-[var(--bg-sunken)] px-1.5 py-0.5 text-[10px] text-[var(--gray-600)]">
               {counts[b.value] ?? 0}
             </span>
           </button>
@@ -164,17 +164,17 @@ export function DemosOverviewContent({
 
       {/* Table */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--gray-200)] bg-[var(--bg-surface)] p-12 text-center">
+        <div className="rounded-2xl border border-dashed border-[var(--allone-line)] bg-[var(--bg-surface)] p-12 text-center">
           <Sparkles className="mx-auto h-8 w-8 text-[var(--gray-300)]" />
-          <p className="mt-3 text-sm text-[var(--gray-500)]">
+          <p className="mt-3 text-sm text-[var(--ink-500)]">
             No demo jobs match this filter.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)]">
+        <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[var(--gray-200)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--gray-500)]">
+              <tr className="border-b border-[var(--allone-line)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
                 <th className="px-5 py-3 font-medium">Lead</th>
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 font-medium">Audit</th>
@@ -201,16 +201,16 @@ function Row({ job }: { job: Job }) {
   const audit = job.audit_results?.scores?.overall;
 
   return (
-    <tr className="border-b border-[var(--gray-100)] last:border-b-0">
+    <tr className="border-b border-[var(--bg-sunken)] last:border-b-0">
       <td className="px-5 py-3">
         <Link
           href={`/sales/demos/${job.id}`}
           className="block transition hover:opacity-80"
         >
-          <div className="font-medium text-[var(--black)]">
+          <div className="font-medium text-[var(--ink-900)]">
             {job.lead?.name ?? "Unknown lead"}
           </div>
-          <div className="text-xs text-[var(--gray-500)]">
+          <div className="text-xs text-[var(--ink-500)]">
             {job.lead?.company ?? job.lead?.email ?? "—"}
           </div>
         </Link>
@@ -230,19 +230,19 @@ function Row({ job }: { job: Job }) {
             {job.status}
           </span>
         ) : (
-          <span className="text-xs text-[var(--gray-500)]">{job.status}</span>
+          <span className="text-xs text-[var(--ink-500)]">{job.status}</span>
         )}
       </td>
       <td className="px-5 py-3">
         {audit != null ? (
-          <span className="font-mono text-xs text-[var(--gray-700)]">
+          <span className="font-mono text-xs text-[var(--ink-700)]">
             {audit}/100
           </span>
         ) : (
           <span className="text-xs text-[var(--gray-400)]">—</span>
         )}
       </td>
-      <td className="px-5 py-3 text-xs text-[var(--gray-700)]">
+      <td className="px-5 py-3 text-xs text-[var(--ink-700)]">
         {job.engagement_count > 0 ? (
           <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
             {job.engagement_count}
@@ -251,7 +251,7 @@ function Row({ job }: { job: Job }) {
           <span className="text-[var(--gray-400)]">—</span>
         )}
       </td>
-      <td className="px-5 py-3 text-xs text-[var(--gray-500)]">
+      <td className="px-5 py-3 text-xs text-[var(--ink-500)]">
         {new Date(job.created_at).toLocaleDateString()}
       </td>
       <td className="px-5 py-3 text-right">
@@ -260,7 +260,7 @@ function Row({ job }: { job: Job }) {
             href={job.demo_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-medium text-[#0ea5e9] hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-medium text-[var(--ao-accent)] hover:underline"
           >
             <ExternalLink className="h-3 w-3" />
             Open

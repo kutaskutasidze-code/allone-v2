@@ -31,20 +31,20 @@ export function AuditPanel({ audit }: AuditPanelProps) {
   const issues = audit?.topIssues ?? [];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)]">
-      <div className="flex items-center justify-between border-b border-[var(--gray-200)] px-5 py-3">
+    <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+      <div className="flex items-center justify-between border-b border-[var(--allone-line)] px-5 py-3">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--gray-500)]">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
             Audit
           </p>
-          <p className="text-sm font-medium text-[#071D2F]">
+          <p className="text-sm font-medium text-[var(--ink-900)]">
             {overall != null ? `${overall}/100 overall` : "No audit available"}
           </p>
         </div>
       </div>
       <div className="space-y-3 px-5 py-4" style={{ minHeight: 420 }}>
         {issues.length === 0 ? (
-          <p className="text-sm text-[var(--gray-500)]">
+          <p className="text-sm text-[var(--ink-500)]">
             No critical issues found, or audit hasn&apos;t run yet.
           </p>
         ) : (
@@ -60,7 +60,7 @@ export function AuditPanel({ audit }: AuditPanelProps) {
                     <p className="text-[11px] font-mono uppercase tracking-wider opacity-70">
                       {issue.category}
                     </p>
-                    <p className="mt-0.5 text-sm font-medium leading-snug text-[#071D2F]">
+                    <p className="mt-0.5 text-sm font-medium leading-snug text-[var(--ink-900)]">
                       {issue.headline}
                     </p>
                     {issue.oneLineFix && (

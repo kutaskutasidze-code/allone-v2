@@ -136,8 +136,8 @@ export default function EditServicePage({
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Info */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-black border-b border-[var(--gray-200)] pb-3 -mt-1">Basic Information</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
+          <h2 className="text-lg font-semibold text-black border-b border-[var(--allone-line)] pb-3 -mt-1">Basic Information</h2>
 
           <Input
             label="Service Title"
@@ -199,8 +199,8 @@ export default function EditServicePage({
         </div>
 
         {/* Features & Stats */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-black border-b border-[var(--gray-200)] pb-3 -mt-1">Features & Statistics</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
+          <h2 className="text-lg font-semibold text-black border-b border-[var(--allone-line)] pb-3 -mt-1">Features & Statistics</h2>
 
           <ArrayInput
             label="Features / Tags"
@@ -221,8 +221,8 @@ export default function EditServicePage({
         </div>
 
         {/* CTA & Footer */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 space-y-6">
-          <h2 className="text-lg font-semibold text-black border-b border-[var(--gray-200)] pb-3 -mt-1">Call to Action & Footer</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
+          <h2 className="text-lg font-semibold text-black border-b border-[var(--allone-line)] pb-3 -mt-1">Call to Action & Footer</h2>
 
           <Input
             label="Footer Text (optional)"
@@ -252,7 +252,7 @@ export default function EditServicePage({
             />
           </div>
 
-          <div className="flex items-center gap-3 pt-4 border-t border-[var(--gray-100)]">
+          <div className="flex items-center gap-3 pt-4 border-t border-[var(--bg-sunken)]">
             <input
               type="checkbox"
               id="is_published"
@@ -264,7 +264,7 @@ export default function EditServicePage({
             />
             <label
               htmlFor="is_published"
-              className="text-sm text-[var(--gray-700)]"
+              className="text-sm text-[var(--ink-700)]"
             >
               Published
             </label>

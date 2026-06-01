@@ -198,7 +198,7 @@ function CallModeContent() {
   return (
     <div className="min-h-[80vh] flex flex-col -mx-5 lg:mx-0">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 lg:px-0 py-3 border-b border-[var(--allone-line-soft)] bg-[var(--bg-surface)] sticky top-0 z-10">
+      <div className="flex items-center justify-between px-5 lg:px-0 py-3 border-b border-[var(--allone-line-soft)] bg-[var(--bg-surface)]">
         <button
           onClick={() => router.push('/sales')}
           className="inline-flex items-center gap-1 text-sm text-[var(--ink-500)] hover:text-[var(--ink-900)]"
@@ -384,7 +384,7 @@ function CallModeContent() {
       )}
 
       {/* Bottom nav */}
-      <div className="px-5 lg:px-0 py-3 border-t border-[var(--allone-line-soft)] bg-[var(--bg-surface)] sticky bottom-0 z-10">
+      <div className="px-5 lg:px-0 py-3 border-t border-[var(--allone-line-soft)] bg-[var(--bg-surface)]">
         <div className="max-w-md mx-auto flex items-center justify-between gap-3">
           <button
             onClick={() => setIndex(i => Math.max(0, i - 1))}

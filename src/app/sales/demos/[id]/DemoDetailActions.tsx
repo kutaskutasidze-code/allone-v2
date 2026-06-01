@@ -56,7 +56,7 @@ export function DemoDetailActions({
     <div className="flex flex-wrap items-center gap-2">
       <Link
         href={`/sales/leads/${leadId}`}
-        className="inline-flex items-center gap-1.5 rounded-lg bg-[#0f172a] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#0b1220]"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--ink-900)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--ink-900)]"
       >
         Review draft on lead page
         <ArrowRight className="h-3.5 w-3.5" />
@@ -66,7 +66,7 @@ export function DemoDetailActions({
           href={demoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--black)] hover:bg-[var(--gray-50)]"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)]"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           Open demo
@@ -77,7 +77,7 @@ export function DemoDetailActions({
           type="button"
           onClick={retry}
           disabled={busy !== null}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--black)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-900)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
         >
           {busy === "retry" ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />

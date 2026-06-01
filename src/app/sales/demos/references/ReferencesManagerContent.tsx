@@ -86,14 +86,14 @@ export function ReferencesManagerContent({
         <div className="space-y-1">
           <Link
             href="/sales/demos"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--gray-500)] hover:text-[var(--black)]"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)]"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Demos
           </Link>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">
             Reference library
           </h1>
-          <p className="text-sm text-[var(--gray-500)]">
+          <p className="text-sm text-[var(--ink-500)]">
             Pre-cloned best-in-segment sites the pipeline skins for new leads.
             Adding a reference clones it via site-xray — this takes a few
             minutes.
@@ -102,7 +102,7 @@ export function ReferencesManagerContent({
         <button
           type="button"
           onClick={() => setShowAdd(true)}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#0ea5e9] px-4 py-2 text-sm font-medium text-white hover:bg-[#0284c7]"
+          className="inline-flex items-center gap-2 rounded-lg bg-[var(--ao-accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--ao-accent-hover)]"
         >
           <Plus className="h-4 w-4" /> Add reference
         </button>
@@ -115,17 +115,17 @@ export function ReferencesManagerContent({
       )}
 
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--gray-200)] bg-[var(--bg-surface)] p-12 text-center">
+        <div className="rounded-2xl border border-dashed border-[var(--allone-line)] bg-[var(--bg-surface)] p-12 text-center">
           <Sparkles className="mx-auto h-8 w-8 text-[var(--gray-300)]" />
-          <p className="mt-3 text-sm text-[var(--gray-500)]">
+          <p className="mt-3 text-sm text-[var(--ink-500)]">
             No reference templates yet. Add one to seed the library.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)]">
+        <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[var(--gray-200)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--gray-500)]">
+              <tr className="border-b border-[var(--allone-line)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
                 <th className="px-5 py-3 font-medium">Segment</th>
                 <th className="px-5 py-3 font-medium">Source</th>
                 <th className="px-5 py-3 font-medium">Tier</th>
@@ -139,22 +139,22 @@ export function ReferencesManagerContent({
               {items.map((r) => (
                 <tr
                   key={r.id}
-                  className="border-b border-[var(--gray-100)] last:border-b-0"
+                  className="border-b border-[var(--bg-sunken)] last:border-b-0"
                 >
                   <td className="px-5 py-3">
-                    <span className="rounded-full bg-[var(--gray-100)] px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider text-[var(--gray-700)]">
+                    <span className="rounded-full bg-[var(--bg-sunken)] px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider text-[var(--ink-700)]">
                       {r.segment}
                     </span>
                   </td>
                   <td className="px-5 py-3">
-                    <div className="font-medium text-[var(--black)]">
+                    <div className="font-medium text-[var(--ink-900)]">
                       {r.source_label || hostnameOf(r.source_url)}
                     </div>
                     <a
                       href={r.source_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-[var(--gray-500)] hover:underline inline-flex items-center gap-1"
+                      className="text-xs text-[var(--ink-500)] hover:underline inline-flex items-center gap-1"
                     >
                       {hostnameOf(r.source_url)}{" "}
                       <ExternalLink className="h-3 w-3" />
@@ -168,7 +168,7 @@ export function ReferencesManagerContent({
                       ? `${r.xfly_check_score}/100`
                       : "—"}
                   </td>
-                  <td className="px-5 py-3 text-xs text-[var(--gray-500)]">
+                  <td className="px-5 py-3 text-xs text-[var(--ink-500)]">
                     {r.last_refreshed_at
                       ? new Date(r.last_refreshed_at).toLocaleDateString()
                       : "—"}
@@ -179,7 +179,7 @@ export function ReferencesManagerContent({
                         active
                       </span>
                     ) : (
-                      <span className="inline-flex rounded-full bg-[var(--gray-100)] px-2 py-0.5 text-[11px] font-medium text-[var(--gray-600)]">
+                      <span className="inline-flex rounded-full bg-[var(--bg-sunken)] px-2 py-0.5 text-[11px] font-medium text-[var(--gray-600)]">
                         archived
                       </span>
                     )}
@@ -190,7 +190,7 @@ export function ReferencesManagerContent({
                         type="button"
                         onClick={() => refreshOne(r.id)}
                         disabled={busyId === r.id}
-                        className="inline-flex items-center gap-1 rounded-md border border-[var(--gray-200)] px-2 py-1 text-xs text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+                        className="inline-flex items-center gap-1 rounded-md border border-[var(--allone-line)] px-2 py-1 text-xs text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
                       >
                         {busyId === r.id ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
@@ -203,7 +203,7 @@ export function ReferencesManagerContent({
                         type="button"
                         onClick={() => toggleActive(r)}
                         disabled={busyId === r.id}
-                        className="inline-flex items-center gap-1 rounded-md border border-[var(--gray-200)] px-2 py-1 text-xs text-[var(--gray-700)] hover:bg-[var(--gray-50)] disabled:opacity-50"
+                        className="inline-flex items-center gap-1 rounded-md border border-[var(--allone-line)] px-2 py-1 text-xs text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-50"
                       >
                         <Power className="h-3 w-3" />
                         {r.is_active ? "Archive" : "Activate"}
@@ -287,23 +287,23 @@ function AddReferenceModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
       <form
         onSubmit={submit}
-        className="w-full max-w-md space-y-4 rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 shadow-xl"
+        className="w-full max-w-md space-y-4 rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 shadow-xl"
       >
         <div className="flex items-start justify-between">
-          <h2 className="text-lg font-semibold text-[var(--black)]">
+          <h2 className="text-lg font-semibold text-[var(--ink-900)]">
             Add reference
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-[var(--gray-400)] hover:text-[var(--black)]"
+            className="text-[var(--gray-400)] hover:text-[var(--ink-900)]"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <label className="block">
-          <span className="text-xs font-medium text-[var(--gray-700)]">
+          <span className="text-xs font-medium text-[var(--ink-700)]">
             Segment
           </span>
           <select
@@ -311,7 +311,7 @@ function AddReferenceModal({
             onChange={(e) =>
               setSegment(e.target.value as (typeof SEGMENTS)[number])
             }
-            className="mt-1 w-full rounded-lg border border-[var(--gray-200)] bg-[var(--bg-surface)] px-3 py-2 text-sm focus:border-[#0ea5e9] focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           >
             {SEGMENTS.map((s) => (
               <option key={s} value={s}>
@@ -322,7 +322,7 @@ function AddReferenceModal({
         </label>
 
         <label className="block">
-          <span className="text-xs font-medium text-[var(--gray-700)]">
+          <span className="text-xs font-medium text-[var(--ink-700)]">
             Source URL
           </span>
           <input
@@ -331,12 +331,12 @@ function AddReferenceModal({
             onChange={(e) => setSourceUrl(e.target.value)}
             placeholder="https://www.example.com"
             required
-            className="mt-1 w-full rounded-lg border border-[var(--gray-200)] px-3 py-2 text-sm focus:border-[#0ea5e9] focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs font-medium text-[var(--gray-700)]">
+          <span className="text-xs font-medium text-[var(--ink-700)]">
             Label (optional)
           </span>
           <input
@@ -344,12 +344,12 @@ function AddReferenceModal({
             value={sourceLabel}
             onChange={(e) => setSourceLabel(e.target.value)}
             placeholder="Awwwards SOTD 2025-04"
-            className="mt-1 w-full rounded-lg border border-[var(--gray-200)] px-3 py-2 text-sm focus:border-[#0ea5e9] focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           />
         </label>
 
         <label className="block">
-          <span className="text-xs font-medium text-[var(--gray-700)]">
+          <span className="text-xs font-medium text-[var(--ink-700)]">
             Aesthetic tier (1 = generic, 5 = Awwwards-grade)
           </span>
           <input
@@ -358,7 +358,7 @@ function AddReferenceModal({
             max={5}
             value={tier}
             onChange={(e) => setTier(parseInt(e.target.value) || 4)}
-            className="mt-1 w-full rounded-lg border border-[var(--gray-200)] px-3 py-2 text-sm focus:border-[#0ea5e9] focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-[var(--allone-line)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
           />
         </label>
 
@@ -372,14 +372,14 @@ function AddReferenceModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-[var(--gray-200)] px-3 py-1.5 text-sm font-medium text-[var(--gray-700)] hover:bg-[var(--gray-50)]"
+            className="rounded-lg border border-[var(--allone-line)] px-3 py-1.5 text-sm font-medium text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting || !sourceUrl}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#0ea5e9] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#0284c7] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-[var(--ao-accent)] px-4 py-1.5 text-sm font-medium text-white hover:bg-[var(--ao-accent-hover)] disabled:opacity-50"
           >
             {isSubmitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -389,7 +389,7 @@ function AddReferenceModal({
             Add and clone
           </button>
         </div>
-        <p className="text-[11px] text-[var(--gray-500)]">
+        <p className="text-[11px] text-[var(--ink-500)]">
           The clone runs in the background via site-xray. The reference will
           show up active once the first clone completes (5–10 min).
         </p>

@@ -98,7 +98,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--allone-line)] border-t-[var(--ink-900)] rounded-full animate-spin" />
       </div>
     );
   }
@@ -108,7 +108,7 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
       {/* Back Link */}
       <Link
         href="/sales/leads"
-        className="inline-flex items-center gap-2 text-sm text-[var(--gray-500)] hover:text-[var(--black)] mb-6"
+        className="inline-flex items-center gap-2 text-sm text-[var(--ink-500)] hover:text-[var(--ink-900)] mb-6"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Leads
@@ -116,10 +116,10 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">
           Edit Lead
         </h1>
-        <p className="mt-1 text-sm text-[var(--gray-500)]">
+        <p className="mt-1 text-sm text-[var(--ink-500)]">
           Update lead information
         </p>
       </div>
@@ -152,8 +152,8 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
       {/* Form */}
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         {/* Contact Information */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">
             Contact Information
           </h2>
           <div className="space-y-4">
@@ -198,8 +198,8 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
         </div>
 
         {/* Lead Details */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">
             Lead Details
           </h2>
           <div className="space-y-4">
@@ -244,8 +244,8 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
         </div>
 
         {/* Notes */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">
             Notes
           </h2>
           <Textarea
@@ -263,14 +263,14 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
         <div className="flex justify-end gap-3">
           <Link
             href="/sales/leads"
-            className="px-4 py-2 text-sm font-medium text-[var(--gray-600)] hover:text-[var(--black)]"
+            className="px-4 py-2 text-sm font-medium text-[var(--gray-600)] hover:text-[var(--ink-900)]"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={isSubmitting || !formData.name}
-            className="px-4 py-2 text-sm font-medium text-white bg-[var(--black)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </button>

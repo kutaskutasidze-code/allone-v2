@@ -396,7 +396,7 @@ function AdminLeadsPageContent() {
       )}
 
       {/* Sticky filter bar — pins to the top of the scroll area on scroll */}
-      <div className="sticky top-0 z-20 -mx-5 lg:-mx-10 px-5 lg:px-10 py-3 bg-[#FAFAFA]/90 dark:bg-[var(--ink-900)]/90 backdrop-blur-md border-b border-[var(--allone-line-soft)] dark:border-slate-800 space-y-3">
+      <div className=" -mx-5 lg:-mx-10 px-5 lg:px-10 py-3 bg-[var(--bg-app)]/90 dark:bg-[var(--ink-900)]/90 backdrop-blur-md border-b border-[var(--allone-line-soft)] dark:border-slate-800 space-y-3">
         {/* Status Filter */}
         <div className="flex flex-wrap gap-2">
           <button

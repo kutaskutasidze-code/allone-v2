@@ -142,14 +142,14 @@ function DemoDetailView({
       <div className="space-y-1">
         <Link
           href="/sales/demos"
-          className="text-xs font-medium text-[var(--gray-500)] hover:text-[var(--black)]"
+          className="text-xs font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)]"
         >
           ← All demos
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">
           Demo for {lead.name}
         </h1>
-        <p className="text-sm text-[var(--gray-500)]">
+        <p className="text-sm text-[var(--ink-500)]">
           {lead.company ?? lead.email ?? "—"} ·{" "}
           <Link href={`/sales/leads/${lead.id}`} className="underline">
             open lead
@@ -188,7 +188,7 @@ function DemoDetailView({
       </div>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--gray-500)]">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--ink-500)]">
           Phase history
         </h2>
         <PhaseTimeline
@@ -199,7 +199,7 @@ function DemoDetailView({
 
       {job.audit_results && (
         <section>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--gray-500)]">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--ink-500)]">
             Audit
           </h2>
           <AuditDetail audit={job.audit_results} />
@@ -207,19 +207,19 @@ function DemoDetailView({
       )}
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--gray-500)]">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--ink-500)]">
           Engagement ({engagements.length})
         </h2>
         {engagements.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--gray-500)]">
+          <p className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--ink-500)]">
             No engagement events yet. Will appear after the lead opens or clicks
             the email.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)]">
+          <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)]">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[var(--gray-200)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--gray-500)]">
+                <tr className="border-b border-[var(--allone-line)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
                   <th className="px-5 py-2 font-medium">When</th>
                   <th className="px-5 py-2 font-medium">Event</th>
                   <th className="px-5 py-2 font-medium">Detail</th>
@@ -229,9 +229,9 @@ function DemoDetailView({
                 {engagements.map((e) => (
                   <tr
                     key={e.id}
-                    className="border-b border-[var(--gray-100)] last:border-b-0"
+                    className="border-b border-[var(--bg-sunken)] last:border-b-0"
                   >
-                    <td className="px-5 py-2 text-xs text-[var(--gray-700)]">
+                    <td className="px-5 py-2 text-xs text-[var(--ink-700)]">
                       {new Date(e.occurred_at).toLocaleString()}
                     </td>
                     <td className="px-5 py-2 text-xs">
@@ -239,7 +239,7 @@ function DemoDetailView({
                         {e.event_type}
                       </span>
                     </td>
-                    <td className="px-5 py-2 truncate text-xs text-[var(--gray-500)]">
+                    <td className="px-5 py-2 truncate text-xs text-[var(--ink-500)]">
                       {e.metadata?.to ?? e.metadata?.ua ?? ""}
                     </td>
                   </tr>
@@ -255,11 +255,11 @@ function DemoDetailView({
 
 function KV({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-4">
-      <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--gray-500)]">
+    <div className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-4">
+      <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
         {label}
       </p>
-      <p className="mt-0.5 text-sm font-medium text-[var(--black)]">{value}</p>
+      <p className="mt-0.5 text-sm font-medium text-[var(--ink-900)]">{value}</p>
     </div>
   );
 }
@@ -273,7 +273,7 @@ function PhaseTimeline({
 }) {
   if (history.length === 0) {
     return (
-      <p className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--gray-500)]">
+      <p className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5 text-sm text-[var(--ink-500)]">
         No phase events yet.
       </p>
     );
@@ -296,8 +296,8 @@ function PhaseTimeline({
         return (
           <li key={i} className={`rounded-xl border ${color} px-4 py-2.5`}>
             <div className="flex items-baseline justify-between gap-3">
-              <div className="font-medium text-[var(--black)]">{p.phase}</div>
-              <div className="text-xs text-[var(--gray-500)]">
+              <div className="font-medium text-[var(--ink-900)]">{p.phase}</div>
+              <div className="text-xs text-[var(--ink-500)]">
                 {start.toLocaleTimeString()}
                 {dur != null && (
                   <>
@@ -313,7 +313,7 @@ function PhaseTimeline({
               </div>
             </div>
             {p.notes && Object.keys(p.notes).length > 0 && (
-              <pre className="mt-2 overflow-x-auto rounded-md bg-[var(--bg-surface)]/80 p-2 text-[11px] text-[var(--gray-700)]">
+              <pre className="mt-2 overflow-x-auto rounded-md bg-[var(--bg-surface)]/80 p-2 text-[11px] text-[var(--ink-700)]">
                 {JSON.stringify(p.notes, null, 2)}
               </pre>
             )}
@@ -333,15 +333,15 @@ function AuditDetail({
   audit: NonNullable<DemoJob["audit_results"]>;
 }) {
   return (
-    <div className="space-y-4 rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
+    <div className="space-y-4 rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
       {audit.scores && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           {Object.entries(audit.scores).map(([k, v]) => (
             <div
               key={k}
-              className="rounded-lg border border-[var(--gray-100)] p-3"
+              className="rounded-lg border border-[var(--bg-sunken)] p-3"
             >
-              <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--gray-500)]">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
                 {k}
               </p>
               <p className="mt-0.5 font-mono text-lg">{v}</p>
@@ -354,13 +354,13 @@ function AuditDetail({
           {audit.topIssues.map((i, n) => (
             <li
               key={n}
-              className="rounded-lg border border-[var(--gray-100)] px-3 py-2 text-sm"
+              className="rounded-lg border border-[var(--bg-sunken)] px-3 py-2 text-sm"
             >
               <div className="flex items-baseline justify-between">
-                <span className="font-medium text-[var(--black)]">
+                <span className="font-medium text-[var(--ink-900)]">
                   {i.headline}
                 </span>
-                <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--gray-500)]">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--ink-500)]">
                   {i.category} · {i.severity}
                 </span>
               </div>

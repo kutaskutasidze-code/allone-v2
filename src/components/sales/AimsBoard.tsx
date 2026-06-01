@@ -49,17 +49,17 @@ export function AimsBoard() {
   const current = data?.[tab] ?? [];
 
   return (
-    <div className="rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
+    <div className="rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
             <Sparkles className="h-4 w-4" />
           </div>
-          <h2 className="text-sm font-semibold text-[var(--black)]">
+          <h2 className="text-sm font-semibold text-[var(--ink-900)]">
             Aims & results
           </h2>
         </div>
-        <div className="flex items-center gap-1 rounded-lg bg-[var(--gray-50)] p-1">
+        <div className="flex items-center gap-1 rounded-lg bg-[var(--bg-surface-alt)] p-1">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -67,8 +67,8 @@ export function AimsBoard() {
               onClick={() => setTab(t.key)}
               className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition ${
                 tab === t.key
-                  ? "bg-[var(--bg-surface)] text-[var(--black)] shadow-sm"
-                  : "text-[var(--gray-500)] hover:text-[var(--black)]"
+                  ? "bg-[var(--bg-surface)] text-[var(--ink-900)] shadow-sm"
+                  : "text-[var(--ink-500)] hover:text-[var(--ink-900)]"
               }`}
             >
               <t.Icon className="h-3 w-3" />
@@ -85,7 +85,7 @@ export function AimsBoard() {
       )}
 
       {current.length === 0 ? (
-        <p className="py-6 text-center text-sm text-[var(--gray-500)]">
+        <p className="py-6 text-center text-sm text-[var(--ink-500)]">
           Computing aims… (need a few days of activity to baseline.)
         </p>
       ) : (
@@ -113,18 +113,18 @@ function AimCard({ aim }: { aim: AimResult }) {
         : "bg-amber-500";
 
   return (
-    <div className="rounded-xl border border-[var(--gray-100)] p-3">
+    <div className="rounded-xl border border-[var(--bg-sunken)] p-3">
       <div className="flex items-baseline justify-between">
         <p className="text-xs font-medium text-[var(--gray-600)]">{label}</p>
-        <p className="text-xs font-mono text-[var(--gray-500)]">{pct}%</p>
+        <p className="text-xs font-mono text-[var(--ink-500)]">{pct}%</p>
       </div>
-      <p className="mt-1 text-xl font-semibold text-[var(--black)]">
+      <p className="mt-1 text-xl font-semibold text-[var(--ink-900)]">
         {actualVal}
-        <span className="ml-1 text-sm font-normal text-[var(--gray-500)]">
+        <span className="ml-1 text-sm font-normal text-[var(--ink-500)]">
           / {aimVal}
         </span>
       </p>
-      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--gray-100)]">
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--bg-sunken)]">
         <div
           className={`h-full transition-all duration-500 ${ringClass}`}
           style={{ width: `${Math.min(100, pct)}%` }}

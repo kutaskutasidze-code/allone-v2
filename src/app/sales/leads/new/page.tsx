@@ -57,7 +57,7 @@ export default function NewLeadPage() {
       {/* Back Link */}
       <Link
         href="/sales/leads"
-        className="inline-flex items-center gap-2 text-sm text-[var(--gray-500)] hover:text-[var(--black)] mb-6"
+        className="inline-flex items-center gap-2 text-sm text-[var(--ink-500)] hover:text-[var(--ink-900)] mb-6"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Leads
@@ -65,8 +65,8 @@ export default function NewLeadPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">Add New Lead</h1>
-        <p className="mt-1 text-sm text-[var(--gray-500)]">Create a new lead in your pipeline</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">Add New Lead</h1>
+        <p className="mt-1 text-sm text-[var(--ink-500)]">Create a new lead in your pipeline</p>
       </div>
 
       {/* Error Message */}
@@ -82,8 +82,8 @@ export default function NewLeadPage() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Contact Information */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">Contact Information</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Contact Information</h2>
           <div className="space-y-4">
             <Input
               label="Name"
@@ -118,8 +118,8 @@ export default function NewLeadPage() {
         </div>
 
         {/* Lead Details */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">Lead Details</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Lead Details</h2>
           <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <Select
@@ -150,8 +150,8 @@ export default function NewLeadPage() {
         </div>
 
         {/* Notes */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">Notes</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Notes</h2>
           <Textarea
             label="Notes"
             value={formData.notes}
@@ -165,14 +165,14 @@ export default function NewLeadPage() {
         <div className="flex justify-end gap-3">
           <Link
             href="/sales/leads"
-            className="px-4 py-2 text-sm font-medium text-[var(--gray-600)] hover:text-[var(--black)]"
+            className="px-4 py-2 text-sm font-medium text-[var(--gray-600)] hover:text-[var(--ink-900)]"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={isSubmitting || !formData.name}
-            className="px-4 py-2 text-sm font-medium text-white bg-[var(--black)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
           >
             {isSubmitting ? 'Creating...' : 'Create Lead'}
           </button>

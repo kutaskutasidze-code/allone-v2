@@ -53,7 +53,7 @@ export default function TemplatesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--allone-line)] border-t-[var(--ink-900)] rounded-full animate-spin" />
       </div>
     );
   }
@@ -85,7 +85,7 @@ export default function TemplatesPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl overflow-hidden"
+              className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl overflow-hidden"
             >
               <button
                 onClick={() => setExpandedId(expandedId === template.id ? null : template.id)}
@@ -93,9 +93,9 @@ export default function TemplatesPage() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="font-medium text-[var(--black)]">{template.name}</h3>
+                    <h3 className="font-medium text-[var(--ink-900)]">{template.name}</h3>
                     {template.target_service && (
-                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-[var(--gray-100)] text-[var(--gray-600)]">
+                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-[var(--bg-sunken)] text-[var(--gray-600)]">
                         {SERVICE_NAMES[template.target_service] || template.target_service}
                       </span>
                     )}
@@ -103,7 +103,7 @@ export default function TemplatesPage() {
                       {template.language}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--gray-500)] truncate">
+                  <p className="text-sm text-[var(--ink-500)] truncate">
                     {template.description || template.subject}
                   </p>
                 </div>
@@ -113,7 +113,7 @@ export default function TemplatesPage() {
                       e.stopPropagation();
                       copyToClipboard(template);
                     }}
-                    className="p-2 text-[var(--gray-400)] hover:text-[var(--black)] hover:bg-[var(--gray-100)] rounded-lg transition-colors"
+                    className="p-2 text-[var(--gray-400)] hover:text-[var(--ink-900)] hover:bg-[var(--bg-sunken)] rounded-lg transition-colors"
                     title="Copy template"
                   >
                     {copiedId === template.id ? (
@@ -135,22 +135,22 @@ export default function TemplatesPage() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="border-t border-[var(--gray-100)]"
+                  className="border-t border-[var(--bg-sunken)]"
                 >
                   <div className="p-4 space-y-4">
                     <div>
-                      <label className="block text-xs font-medium text-[var(--gray-500)] mb-1">
+                      <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">
                         Subject
                       </label>
-                      <p className="text-sm text-[var(--black)] bg-[var(--bg-surface)] p-3 rounded-lg">
+                      <p className="text-sm text-[var(--ink-900)] bg-[var(--bg-surface)] p-3 rounded-lg">
                         {template.subject}
                       </p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-[var(--gray-500)] mb-1">
+                      <label className="block text-xs font-medium text-[var(--ink-500)] mb-1">
                         Body
                       </label>
-                      <pre className="text-sm text-[var(--black)] bg-[var(--bg-surface)] p-3 rounded-lg whitespace-pre-wrap font-sans">
+                      <pre className="text-sm text-[var(--ink-900)] bg-[var(--bg-surface)] p-3 rounded-lg whitespace-pre-wrap font-sans">
                         {template.body}
                       </pre>
                     </div>

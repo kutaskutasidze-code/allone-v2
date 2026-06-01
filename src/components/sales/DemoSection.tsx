@@ -153,13 +153,13 @@ export function DemoSection({
 
   if (!job) {
     return (
-      <div className="mb-8 rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6">
+      <div className="mb-8 rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="font-display text-xl text-[#071D2F]">
+            <h3 className="font-display text-xl text-[var(--ink-900)]">
               Personalized demo
             </h3>
-            <p className="mt-1 text-sm text-[var(--gray-500)]">
+            <p className="mt-1 text-sm text-[var(--ink-500)]">
               Generate a working demo branded for{" "}
               {lead?.company || lead?.name || "this lead"} — clone, skin,
               deploy, audit, drafted email. Takes about 3-5 minutes.
@@ -169,7 +169,7 @@ export function DemoSection({
             type="button"
             onClick={startDemo}
             disabled={isStarting}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#0ea5e9] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#0284c7] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-[var(--ao-accent)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--ao-accent-hover)] disabled:opacity-50"
           >
             {isStarting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -185,21 +185,21 @@ export function DemoSection({
 
   if (IN_PROGRESS.includes(job.status)) {
     return (
-      <div className="mb-8 rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6">
+      <div className="mb-8 rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6">
         <div className="flex items-center gap-3">
-          <Loader2 className="h-5 w-5 animate-spin text-[#0ea5e9]" />
+          <Loader2 className="h-5 w-5 animate-spin text-[var(--ao-accent)]" />
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
-              <p className="font-medium text-[#071D2F]">
+              <p className="font-medium text-[var(--ink-900)]">
                 {PHASE_LABEL[job.current_phase ?? job.status] ?? job.status}
               </p>
-              <span className="text-sm text-[var(--gray-500)]">
+              <span className="text-sm text-[var(--ink-500)]">
                 {job.progress}%
               </span>
             </div>
-            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--gray-100)]">
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--bg-sunken)]">
               <div
-                className="h-full bg-[#0ea5e9] transition-all duration-500"
+                className="h-full bg-[var(--ao-accent)] transition-all duration-500"
                 style={{ width: `${Math.max(5, job.progress)}%` }}
               />
             </div>

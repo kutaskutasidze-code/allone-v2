@@ -80,7 +80,7 @@ export default function AboutPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--allone-line)] border-t-[var(--ink-900)] rounded-full animate-spin" />
       </div>
     );
   }
@@ -89,13 +89,13 @@ export default function AboutPage() {
     <div className="max-w-2xl space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--black)]">About Page</h1>
-          <p className="mt-1 text-sm text-[var(--gray-500)]">Edit the content displayed on your About page</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">About Page</h1>
+          <p className="mt-1 text-sm text-[var(--ink-500)]">Edit the content displayed on your About page</p>
         </div>
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--black)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--ink-900)] rounded-lg hover:bg-[var(--gray-800)] disabled:opacity-50"
         >
           {saved ? (
             <>
@@ -123,8 +123,8 @@ export default function AboutPage() {
 
       <div className="space-y-4">
         {/* Hero Section */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">Hero Section</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Hero Section</h2>
           <div className="space-y-4">
             <Input
               label="Subtitle"
@@ -147,8 +147,8 @@ export default function AboutPage() {
         </div>
 
         {/* Story Section */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">Story Section</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Story Section</h2>
           <div className="space-y-4">
             <Input
               label="Subtitle"
@@ -179,8 +179,8 @@ export default function AboutPage() {
         </div>
 
         {/* Values Section Headers */}
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-5">
-          <h2 className="text-sm font-medium text-[var(--black)] mb-4">Values Section</h2>
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5">
+          <h2 className="text-sm font-medium text-[var(--ink-900)] mb-4">Values Section</h2>
           <div className="space-y-4">
             <Input
               label="Subtitle"
@@ -198,9 +198,9 @@ export default function AboutPage() {
               }
               placeholder="What drives us"
             />
-            <p className="text-xs text-[var(--gray-500)]">
+            <p className="text-xs text-[var(--ink-500)]">
               Manage individual values in the{' '}
-              <a href="/admin/values" className="underline hover:text-[var(--black)]">
+              <a href="/admin/values" className="underline hover:text-[var(--ink-900)]">
                 Values section
               </a>
               .

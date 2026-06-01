@@ -95,7 +95,7 @@ export default function NewProjectPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="rounded-xl border border-[var(--gray-200)] bg-[var(--bg-surface)] p-6 space-y-6">
+        <div className="rounded-xl border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 space-y-6">
           <Input
             label="Project Title"
             value={formData.title}
@@ -194,7 +194,7 @@ export default function NewProjectPage() {
             />
             <label
               htmlFor="is_published"
-              className="text-sm text-[var(--gray-700)]"
+              className="text-sm text-[var(--ink-700)]"
             >
               Publish immediately
             </label>

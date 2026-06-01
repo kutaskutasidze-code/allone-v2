@@ -19,12 +19,12 @@ export function LeadContextPanel({ lead }: LeadContextPanelProps) {
   const url = domain ? `https://${domain}` : null;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--gray-200)] bg-[var(--bg-surface)] lg:col-span-2">
-      <div className="border-b border-[var(--gray-200)] px-5 py-3">
-        <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--gray-500)]">
+    <div className="overflow-hidden rounded-2xl border border-[var(--allone-line)] bg-[var(--bg-surface)] lg:col-span-2">
+      <div className="border-b border-[var(--allone-line)] px-5 py-3">
+        <p className="font-mono text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
           Lead
         </p>
-        <p className="text-sm font-medium text-[#071D2F]">{lead.name}</p>
+        <p className="text-sm font-medium text-[var(--ink-900)]">{lead.name}</p>
       </div>
       <div className="grid grid-cols-1 gap-3 px-5 py-4 sm:grid-cols-4">
         <Item icon={Building2} label="Company" value={lead.company ?? "—"} />
@@ -51,7 +51,7 @@ function Item({
     <div className="flex items-start gap-2">
       <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--gray-400)]" />
       <div className="min-w-0">
-        <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--gray-500)]">
+        <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--ink-500)]">
           {label}
         </p>
         {href ? (
@@ -59,12 +59,12 @@ function Item({
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="block truncate text-sm text-[#071D2F] hover:underline"
+            className="block truncate text-sm text-[var(--ink-900)] hover:underline"
           >
             {value}
           </a>
         ) : (
-          <p className="truncate text-sm text-[#071D2F]">{value}</p>
+          <p className="truncate text-sm text-[var(--ink-900)]">{value}</p>
         )}
       </div>
     </div>

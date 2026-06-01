@@ -78,7 +78,7 @@ export default function SourcesPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-6 h-6 border-2 border-[var(--gray-200)] border-t-[var(--black)] rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[var(--allone-line)] border-t-[var(--ink-900)] rounded-full animate-spin" />
       </div>
     );
   }
@@ -101,20 +101,20 @@ export default function SourcesPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-4">
-          <p className="text-sm text-[var(--gray-500)]">Total Sources</p>
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-4">
+          <p className="text-sm text-[var(--ink-500)]">Total Sources</p>
           <p className="text-2xl font-semibold">{sources.length}</p>
         </div>
-        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-4">
-          <p className="text-sm text-[var(--gray-500)]">Active</p>
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-4">
+          <p className="text-sm text-[var(--ink-500)]">Active</p>
           <p className="text-2xl font-semibold text-green-600">{activeSources}</p>
         </div>
-        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-4">
-          <p className="text-sm text-[var(--gray-500)]">Inactive</p>
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-4">
+          <p className="text-sm text-[var(--ink-500)]">Inactive</p>
           <p className="text-2xl font-semibold text-[var(--gray-400)]">{sources.length - activeSources}</p>
         </div>
-        <div className="bg-[var(--bg-surface)] border border-[var(--gray-200)] rounded-xl p-4">
-          <p className="text-sm text-[var(--gray-500)]">Total Leads</p>
+        <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-xl p-4">
+          <p className="text-sm text-[var(--ink-500)]">Total Leads</p>
           <p className="text-2xl font-semibold">{totalLeads.toLocaleString()}</p>
         </div>
       </div>
@@ -129,8 +129,8 @@ export default function SourcesPage() {
             transition={{ delay: index * 0.03 }}
             className={`p-4 bg-[var(--bg-surface)] border rounded-xl transition-colors ${
               source.is_active
-                ? 'border-[var(--gray-200)] hover:border-[var(--gray-300)]'
-                : 'border-[var(--gray-100)] opacity-60'
+                ? 'border-[var(--allone-line)] hover:border-[var(--gray-300)]'
+                : 'border-[var(--bg-sunken)] opacity-60'
             }`}
           >
             <div className="flex items-start justify-between gap-4">
@@ -140,7 +140,7 @@ export default function SourcesPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="font-medium text-[var(--black)]">{source.name}</h3>
+                    <h3 className="font-medium text-[var(--ink-900)]">{source.name}</h3>
                     <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${SOURCE_TYPE_COLORS[source.source_type] || 'bg-[var(--bg-sunken)] text-[var(--ink-700)]'}`}>
                       {SOURCE_TYPE_LABELS[source.source_type] || source.source_type}
                     </span>
@@ -148,13 +148,13 @@ export default function SourcesPage() {
                       className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium rounded-md ${
                         source.is_active
                           ? 'bg-green-100 text-green-700'
-                          : 'bg-[var(--gray-100)] text-[var(--gray-600)]'
+                          : 'bg-[var(--bg-sunken)] text-[var(--gray-600)]'
                       }`}
                     >
                       {source.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-[var(--gray-500)]">
+                  <div className="flex items-center gap-4 text-sm text-[var(--ink-500)]">
                     {source.base_url && (
                       <span className="flex items-center gap-1">
                         <Globe className="w-3.5 h-3.5" />
@@ -178,7 +178,7 @@ export default function SourcesPage() {
                 className={`p-2 rounded-lg transition-colors ${
                   source.is_active
                     ? 'text-green-600 hover:bg-green-50'
-                    : 'text-[var(--gray-400)] hover:bg-[var(--gray-100)]'
+                    : 'text-[var(--gray-400)] hover:bg-[var(--bg-sunken)]'
                 }`}
                 title={source.is_active ? 'Disable source' : 'Enable source'}
               >
@@ -190,7 +190,7 @@ export default function SourcesPage() {
       </div>
 
       {sources.length === 0 && (
-        <div className="text-center py-12 text-[var(--gray-500)]">
+        <div className="text-center py-12 text-[var(--ink-500)]">
           <Database className="w-12 h-12 mx-auto mb-4 text-[var(--gray-300)]" />
           <p>No lead sources configured</p>
           <p className="text-sm">Run the database migration to add default sources</p>
