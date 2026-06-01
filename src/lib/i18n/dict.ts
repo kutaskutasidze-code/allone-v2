@@ -429,9 +429,9 @@ const en = {
   "home.greeting.afternoon": "Good afternoon",
   "home.greeting.evening": "Good evening",
   "home.composer_placeholder":
-    "Ask about hotels, bookings, customers, today's schedule…",
+    "Ask anything — pipeline, demos, leads, today's aims…",
   "home.footer_disclaimer":
-    "Travelplace assistant can be wrong. Verify before acting.",
+    "Allone assistant can be wrong. Verify before acting.",
   "home.starter.followup": "Which hotels need a follow-up call today?",
   "home.starter.draft_email":
     "Draft a booking confirmation email for a hotel partner.",
@@ -2298,9 +2298,9 @@ const ka: Partial<Record<TranslationKey, string>> = {
   "home.greeting.afternoon": "შუადღე მშვიდობისა",
   "home.greeting.evening": "საღამო მშვიდობისა",
   "home.composer_placeholder":
-    "ჰკითხე სასტუმროებზე, ჯავშნებზე, კლიენტებზე, დღევანდელ განრიგზე…",
+    "ჰკითხე ლიდებზე, დემოებზე, ანალიტიკაზე…",
   "home.footer_disclaimer":
-    "Travelplace-ის ასისტენტი შეიძლება ცდებოდეს. გადაამოწმე მოქმედებამდე.",
+    "Allone-ის ასისტენტი შეიძლება ცდებოდეს. გადაამოწმე მოქმედებამდე.",
   "home.starter.followup": "რომელ სასტუმროებს სჭირდებათ დღეს თვალის გადევნება?",
   "home.starter.draft_email":
     "შეადგინე ჯავშნის დადასტურების წერილი სასტუმროს პარტნიორისთვის.",

@@ -183,16 +183,24 @@ export function AppSidebar() {
 
   return (
     <aside className="flex h-full flex-col">
-      <nav className="flex-1 overflow-y-auto px-2 py-4">
+      <nav className="bf-no-scrollbar flex-1 overflow-y-auto overflow-x-hidden px-2 py-4">
         {/* Top — Home */}
         <ul className="space-y-0.5">
           <li>
-            <NavRow
-              href={tourismNav.top.href}
-              label={t(navKey(tourismNav.top.href))}
-              iconName={tourismNav.top.icon}
-              active={pathname === tourismNav.top.href}
-            />
+            {(() => {
+              const topKey = navKey(tourismNav.top.href);
+              const topTranslated = t(topKey);
+              const topLabel =
+                topTranslated === topKey ? tourismNav.top.label : topTranslated;
+              return (
+                <NavRow
+                  href={tourismNav.top.href}
+                  label={topLabel}
+                  iconName={tourismNav.top.icon}
+                  active={pathname === tourismNav.top.href}
+                />
+              );
+            })()}
           </li>
         </ul>
 

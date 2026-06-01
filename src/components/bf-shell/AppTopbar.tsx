@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AllOnceLogo } from "../AllOnceLogo";
+import { BrandLogo } from "./BrandLogo";
 import { NotificationsMenu } from "./NotificationsMenu";
 import { AccountMenu } from "./AccountMenu";
 import { ThemeToggle } from "./ThemeToggle";
@@ -83,8 +83,8 @@ export function AppTopbar({
             )}
           </button>
         )}
-        <Link href="/app" className="flex items-center pr-1">
-          <AllOnceLogo size="lg" variant="mark" />
+        <Link href="/sales" className="flex items-center pr-1">
+          <BrandLogo size="lg" variant="mark" />
         </Link>
 
         {breadcrumb.length > 0 && (

@@ -178,7 +178,7 @@ export function AppShell({
             </div>
           )}
 
-          <main className="overflow-y-auto rounded-[var(--radius-lg)] bg-[var(--bg-surface-alt)] shadow-[var(--shadow-sm)]">
+          <main className="bf-no-scrollbar overflow-y-auto rounded-[var(--radius-lg)] bg-[var(--bg-surface-alt)] shadow-[var(--shadow-sm)]">
             {children}
           </main>
 
