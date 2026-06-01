@@ -5,6 +5,12 @@
 // result back into the conversation.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import {
+  buildContractPdf,
+  buildInvoicePdf,
+  type InvoiceLineItem,
+  type PartyInfo,
+} from "./document-pdf";
 
 export interface ToolInput {
   name: string;
@@ -114,6 +120,77 @@ export const TOOLS = [
     },
   },
   {
+    name: "issue_contract",
+    description:
+      "Generate a PDF service agreement (contract) for a lead. Use when the user says 'issue a contract', 'send the contract', 'draft a service agreement', etc. Returns a signed download URL. The lead is identified by lead_id OR by the most recent won lead for the caller (when omitted).",
+    input_schema: {
+      type: "object",
+      properties: {
+        lead_id: { type: "string" },
+        total_amount: {
+          type: "number",
+          description: "Total value of the contract",
+        },
+        currency: {
+          type: "string",
+          description: "ISO currency code, e.g. USD, GEL, EUR",
+        },
+        scope: {
+          type: "string",
+          description: "1–2 sentence description of the work being engaged",
+        },
+        deliverables: {
+          type: "array",
+          items: { type: "string" },
+          description: "Bullet list of concrete deliverables",
+        },
+        payment_terms: {
+          type: "string",
+          description: "e.g. '50% upfront, 50% on delivery'",
+        },
+        start_date: { type: "string", description: "ISO date YYYY-MM-DD" },
+        delivery_date: { type: "string", description: "ISO date YYYY-MM-DD" },
+      },
+      required: [
+        "total_amount",
+        "currency",
+        "scope",
+        "deliverables",
+        "payment_terms",
+      ],
+    },
+  },
+  {
+    name: "issue_invoice",
+    description:
+      "Generate a PDF invoice for a lead. Use when the user says 'invoice them', 'send the invoice', 'bill X', etc. Returns a signed download URL. Lead identified by lead_id OR by the most recent won lead.",
+    input_schema: {
+      type: "object",
+      properties: {
+        lead_id: { type: "string" },
+        currency: { type: "string", description: "ISO currency code" },
+        line_items: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              description: { type: "string" },
+              quantity: { type: "number" },
+              unit_price: { type: "number" },
+            },
+            required: ["description", "quantity", "unit_price"],
+          },
+        },
+        due_in_days: {
+          type: "number",
+          description: "Days from today the invoice is due (default 14)",
+        },
+        notes: { type: "string" },
+      },
+      required: ["currency", "line_items"],
+    },
+  },
+  {
     name: "export_sales_report",
     description:
       "Generate a sales report .xlsx with four sheets: Deals (every lead with owner + status + value), Summary (by-status totals + conversion rates), By Week (last 12 weeks of new/contacted/qualified/won counts), and Team & Calls (per-rep daily-target attainment). Returns a signed download URL the user can click. Use when the user says 'export', 'generate report', 'weekly numbers', 'how are we doing this week', etc. Honors the caller's role: salespeople get their own pipeline; admins/supervisors get all reps.",
@@ -151,6 +228,10 @@ export async function executeTool(
         return await sendDraft(input, ctx);
       case "export_sales_report":
         return await exportSalesReport(input, ctx);
+      case "issue_contract":
+        return await issueContract(input, ctx);
+      case "issue_invoice":
+        return await issueInvoice(input, ctx);
       default:
         return { tool: name, ok: false, error: `Unknown tool: ${name}` };
     }
@@ -700,6 +781,204 @@ async function exportSalesReport(
       leads: total,
       reps: isPrivileged ? team.length : 1,
       weeks,
+    },
+  };
+}
+
+// ── issue_contract + issue_invoice ───────────────────────────────────
+//
+// Both flows share the same skeleton: resolve the lead, build the PDF,
+// upload to documents/contracts|invoices, return a signed URL.
+
+async function resolveLead(
+  input: Record<string, unknown>,
+  ctx: { supabase: SupabaseClient; salesUserId: string },
+): Promise<
+  | {
+      ok: true;
+      lead: { id: string; name: string; company: string | null; email: string | null };
+    }
+  | { ok: false; error: string }
+> {
+  const leadId = typeof input.lead_id === "string" ? input.lead_id : "";
+  if (leadId) {
+    const { data, error } = await ctx.supabase
+      .from("leads")
+      .select("id, name, company, email")
+      .eq("id", leadId)
+      .maybeSingle();
+    if (error) return { ok: false, error: error.message };
+    if (!data) return { ok: false, error: `Lead ${leadId} not found` };
+    return { ok: true, lead: data as { id: string; name: string; company: string | null; email: string | null } };
+  }
+  // Fall back: most recent won lead for the caller.
+  const { data, error } = await ctx.supabase
+    .from("leads")
+    .select("id, name, company, email")
+    .eq("sales_user_id", ctx.salesUserId)
+    .eq("status", "won")
+    .order("status_changed_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) return { ok: false, error: error.message };
+  if (!data)
+    return {
+      ok: false,
+      error:
+        "No lead_id given and no recent 'won' lead to default to. Pass lead_id.",
+    };
+  return { ok: true, lead: data as { id: string; name: string; company: string | null; email: string | null } };
+}
+
+function leadToParty(lead: {
+  name: string;
+  company: string | null;
+  email: string | null;
+}): PartyInfo {
+  return {
+    name: lead.name,
+    company: lead.company ?? undefined,
+    email: lead.email ?? undefined,
+  };
+}
+
+async function uploadDoc(
+  ctx: { supabase: SupabaseClient },
+  kind: "contracts" | "invoices",
+  filename: string,
+  bytes: Uint8Array,
+): Promise<{ ok: true; url: string; path: string } | { ok: false; error: string }> {
+  const id = crypto.randomUUID();
+  const path = `${kind}/${new Date().toISOString().slice(0, 10)}-${id}-${filename}`;
+  const up = await ctx.supabase.storage
+    .from("documents")
+    .upload(path, bytes, {
+      contentType: "application/pdf",
+      upsert: false,
+      cacheControl: "3600",
+    });
+  if (up.error) return { ok: false, error: up.error.message };
+  const signed = await ctx.supabase.storage
+    .from("documents")
+    .createSignedUrl(path, 60 * 60 * 24); // 24h for documents
+  if (signed.error || !signed.data?.signedUrl)
+    return { ok: false, error: signed.error?.message ?? "sign URL failed" };
+  return { ok: true, url: signed.data.signedUrl, path };
+}
+
+async function issueContract(
+  input: Record<string, unknown>,
+  ctx: { supabase: SupabaseClient; salesUserId: string },
+): Promise<ToolResult> {
+  const resolved = await resolveLead(input, ctx);
+  if (!resolved.ok) return { tool: "issue_contract", ok: false, error: resolved.error };
+  const { lead } = resolved;
+
+  const deliverables = Array.isArray(input.deliverables)
+    ? (input.deliverables as unknown[]).filter((d): d is string => typeof d === "string")
+    : [];
+  if (deliverables.length === 0)
+    return {
+      tool: "issue_contract",
+      ok: false,
+      error: "deliverables[] is required and must not be empty",
+    };
+
+  const today = new Date().toISOString().slice(0, 10);
+  const contractNumber = `AL-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+  const pdf = await buildContractPdf({
+    client: leadToParty(lead),
+    contract_number: contractNumber,
+    issue_date: today,
+    total_amount: Number(input.total_amount),
+    currency: String(input.currency || "USD"),
+    payment_terms: String(input.payment_terms),
+    scope: String(input.scope),
+    deliverables,
+    start_date: typeof input.start_date === "string" ? input.start_date : today,
+    delivery_date:
+      typeof input.delivery_date === "string"
+        ? input.delivery_date
+        : new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10),
+  });
+  const up = await uploadDoc(
+    ctx,
+    "contracts",
+    `${contractNumber}.pdf`,
+    pdf,
+  );
+  if (!up.ok) return { tool: "issue_contract", ok: false, error: up.error };
+  return {
+    tool: "issue_contract",
+    ok: true,
+    data: {
+      url: up.url,
+      path: up.path,
+      contract_number: contractNumber,
+      lead_id: lead.id,
+      lead_name: lead.name,
+    },
+  };
+}
+
+async function issueInvoice(
+  input: Record<string, unknown>,
+  ctx: { supabase: SupabaseClient; salesUserId: string },
+): Promise<ToolResult> {
+  const resolved = await resolveLead(input, ctx);
+  if (!resolved.ok) return { tool: "issue_invoice", ok: false, error: resolved.error };
+  const { lead } = resolved;
+
+  const items = Array.isArray(input.line_items)
+    ? (input.line_items as unknown[])
+        .map((raw) => raw as Record<string, unknown>)
+        .filter(
+          (i) =>
+            typeof i.description === "string" &&
+            typeof i.quantity === "number" &&
+            typeof i.unit_price === "number",
+        )
+        .map<InvoiceLineItem>((i) => ({
+          description: String(i.description),
+          quantity: Number(i.quantity),
+          unit_price: Number(i.unit_price),
+        }))
+    : [];
+  if (items.length === 0)
+    return {
+      tool: "issue_invoice",
+      ok: false,
+      error: "line_items[] is required and must not be empty",
+    };
+
+  const today = new Date();
+  const dueIn =
+    typeof input.due_in_days === "number" && input.due_in_days > 0
+      ? input.due_in_days
+      : 14;
+  const due = new Date(today.getTime() + dueIn * 86_400_000);
+  const invoiceNumber = `INV-${today.getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+  const pdf = await buildInvoicePdf({
+    client: leadToParty(lead),
+    invoice_number: invoiceNumber,
+    issue_date: today.toISOString().slice(0, 10),
+    due_date: due.toISOString().slice(0, 10),
+    currency: String(input.currency || "USD"),
+    line_items: items,
+    notes: typeof input.notes === "string" ? input.notes : undefined,
+  });
+  const up = await uploadDoc(ctx, "invoices", `${invoiceNumber}.pdf`, pdf);
+  if (!up.ok) return { tool: "issue_invoice", ok: false, error: up.error };
+  return {
+    tool: "issue_invoice",
+    ok: true,
+    data: {
+      url: up.url,
+      path: up.path,
+      invoice_number: invoiceNumber,
+      lead_id: lead.id,
+      lead_name: lead.name,
+      due_date: due.toISOString().slice(0, 10),
     },
   };
 }
