@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { tourismFooter, tourismNav } from "@/data/tourism-nav";
+import {
+  salesNavBF,
+  salesFooterBF,
+  adminNavBF,
+  adminFooterBF,
+} from "./data/sales-nav-bf";
 import { useLocale } from "@/lib/i18n/useLocale";
 import type { TranslationKey } from "@/lib/i18n/dict";
 import {
@@ -177,6 +182,13 @@ export function AppSidebar() {
   const pathname = usePathname() ?? "";
   const { t } = useLocale();
 
+  // Pick the right nav config based on the active route — sales reps get the
+  // rep-facing items, admins get the manager surface. Admin wins when both
+  // prefixes match (e.g. /admin should never fall through to sales nav).
+  const isAdmin = pathname.startsWith("/admin");
+  const navConfig = isAdmin ? adminNavBF : salesNavBF;
+  const footerConfig = isAdmin ? adminFooterBF : salesFooterBF;
+
   const matchesItem = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
 
@@ -190,16 +202,16 @@ export function AppSidebar() {
         <ul className="space-y-0.5">
           <li>
             {(() => {
-              const topKey = navKey(tourismNav.top.href);
+              const topKey = navKey(navConfig.top.href);
               const topTranslated = t(topKey);
               const topLabel =
-                topTranslated === topKey ? tourismNav.top.label : topTranslated;
+                topTranslated === topKey ? navConfig.top.label : topTranslated;
               return (
                 <NavRow
-                  href={tourismNav.top.href}
+                  href={navConfig.top.href}
                   label={topLabel}
-                  iconName={tourismNav.top.icon}
-                  active={pathname === tourismNav.top.href}
+                  iconName={navConfig.top.icon}
+                  active={pathname === navConfig.top.href}
                 />
               );
             })()}
@@ -207,7 +219,7 @@ export function AppSidebar() {
         </ul>
 
         {/* Sections */}
-        {tourismNav.sections.map((section) => (
+        {navConfig.sections.map((section) => (
           <div key={section.label} className="mt-6 px-3">
             <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-400)]">
               {SECTION_KEY[section.label]
@@ -266,7 +278,7 @@ export function AppSidebar() {
       {/* Footer — BF defaults, translated */}
       <div className="px-2 py-3">
         <ul className="space-y-0.5">
-          {tourismFooter.map((item) => {
+          {footerConfig.map((item) => {
             const label = FOOTER_KEY[item.href]
               ? t(FOOTER_KEY[item.href])
               : item.label;

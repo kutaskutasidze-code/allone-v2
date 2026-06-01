@@ -25,6 +25,10 @@ export interface NavConfig {
   sections: NavSection[];
 }
 
+// Sales-rep sidebar: only what a rep needs day-to-day. Library (templates,
+// sources, references), Team, and Aim overrides are admin-only and live
+// under /admin in [[adminNavBF]] — they used to bleed into this nav, which
+// confused reps and gave them links to pages they don't own.
 export const salesNavBF: NavConfig = {
   top: { label: "Dashboard", href: "/sales", icon: "home" },
   sections: [
@@ -50,32 +54,13 @@ export const salesNavBF: NavConfig = {
       ],
     },
     {
-      label: "Library",
-      items: [
-        {
-          label: "References",
-          href: "/sales/demos/references",
-          icon: "briefcase",
-        },
-        { label: "Templates", href: "/sales/templates", icon: "file-text" },
-        { label: "Sources", href: "/sales/sources", icon: "plug" },
-      ],
-    },
-    {
       label: "Insights",
       items: [
         {
           label: "Notifications",
           href: "/sales/notifications",
-          icon: "briefcase",
+          icon: "bell",
         },
-        { label: "Team", href: "/sales/team", icon: "user-check" },
-      ],
-    },
-    {
-      label: "Admin",
-      items: [
-        { label: "Aim overrides", href: "/sales/admin/aims", icon: "compass" },
       ],
     },
   ],
@@ -83,6 +68,9 @@ export const salesNavBF: NavConfig = {
 
 export const salesFooterBF = [{ label: "Sign out", href: "/sales/logout" }];
 
+// Admin/manager sidebar. Includes the sales-rep–facing library (Templates,
+// Sources, References, Aim overrides) that admins maintain, plus the
+// /admin/team roster that replaced /sales/team.
 export const adminNavBF: NavConfig = {
   top: { label: "Dashboard", href: "/admin", icon: "home" },
   sections: [
@@ -99,6 +87,15 @@ export const adminNavBF: NavConfig = {
           href: "/admin/leads/analytics",
           icon: "bar-chart-3",
         },
+      ],
+    },
+    {
+      label: "Library",
+      items: [
+        { label: "References", href: "/admin/references", icon: "briefcase" },
+        { label: "Templates", href: "/admin/templates", icon: "file-text" },
+        { label: "Sources", href: "/admin/sources", icon: "plug" },
+        { label: "Aim overrides", href: "/admin/aims", icon: "compass" },
       ],
     },
     {
@@ -120,7 +117,7 @@ export const adminNavBF: NavConfig = {
       ],
     },
     {
-      label: "Sales",
+      label: "Tools",
       items: [
         { label: "Claude", href: "/admin/claude", icon: "plug" },
         { label: "Sales Portal", href: "/sales", icon: "briefcase" },
