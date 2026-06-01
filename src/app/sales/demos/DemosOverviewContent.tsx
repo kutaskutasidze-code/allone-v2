@@ -49,11 +49,19 @@ const STATUS_STYLE: Record<
   string,
   { bg: string; fg: string; Icon: typeof Clock }
 > = {
-  draft_ready: { bg: "bg-[var(--ao-accent-soft)]", fg: "text-[var(--ao-accent-hover)]", Icon: CheckCircle2 },
+  draft_ready: {
+    bg: "bg-[var(--ao-accent-soft)]",
+    fg: "text-[var(--ao-accent-hover)]",
+    Icon: CheckCircle2,
+  },
   sent: { bg: "bg-emerald-50", fg: "text-emerald-700", Icon: CheckCircle2 },
   failed: { bg: "bg-red-50", fg: "text-red-700", Icon: AlertCircle },
   expired: { bg: "bg-[var(--bg-sunken)]", fg: "text-slate-600", Icon: Clock },
-  deleted: { bg: "bg-[var(--bg-sunken)]", fg: "text-[var(--ink-500)]", Icon: Clock },
+  deleted: {
+    bg: "bg-[var(--bg-sunken)]",
+    fg: "text-[var(--ink-500)]",
+    Icon: Clock,
+  },
 };
 
 const PHASE_LABEL: Record<string, string> = {
@@ -102,13 +110,13 @@ export function DemosOverviewContent({
   }, [jobs]);
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-7xl space-y-8">
       <div className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-900)]">
+          <h1 className="text-xl font-semibold tracking-[-0.022em] text-[var(--ink-900)] sm:text-2xl">
             Demos
           </h1>
-          <p className="mt-1 text-sm text-[var(--ink-500)]">
+          <p className="mt-1 text-[13px] text-[var(--ink-500)]">
             Personalized demo pipelines across your leads.
           </p>
         </div>
@@ -131,41 +139,45 @@ export function DemosOverviewContent({
         </div>
       )}
 
-      {/* Filter bar */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[220px]">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--gray-400)]" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search lead, company, email…"
-            className="w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] py-2 pl-9 pr-3 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
-          />
+      {/* Filter toolbar */}
+      <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-3 shadow-[var(--shadow-xs)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--ink-400)]" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search lead, company, email…"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] py-2 pl-9 pr-3 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {STATUS_BUCKETS.map((b) => (
+              <button
+                key={b.value}
+                type="button"
+                onClick={() => setBucket(b.value)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                  bucket === b.value
+                    ? "border-[var(--ao-accent)] bg-[var(--ao-accent)]/10 text-[var(--ao-accent)]"
+                    : "border-[var(--allone-line)] bg-[var(--bg-surface-alt)] text-[var(--ink-600)] hover:bg-[var(--bg-sunken)]"
+                }`}
+              >
+                {b.label}
+                <span className="rounded-full bg-[var(--bg-sunken)] px-1.5 py-0.5 text-[10px] text-[var(--ink-600)]">
+                  {counts[b.value] ?? 0}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
-        {STATUS_BUCKETS.map((b) => (
-          <button
-            key={b.value}
-            type="button"
-            onClick={() => setBucket(b.value)}
-            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-              bucket === b.value
-                ? "border-[var(--ao-accent)] bg-[var(--ao-accent)]/10 text-[var(--ao-accent)]"
-                : "border-[var(--allone-line)] bg-[var(--bg-surface)] text-[var(--gray-600)] hover:bg-[var(--bg-surface-alt)]"
-            }`}
-          >
-            {b.label}
-            <span className="rounded-full bg-[var(--bg-sunken)] px-1.5 py-0.5 text-[10px] text-[var(--gray-600)]">
-              {counts[b.value] ?? 0}
-            </span>
-          </button>
-        ))}
       </div>
 
       {/* Table */}
       {filtered.length === 0 ? (
         <div className="rounded-[var(--radius-lg)] border border-dashed border-[var(--allone-line)] bg-[var(--bg-surface)] p-12 text-center">
-          <Sparkles className="mx-auto h-8 w-8 text-[var(--gray-300)]" />
+          <Sparkles className="mx-auto h-8 w-8 text-[var(--ink-300)]" />
           <p className="mt-3 text-sm text-[var(--ink-500)]">
             No demo jobs match this filter.
           </p>
@@ -239,7 +251,7 @@ function Row({ job }: { job: Job }) {
             {audit}/100
           </span>
         ) : (
-          <span className="text-xs text-[var(--gray-400)]">—</span>
+          <span className="text-xs text-[var(--ink-400)]">—</span>
         )}
       </td>
       <td className="px-5 py-3 text-xs text-[var(--ink-700)]">
@@ -248,7 +260,7 @@ function Row({ job }: { job: Job }) {
             {job.engagement_count}
           </span>
         ) : (
-          <span className="text-[var(--gray-400)]">—</span>
+          <span className="text-[var(--ink-400)]">—</span>
         )}
       </td>
       <td className="px-5 py-3 text-xs text-[var(--ink-500)]">
