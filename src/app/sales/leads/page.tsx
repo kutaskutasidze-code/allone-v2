@@ -20,6 +20,7 @@ import {
   Inbox,
   PhoneCall,
   Layers,
+  Download,
 } from "lucide-react";
 import { PageHeader, EmptyState } from "@/components/admin";
 import {
@@ -209,7 +210,37 @@ function LeadsPageContent() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
+  const [exporting, setExporting] = useState(false);
   const limit = 50;
+
+  const exportMyLeads = async () => {
+    if (exporting) return;
+    setExporting(true);
+    setError("");
+    try {
+      const res = await fetch("/api/sales/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tool: "export_sales_report",
+          input: { weeks: 12 },
+        }),
+      });
+      const json = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        data?: { url?: string };
+      };
+      if (!res.ok || !json.ok || !json.data?.url) {
+        throw new Error(json.error || `HTTP ${res.status}`);
+      }
+      window.open(json.data.url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const debouncedSearch = useDebounce(search, 350);
 
@@ -328,19 +359,32 @@ function LeadsPageContent() {
         description={`${total} leads · your pipeline`}
         action={{ label: "Add Lead", href: "/sales/leads/new" }}
         extras={
-          <button
-            onClick={toggleTheme}
-            aria-label={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-            }
-            className="inline-flex items-center justify-center w-10 h-10 text-[var(--ink-700)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] hover:border-[var(--allone-line-strong)] active:scale-[0.98] transition-all duration-150"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
-          </button>
+          <>
+            <button
+              onClick={exportMyLeads}
+              disabled={exporting}
+              title="Export your pipeline as xlsx (deals, summary, by-week, calls)"
+              className="inline-flex items-center gap-2 px-3 h-10 text-sm font-medium text-[var(--ink-700)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] hover:border-[var(--allone-line-strong)] active:scale-[0.98] transition-all duration-150 disabled:opacity-50"
+            >
+              <Download className="h-4 w-4" />
+              {exporting ? "Exporting…" : "Export"}
+            </button>
+            <button
+              onClick={toggleTheme}
+              aria-label={
+                theme === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"
+              }
+              className="inline-flex items-center justify-center w-10 h-10 text-[var(--ink-700)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] hover:border-[var(--allone-line-strong)] active:scale-[0.98] transition-all duration-150"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </button>
+          </>
         }
       />
 

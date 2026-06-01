@@ -1,32 +1,60 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { requireSalesAuth } from '@/lib/sales-auth';
-import { leadStatusSchema } from '@/lib/validations/leads';
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { requireSalesAuth } from "@/lib/sales-auth";
+import { leadStatusSchema } from "@/lib/validations/leads";
 
 export async function GET(request: NextRequest) {
   try {
     const { salesUser } = await requireSalesAuth();
     const supabase = createAdminClient();
 
-    const days = parseInt(request.nextUrl.searchParams.get('days') || '30', 10);
+    const days = parseInt(request.nextUrl.searchParams.get("days") || "30", 10);
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
     const statuses = [...leadStatusSchema.options];
-    const services = ['chatbots', 'custom_ai', 'automation', 'website', 'consulting'];
+    const services = [
+      "chatbots",
+      "custom_ai",
+      "automation",
+      "website",
+      "consulting",
+    ];
 
     // Every sales user — including supervisors/admins — only sees their own
     // numbers on /sales/*. Team-wide analytics live behind /admin.
     const scope = <T extends ReturnType<typeof supabase.from>>(q: T) =>
-      q.eq('sales_user_id', salesUser.id);
+      q.eq("sales_user_id", salesUser.id);
 
-    const [totalRes, phoneRes, emailRes, newInPeriodRes, ...statusAndServiceResults] = await Promise.all([
-      scope(supabase.from('leads').select('id', { count: 'exact', head: true })),
-      scope(supabase.from('leads').select('id', { count: 'exact', head: true })).not('phone', 'is', null),
-      scope(supabase.from('leads').select('id', { count: 'exact', head: true })).not('email', 'is', null),
-      scope(supabase.from('leads').select('id', { count: 'exact', head: true })).gte('created_at', startDate.toISOString()),
-      ...statuses.map(s => scope(supabase.from('leads').select('id', { count: 'exact', head: true })).eq('status', s)),
-      ...services.map(s => scope(supabase.from('leads').select('id', { count: 'exact', head: true })).eq('matched_service', s)),
+    const [
+      totalRes,
+      phoneRes,
+      emailRes,
+      newInPeriodRes,
+      ...statusAndServiceResults
+    ] = await Promise.all([
+      scope(
+        supabase.from("leads").select("id", { count: "exact", head: true }),
+      ),
+      scope(
+        supabase.from("leads").select("id", { count: "exact", head: true }),
+      ).not("phone", "is", null),
+      scope(
+        supabase.from("leads").select("id", { count: "exact", head: true }),
+      ).not("email", "is", null),
+      scope(
+        supabase.from("leads").select("id", { count: "exact", head: true }),
+      ).gte("created_at", startDate.toISOString()),
+      ...statuses.map((s) =>
+        scope(
+          supabase.from("leads").select("id", { count: "exact", head: true }),
+        ).eq("status", s),
+      ),
+      ...services.map((s) =>
+        scope(
+          supabase.from("leads").select("id", { count: "exact", head: true }),
+        ).eq("matched_service", s),
+      ),
     ]);
 
     const total = totalRes.count || 0;
@@ -47,24 +75,71 @@ export async function GET(request: NextRequest) {
     });
 
     // Unclassified count
-    const classifiedTotal = Object.values(byService).reduce((sum, v) => sum + v, 0);
+    const classifiedTotal = Object.values(byService).reduce(
+      (sum, v) => sum + v,
+      0,
+    );
     if (total > classifiedTotal) {
-      byService['unclassified'] = total - classifiedTotal;
+      byService["unclassified"] = total - classifiedTotal;
     }
 
     // Daily trend - fetch just dates from the period (limit higher)
     const { data: recentDates } = await scope(
-      supabase.from('leads').select('created_at')
+      supabase.from("leads").select("created_at"),
     )
-      .gte('created_at', startDate.toISOString())
-      .order('created_at', { ascending: true })
+      .gte("created_at", startDate.toISOString())
+      .order("created_at", { ascending: true })
       .limit(5000);
 
     const dailyTrend: Record<string, number> = {};
     for (const row of recentDates || []) {
-      const date = new Date(row.created_at).toISOString().split('T')[0];
+      const date = new Date(row.created_at).toISOString().split("T")[0];
       dailyTrend[date] = (dailyTrend[date] || 0) + 1;
     }
+
+    // Goal progress — daily / weekly / monthly call & won counts vs target.
+    // `daily_target` is configured per-rep on sales_users; week = 5×, month = 21×.
+    const dailyTarget = Math.max(salesUser.daily_target ?? 0, 0);
+    const weekTarget = dailyTarget * 5;
+    const monthTarget = dailyTarget * 21;
+
+    const now = new Date();
+    const dayStart = new Date(now);
+    dayStart.setUTCHours(0, 0, 0, 0);
+    const weekStart = new Date(dayStart);
+    weekStart.setUTCDate(weekStart.getUTCDate() - weekStart.getUTCDay() + 1); // Monday-anchored
+    const monthStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    );
+
+    const callsRange = async (since: Date) => {
+      // A "call" = a contacted/qualified/won/lost/callback status change today.
+      // We approximate with leads whose status_changed_at lies in the window.
+      const { count } = await scope(
+        supabase.from("leads").select("id", { count: "exact", head: true }),
+      )
+        .gte("status_changed_at", since.toISOString())
+        .neq("status", "new");
+      return count ?? 0;
+    };
+    const wonRange = async (since: Date) => {
+      const { count } = await scope(
+        supabase.from("leads").select("id", { count: "exact", head: true }),
+      )
+        .eq("status", "won")
+        .gte("status_changed_at", since.toISOString());
+      return count ?? 0;
+    };
+
+    const [callsToday, callsWeek, callsMonth, wonToday, wonWeek, wonMonth] =
+      await Promise.all([
+        callsRange(dayStart),
+        callsRange(weekStart),
+        callsRange(monthStart),
+        wonRange(dayStart),
+        wonRange(weekStart),
+        wonRange(monthStart),
+      ]);
 
     return NextResponse.json({
       data: {
@@ -78,10 +153,21 @@ export async function GET(request: NextRequest) {
         },
         leads: { byStatus, byService, dailyTrend },
         period: { days },
+        goals: {
+          dailyTarget,
+          weekTarget,
+          monthTarget,
+          callsToday,
+          callsWeek,
+          callsMonth,
+          wonToday,
+          wonWeek,
+          wonMonth,
+        },
       },
     });
   } catch (err) {
-    console.error('Analytics error:', err);
-    return NextResponse.json({ error: 'Analytics failed' }, { status: 500 });
+    console.error("Analytics error:", err);
+    return NextResponse.json({ error: "Analytics failed" }, { status: 500 });
   }
 }
