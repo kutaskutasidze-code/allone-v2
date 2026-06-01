@@ -656,7 +656,11 @@ export function AppChatPane({
         },
       ]);
       try {
-        const res = await fetch("/api/chat", {
+        // Swapped from BF's /api/chat (which doesn't exist here) to our
+        // /api/sales/chat. The endpoint reads only `messages`, so the BF-
+        // specific `scope` + `business` fields are sent for forward-compat
+        // but ignored. Response shape ({text}) matches.
+        const res = await fetch("/api/sales/chat", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
