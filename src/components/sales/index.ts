@@ -11,3 +11,4 @@ export { DraftPanel } from "./DraftPanel";
 export { LeadContextPanel } from "./LeadContextPanel";
 export { TelegramConnect } from "./TelegramConnect";
 export { AimsBoard } from "./AimsBoard";
+export { LeadActionsBar } from "./LeadActionsBar";

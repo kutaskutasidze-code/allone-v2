@@ -57,6 +57,11 @@ export const salesNavBF: NavConfig = {
       label: "Insights",
       items: [
         {
+          label: "Commissions",
+          href: "/sales/commissions",
+          icon: "dollar-sign",
+        },
+        {
           label: "Notifications",
           href: "/sales/notifications",
           icon: "bell",

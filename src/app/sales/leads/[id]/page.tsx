@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, X } from "lucide-react";
 import { Input, Textarea, Select } from "@/components/ui";
-import { DemoSection } from "@/components/sales";
+import { DemoSection, LeadActionsBar } from "@/components/sales";
 import { LEAD_STATUSES, LEAD_SOURCES } from "@/lib/validations/leads";
 import type { Lead, LeadStatus } from "@/types/database";
 
@@ -123,6 +123,9 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
           Update lead information
         </p>
       </div>
+
+      {/* Inline actions — offer / contract / invoice / send-draft */}
+      <LeadActionsBar leadId={id} leadName={formData.name} />
 
       {/* Personalized demo pipeline section */}
       <DemoSection

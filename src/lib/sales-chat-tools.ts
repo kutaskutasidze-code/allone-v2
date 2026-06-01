@@ -8,6 +8,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   buildContractPdf,
   buildInvoicePdf,
+  buildOfferPdf,
   type InvoiceLineItem,
   type PartyInfo,
 } from "./document-pdf";
@@ -120,6 +121,47 @@ export const TOOLS = [
     },
   },
   {
+    name: "issue_offer",
+    description:
+      "Generate a PDF commercial offer (priced proposal) for a lead. Use when the user says 'send an offer', 'draft a proposal', 'send pricing', etc. Returns a signed download URL. The offer is non-binding and expires on `valid_until`; once accepted, follow up with `issue_contract`. Lead identified by lead_id OR by the most recent open lead.",
+    input_schema: {
+      type: "object",
+      properties: {
+        lead_id: { type: "string" },
+        currency: {
+          type: "string",
+          description: "ISO currency code, e.g. USD, GEL, EUR",
+        },
+        intro: {
+          type: "string",
+          description: "1–2 sentence framing of why we're a fit for this lead",
+        },
+        line_items: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              description: { type: "string" },
+              quantity: { type: "number" },
+              unit_price: { type: "number" },
+            },
+            required: ["description", "quantity", "unit_price"],
+          },
+        },
+        valid_days: {
+          type: "number",
+          description: "Days from today the offer remains valid (default 14)",
+        },
+        payment_terms: {
+          type: "string",
+          description: "e.g. '50% on signature, 50% on delivery'",
+        },
+        notes: { type: "string" },
+      },
+      required: ["currency", "line_items"],
+    },
+  },
+  {
     name: "issue_contract",
     description:
       "Generate a PDF service agreement (contract) for a lead. Use when the user says 'issue a contract', 'send the contract', 'draft a service agreement', etc. Returns a signed download URL. The lead is identified by lead_id OR by the most recent won lead for the caller (when omitted).",
@@ -228,6 +270,8 @@ export async function executeTool(
         return await sendDraft(input, ctx);
       case "export_sales_report":
         return await exportSalesReport(input, ctx);
+      case "issue_offer":
+        return await issueOffer(input, ctx);
       case "issue_contract":
         return await issueContract(input, ctx);
       case "issue_invoice":
@@ -796,7 +840,12 @@ async function resolveLead(
 ): Promise<
   | {
       ok: true;
-      lead: { id: string; name: string; company: string | null; email: string | null };
+      lead: {
+        id: string;
+        name: string;
+        company: string | null;
+        email: string | null;
+      };
     }
   | { ok: false; error: string }
 > {
@@ -809,7 +858,15 @@ async function resolveLead(
       .maybeSingle();
     if (error) return { ok: false, error: error.message };
     if (!data) return { ok: false, error: `Lead ${leadId} not found` };
-    return { ok: true, lead: data as { id: string; name: string; company: string | null; email: string | null } };
+    return {
+      ok: true,
+      lead: data as {
+        id: string;
+        name: string;
+        company: string | null;
+        email: string | null;
+      },
+    };
   }
   // Fall back: most recent won lead for the caller.
   const { data, error } = await ctx.supabase
@@ -827,7 +884,15 @@ async function resolveLead(
       error:
         "No lead_id given and no recent 'won' lead to default to. Pass lead_id.",
     };
-  return { ok: true, lead: data as { id: string; name: string; company: string | null; email: string | null } };
+  return {
+    ok: true,
+    lead: data as {
+      id: string;
+      name: string;
+      company: string | null;
+      email: string | null;
+    },
+  };
 }
 
 function leadToParty(lead: {
@@ -847,16 +912,16 @@ async function uploadDoc(
   kind: "contracts" | "invoices",
   filename: string,
   bytes: Uint8Array,
-): Promise<{ ok: true; url: string; path: string } | { ok: false; error: string }> {
+): Promise<
+  { ok: true; url: string; path: string } | { ok: false; error: string }
+> {
   const id = crypto.randomUUID();
   const path = `${kind}/${new Date().toISOString().slice(0, 10)}-${id}-${filename}`;
-  const up = await ctx.supabase.storage
-    .from("documents")
-    .upload(path, bytes, {
-      contentType: "application/pdf",
-      upsert: false,
-      cacheControl: "3600",
-    });
+  const up = await ctx.supabase.storage.from("documents").upload(path, bytes, {
+    contentType: "application/pdf",
+    upsert: false,
+    cacheControl: "3600",
+  });
   if (up.error) return { ok: false, error: up.error.message };
   const signed = await ctx.supabase.storage
     .from("documents")
@@ -866,16 +931,85 @@ async function uploadDoc(
   return { ok: true, url: signed.data.signedUrl, path };
 }
 
+async function issueOffer(
+  input: Record<string, unknown>,
+  ctx: { supabase: SupabaseClient; salesUserId: string },
+): Promise<ToolResult> {
+  const resolved = await resolveLead(input, ctx);
+  if (!resolved.ok)
+    return { tool: "issue_offer", ok: false, error: resolved.error };
+  const { lead } = resolved;
+
+  const items = Array.isArray(input.line_items)
+    ? (input.line_items as unknown[])
+        .map((raw) => raw as Record<string, unknown>)
+        .filter(
+          (i) =>
+            typeof i.description === "string" &&
+            typeof i.quantity === "number" &&
+            typeof i.unit_price === "number",
+        )
+        .map<InvoiceLineItem>((i) => ({
+          description: String(i.description),
+          quantity: Number(i.quantity),
+          unit_price: Number(i.unit_price),
+        }))
+    : [];
+  if (items.length === 0)
+    return {
+      tool: "issue_offer",
+      ok: false,
+      error: "line_items[] is required and must not be empty",
+    };
+
+  const today = new Date();
+  const validDays =
+    typeof input.valid_days === "number" && input.valid_days > 0
+      ? input.valid_days
+      : 14;
+  const validUntil = new Date(today.getTime() + validDays * 86_400_000);
+  const offerNumber = `OFR-${today.getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+  const pdf = await buildOfferPdf({
+    client: leadToParty(lead),
+    offer_number: offerNumber,
+    issue_date: today.toISOString().slice(0, 10),
+    valid_until: validUntil.toISOString().slice(0, 10),
+    currency: String(input.currency || "USD"),
+    intro: typeof input.intro === "string" ? input.intro : undefined,
+    line_items: items,
+    payment_terms:
+      typeof input.payment_terms === "string" ? input.payment_terms : undefined,
+    notes: typeof input.notes === "string" ? input.notes : undefined,
+  });
+  const up = await uploadDoc(ctx, "offers", `${offerNumber}.pdf`, pdf);
+  if (!up.ok) return { tool: "issue_offer", ok: false, error: up.error };
+  return {
+    tool: "issue_offer",
+    ok: true,
+    data: {
+      url: up.url,
+      path: up.path,
+      offer_number: offerNumber,
+      lead_id: lead.id,
+      lead_name: lead.name,
+      valid_until: validUntil.toISOString().slice(0, 10),
+    },
+  };
+}
+
 async function issueContract(
   input: Record<string, unknown>,
   ctx: { supabase: SupabaseClient; salesUserId: string },
 ): Promise<ToolResult> {
   const resolved = await resolveLead(input, ctx);
-  if (!resolved.ok) return { tool: "issue_contract", ok: false, error: resolved.error };
+  if (!resolved.ok)
+    return { tool: "issue_contract", ok: false, error: resolved.error };
   const { lead } = resolved;
 
   const deliverables = Array.isArray(input.deliverables)
-    ? (input.deliverables as unknown[]).filter((d): d is string => typeof d === "string")
+    ? (input.deliverables as unknown[]).filter(
+        (d): d is string => typeof d === "string",
+      )
     : [];
   if (deliverables.length === 0)
     return {
@@ -901,12 +1035,7 @@ async function issueContract(
         ? input.delivery_date
         : new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10),
   });
-  const up = await uploadDoc(
-    ctx,
-    "contracts",
-    `${contractNumber}.pdf`,
-    pdf,
-  );
+  const up = await uploadDoc(ctx, "contracts", `${contractNumber}.pdf`, pdf);
   if (!up.ok) return { tool: "issue_contract", ok: false, error: up.error };
   return {
     tool: "issue_contract",
@@ -926,7 +1055,8 @@ async function issueInvoice(
   ctx: { supabase: SupabaseClient; salesUserId: string },
 ): Promise<ToolResult> {
   const resolved = await resolveLead(input, ctx);
-  if (!resolved.ok) return { tool: "issue_invoice", ok: false, error: resolved.error };
+  if (!resolved.ok)
+    return { tool: "issue_invoice", ok: false, error: resolved.error };
   const { lead } = resolved;
 
   const items = Array.isArray(input.line_items)

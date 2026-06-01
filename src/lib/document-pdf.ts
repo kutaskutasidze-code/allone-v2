@@ -48,6 +48,18 @@ export interface InvoiceInput {
   notes?: string;
 }
 
+export interface OfferInput {
+  client: PartyInfo;
+  offer_number: string;
+  issue_date: string;
+  valid_until: string; // ISO yyyy-mm-dd; the offer expires after this
+  currency: string;
+  intro?: string; // 1–2 sentence framing of why we're a fit
+  line_items: InvoiceLineItem[];
+  payment_terms?: string; // e.g. "50% on signature, 50% on delivery"
+  notes?: string;
+}
+
 const ALLONE: PartyInfo = {
   name: "Allone Labs",
   email: "billing@allonelabs.com",
@@ -413,6 +425,170 @@ export async function buildInvoicePdf(
       moveDown(ctx, 13);
     }
   }
+
+  return doc.save();
+}
+
+// ── Commercial offer / proposal ───────────────────────────────────────
+//
+// Sits between a demo and a contract — a priced proposal the rep sends to
+// open the conversation. Non-binding, time-limited (valid_until), and
+// includes optional payment terms so the lead can say "yes" with a single
+// reply before we draft a contract.
+
+export async function buildOfferPdf(input: OfferInput): Promise<Uint8Array> {
+  const doc = await PDFDocument.create();
+  doc.setTitle(`Allone Labs Offer ${input.offer_number}`);
+  doc.setAuthor("Allone Labs");
+  doc.setCreator("Allone Labs");
+
+  const ctx = await startPage(doc);
+  header(ctx, "Commercial Offer", `#${input.offer_number}`);
+
+  const halfX = ctx.width / 2 + 10;
+  const savedY = ctx.y;
+  partyBlock(ctx, "FROM", ALLONE);
+  ctx.y = savedY;
+  partyBlock(ctx, "PREPARED FOR", input.client, halfX);
+
+  moveDown(ctx, 12);
+  drawDivider(ctx);
+  moveDown(ctx, 22);
+
+  drawText(ctx, "ISSUED", { size: 8, bold: true, color: MUTED });
+  drawText(ctx, input.issue_date, { size: 11, x: MARGIN + 70 });
+  drawText(ctx, "VALID UNTIL", {
+    size: 8,
+    bold: true,
+    color: MUTED,
+    x: halfX,
+  });
+  drawText(ctx, input.valid_until, { size: 11, x: halfX + 90 });
+  moveDown(ctx, 24);
+
+  if (input.intro) {
+    drawDivider(ctx);
+    moveDown(ctx, 18);
+    const introLines = wrapText(
+      input.intro,
+      ctx.font,
+      11,
+      ctx.width - MARGIN * 2,
+    );
+    for (const line of introLines) {
+      drawText(ctx, line, { size: 11 });
+      moveDown(ctx, 15);
+    }
+    moveDown(ctx, 6);
+  }
+
+  drawDivider(ctx);
+  moveDown(ctx, 18);
+
+  // Line-item table (same shape as invoice)
+  drawText(ctx, "DESCRIPTION", { size: 8, bold: true, color: MUTED });
+  drawText(ctx, "QTY", {
+    size: 8,
+    bold: true,
+    color: MUTED,
+    x: ctx.width - MARGIN - 160,
+  });
+  drawText(ctx, "UNIT", {
+    size: 8,
+    bold: true,
+    color: MUTED,
+    x: ctx.width - MARGIN - 110,
+  });
+  drawText(ctx, "TOTAL", {
+    size: 8,
+    bold: true,
+    color: MUTED,
+    x: ctx.width - MARGIN - 50,
+  });
+  moveDown(ctx, 12);
+  drawDivider(ctx);
+  moveDown(ctx, 14);
+
+  let subtotal = 0;
+  for (const item of input.line_items) {
+    const lineTotal = item.quantity * item.unit_price;
+    subtotal += lineTotal;
+    const descLines = wrapText(
+      item.description,
+      ctx.font,
+      11,
+      ctx.width - MARGIN * 2 - 200,
+    );
+    drawText(ctx, descLines[0] ?? "", { size: 11 });
+    drawText(ctx, String(item.quantity), {
+      size: 11,
+      x: ctx.width - MARGIN - 160,
+    });
+    drawText(ctx, fmtMoney(item.unit_price, input.currency), {
+      size: 11,
+      x: ctx.width - MARGIN - 110,
+    });
+    drawText(ctx, fmtMoney(lineTotal, input.currency), {
+      size: 11,
+      x: ctx.width - MARGIN - 50,
+    });
+    if (descLines.length > 1) {
+      for (let i = 1; i < descLines.length; i++) {
+        moveDown(ctx, 13);
+        drawText(ctx, descLines[i]!, { size: 10, color: MUTED });
+      }
+    }
+    moveDown(ctx, 18);
+  }
+
+  moveDown(ctx, 6);
+  drawDivider(ctx);
+  moveDown(ctx, 18);
+
+  drawText(ctx, "ESTIMATED TOTAL", {
+    size: 11,
+    bold: true,
+    x: ctx.width - MARGIN - 160,
+  });
+  drawText(ctx, fmtMoney(subtotal, input.currency), {
+    size: 12,
+    bold: true,
+    x: ctx.width - MARGIN - 50,
+  });
+
+  if (input.payment_terms) {
+    moveDown(ctx, 26);
+    drawText(ctx, "PAYMENT TERMS", { size: 8, bold: true, color: MUTED });
+    moveDown(ctx, 13);
+    drawText(ctx, input.payment_terms, { size: 11 });
+  }
+
+  if (input.notes) {
+    moveDown(ctx, 24);
+    drawDivider(ctx);
+    moveDown(ctx, 18);
+    drawText(ctx, "NOTES", { size: 8, bold: true, color: MUTED });
+    moveDown(ctx, 13);
+    const noteLines = wrapText(
+      input.notes,
+      ctx.font,
+      10,
+      ctx.width - MARGIN * 2,
+    );
+    for (const line of noteLines) {
+      drawText(ctx, line, { size: 10, color: MUTED });
+      moveDown(ctx, 13);
+    }
+  }
+
+  // Closing line — soft CTA at the bottom.
+  moveDown(ctx, 28);
+  drawDivider(ctx);
+  moveDown(ctx, 18);
+  drawText(ctx, "Reply to confirm and we'll send the service agreement.", {
+    size: 10,
+    color: MUTED,
+  });
 
   return doc.save();
 }
