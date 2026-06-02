@@ -124,6 +124,7 @@ export const adminNavBF: NavConfig = {
     {
       label: "Tools",
       items: [
+        { label: "Cloner", href: "/admin/cloner", icon: "git-branch" },
         { label: "Claude", href: "/admin/claude", icon: "plug" },
         { label: "Sales Portal", href: "/sales", icon: "briefcase" },
       ],

@@ -36,12 +36,23 @@ interface OverviewChatProps {
   operatorFirstName: string;
   /** Translation keys for the starter suggestion buttons. */
   starters: string[];
+  /** Backend chat endpoint. Defaults to /api/sales/chat (sales-rep tools).
+   *  Pass /api/admin/cloner/chat for the cloner agent etc. */
+  chatEndpoint?: string;
+  /** Companion upload endpoint. Defaults to {chatEndpoint}/upload. */
+  uploadEndpoint?: string;
+  /** Empty-state greeting override (e.g. "What do we clone today?"). */
+  greetingOverride?: string;
 }
 
 export function OverviewChat({
   operatorFirstName,
   starters,
+  chatEndpoint = "/api/sales/chat",
+  uploadEndpoint,
+  greetingOverride,
 }: OverviewChatProps) {
+  const _uploadEndpoint = uploadEndpoint ?? `${chatEndpoint}/upload`;
   const { t } = useLocale();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [streamingSay, setStreamingSay] = useState("");
@@ -83,7 +94,7 @@ export function OverviewChat({
           })),
           { role: "user" as const, content: text },
         ];
-        const res = await fetch("/api/sales/chat", {
+        const res = await fetch(chatEndpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ messages: history }),
@@ -115,7 +126,7 @@ export function OverviewChat({
         const fd = new FormData();
         fd.append("file", f);
         try {
-          const res = await fetch("/api/sales/chat/upload", {
+          const res = await fetch(_uploadEndpoint, {
             method: "POST",
             body: fd,
             credentials: "include",
@@ -179,7 +190,7 @@ export function OverviewChat({
     setStreamClosed(false);
 
     try {
-      const res = await fetch("/api/sales/chat", {
+      const res = await fetch(chatEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -245,7 +256,9 @@ export function OverviewChat({
                 lineHeight: 1.05,
               }}
             >
-              {greeting()}, {operatorFirstName}.
+              {greetingOverride
+                ? greetingOverride
+                : `${greeting()}, ${operatorFirstName}.`}
             </h1>
             {starters.length > 0 && (
               <ul className="flex w-full max-w-md flex-col gap-1.5 text-left">

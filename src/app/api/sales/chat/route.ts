@@ -10,6 +10,7 @@ import { AuthError } from "@/lib/auth";
 import { fetchMetricEventsForUser } from "@/lib/sales-metric-events";
 import { computeAllAims } from "@/lib/sales-aims";
 import { TOOLS, executeTool, type ToolResult } from "@/lib/sales-chat-tools";
+import { callClaudeCli, claudeCliAvailable } from "@/lib/claude-cli";
 
 interface IncomingMessage {
   role: "user" | "assistant";
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
     const incoming = Array.isArray(body.messages) ? body.messages : [];
 
     const apiKey = process.env.ANTHROPIC_API_KEY ?? "";
-    if (!apiKey) {
+    if (!apiKey && !claudeCliAvailable()) {
       return NextResponse.json({
         text: "Chat isn't configured — ANTHROPIC_API_KEY is missing on the deploy. Once it's set, ask me again and I'll have an answer.",
       });
@@ -79,6 +80,26 @@ export async function POST(request: NextRequest) {
       content: String(m.content ?? ""),
     }));
 
+    // No API key but CLI is available — run text-only via subprocess.
+    // Tool-use is off here because `claude -p` doesn't expose tools.
+    if (!apiKey && claudeCliAvailable()) {
+      try {
+        const reply = await callClaudeCli({
+          system:
+            system +
+            "\n\n[Note: tool execution is currently unavailable (running in CLI-only mode). Describe what the user could do but don't pretend to have run anything.]",
+          messages: incoming.map((m) => ({ role: m.role, content: m.content })),
+        });
+        return NextResponse.json({ text: reply, provider: "claude-cli" });
+      } catch (err) {
+        return NextResponse.json({
+          text: `Claude CLI fell through: ${err instanceof Error ? err.message : String(err)}`,
+        });
+      }
+    }
+
+    let lastAnthropicError: string | null = null;
+
     // Tool-use loop: call Anthropic; if it asks for tools, execute them and
     // feed the results back; otherwise return the text reply.
     for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
@@ -103,9 +124,9 @@ export async function POST(request: NextRequest) {
       });
       const json = (await res.json()) as AnthropicResponse;
       if (!res.ok) {
-        return NextResponse.json({
-          text: `Anthropic returned ${res.status}: ${json.error?.message ?? "unknown error"}`,
-        });
+        lastAnthropicError =
+          json.error?.message ?? `Anthropic returned ${res.status}`;
+        break;
       }
 
       const blocks = json.content ?? [];
@@ -140,8 +161,25 @@ export async function POST(request: NextRequest) {
       conversation.push({ role: "user", content: toolResultBlocks });
     }
 
+    // Anthropic errored AND we have a local CLI — last-chance text reply.
+    if (lastAnthropicError && claudeCliAvailable()) {
+      try {
+        const reply = await callClaudeCli({
+          system:
+            system +
+            `\n\n[Anthropic API just errored: ${lastAnthropicError}. Tool execution is unavailable in this fallback mode — answer text-only and tell the user to retry once the API is back if they wanted a tool to run.]`,
+          messages: incoming.map((m) => ({ role: m.role, content: m.content })),
+        });
+        return NextResponse.json({ text: reply, provider: "claude-cli" });
+      } catch {
+        /* fall through */
+      }
+    }
+
     return NextResponse.json({
-      text: "I ran out of tool steps before finishing. Try asking in smaller pieces.",
+      text: lastAnthropicError
+        ? `Sales chat failed: ${lastAnthropicError}`
+        : "I ran out of tool steps before finishing. Try asking in smaller pieces.",
     });
   } catch (err) {
     if (err instanceof AuthError) {

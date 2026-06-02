@@ -20,7 +20,10 @@ export function AdminLayoutContent({
 }) {
   const pathname = usePathname();
   const isLoginPage = pathname === "/admin/login";
-  const isChatNativeHome = pathname === "/admin";
+  // Both /admin (overview) and /admin/cloner ARE the chat — hide the
+  // shell's side-chat toggle so we don't stack two chat surfaces.
+  const isChatNativeHome =
+    pathname === "/admin" || pathname === "/admin/cloner";
 
   const [theme, setTheme] = useState<AdminTheme>("light");
 
