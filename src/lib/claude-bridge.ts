@@ -15,11 +15,20 @@ import "server-only";
 
 import type { ChatMessage } from "./llm-types";
 
-const BRIDGE_URL = process.env.CLAUDE_BRIDGE_URL || "";
-const BRIDGE_TOKEN = process.env.CLAUDE_BRIDGE_TOKEN || "";
+// Read env at call time — Vercel's warm function instances cache module
+// loads, so a const evaluated here would freeze whatever value was set
+// when the container first booted. The first user attempt failed exactly
+// this way: the empty-string defaults below got captured before the
+// CLAUDE_BRIDGE_* vars were saved on the project.
+function bridgeUrl(): string {
+  return process.env.CLAUDE_BRIDGE_URL || "";
+}
+function bridgeToken(): string {
+  return process.env.CLAUDE_BRIDGE_TOKEN || "";
+}
 
 export function bridgeConfigured(): boolean {
-  return BRIDGE_URL.length > 0 && BRIDGE_TOKEN.length > 0;
+  return bridgeUrl().length > 0 && bridgeToken().length > 0;
 }
 
 // ── Plain text turn ────────────────────────────────────────────────────
@@ -28,16 +37,18 @@ export async function callBridge(req: {
   system: string;
   messages: ChatMessage[];
 }): Promise<string> {
-  if (!bridgeConfigured()) {
+  const url = bridgeUrl();
+  const token = bridgeToken();
+  if (!url || !token) {
     throw new Error(
       "Claude bridge not configured — set CLAUDE_BRIDGE_URL and CLAUDE_BRIDGE_TOKEN.",
     );
   }
-  const res = await fetch(`${BRIDGE_URL.replace(/\/$/, "")}/chat`, {
+  const res = await fetch(`${url.replace(/\/$/, "")}/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${BRIDGE_TOKEN}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ system: req.system, messages: req.messages }),
     signal: AbortSignal.timeout(180_000),
