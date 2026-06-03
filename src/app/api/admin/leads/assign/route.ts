@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 
 // Bulk-assign leads to a sales user. Refuses to reassign any lead whose
 // status has already moved off 'new' — those leads are permanently owned by
@@ -15,6 +17,8 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user?.email) {
@@ -106,6 +110,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in POST /api/admin/leads/assign', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

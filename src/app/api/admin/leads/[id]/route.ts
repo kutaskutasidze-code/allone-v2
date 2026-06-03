@@ -3,12 +3,16 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { updateLeadSchema } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     // Auth check via user session
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -43,6 +47,7 @@ export async function PATCH(
 
     return NextResponse.json({ data });
   } catch (error) {
+    if (error instanceof AuthError) return NextResponse.json({ error: error.message }, { status: error.status });
     logger.error('Lead update error', { error: String(error) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -53,6 +58,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -71,6 +78,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof AuthError) return NextResponse.json({ error: error.message }, { status: error.status });
     logger.error('Lead delete error', { error: String(error) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

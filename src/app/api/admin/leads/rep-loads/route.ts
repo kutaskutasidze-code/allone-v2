@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -9,6 +11,8 @@ export const dynamic = 'force-dynamic';
 // for rebalance.
 export async function GET() {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const admin = createAdminClient();
 
     const { data: salesUsers, error: usersErr } = await admin
@@ -68,6 +72,7 @@ export async function GET() {
 
     return NextResponse.json({ data: { reps, totals } });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in GET /api/admin/leads/rep-loads', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

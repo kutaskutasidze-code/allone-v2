@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 
 // Send leads back to the unassigned pool. Only works on leads whose status is
 // still 'new' — once a rep has touched a lead, it stays with them.
@@ -12,6 +14,8 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -83,6 +87,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in POST /api/admin/leads/unassign', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

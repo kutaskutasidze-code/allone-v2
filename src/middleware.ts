@@ -3,9 +3,14 @@ import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
+  // Forward the pathname to Server Components (layout guards) so the login
+  // route can be skipped without causing a redirect loop.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+
   let response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: requestHeaders,
     },
   });
 
@@ -23,7 +28,7 @@ export async function middleware(request: NextRequest) {
           );
           response = NextResponse.next({
             request: {
-              headers: request.headers,
+              headers: requestHeaders,
             },
           });
           cookiesToSet.forEach(({ name, value, options }) =>
@@ -41,9 +46,9 @@ export async function middleware(request: NextRequest) {
 
   const isAuthenticated = !!user && !error;
 
-  // Admin allowlist. Configurable via ADMIN_EMAILS env var (comma-separated)
-  // so new admins can be added in the Vercel dashboard without a code change.
-  // The hardcoded list below is a safety fallback if the env var is unset.
+  // Admin allowlist (LEGACY). Retained only as a transition safety net so a
+  // current admin can't be locked out while authorization moves to
+  // sales_users.role. Removed at cutover once every admin has a role row.
   const ADMIN_EMAILS = (
     process.env.ADMIN_EMAILS
       ? process.env.ADMIN_EMAILS.split(",")
@@ -58,10 +63,31 @@ export async function middleware(request: NextRequest) {
     .map((e) => e.toLowerCase().trim())
     .filter(Boolean);
 
-  // Case-insensitive comparison — Supabase may store emails with original casing,
-  // and a case-sensitive includes() would silently bounce a valid admin.
   const userEmail = (user?.email || "").toLowerCase().trim();
-  const isAdmin = ADMIN_EMAILS.includes(userEmail);
+  const isAllowlistAdmin = ADMIN_EMAILS.includes(userEmail);
+
+  // Single source of truth: resolve the caller's role from sales_users (one
+  // indexed service-role lookup). Union with the legacy allowlist during the
+  // transition so no current admin is ever locked out.
+  let dbRole: string | null = null;
+  if (isAuthenticated && userEmail) {
+    const roleUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent(userEmail)}&select=role&limit=1`;
+    const lookup = await fetch(roleUrl, {
+      headers: {
+        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+      },
+      cache: "no-store",
+    });
+    if (lookup.ok) {
+      const rows = await lookup.json();
+      if (Array.isArray(rows) && rows[0]?.role) dbRole = rows[0].role as string;
+    }
+  }
+  // Coarse middleware gate. Admin = role 'admin' (or allowlist during transition).
+  // The admin-only-vs-supervisor split is enforced per-route by requireRole().
+  const isAdmin = dbRole === "admin" || isAllowlistAdmin;
+  const isSalesUser = dbRole !== null || isAllowlistAdmin;
 
   // Protect admin routes (except login)
   if (
@@ -96,28 +122,14 @@ export async function middleware(request: NextRequest) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL("/sales/login", request.url));
     }
-    if (!user?.email) {
-      return NextResponse.redirect(new URL("/sales/login", request.url));
-    }
-    // Admin emails (allowlist) bypass the sales_users existence check —
-    // they should always be able to reach the sales portal.
-    if (!isAdmin) {
-      const adminUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent((user.email||'').toLowerCase())}&select=id&limit=1`;
-      const lookup = await fetch(adminUrl, {
-        headers: {
-          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
-        },
-        cache: "no-store",
-      });
-      const rows = lookup.ok ? await lookup.json() : [];
-      if (!Array.isArray(rows) || rows.length === 0) {
-        // Surface the reason on the login page instead of silently bouncing
-        // to the marketing landing.
-        const url = new URL("/sales/login", request.url);
-        url.searchParams.set("error", "not_sales_user");
-        return NextResponse.redirect(url);
-      }
+    // Any sales role (or a transition allowlist admin) may reach the portal.
+    // Reuses the role lookup above — no extra round-trip.
+    if (!isSalesUser) {
+      // Surface the reason on the login page instead of silently bouncing
+      // to the marketing landing.
+      const url = new URL("/sales/login", request.url);
+      url.searchParams.set("error", "not_sales_user");
+      return NextResponse.redirect(url);
     }
   }
 

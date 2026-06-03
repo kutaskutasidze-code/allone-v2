@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { leadStatusSchema, LEAD_STATUSES } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 
 type Status = typeof LEAD_STATUSES[number]['value'];
 
@@ -18,6 +20,8 @@ function emptyRow(date: string): DailyStatusRow {
 
 export async function GET() {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -108,6 +112,7 @@ export async function GET() {
       },
     });
   } catch (error) {
+    if (error instanceof AuthError) return NextResponse.json({ error: error.message }, { status: error.status });
     logger.error('Lead analytics error', { error: String(error) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

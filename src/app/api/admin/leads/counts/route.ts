@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { LEAD_STATUSES, parsePhonePrefixes } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +13,8 @@ export const dynamic = 'force-dynamic';
 // status filter chips with a single request instead of 9 parallel ones.
 export async function GET(request: NextRequest) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -50,6 +54,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: counts });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in GET /api/admin/leads/counts', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

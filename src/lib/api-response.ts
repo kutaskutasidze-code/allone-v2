@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { ZodError } from 'zod';
+import { AuthError } from '@/lib/auth';
 
 /**
  * Standard API response structure
@@ -99,6 +100,17 @@ export function forbidden(): NextResponse<ApiResponse> {
     { success: false, error: 'Forbidden' },
     { status: 403 }
   );
+}
+
+/**
+ * Maps a caught AuthError to the correct HTTP response (403 vs 401),
+ * falling back to a generic 500 for any other error.
+ */
+export function authErrorResponse(err: unknown): NextResponse<ApiResponse> {
+  if (err instanceof AuthError) {
+    return err.status === 403 ? forbidden() : unauthorized();
+  }
+  return error('Internal server error');
 }
 
 /**

@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -70,6 +72,8 @@ async function selectMovableLeads(
 
 export async function POST(request: NextRequest) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -172,6 +176,7 @@ export async function POST(request: NextRequest) {
       data: { perRep, totalMovedToPool, dryRun: false },
     });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in POST /api/admin/leads/rebalance', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

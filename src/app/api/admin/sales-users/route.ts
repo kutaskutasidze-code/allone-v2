@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 import { logger } from '@/lib/logger';
 import { salesUserIndustriesSchema } from '@/lib/validations/leads';
 
@@ -18,11 +19,7 @@ const createSchema = z.object({
 // Lightweight directory of sales users for the admin assign UI.
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireRole(['admin']);
 
     const admin = createAdminClient();
     const { data, error } = await admin
@@ -37,6 +34,7 @@ export async function GET() {
 
     return NextResponse.json({ data: data || [] });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in GET /api/admin/sales-users', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -46,9 +44,7 @@ export async function GET() {
 // The user still needs a corresponding Supabase Auth account to log in.
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { salesUser } = await requireRole(['admin']);
 
     const body = await request.json().catch(() => null);
     const parsed = createSchema.safeParse(body);
@@ -72,8 +68,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create rep' }, { status: 500 });
     }
 
+    logger.audit('create_sales_user', 'sales_users', data.id, salesUser.id, { role: data.role });
     return NextResponse.json({ data }, { status: 201 });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in POST /api/admin/sales-users', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

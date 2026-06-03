@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 import { getPeriod, round2, COMMISSION_RATES } from '@/lib/commissions';
 import { logger } from '@/lib/logger';
 
@@ -24,6 +26,8 @@ interface RepStats {
 
 export async function GET(request: NextRequest) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const period = getPeriod(request.nextUrl.searchParams.get('period') || 'month');
     const admin = createAdminClient();
 
@@ -136,6 +140,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in GET /api/admin/team', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

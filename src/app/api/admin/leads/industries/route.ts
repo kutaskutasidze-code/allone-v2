@@ -3,11 +3,15 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { parsePhonePrefixes } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -63,6 +67,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: result });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in GET /api/admin/leads/industries', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

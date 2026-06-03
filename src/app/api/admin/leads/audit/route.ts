@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 import { LEAD_STATUSES } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 
@@ -9,6 +11,8 @@ const STATUS_VALUES = new Set(LEAD_STATUSES.map(s => s.value));
 
 export async function GET(request: NextRequest) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const sp = request.nextUrl.searchParams;
     const page = Math.max(1, parseInt(sp.get('page') || '1', 10) || 1);
     const limit = Math.min(200, Math.max(10, parseInt(sp.get('limit') || '50', 10) || 50));
@@ -105,6 +109,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data, meta: { total: count ?? data.length, page, limit } });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in GET /api/admin/leads/audit', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

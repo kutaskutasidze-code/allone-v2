@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { INFOSHOP_DOMAIN, parsePhonePrefixes } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
+import { requireRole } from '@/lib/sales-auth';
+import { AuthError } from '@/lib/auth';
 
 // Bulk-distribute the unassigned pool round-robin across the chosen reps.
 // Only leads with status = 'new' are eligible. Optional filters narrow the pool
@@ -21,6 +23,8 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    await requireRole(['admin', 'supervisor']);
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user?.email) {
@@ -149,6 +153,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (err) {
+    if (err instanceof AuthError) return NextResponse.json({ error: err.message }, { status: err.status });
     logger.error('Unexpected error in POST /api/admin/leads/distribute', { error: String(err) });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

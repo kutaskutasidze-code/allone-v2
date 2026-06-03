@@ -48,17 +48,31 @@ export async function checkSalesAuth(): Promise<SalesAuthResult | null> {
   }
 }
 
+export type Role = 'admin' | 'supervisor' | 'salesperson';
+
 /**
- * Requires the current user to be a supervisor. Throws AuthError otherwise.
+ * Requires the current sales user to hold one of the given roles.
+ * Throws AuthError(401) if not a sales user, AuthError(403) if the role is insufficient.
  */
-export async function requireSupervisorAuth(): Promise<SalesAuthResult> {
+export async function requireRole(roles: Role[]): Promise<SalesAuthResult> {
   const res = await requireSalesAuth();
-  if (res.salesUser.role !== 'supervisor' && res.salesUser.role !== 'admin') {
-    throw new AuthError('Supervisor access required');
+  if (!roles.includes(res.salesUser.role as Role)) {
+    throw new AuthError('Insufficient role', 403);
   }
   return res;
 }
 
+/**
+ * Requires the current user to be a supervisor or admin. Throws AuthError otherwise.
+ */
+export async function requireSupervisorAuth(): Promise<SalesAuthResult> {
+  return requireRole(['admin', 'supervisor']);
+}
+
 export function isSupervisor(salesUser: SalesUser): boolean {
   return salesUser.role === 'supervisor' || salesUser.role === 'admin';
+}
+
+export function isAdmin(salesUser: SalesUser): boolean {
+  return salesUser.role === 'admin';
 }

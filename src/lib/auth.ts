@@ -5,9 +5,11 @@ import type { SupabaseClient, Session } from '@supabase/supabase-js';
  * Custom error class for authentication failures
  */
 export class AuthError extends Error {
-  constructor(message: string = 'Unauthorized') {
+  status: number;
+  constructor(message: string = 'Unauthorized', status: number = 401) {
     super(message);
     this.name = 'AuthError';
+    this.status = status;
   }
 }
 
