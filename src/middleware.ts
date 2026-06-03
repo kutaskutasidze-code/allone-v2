@@ -41,29 +41,10 @@ export async function middleware(request: NextRequest) {
 
   const isAuthenticated = !!user && !error;
 
-  // Admin allowlist (LEGACY). Retained only as a transition safety net so a
-  // current admin can't be locked out while authorization moves to
-  // sales_users.role. Removed at cutover once every admin has a role row.
-  const ADMIN_EMAILS = (
-    process.env.ADMIN_EMAILS
-      ? process.env.ADMIN_EMAILS.split(",")
-      : [
-          "nikoloz.gaprindashvili@allonelabs.com",
-          "luka.tsulukidze@allonelabs.com",
-          "luka.adamia@allonelabs.com",
-          "team@allonelabs.com",
-          "lizi.nodia@allonelabs.com",
-        ]
-  )
-    .map((e) => e.toLowerCase().trim())
-    .filter(Boolean);
-
   const userEmail = (user?.email || "").toLowerCase().trim();
-  const isAllowlistAdmin = ADMIN_EMAILS.includes(userEmail);
 
-  // Single source of truth: resolve the caller's role from sales_users (one
-  // indexed service-role lookup). Union with the legacy allowlist during the
-  // transition so no current admin is ever locked out.
+  // Single source of truth: resolve the caller's role from sales_users
+  // (one indexed service-role lookup).
   let dbRole: string | null = null;
   if (isAuthenticated && userEmail) {
     const roleUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/sales_users?email=eq.${encodeURIComponent(userEmail)}&select=role&limit=1`;
@@ -79,10 +60,10 @@ export async function middleware(request: NextRequest) {
       if (Array.isArray(rows) && rows[0]?.role) dbRole = rows[0].role as string;
     }
   }
-  // Coarse middleware gate. Admin = role 'admin' (or allowlist during transition).
-  // The admin-only-vs-supervisor split is enforced per-route by requireRole().
-  const isAdmin = dbRole === "admin" || isAllowlistAdmin;
-  const isSalesUser = dbRole !== null || isAllowlistAdmin;
+  // Authorization authority = sales_users.role. The admin-vs-supervisor split
+  // is enforced per-route by requireRole().
+  const isAdmin = dbRole === "admin";
+  const isSalesUser = dbRole !== null;
 
   // Protect admin routes (except login)
   if (
