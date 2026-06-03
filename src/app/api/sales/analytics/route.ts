@@ -113,13 +113,21 @@ export async function GET(request: NextRequest) {
     );
 
     const callsRange = async (since: Date) => {
-      // A "call" = a contacted/qualified/won/lost/callback status change today.
-      // We approximate with leads whose status_changed_at lies in the window.
-      const { count } = await scope(
-        supabase.from("leads").select("id", { count: "exact", head: true }),
-      )
-        .gte("status_changed_at", since.toISOString())
-        .neq("status", "new");
+      // Real calls logged by this rep in the window.
+      const { count } = await supabase
+        .from("calls")
+        .select("id", { count: "exact", head: true })
+        .eq("sales_user_id", salesUser.id)
+        .gte("occurred_at", since.toISOString());
+      return count ?? 0;
+    };
+    const connectedRange = async (since: Date) => {
+      const { count } = await supabase
+        .from("calls")
+        .select("id", { count: "exact", head: true })
+        .eq("sales_user_id", salesUser.id)
+        .eq("outcome", "connected")
+        .gte("occurred_at", since.toISOString());
       return count ?? 0;
     };
     const wonRange = async (since: Date) => {
@@ -131,15 +139,27 @@ export async function GET(request: NextRequest) {
       return count ?? 0;
     };
 
-    const [callsToday, callsWeek, callsMonth, wonToday, wonWeek, wonMonth] =
-      await Promise.all([
-        callsRange(dayStart),
-        callsRange(weekStart),
-        callsRange(monthStart),
-        wonRange(dayStart),
-        wonRange(weekStart),
-        wonRange(monthStart),
-      ]);
+    const [
+      callsToday,
+      callsWeek,
+      callsMonth,
+      connectedToday,
+      connectedWeek,
+      connectedMonth,
+      wonToday,
+      wonWeek,
+      wonMonth,
+    ] = await Promise.all([
+      callsRange(dayStart),
+      callsRange(weekStart),
+      callsRange(monthStart),
+      connectedRange(dayStart),
+      connectedRange(weekStart),
+      connectedRange(monthStart),
+      wonRange(dayStart),
+      wonRange(weekStart),
+      wonRange(monthStart),
+    ]);
 
     return NextResponse.json({
       data: {
@@ -160,6 +180,9 @@ export async function GET(request: NextRequest) {
           callsToday,
           callsWeek,
           callsMonth,
+          connectedToday,
+          connectedWeek,
+          connectedMonth,
           wonToday,
           wonWeek,
           wonMonth,

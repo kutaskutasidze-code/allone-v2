@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import {
   Users,
   UserPlus,
@@ -25,6 +26,7 @@ interface RepStats {
   industries: string[];
   assignedInPeriod: number;
   calledInPeriod: number;
+  connectedCalls: number;
   wonCount: number;
   wonRevenue: number;
   pipelineValue: number;
@@ -39,6 +41,7 @@ interface TeamData {
     activeReps: number;
     assignedInPeriod: number;
     calledInPeriod: number;
+    connectedCalls: number;
     wonCount: number;
     wonRevenue: number;
     pipelineValue: number;
@@ -769,9 +772,12 @@ export function TeamContent() {
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-medium text-[var(--ink-900)]">
+                      <Link
+                        href={`/admin/team/${rep.id}`}
+                        className="font-medium text-[var(--ink-900)] hover:underline"
+                      >
                         {rep.name}
-                      </span>
+                      </Link>
                       <RoleSelect
                         value={rep.role}
                         onChange={(v) => patchRep(rep.id, { role: v })}
@@ -803,6 +809,12 @@ export function TeamContent() {
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-[var(--ink-700)]">
                     {rep.calledInPeriod}
+                    {rep.calledInPeriod > 0 && (
+                      <span className="text-[var(--ink-400)]">
+                        {" "}
+                        ({rep.connectedCalls} conn)
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums">
                     <span

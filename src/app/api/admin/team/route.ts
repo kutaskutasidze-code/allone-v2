@@ -17,6 +17,7 @@ interface RepStats {
   industries: string[];
   assignedInPeriod: number;
   calledInPeriod: number;
+  connectedCalls: number;
   wonCount: number;
   wonRevenue: number;
   pipelineValue: number;
@@ -43,11 +44,33 @@ export async function GET(request: NextRequest) {
 
     const { data: allLeads, error: leadsErr } = await admin
       .from('leads')
-      .select('sales_user_id, status, value, won_at, assigned_at, status_changed_at');
+      .select('sales_user_id, status, value, won_at, assigned_at');
 
     if (leadsErr) {
       logger.error('Failed to load leads for team stats', { error: leadsErr.message });
       return NextResponse.json({ error: 'Failed to load leads' }, { status: 500 });
+    }
+
+    // Real call activity in the period, from the calls table. Supabase JS can't
+    // GROUP BY, so fetch the period's calls and tally per rep in JS.
+    const { data: periodCalls, error: callsErr } = await admin
+      .from('calls')
+      .select('sales_user_id, outcome')
+      .gte('occurred_at', period.start.toISOString())
+      .lt('occurred_at', period.end.toISOString());
+
+    if (callsErr) {
+      logger.error('Failed to load calls for team stats', { error: callsErr.message });
+      return NextResponse.json({ error: 'Failed to load calls' }, { status: 500 });
+    }
+
+    const callsByRep = new Map<string, { total: number; connected: number }>();
+    for (const c of periodCalls || []) {
+      if (!c.sales_user_id) continue;
+      const agg = callsByRep.get(c.sales_user_id) || { total: 0, connected: 0 };
+      agg.total++;
+      if (c.outcome === 'connected') agg.connected++;
+      callsByRep.set(c.sales_user_id, agg);
     }
 
     const periodStart = period.start.getTime();
@@ -56,6 +79,7 @@ export async function GET(request: NextRequest) {
 
     const reps: RepStats[] = (salesUsers || []).map(u => {
       const userLeads = leads.filter(l => l.sales_user_id === u.id);
+      const callAgg = callsByRep.get(u.id) || { total: 0, connected: 0 };
 
       const assignedInPeriod = userLeads.filter(l => {
         if (!l.assigned_at) return false;
@@ -63,12 +87,10 @@ export async function GET(request: NextRequest) {
         return t >= periodStart && t < periodEnd;
       }).length;
 
-      // "Called" = status changed in period to something other than 'new'.
-      const calledInPeriod = userLeads.filter(l => {
-        if (l.status === 'new' || !l.status_changed_at) return false;
-        const t = new Date(l.status_changed_at).getTime();
-        return t >= periodStart && t < periodEnd;
-      }).length;
+      // "Called" = real calls logged in the period. "Connected" = those that
+      // reached the prospect (outcome='connected').
+      const calledInPeriod = callAgg.total;
+      const connectedCalls = callAgg.connected;
 
       const wonInPeriod = userLeads.filter(l => {
         if (l.status !== 'won' || !l.won_at) return false;
@@ -82,7 +104,7 @@ export async function GET(request: NextRequest) {
         .filter(l => l.status === 'in_process' || l.status === 'interested' || l.status === 'proposal')
         .reduce((sum, l) => sum + Number(l.value || 0), 0);
 
-      const conversionRate = calledInPeriod > 0 ? wonCount / calledInPeriod : 0;
+      const conversionRate = connectedCalls > 0 ? wonCount / connectedCalls : 0;
 
       // Salesperson commission = 10% of own won revenue.
       // Supervisor / admin also gets a 5% override on EVERY OTHER rep's won revenue.
@@ -107,6 +129,7 @@ export async function GET(request: NextRequest) {
         industries: u.industries ?? [],
         assignedInPeriod,
         calledInPeriod,
+        connectedCalls,
         wonCount,
         wonRevenue: round2(wonRevenue),
         pipelineValue: round2(pipelineValue),
@@ -126,6 +149,7 @@ export async function GET(request: NextRequest) {
       activeReps: activeReps.length,
       assignedInPeriod: activeReps.reduce((s, r) => s + r.assignedInPeriod, 0),
       calledInPeriod: activeReps.reduce((s, r) => s + r.calledInPeriod, 0),
+      connectedCalls: activeReps.reduce((s, r) => s + r.connectedCalls, 0),
       wonCount: activeReps.reduce((s, r) => s + r.wonCount, 0),
       wonRevenue: round2(activeReps.reduce((s, r) => s + r.wonRevenue, 0)),
       pipelineValue: round2(activeReps.reduce((s, r) => s + r.pipelineValue, 0)),

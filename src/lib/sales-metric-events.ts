@@ -36,14 +36,6 @@ export async function fetchMetricEventsForUser(
   }> | null) ?? []) {
     const t = l.status_changed_at ?? l.created_at;
     if (
-      l.status === "in_process" ||
-      l.status === "interested" ||
-      l.status === "proposal" ||
-      l.status === "won"
-    ) {
-      events.push({ metric: "leads_contacted", occurred_at: t, value: 1 });
-    }
-    if (
       l.status === "interested" ||
       l.status === "proposal" ||
       l.status === "won"
@@ -58,6 +50,20 @@ export async function fetchMetricEventsForUser(
         value: l.value ?? 0,
       });
     }
+  }
+
+  // leads_contacted = real calls logged by this rep (one event per call).
+  const { data: calls } = await supabase
+    .from("calls")
+    .select("occurred_at")
+    .eq("sales_user_id", salesUserId)
+    .gte("occurred_at", since);
+  for (const c of (calls as Array<{ occurred_at: string }> | null) ?? []) {
+    events.push({
+      metric: "leads_contacted",
+      occurred_at: c.occurred_at,
+      value: 1,
+    });
   }
 
   // Demos: sent + engagement

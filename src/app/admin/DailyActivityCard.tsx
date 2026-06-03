@@ -25,6 +25,7 @@ interface RepActivity {
   dailyTarget: number;
   assigned: number;
   called: number;
+  connectedCalls: number;
   callbacks: number;
   byStatus: Record<string, number>;
 }
@@ -104,7 +105,12 @@ interface ApiResponse {
   data: {
     range: Range;
     reps: RepActivity[];
-    totals: { assigned: number; called: number; callbacks: number };
+    totals: {
+      assigned: number;
+      called: number;
+      connectedCalls: number;
+      callbacks: number;
+    };
   };
 }
 
@@ -173,16 +179,26 @@ export function DailyActivityCard() {
               <th className="text-right px-3 py-2.5 font-medium">
                 {showsAllTime ? "Assigned (lifetime)" : "Assigned"}
               </th>
-              <th className="text-right px-3 py-2.5 font-medium">
-                {showsAllTime ? "Touched" : "Called"}
+              <th
+                className="text-right px-3 py-2.5 font-medium"
+                title="Calls logged in this range"
+              >
+                {showsAllTime ? "Calls (all)" : "Calls"}
               </th>
               <th
                 className="text-right px-3 py-2.5 font-medium"
-                title="Callbacks scheduled for today"
+                title="Connected calls / connect rate"
+              >
+                <span className="hidden md:inline">Connect</span>
+                <span className="md:hidden">Conn</span>
+              </th>
+              <th
+                className="text-right px-3 py-2.5 font-medium"
+                title="Open follow-up tasks due today"
               >
                 <span className="inline-flex items-center gap-1.5">
                   <PhoneCall className="w-3 h-3 text-amber-500" />
-                  <span className="hidden md:inline">Callbacks</span>
+                  <span className="hidden md:inline">Tasks due</span>
                 </span>
               </th>
               {callStatuses.map((s) => (
@@ -206,7 +222,7 @@ export function DailyActivityCard() {
             {isLoading ? (
               <tr>
                 <td
-                  colSpan={4 + callStatuses.length + 1}
+                  colSpan={5 + callStatuses.length + 1}
                   className="px-5 py-8 text-center text-xs text-[var(--ink-400)]"
                 >
                   Loading…
@@ -215,7 +231,7 @@ export function DailyActivityCard() {
             ) : !data || data.reps.length === 0 ? (
               <tr>
                 <td
-                  colSpan={4 + callStatuses.length + 1}
+                  colSpan={5 + callStatuses.length + 1}
                   className="px-5 py-8 text-center text-xs text-[var(--ink-400)]"
                 >
                   No sales reps configured yet.
@@ -268,6 +284,19 @@ export function DailyActivityCard() {
                         {onTarget && <Check className="w-3.5 h-3.5" />}
                         {rep.called}
                       </span>
+                    </td>
+                    <td className="px-3 py-3 text-right tabular-nums text-[var(--ink-700)]">
+                      {rep.called > 0 ? (
+                        <span>
+                          {rep.connectedCalls}
+                          <span className="text-[var(--ink-400)]">
+                            {" "}
+                            ({Math.round((rep.connectedCalls / rep.called) * 100)}%)
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="text-[var(--ink-400)]">—</span>
+                      )}
                     </td>
                     <td className="px-3 py-3 text-right tabular-nums">
                       <span
