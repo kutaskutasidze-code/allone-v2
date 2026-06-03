@@ -52,6 +52,7 @@ export async function middleware(request: NextRequest) {
           "luka.tsulukidze@allonelabs.com",
           "luka.adamia@allonelabs.com",
           "team@allonelabs.com",
+          "lizi.nodia@allonelabs.com",
         ]
   )
     .map((e) => e.toLowerCase().trim())
