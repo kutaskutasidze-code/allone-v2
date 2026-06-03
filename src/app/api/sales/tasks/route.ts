@@ -1,4 +1,4 @@
-import { requireSalesAuth } from "@/lib/sales-auth";
+import { requireSalesAuth, canAccessLead } from "@/lib/sales-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   success,
@@ -96,11 +96,7 @@ export async function POST(request: Request) {
       return error("Failed to fetch lead");
     }
 
-    const canSeeAll =
-      salesUser.role === "supervisor" || salesUser.role === "admin";
-    const isOwn = lead.sales_user_id === salesUser.id;
-    const isUnassigned = !lead.sales_user_id;
-    if (!canSeeAll && !isOwn && !isUnassigned) return forbidden();
+    if (!canAccessLead(salesUser, lead)) return forbidden();
 
     const { data, error: dbError } = await supabase
       .from("tasks")

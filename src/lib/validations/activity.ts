@@ -14,6 +14,10 @@ export const CALL_OUTCOMES = [
   { value: 'not_interested', label: 'Not Interested' },
 ] as const;
 
+export const CALL_OUTCOME_LABELS: Record<string, string> = Object.fromEntries(
+  CALL_OUTCOMES.map((o) => [o.value, o.label]),
+);
+
 export const callOutcomeSchema = z.enum([
   'connected',
   'no_answer',

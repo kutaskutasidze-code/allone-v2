@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { LEAD_STATUS_LABELS } from '@/lib/validations/leads';
+import { CALL_OUTCOME_LABELS } from '@/lib/validations/activity';
 
 /**
  * A single normalized entry in a lead's unified activity timeline.
@@ -22,21 +23,6 @@ function statusLabel(s: string | null | undefined): string {
   if (!s) return '—';
   return LEAD_STATUS_LABELS[s] ?? s;
 }
-
-const CALL_OUTCOME_LABELS: Record<string, string> = {
-  connected: 'Connected',
-  no_answer: 'No answer',
-  voicemail: 'Voicemail',
-  busy: 'Busy',
-  wrong_number: 'Wrong number',
-  callback_requested: 'Callback requested',
-  not_interested: 'Not interested',
-};
-
-const CALL_DIRECTION_LABELS: Record<string, string> = {
-  outbound: 'Outbound',
-  inbound: 'Inbound',
-};
 
 const MEETING_STATUS_LABELS: Record<string, string> = {
   scheduled: 'scheduled',
@@ -249,7 +235,6 @@ export async function buildLeadStream(
       detail: r.notes ?? undefined,
       meta: {
         direction: r.direction,
-        directionLabel: CALL_DIRECTION_LABELS[r.direction] ?? r.direction,
         outcome: r.outcome,
         durationSeconds: r.duration_seconds,
       },

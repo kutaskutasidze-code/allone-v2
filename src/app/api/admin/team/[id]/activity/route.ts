@@ -4,19 +4,10 @@ import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
 import { getPeriod, round2 } from '@/lib/commissions';
 import { success, error, authErrorResponse, notFound } from '@/lib/api-response';
+import { CALL_OUTCOMES } from '@/lib/validations/activity';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
-
-const CALL_OUTCOMES = [
-  'connected',
-  'no_answer',
-  'voicemail',
-  'busy',
-  'wrong_number',
-  'callback_requested',
-  'not_interested',
-] as const;
 
 export async function GET(
   request: NextRequest,
@@ -53,21 +44,49 @@ export async function GET(
     const todayIso = startOfDay.toISOString();
     const tomorrowIso = endOfDay.toISOString();
 
-    // Calls for this rep in the period — grouped by outcome in JS.
-    const { data: periodCalls, error: callsErr } = await admin
-      .from('calls')
-      .select('outcome, occurred_at')
-      .eq('sales_user_id', id)
-      .gte('occurred_at', startIso)
-      .lt('occurred_at', endIso);
+    // Calls, open tasks, completed-task count, and won leads for this rep are
+    // all independent reads — run them concurrently.
+    const [
+      { data: periodCalls, error: callsErr },
+      { data: openTasks, error: openErr },
+      { count: tasksCompletedInPeriod },
+      { data: wonLeads, error: wonErr },
+    ] = await Promise.all([
+      admin
+        .from('calls')
+        .select('outcome, occurred_at')
+        .eq('sales_user_id', id)
+        .gte('occurred_at', startIso)
+        .lt('occurred_at', endIso),
+      admin
+        .from('tasks')
+        .select('due_at')
+        .eq('sales_user_id', id)
+        .eq('status', 'open'),
+      admin
+        .from('tasks')
+        .select('id', { count: 'exact', head: true })
+        .eq('sales_user_id', id)
+        .eq('status', 'done')
+        .gte('completed_at', startIso)
+        .lt('completed_at', endIso),
+      admin
+        .from('leads')
+        .select('value')
+        .eq('sales_user_id', id)
+        .eq('status', 'won')
+        .gte('won_at', startIso)
+        .lt('won_at', endIso),
+    ]);
 
     if (callsErr) {
       logger.error('Failed to load calls for rep activity', { error: callsErr.message, id });
       return error('Failed to load calls');
     }
 
+    // Calls grouped by outcome in JS.
     const byOutcome: Record<string, number> = {};
-    for (const o of CALL_OUTCOMES) byOutcome[o] = 0;
+    for (const o of CALL_OUTCOMES) byOutcome[o.value] = 0;
     let callsTotal = 0;
     let callsToday = 0;
     for (const c of periodCalls || []) {
@@ -77,19 +96,12 @@ export async function GET(
     }
     const connectedCalls = byOutcome['connected'] || 0;
 
-    // Tasks for this rep: open (due today / overdue / total open), plus
-    // completed within the period.
-    const { data: openTasks, error: openErr } = await admin
-      .from('tasks')
-      .select('due_at')
-      .eq('sales_user_id', id)
-      .eq('status', 'open');
-
     if (openErr) {
       logger.error('Failed to load open tasks for rep activity', { error: openErr.message, id });
       return error('Failed to load tasks');
     }
 
+    // Open tasks: due today / overdue / total open.
     let tasksOpen = 0;
     let tasksDueToday = 0;
     let tasksOverdue = 0;
@@ -99,23 +111,6 @@ export async function GET(
       if (t.due_at < nowIso) tasksOverdue++;
       if (t.due_at >= todayIso && t.due_at < tomorrowIso) tasksDueToday++;
     }
-
-    const { count: tasksCompletedInPeriod } = await admin
-      .from('tasks')
-      .select('id', { count: 'exact', head: true })
-      .eq('sales_user_id', id)
-      .eq('status', 'done')
-      .gte('completed_at', startIso)
-      .lt('completed_at', endIso);
-
-    // Won leads in the period for conversion.
-    const { data: wonLeads, error: wonErr } = await admin
-      .from('leads')
-      .select('value')
-      .eq('sales_user_id', id)
-      .eq('status', 'won')
-      .gte('won_at', startIso)
-      .lt('won_at', endIso);
 
     if (wonErr) {
       logger.error('Failed to load won leads for rep activity', { error: wonErr.message, id });

@@ -73,6 +73,21 @@ export function isSupervisor(salesUser: SalesUser): boolean {
   return salesUser.role === 'supervisor' || salesUser.role === 'admin';
 }
 
+/**
+ * Whether a sales user may act on a lead: supervisors/admins see every lead;
+ * a salesperson may act on their own leads or any still-unassigned lead.
+ */
+export function canAccessLead(
+  salesUser: SalesUser,
+  lead: { sales_user_id: string | null },
+): boolean {
+  return (
+    isSupervisor(salesUser) ||
+    lead.sales_user_id === salesUser.id ||
+    !lead.sales_user_id
+  );
+}
+
 export function isAdmin(salesUser: SalesUser): boolean {
   return salesUser.role === 'admin';
 }

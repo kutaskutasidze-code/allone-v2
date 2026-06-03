@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Activity,
 } from "lucide-react";
+import { formatRelative } from "@/lib/utils";
 
 interface StreamEvent {
   id: string;
@@ -59,19 +60,6 @@ const KIND_TINT: Record<StreamEvent["kind"], string> = {
   email: "bg-sky-50 text-sky-600",
   demo: "bg-indigo-50 text-indigo-600",
   note: "bg-[var(--bg-surface-alt)] text-[var(--ink-500)]",
-};
-
-const formatRelative = (iso: string) => {
-  const d = new Date(iso);
-  const diff = Date.now() - d.getTime();
-  const minutes = Math.floor(diff / 60_000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return d.toLocaleDateString();
 };
 
 const formatAbsolute = (iso: string) =>

@@ -11,6 +11,7 @@ import {
   Clock,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { CALL_OUTCOME_LABELS } from "@/lib/validations/activity";
 
 const PERIODS = [
   { value: "month", label: "This Month" },
@@ -18,16 +19,6 @@ const PERIODS = [
   { value: "quarter", label: "This Quarter" },
   { value: "all", label: "All Time" },
 ];
-
-const OUTCOME_LABELS: Record<string, string> = {
-  connected: "Connected",
-  no_answer: "No answer",
-  voicemail: "Voicemail",
-  busy: "Busy",
-  wrong_number: "Wrong number",
-  callback_requested: "Callback requested",
-  not_interested: "Not interested",
-};
 
 const OUTCOME_ORDER = [
   "connected",
@@ -238,7 +229,7 @@ export default function RepActivityPage({
                         className="border-t border-[var(--allone-line-soft)] first:border-t-0"
                       >
                         <td className="px-5 py-2.5 text-[var(--ink-700)]">
-                          {OUTCOME_LABELS[o] || o}
+                          {CALL_OUTCOME_LABELS[o] || o}
                         </td>
                         <td className="px-5 py-2.5 text-right tabular-nums text-[var(--ink-900)] font-medium">
                           {count}

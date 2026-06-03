@@ -25,6 +25,8 @@ import {
   LEAD_STATUS_STYLES,
   LOST_REASONS,
 } from "@/lib/validations/leads";
+import { CALL_OUTCOME_LABELS } from "@/lib/validations/activity";
+import { formatRelative } from "@/lib/utils";
 import type { Lead, LeadStatus } from "@/types/database";
 
 type Role = "admin" | "sales";
@@ -42,16 +44,6 @@ interface CallRow {
   occurred_at: string;
 }
 
-const CALL_OUTCOME_LABELS: Record<string, string> = {
-  connected: "Connected",
-  no_answer: "No answer",
-  voicemail: "Voicemail",
-  busy: "Busy",
-  wrong_number: "Wrong number",
-  callback_requested: "Callback requested",
-  not_interested: "Not interested",
-};
-
 const LOST_REASON_LABELS: Record<string, string> = Object.fromEntries(
   LOST_REASONS.map((r) => [r.value, r.label]),
 );
@@ -64,19 +56,6 @@ const formatDate = (iso: string) =>
     hour: "numeric",
     minute: "2-digit",
   });
-
-const formatRelative = (iso: string) => {
-  const d = new Date(iso);
-  const diff = Date.now() - d.getTime();
-  const minutes = Math.floor(diff / 60_000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return d.toLocaleDateString();
-};
 
 const INPUT_CLS =
   "w-full px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-900)] focus:border-gray-400 focus:outline-none transition-colors";

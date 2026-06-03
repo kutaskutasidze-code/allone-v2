@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Users, Phone, Mail, TrendingUp, Target, Globe } from "lucide-react";
+import { LEAD_STATUS_LABELS, LEAD_STATUS_COLORS } from "@/lib/validations/leads";
 
 interface AnalyticsData {
   overview: {
@@ -38,26 +39,6 @@ const SERVICE_NAMES: Record<string, string> = {
   website: "Website",
   consulting: "Consulting",
   unclassified: "Unclassified",
-};
-
-const STATUS_NAMES: Record<string, string> = {
-  new: "New",
-  in_process: "In Process",
-  interested: "Interested",
-  proposal: "Proposal",
-  won: "Won",
-  lost: "Lost",
-  on_hold: "On Hold",
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  new: "#3b82f6",
-  in_process: "#eab308",
-  interested: "#a855f7",
-  proposal: "#6366f1",
-  won: "#22c55e",
-  lost: "#9ca3af",
-  on_hold: "#f97316",
 };
 
 function GoalCard({
@@ -320,8 +301,8 @@ export default function AnalyticsPage() {
           </div>
           <DistributionBar
             data={data.leads.byStatus}
-            names={STATUS_NAMES}
-            colors={STATUS_COLORS}
+            names={LEAD_STATUS_LABELS}
+            colors={LEAD_STATUS_COLORS}
           />
         </div>
 
