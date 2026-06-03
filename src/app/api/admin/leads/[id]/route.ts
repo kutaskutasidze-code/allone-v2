@@ -5,6 +5,7 @@ import { updateLeadSchema } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
+import { success, error, notFound, authErrorResponse } from '@/lib/api-response';
 
 export async function GET(
   request: NextRequest,
@@ -16,25 +17,23 @@ export async function GET(
     const { id } = await params;
 
     const admin = createAdminClient();
-    const { data, error } = await admin
+    const { data, error: dbError } = await admin
       .from('leads')
-      .select('*, sales_user:sales_users(id, name, email)')
+      .select('*, sales_user:sales_users!leads_sales_user_id_fkey(id, name, email)')
       .eq('id', id)
       .single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json({ success: false, error: 'Lead not found' }, { status: 404 });
-      }
-      logger.error('Failed to fetch lead', { error: error.message, id });
-      return NextResponse.json({ success: false, error: 'Failed to fetch lead' }, { status: 500 });
+    if (dbError) {
+      if (dbError.code === 'PGRST116') return notFound('Lead');
+      logger.error('Failed to fetch lead', { error: dbError.message, id });
+      return error('Failed to fetch lead');
     }
 
-    return NextResponse.json({ success: true, data });
-  } catch (error) {
-    if (error instanceof AuthError) return NextResponse.json({ error: error.message }, { status: error.status });
-    logger.error('Lead fetch error', { error: String(error) });
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return success(data);
+  } catch (err) {
+    if (err instanceof AuthError) return authErrorResponse(err);
+    logger.error('Lead fetch error', { error: String(err) });
+    return error('Internal server error');
   }
 }
 
