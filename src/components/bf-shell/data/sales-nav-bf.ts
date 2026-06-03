@@ -35,6 +35,7 @@ export const salesNavBF: NavConfig = {
     {
       label: "Overview",
       items: [
+        { label: "Pipeline", href: "/sales/pipeline", icon: "trending-up" },
         { label: "Call Mode", href: "/sales/call", icon: "message-circle" },
         {
           label: "Today's Queue",
@@ -83,6 +84,7 @@ export const adminNavBF: NavConfig = {
     {
       label: "Leads",
       items: [
+        { label: "Pipeline", href: "/admin/pipeline", icon: "trending-up" },
         { label: "All Leads", href: "/admin/leads", icon: "user-check" },
         { label: "Assign Leads", href: "/admin/leads/assign", icon: "compass" },
         { label: "Hot Lines", href: "/admin/leads/hotlines", icon: "plane" },
