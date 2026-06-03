@@ -709,9 +709,12 @@ function AdminLeadsPageContent() {
                 {/* Lead info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-medium text-sm text-[var(--ink-900)] truncate">
+                    <Link
+                      href={`/admin/leads/${lead.id}`}
+                      className="font-medium text-sm text-[var(--ink-900)] truncate hover:underline"
+                    >
                       {lead.company || lead.name}
-                    </h3>
+                    </Link>
                     {lead.industry && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium">
                         {lead.industry}

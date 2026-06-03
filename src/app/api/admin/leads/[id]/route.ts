@@ -6,6 +6,38 @@ import { logger } from '@/lib/logger';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireRole(['admin', 'supervisor']);
+
+    const { id } = await params;
+
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from('leads')
+      .select('*, sales_user:sales_users(id, name, email)')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ success: false, error: 'Lead not found' }, { status: 404 });
+      }
+      logger.error('Failed to fetch lead', { error: error.message, id });
+      return NextResponse.json({ success: false, error: 'Failed to fetch lead' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (error) {
+    if (error instanceof AuthError) return NextResponse.json({ error: error.message }, { status: error.status });
+    logger.error('Lead fetch error', { error: String(error) });
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

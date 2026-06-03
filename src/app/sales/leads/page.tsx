@@ -507,9 +507,12 @@ function LeadsPageContent() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-medium text-sm text-[var(--ink-900)] truncate">
+                      <Link
+                        href={`/sales/leads/${l.id as string}`}
+                        className="font-medium text-sm text-[var(--ink-900)] truncate hover:underline"
+                      >
                         {(l.company || l.name) as string}
-                      </h3>
+                      </Link>
                       {l.industry && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-medium">
                           {l.industry as string}
