@@ -33,7 +33,7 @@ function formatDate(d: string) {
   return new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
-const CALL_STATUSES = ['contacted', 'callback', 'qualified', 'not_interested', 'unavailable'] as const;
+const CALL_STATUSES = ['in_process', 'interested', 'proposal', 'on_hold', 'lost'] as const;
 
 export default function LeadsAnalyticsPage() {
   const [data, setData] = useState<DailyRow[]>([]);
@@ -164,11 +164,11 @@ export default function LeadsAnalyticsPage() {
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
                 />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="contacted" stackId="calls" fill={LEAD_STATUS_COLORS.contacted} name="Contacted" />
-                <Bar dataKey="callback" stackId="calls" fill={LEAD_STATUS_COLORS.callback} name="Callback" />
-                <Bar dataKey="qualified" stackId="calls" fill={LEAD_STATUS_COLORS.qualified} name="Qualified" />
-                <Bar dataKey="not_interested" stackId="calls" fill={LEAD_STATUS_COLORS.not_interested} name="Not Interested" />
-                <Bar dataKey="unavailable" stackId="calls" fill={LEAD_STATUS_COLORS.unavailable} name="Unavailable" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="in_process" stackId="calls" fill={LEAD_STATUS_COLORS.in_process} name="In Process" />
+                <Bar dataKey="interested" stackId="calls" fill={LEAD_STATUS_COLORS.interested} name="Interested" />
+                <Bar dataKey="proposal" stackId="calls" fill={LEAD_STATUS_COLORS.proposal} name="Proposal" />
+                <Bar dataKey="on_hold" stackId="calls" fill={LEAD_STATUS_COLORS.on_hold} name="On Hold" />
+                <Bar dataKey="lost" stackId="calls" fill={LEAD_STATUS_COLORS.lost} name="Lost" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

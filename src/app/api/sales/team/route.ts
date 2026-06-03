@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
       const lostCount = userLeads.filter(l => l.status === 'lost').length;
       const pipelineValue = userLeads
-        .filter(l => l.status === 'contacted' || l.status === 'qualified')
+        .filter(l => l.status === 'in_process' || l.status === 'interested' || l.status === 'proposal')
         .reduce((sum, l) => sum + Number(l.value || 0), 0);
 
       const conversionRate = leadCount > 0 ? wonCount / leadCount : 0;

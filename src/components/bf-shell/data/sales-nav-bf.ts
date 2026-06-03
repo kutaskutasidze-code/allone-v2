@@ -41,6 +41,7 @@ export const salesNavBF: NavConfig = {
           href: "/sales/leads?scope=today",
           icon: "calendar",
         },
+        { label: "Follow-ups", href: "/sales/follow-ups", icon: "calendar" },
         { label: "Analytics", href: "/sales/analytics", icon: "bar-chart-3" },
       ],
     },

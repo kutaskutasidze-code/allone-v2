@@ -57,7 +57,7 @@ export const TOOLS = [
       properties: {
         status: {
           type: "string",
-          enum: ["new", "contacted", "qualified", "won", "lost", "all"],
+          enum: ["new", "in_process", "interested", "proposal", "won", "lost", "on_hold", "all"],
         },
         limit: { type: "number" },
       },
@@ -78,7 +78,7 @@ export const TOOLS = [
         },
         status: {
           type: "string",
-          enum: ["new", "contacted", "qualified", "won", "lost"],
+          enum: ["new", "in_process", "interested", "proposal", "won", "lost", "on_hold"],
         },
       },
       required: ["status"],
@@ -235,7 +235,7 @@ export const TOOLS = [
   {
     name: "export_sales_report",
     description:
-      "Generate a sales report .xlsx with four sheets: Deals (every lead with owner + status + value), Summary (by-status totals + conversion rates), By Week (last 12 weeks of new/contacted/qualified/won counts), and Team & Calls (per-rep daily-target attainment). Returns a signed download URL the user can click. Use when the user says 'export', 'generate report', 'weekly numbers', 'how are we doing this week', etc. Honors the caller's role: salespeople get their own pipeline; admins/supervisors get all reps.",
+      "Generate a sales report .xlsx with four sheets: Deals (every lead with owner + status + value), Summary (by-status totals + conversion rates), By Week (last 12 weeks of new/in-process/interested/won counts), and Team & Calls (per-rep daily-target attainment). Returns a signed download URL the user can click. Use when the user says 'export', 'generate report', 'weekly numbers', 'how are we doing this week', etc. Honors the caller's role: salespeople get their own pipeline; admins/supervisors get all reps.",
     input_schema: {
       type: "object",
       properties: {
@@ -634,13 +634,12 @@ async function exportSalesReport(
   const summary = wb.addWorksheet("Summary");
   const statusOrder = [
     "new",
-    "contacted",
-    "callback",
-    "qualified",
+    "in_process",
+    "interested",
+    "proposal",
     "won",
     "lost",
-    "not_interested",
-    "unavailable",
+    "on_hold",
   ];
   const byStatus = new Map<string, { count: number; value: number }>();
   for (const s of statusOrder) byStatus.set(s, { count: 0, value: 0 });
@@ -652,8 +651,8 @@ async function exportSalesReport(
   }
   const total = leads.length;
   const wonCount = byStatus.get("won")?.count ?? 0;
-  const contactedCount = byStatus.get("contacted")?.count ?? 0;
-  const qualifiedCount = byStatus.get("qualified")?.count ?? 0;
+  const contactedCount = byStatus.get("in_process")?.count ?? 0;
+  const qualifiedCount = byStatus.get("interested")?.count ?? 0;
   summary.columns = [
     { header: "Status", key: "status", width: 20 },
     { header: "Count", key: "count", width: 10 },
@@ -672,7 +671,7 @@ async function exportSalesReport(
   summary.addRow({});
   summary.addRow({ status: "Total leads", count: total });
   summary.addRow({
-    status: "Conversion (contacted→won)",
+    status: "Conversion (in process→won)",
     pct: contactedCount > 0 ? wonCount / contactedCount : 0,
   });
   summary.addRow({
@@ -688,8 +687,8 @@ async function exportSalesReport(
   byWeek.columns = [
     { header: "Week starting", key: "start", width: 16 },
     { header: "New", key: "n", width: 8 },
-    { header: "Contacted", key: "c", width: 12 },
-    { header: "Qualified", key: "q", width: 12 },
+    { header: "In Process", key: "c", width: 12 },
+    { header: "Interested", key: "q", width: 12 },
     { header: "Won", key: "w", width: 8 },
     { header: "Won Value", key: "wv", width: 14 },
   ];
@@ -723,12 +722,18 @@ async function exportSalesReport(
     if (!b) continue;
     b.n += 1;
     if (
-      l.status === "contacted" ||
-      l.status === "qualified" ||
+      l.status === "in_process" ||
+      l.status === "interested" ||
+      l.status === "proposal" ||
       l.status === "won"
     )
       b.c += 1;
-    if (l.status === "qualified" || l.status === "won") b.q += 1;
+    if (
+      l.status === "interested" ||
+      l.status === "proposal" ||
+      l.status === "won"
+    )
+      b.q += 1;
     if (l.status === "won") {
       b.w += 1;
       b.wv += l.value ?? 0;
@@ -749,8 +754,8 @@ async function exportSalesReport(
     { header: "Role", key: "role", width: 12 },
     { header: "Daily target", key: "target", width: 12 },
     { header: "Assigned (total)", key: "assigned", width: 16 },
-    { header: "Contacted+", key: "touched", width: 12 },
-    { header: "Qualified", key: "q", width: 10 },
+    { header: "Touched", key: "touched", width: 12 },
+    { header: "Interested+", key: "q", width: 10 },
     { header: "Won", key: "w", width: 8 },
     { header: "Won value", key: "wv", width: 14 },
     { header: "Conversion", key: "conv", width: 12 },
@@ -761,7 +766,10 @@ async function exportSalesReport(
     const assigned = own.length;
     const touched = own.filter((l) => l.status !== "new").length;
     const q = own.filter(
-      (l) => l.status === "qualified" || l.status === "won",
+      (l) =>
+        l.status === "interested" ||
+        l.status === "proposal" ||
+        l.status === "won",
     ).length;
     const w = own.filter((l) => l.status === "won").length;
     const wv = own

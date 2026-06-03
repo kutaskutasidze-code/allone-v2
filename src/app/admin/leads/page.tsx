@@ -8,7 +8,6 @@ import {
   Search,
   X,
   Users,
-  ChevronDown,
   MessageSquare,
   ExternalLink,
   Phone,
@@ -21,9 +20,9 @@ import {
   Moon,
 } from "lucide-react";
 import { EmptyState } from "@/components/admin";
+import { StatusDropdown } from "@/components/leads";
 import {
   LEAD_STATUSES,
-  LEAD_STATUS_STYLES,
   HOTLINE_PHONE_PREFIX_PARAM,
   INFOSHOP_PATTERN,
 } from "@/lib/validations/leads";
@@ -75,52 +74,6 @@ function LeadCardSkeleton() {
           <div className="h-6 w-20 rounded-full bg-[var(--bg-sunken)]" />
         </div>
       </div>
-    </div>
-  );
-}
-
-function StatusDropdown({
-  leadId,
-  currentStatus,
-  onUpdate,
-}: {
-  leadId: string;
-  currentStatus: string;
-  onUpdate: (id: string, status: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer ${LEAD_STATUS_STYLES[currentStatus]}`}
-      >
-        {LEAD_STATUSES.find((s) => s.value === currentStatus)?.label}
-        <ChevronDown className="w-3 h-3" />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 z-20 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-md)] shadow-black/[0.08] py-1 min-w-[120px]">
-            {LEAD_STATUSES.map((s) => (
-              <button
-                key={s.value}
-                onClick={() => {
-                  onUpdate(leadId, s.value);
-                  setOpen(false);
-                }}
-                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--bg-surface-alt)] transition-colors ${currentStatus === s.value ? "font-semibold" : ""}`}
-              >
-                <span
-                  className={`inline-block w-2 h-2 rounded-full mr-2 ${LEAD_STATUS_STYLES[s.value]?.split(" ")[0]}`}
-                />
-                {s.label}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 }
@@ -858,9 +811,8 @@ function AdminLeadsPageContent() {
                 {/* Actions */}
                 <div className="flex items-center gap-2 shrink-0">
                   <StatusDropdown
-                    leadId={lead.id}
                     currentStatus={lead.status}
-                    onUpdate={(id, status) => updateLead(id, { status })}
+                    onSelect={(status) => updateLead(lead.id, { status })}
                   />
                   <LeadNotes
                     leadId={lead.id}

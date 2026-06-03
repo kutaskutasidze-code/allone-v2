@@ -46,13 +46,12 @@ interface DashboardContentProps {
     recentLeads: LeadWithSalesUser[];
     stats: {
       new: number;
-      contacted: number;
-      callback: number;
-      qualified: number;
+      in_process: number;
+      interested: number;
+      proposal: number;
       won: number;
       lost: number;
-      not_interested: number;
-      unavailable: number;
+      on_hold: number;
       totalValue: number;
     };
   };

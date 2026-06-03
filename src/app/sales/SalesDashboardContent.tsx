@@ -33,8 +33,8 @@ interface SalesDashboardContentProps {
   salesUser: SalesUser;
   stats: {
     new: number;
-    contacted: number;
-    qualified: number;
+    in_process: number;
+    interested: number;
     won: number;
     lost: number;
     pipelineValue: number;
@@ -183,7 +183,7 @@ export function SalesDashboardContent({
   telegramStatus,
 }: SalesDashboardContentProps) {
   const totalLeads =
-    stats.new + stats.contacted + stats.qualified + stats.won + stats.lost;
+    stats.new + stats.in_process + stats.interested + stats.won + stats.lost;
   const conversionRate =
     totalLeads > 0 ? ((stats.won / totalLeads) * 100).toFixed(1) : "0";
   const callTarget = dailyTarget;
@@ -194,14 +194,14 @@ export function SalesDashboardContent({
   const statsGrid = [
     { label: "New", count: stats.new, href: "/sales/leads?status=new" },
     {
-      label: "Contacted",
-      count: stats.contacted,
-      href: "/sales/leads?status=contacted",
+      label: "In Process",
+      count: stats.in_process,
+      href: "/sales/leads?status=in_process",
     },
     {
-      label: "Qualified",
-      count: stats.qualified,
-      href: "/sales/leads?status=qualified",
+      label: "Interested",
+      count: stats.interested,
+      href: "/sales/leads?status=interested",
     },
     { label: "Won", count: stats.won, href: "/sales/leads?status=won" },
     { label: "Lost", count: stats.lost, href: "/sales/leads?status=lost" },
@@ -445,9 +445,9 @@ export function SalesDashboardContent({
             { href: "/sales/leads/new", icon: Plus, label: "Add new lead" },
             { href: "/sales/leads", icon: Users, label: "View all leads" },
             {
-              href: "/sales/leads?status=qualified",
+              href: "/sales/leads?status=interested",
               icon: TrendingUp,
-              label: "Qualified leads",
+              label: "Interested leads",
             },
             {
               href: "/sales/leads?status=won",

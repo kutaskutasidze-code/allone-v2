@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
       const wonRevenue = wonInPeriod.reduce((sum, l) => sum + Number(l.value || 0), 0);
 
       const pipelineValue = userLeads
-        .filter(l => l.status === 'contacted' || l.status === 'qualified' || l.status === 'callback')
+        .filter(l => l.status === 'in_process' || l.status === 'interested' || l.status === 'proposal')
         .reduce((sum, l) => sum + Number(l.value || 0), 0);
 
       const conversionRate = calledInPeriod > 0 ? wonCount / calledInPeriod : 0;

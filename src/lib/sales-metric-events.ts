@@ -19,9 +19,10 @@ export async function fetchMetricEventsForUser(
   ).toISOString();
   const events: MetricEvent[] = [];
 
-  // Leads: contacted / qualified / won. Use status_changed_at — updated_at
-  // gets touched by every patch (including bulk imports), which would lump
-  // 30k untouched leads into "today" the next time the importer runs.
+  // Leads: in_process / interested / proposal / won. Use status_changed_at —
+  // updated_at gets touched by every patch (including bulk imports), which
+  // would lump 30k untouched leads into "today" the next time the importer
+  // runs.
   const { data: leads } = await supabase
     .from("leads")
     .select("id, status, value, status_changed_at, created_at")
@@ -35,13 +36,18 @@ export async function fetchMetricEventsForUser(
   }> | null) ?? []) {
     const t = l.status_changed_at ?? l.created_at;
     if (
-      l.status === "contacted" ||
-      l.status === "qualified" ||
+      l.status === "in_process" ||
+      l.status === "interested" ||
+      l.status === "proposal" ||
       l.status === "won"
     ) {
       events.push({ metric: "leads_contacted", occurred_at: t, value: 1 });
     }
-    if (l.status === "qualified" || l.status === "won") {
+    if (
+      l.status === "interested" ||
+      l.status === "proposal" ||
+      l.status === "won"
+    ) {
       events.push({ metric: "leads_qualified", occurred_at: t, value: 1 });
     }
     if (l.status === "won") {

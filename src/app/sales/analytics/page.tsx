@@ -42,18 +42,22 @@ const SERVICE_NAMES: Record<string, string> = {
 
 const STATUS_NAMES: Record<string, string> = {
   new: "New",
-  contacted: "Contacted",
-  qualified: "Qualified",
+  in_process: "In Process",
+  interested: "Interested",
+  proposal: "Proposal",
   won: "Won",
   lost: "Lost",
+  on_hold: "On Hold",
 };
 
 const STATUS_COLORS: Record<string, string> = {
   new: "#3b82f6",
-  contacted: "#f59e0b",
-  qualified: "#8b5cf6",
-  won: "#10b981",
-  lost: "#6b7280",
+  in_process: "#eab308",
+  interested: "#a855f7",
+  proposal: "#6366f1",
+  won: "#22c55e",
+  lost: "#9ca3af",
+  on_hold: "#f97316",
 };
 
 function GoalCard({

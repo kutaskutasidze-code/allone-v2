@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const leadStatusSchema = z.enum(['new', 'contacted', 'callback', 'qualified', 'won', 'lost', 'not_interested', 'unavailable']);
+export const leadStatusSchema = z.enum(['new', 'in_process', 'interested', 'proposal', 'won', 'lost', 'on_hold']);
 
 export const leadServiceSchema = z.enum(['chatbots', 'custom_ai', 'automation', 'website', 'consulting']);
 
@@ -21,9 +21,29 @@ export const createLeadSchema = z.object({
 
 // IMPORTANT: each `.optional().transform(...)` must preserve `undefined` for fields the
 // client did not send. If the transform returned `null` for `undefined`, then a PATCH
-// like `{ status: 'contacted' }` would also wipe company/notes/email/phone to NULL.
+// like `{ status: 'in_process' }` would also wipe company/notes/email/phone to NULL.
 const emptyToNull = <T extends string | undefined>(val: T) =>
   val === undefined ? undefined : (val === '' ? null : val);
+
+export const lostReasonSchema = z.enum([
+  'not_interested',
+  'no_budget',
+  'unreachable',
+  'bad_fit',
+  'competitor',
+  'timing',
+  'other',
+]);
+
+export const LOST_REASONS = [
+  { value: 'not_interested', label: 'Not Interested' },
+  { value: 'no_budget', label: 'No Budget' },
+  { value: 'unreachable', label: 'Unreachable' },
+  { value: 'bad_fit', label: 'Bad Fit' },
+  { value: 'competitor', label: 'Competitor' },
+  { value: 'timing', label: 'Timing' },
+  { value: 'other', label: 'Other' },
+] as const;
 
 export const updateLeadSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255, 'Name too long').optional(),
@@ -34,9 +54,9 @@ export const updateLeadSchema = z.object({
   value: z.number().min(0, 'Value cannot be negative').optional(),
   source: z.string().max(100).optional().transform(emptyToNull),
   notes: z.string().optional().transform(emptyToNull),
-  // Accept an ISO date/datetime string or `null` to clear. Empty string also clears.
-  callback_at: z.union([z.string(), z.null()]).optional()
-    .transform(v => (v === '' || v === undefined) ? undefined : v),
+  // Accept a lost-reason enum value, or '' / null to clear. undefined leaves it untouched.
+  lost_reason: z.union([lostReasonSchema, z.literal(''), z.null()]).optional()
+    .transform(v => v === undefined ? undefined : (v === '' ? null : v)),
 });
 
 export type CreateLead = z.infer<typeof createLeadSchema>;
@@ -44,13 +64,12 @@ export type UpdateLead = z.infer<typeof updateLeadSchema>;
 
 export const LEAD_STATUSES = [
   { value: 'new', label: 'New' },
-  { value: 'contacted', label: 'Contacted' },
-  { value: 'callback', label: 'Callback' },
-  { value: 'qualified', label: 'Qualified' },
+  { value: 'in_process', label: 'In Process' },
+  { value: 'interested', label: 'Interested' },
+  { value: 'proposal', label: 'Proposal' },
   { value: 'won', label: 'Won' },
   { value: 'lost', label: 'Lost' },
-  { value: 'not_interested', label: 'Not Interested' },
-  { value: 'unavailable', label: 'Unavailable' },
+  { value: 'on_hold', label: 'On Hold' },
 ] as const;
 
 export const LEAD_SERVICES = [
@@ -116,35 +135,53 @@ export const LEAD_SOURCES = [
   'Other',
 ] as const;
 
+// Supersets: the new 7 status keys PLUS the legacy keys (contacted/callback/
+// qualified/not_interested/unavailable) so historical lead_status_history rows
+// still render with sensible styling.
 export const LEAD_STATUS_STYLES: Record<string, string> = {
   new: 'bg-blue-100 text-blue-700',
+  in_process: 'bg-yellow-100 text-yellow-700',
+  interested: 'bg-purple-100 text-purple-700',
+  proposal: 'bg-indigo-100 text-indigo-700',
+  won: 'bg-green-100 text-green-700',
+  lost: 'bg-gray-100 text-gray-500',
+  on_hold: 'bg-orange-100 text-orange-700',
+  // legacy
   contacted: 'bg-yellow-100 text-yellow-700',
   callback: 'bg-teal-100 text-teal-700',
   qualified: 'bg-purple-100 text-purple-700',
-  won: 'bg-green-100 text-green-700',
-  lost: 'bg-gray-100 text-gray-500',
   not_interested: 'bg-red-100 text-red-700',
   unavailable: 'bg-orange-100 text-orange-700',
 };
 
 export const LEAD_STATUS_LABELS: Record<string, string> = {
   new: 'New',
+  in_process: 'In Process',
+  interested: 'Interested',
+  proposal: 'Proposal',
+  won: 'Won',
+  lost: 'Lost',
+  on_hold: 'On Hold',
+  // legacy
   contacted: 'Contacted',
   callback: 'Callback',
   qualified: 'Qualified',
-  won: 'Won',
-  lost: 'Lost',
   not_interested: 'Not Interested',
   unavailable: 'Unavailable',
 };
 
 export const LEAD_STATUS_COLORS: Record<string, string> = {
   new: '#3b82f6',
+  in_process: '#eab308',
+  interested: '#a855f7',
+  proposal: '#6366f1',
+  won: '#22c55e',
+  lost: '#9ca3af',
+  on_hold: '#f97316',
+  // legacy
   contacted: '#eab308',
   callback: '#14b8a6',
   qualified: '#a855f7',
-  won: '#22c55e',
-  lost: '#9ca3af',
   not_interested: '#ef4444',
   unavailable: '#f97316',
 };

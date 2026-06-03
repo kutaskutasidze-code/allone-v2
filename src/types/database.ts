@@ -323,10 +323,11 @@ export interface Database {
           email: string | null;
           phone: string | null;
           company: string | null;
-          status: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
+          status: 'new' | 'in_process' | 'interested' | 'proposal' | 'won' | 'lost' | 'on_hold';
           value: number;
           source: string | null;
           notes: string | null;
+          lost_reason: string | null;
           // Extended fields for lead generation
           company_name_local: string | null;
           website: string | null;
@@ -359,10 +360,11 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           company?: string | null;
-          status?: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
+          status?: 'new' | 'in_process' | 'interested' | 'proposal' | 'won' | 'lost' | 'on_hold';
           value?: number;
           source?: string | null;
           notes?: string | null;
+          lost_reason?: string | null;
           company_name_local?: string | null;
           website?: string | null;
           industry?: string | null;
@@ -394,10 +396,11 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           company?: string | null;
-          status?: 'new' | 'contacted' | 'callback' | 'qualified' | 'won' | 'lost' | 'not_interested' | 'unavailable';
+          status?: 'new' | 'in_process' | 'interested' | 'proposal' | 'won' | 'lost' | 'on_hold';
           value?: number;
           source?: string | null;
           notes?: string | null;
+          lost_reason?: string | null;
           company_name_local?: string | null;
           website?: string | null;
           industry?: string | null;
@@ -720,6 +723,129 @@ export interface Database {
           created_at?: string;
         };
       };
+      calls: {
+        Row: {
+          id: string;
+          lead_id: string;
+          sales_user_id: string | null;
+          direction: 'outbound' | 'inbound';
+          outcome: 'connected' | 'no_answer' | 'voicemail' | 'busy' | 'wrong_number' | 'callback_requested' | 'not_interested';
+          duration_seconds: number | null;
+          notes: string | null;
+          occurred_at: string;
+          external_call_id: string | null;
+          recording_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          lead_id: string;
+          sales_user_id?: string | null;
+          direction?: 'outbound' | 'inbound';
+          outcome: 'connected' | 'no_answer' | 'voicemail' | 'busy' | 'wrong_number' | 'callback_requested' | 'not_interested';
+          duration_seconds?: number | null;
+          notes?: string | null;
+          occurred_at?: string;
+          external_call_id?: string | null;
+          recording_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          lead_id?: string;
+          sales_user_id?: string | null;
+          direction?: 'outbound' | 'inbound';
+          outcome?: 'connected' | 'no_answer' | 'voicemail' | 'busy' | 'wrong_number' | 'callback_requested' | 'not_interested';
+          duration_seconds?: number | null;
+          notes?: string | null;
+          occurred_at?: string;
+          external_call_id?: string | null;
+          recording_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      tasks: {
+        Row: {
+          id: string;
+          lead_id: string;
+          sales_user_id: string | null;
+          title: string;
+          due_at: string | null;
+          status: 'open' | 'done' | 'cancelled';
+          completed_at: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          lead_id: string;
+          sales_user_id?: string | null;
+          title?: string;
+          due_at?: string | null;
+          status?: 'open' | 'done' | 'cancelled';
+          completed_at?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          lead_id?: string;
+          sales_user_id?: string | null;
+          title?: string;
+          due_at?: string | null;
+          status?: 'open' | 'done' | 'cancelled';
+          completed_at?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      meetings: {
+        Row: {
+          id: string;
+          lead_id: string;
+          sales_user_id: string | null;
+          title: string;
+          starts_at: string;
+          ends_at: string | null;
+          location: string | null;
+          status: 'scheduled' | 'held' | 'no_show' | 'cancelled';
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          lead_id: string;
+          sales_user_id?: string | null;
+          title?: string;
+          starts_at: string;
+          ends_at?: string | null;
+          location?: string | null;
+          status?: 'scheduled' | 'held' | 'no_show' | 'cancelled';
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          lead_id?: string;
+          sales_user_id?: string | null;
+          title?: string;
+          starts_at?: string;
+          ends_at?: string | null;
+          location?: string | null;
+          status?: 'scheduled' | 'held' | 'no_show' | 'cancelled';
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -810,6 +936,21 @@ export type EmailTemplateUpdate = Database['public']['Tables']['email_templates'
 export type LeadAnalytics = Database['public']['Tables']['lead_analytics']['Row'];
 export type LeadAnalyticsInsert = Database['public']['Tables']['lead_analytics']['Insert'];
 export type LeadAnalyticsUpdate = Database['public']['Tables']['lead_analytics']['Update'];
+
+// Activity Types (calls / tasks / meetings)
+export type Call = Database['public']['Tables']['calls']['Row'];
+export type CallInsert = Database['public']['Tables']['calls']['Insert'];
+export type CallUpdate = Database['public']['Tables']['calls']['Update'];
+export type CallOutcome = Call['outcome'];
+
+export type Task = Database['public']['Tables']['tasks']['Row'];
+export type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
+export type TaskUpdate = Database['public']['Tables']['tasks']['Update'];
+export type TaskStatus = Task['status'];
+
+export type Meeting = Database['public']['Tables']['meetings']['Row'];
+export type MeetingInsert = Database['public']['Tables']['meetings']['Insert'];
+export type MeetingUpdate = Database['public']['Tables']['meetings']['Update'];
 
 // Extended types with relations
 export interface LeadWithSource extends Lead {

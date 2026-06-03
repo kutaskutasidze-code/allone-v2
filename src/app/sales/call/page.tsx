@@ -17,9 +17,10 @@ import {
   Mail,
   ExternalLink,
   MessageSquare,
+  CalendarClock,
 } from 'lucide-react';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, LEAD_STATUS_COLORS, INFOSHOP_PATTERN } from '@/lib/validations/leads';
-import { CallbackPicker } from '@/components/sales';
+import { LogCallSheet, AddTaskSheet } from '@/components/leads';
 
 interface Lead {
   id: string;
@@ -36,14 +37,12 @@ interface Lead {
 }
 
 // Order matters — these are the buttons shown after a call, in the order a
-// rep is likely to want them. "Contacted" lives on its own because it's the
+// rep is likely to want them. "In Process" lives on its own because it's the
 // "default success" outcome and gets prime real estate.
 const POST_CALL_STATUSES = [
-  { value: 'contacted', label: 'Contacted', emoji: '✓' },
-  { value: 'callback', label: 'Callback' },
-  { value: 'qualified', label: 'Qualified' },
-  { value: 'not_interested', label: 'Not interested' },
-  { value: 'unavailable', label: 'No answer' },
+  { value: 'in_process', label: 'In Process', emoji: '✓' },
+  { value: 'interested', label: 'Interested' },
+  { value: 'on_hold', label: 'On Hold' },
   { value: 'won', label: 'Won' },
   { value: 'lost', label: 'Lost' },
 ] as const;
@@ -105,16 +104,15 @@ function CallModeContent() {
     setIndex(i => Math.min(i + 1, leads.length - 1));
   }, [leads.length]);
 
-  const [callbackPickerOpen, setCallbackPickerOpen] = useState(false);
+  const [logCallOpen, setLogCallOpen] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
 
-  const persistStatus = async (status: string, callback_at?: string | null) => {
+  const persistStatus = async (status: string) => {
     if (!current) return;
     setBusy(true);
     setError('');
     try {
-      const patch: Record<string, unknown> = { status };
-      if (callback_at !== undefined) patch.callback_at = callback_at;
-      const updated = await update(current.id, patch as Partial<Lead>);
+      const updated = await update(current.id, { status } as Partial<Lead>);
       setLeads(prev => prev.map(l => l.id === current.id ? { ...l, ...updated } : l));
       const nextIdx = leads.findIndex((l, i) => i > index && l.status === 'new');
       if (nextIdx >= 0) setIndex(nextIdx);
@@ -127,17 +125,7 @@ function CallModeContent() {
   };
 
   const setStatus = async (status: string) => {
-    // Callback status needs a date — open the picker instead of saving immediately.
-    if (status === 'callback') {
-      setCallbackPickerOpen(true);
-      return;
-    }
     await persistStatus(status);
-  };
-
-  const saveCallback = async (when: string) => {
-    setCallbackPickerOpen(false);
-    await persistStatus('callback', when);
   };
 
   const saveNotes = async () => {
@@ -290,6 +278,24 @@ function CallModeContent() {
               </div>
             )}
 
+            {/* Log the dial as a real call record */}
+            <button
+              onClick={() => setLogCallOpen(true)}
+              className="w-full mb-3 flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-sm font-medium text-[var(--ink-700)] hover:border-gray-400 hover:bg-[var(--bg-surface-alt)] transition-all"
+            >
+              <Phone className="w-4 h-4" />
+              Log call
+            </button>
+
+            {/* Schedule a follow-up task for this lead */}
+            <button
+              onClick={() => setFollowUpOpen(true)}
+              className="w-full mb-6 flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-sm font-medium text-[var(--ink-700)] hover:border-gray-400 hover:bg-[var(--bg-surface-alt)] transition-all"
+            >
+              <CalendarClock className="w-4 h-4" />
+              Schedule follow-up
+            </button>
+
             {/* Secondary contact actions */}
             <div className="grid grid-cols-2 gap-2 mb-6">
               {current.email && (
@@ -375,13 +381,20 @@ function CallModeContent() {
         </AnimatePresence>
       </div>
 
-      {/* Callback date picker modal */}
-      {callbackPickerOpen && (
-        <CallbackPicker
-          onCancel={() => setCallbackPickerOpen(false)}
-          onPick={saveCallback}
-        />
-      )}
+      {/* Log a call record for the current lead */}
+      <LogCallSheet
+        leadId={current.id}
+        open={logCallOpen}
+        onClose={() => setLogCallOpen(false)}
+      />
+
+      {/* Schedule a follow-up task for the current lead */}
+      <AddTaskSheet
+        leadId={current.id}
+        open={followUpOpen}
+        onClose={() => setFollowUpOpen(false)}
+        onAdded={advance}
+      />
 
       {/* Bottom nav */}
       <div className="px-5 lg:px-0 py-3 border-t border-[var(--allone-line-soft)] bg-[var(--bg-surface)]">

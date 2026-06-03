@@ -116,13 +116,12 @@ async function getLeadsData() {
 
   const leadStats = {
     new: 0,
-    contacted: 0,
-    callback: 0,
-    qualified: 0,
+    in_process: 0,
+    interested: 0,
+    proposal: 0,
     won: 0,
     lost: 0,
-    not_interested: 0,
-    unavailable: 0,
+    on_hold: 0,
     totalValue: 0,
   };
 

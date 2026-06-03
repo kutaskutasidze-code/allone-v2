@@ -8,7 +8,6 @@ import {
   Search,
   X,
   Users,
-  ChevronDown,
   MessageSquare,
   ExternalLink,
   Phone,
@@ -21,17 +20,17 @@ import {
   PhoneCall,
   Layers,
   Download,
+  CalendarClock,
 } from "lucide-react";
 import { PageHeader, EmptyState } from "@/components/admin";
+import { StatusDropdown, AddTaskSheet } from "@/components/leads";
 import {
   LEAD_STATUSES,
-  LEAD_STATUS_STYLES,
   HOTLINE_PHONE_PREFIX_PARAM,
   INFOSHOP_PATTERN,
 } from "@/lib/validations/leads";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { useSalesTheme } from "@/app/sales/SalesThemeContext";
-import { CallbackPicker } from "@/components/sales";
 
 const formatDate = (dateString: string) =>
   new Date(dateString).toLocaleDateString("en-US", {
@@ -55,57 +54,6 @@ const PITCH_LABELS: Record<string, string> = {
 };
 
 const HIDDEN_TAGS = new Set(["enrich_attempted", "website_audited"]);
-
-function StatusDropdown({
-  leadId,
-  currentStatus,
-  onUpdate,
-  onPickCallback,
-}: {
-  leadId: string;
-  currentStatus: string;
-  onUpdate: (id: string, status: string) => void;
-  onPickCallback: (id: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full cursor-pointer ${LEAD_STATUS_STYLES[currentStatus]}`}
-      >
-        {LEAD_STATUSES.find((s) => s.value === currentStatus)?.label}
-        <ChevronDown className="w-3 h-3" />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-full left-0 mt-1 z-20 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-md)] shadow-black/[0.08] py-1 min-w-[120px]">
-            {LEAD_STATUSES.map((s) => (
-              <button
-                key={s.value}
-                onClick={() => {
-                  setOpen(false);
-                  if (s.value === "callback") {
-                    onPickCallback(leadId);
-                  } else {
-                    onUpdate(leadId, s.value);
-                  }
-                }}
-                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--bg-surface-alt)] transition-colors ${currentStatus === s.value ? "font-semibold" : ""}`}
-              >
-                <span
-                  className={`inline-block w-2 h-2 rounded-full mr-2 ${LEAD_STATUS_STYLES[s.value]?.split(" ")[0]}`}
-                />
-                {s.label}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 function LeadNotes({
   leadId,
@@ -187,9 +135,7 @@ function LeadsPageContent() {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get("status") || "all";
   const { theme, toggleTheme } = useSalesTheme();
-  const [callbackForLeadId, setCallbackForLeadId] = useState<string | null>(
-    null,
-  );
+  const [taskForLeadId, setTaskForLeadId] = useState<string | null>(null);
   const initialScopeParam = searchParams.get("scope");
 
   const [scopeMode, setScopeMode] = useState<ScopeMode>(
@@ -252,7 +198,7 @@ function LeadsPageContent() {
       if (scopeMode === "today") {
         params.set("scope", "today");
       } else if (scopeMode === "callbacks") {
-        params.set("status", "callback");
+        params.set("status", "in_process");
       }
 
       // Honor an explicit status pill click only when no scope filter overrides it.
@@ -342,16 +288,11 @@ function LeadsPageContent() {
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-8">
-      {callbackForLeadId && (
-        <CallbackPicker
-          onCancel={() => setCallbackForLeadId(null)}
-          onPick={(when) => {
-            updateLead(callbackForLeadId, {
-              status: "callback",
-              callback_at: when,
-            });
-            setCallbackForLeadId(null);
-          }}
+      {taskForLeadId && (
+        <AddTaskSheet
+          leadId={taskForLeadId}
+          open={!!taskForLeadId}
+          onClose={() => setTaskForLeadId(null)}
         />
       )}
       <PageHeader
@@ -663,11 +604,16 @@ function LeadsPageContent() {
 
                   <div className="flex items-center gap-2 shrink-0">
                     <StatusDropdown
-                      leadId={l.id as string}
                       currentStatus={l.status as string}
-                      onUpdate={(id, status) => updateLead(id, { status })}
-                      onPickCallback={(id) => setCallbackForLeadId(id)}
+                      onSelect={(status) => updateLead(l.id as string, { status })}
                     />
+                    <button
+                      onClick={() => setTaskForLeadId(l.id as string)}
+                      className="p-1 rounded hover:bg-[var(--bg-surface-alt)] text-[var(--ink-400)] hover:text-[var(--ink-900)] transition-colors"
+                      title="Schedule follow-up"
+                    >
+                      <CalendarClock className="w-3.5 h-3.5" />
+                    </button>
                     <LeadNotes
                       leadId={l.id as string}
                       initialNotes={(l.notes as string) || ""}

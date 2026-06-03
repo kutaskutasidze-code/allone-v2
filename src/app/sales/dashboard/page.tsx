@@ -29,7 +29,7 @@ async function getSalesUser() {
 // pipeline on /sales/*. Team-wide views live behind /admin.
 async function getLeadStats(salesUserId: string) {
   const supabase = createAdminClient();
-  const statuses = ['new', 'contacted', 'qualified', 'won', 'lost'];
+  const statuses = ['new', 'in_process', 'interested', 'won', 'lost'];
 
   const results = await Promise.all(
     statuses.map(s =>
@@ -41,14 +41,14 @@ async function getLeadStats(salesUserId: string) {
 
   const { data: pipelineData } = await supabase.from('leads').select('value')
     .eq('sales_user_id', salesUserId)
-    .in('status', ['contacted', 'qualified']);
+    .in('status', ['in_process', 'interested', 'proposal']);
 
   const { data: wonData } = await supabase.from('leads').select('value')
     .eq('sales_user_id', salesUserId)
     .eq('status', 'won');
 
   const stats: Record<string, number> = {
-    new: 0, contacted: 0, qualified: 0, won: 0, lost: 0,
+    new: 0, in_process: 0, interested: 0, won: 0, lost: 0,
     pipelineValue: 0, wonValue: 0,
   };
 
