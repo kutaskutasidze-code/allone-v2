@@ -94,7 +94,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
     if (!isAdmin) {
-      return NextResponse.redirect(new URL("/", request.url));
+      // A non-admin who is a sales user belongs in the sales portal — not the
+      // public landing page (e.g. a rep who logged in via /admin/login).
+      return NextResponse.redirect(new URL(isSalesUser ? "/sales" : "/", request.url));
     }
   }
 
