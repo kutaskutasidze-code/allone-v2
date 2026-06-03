@@ -125,7 +125,14 @@ export default function EditLeadPage({ params }: EditLeadPageProps) {
       </div>
 
       {/* Inline actions — offer / contract / invoice / send-draft */}
-      <LeadActionsBar leadId={id} leadName={formData.name} />
+      <LeadActionsBar
+        leadId={id}
+        leadName={formData.name}
+        leadStatus={formData.status}
+        onStatusChange={(status) =>
+          setFormData((prev) => ({ ...prev, status: status as LeadStatus }))
+        }
+      />
 
       {/* Personalized demo pipeline section */}
       <DemoSection

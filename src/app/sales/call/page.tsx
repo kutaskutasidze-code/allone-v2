@@ -20,7 +20,7 @@ import {
   CalendarClock,
 } from 'lucide-react';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, LEAD_STATUS_COLORS, INFOSHOP_PATTERN } from '@/lib/validations/leads';
-import { LogCallSheet, AddTaskSheet } from '@/components/leads';
+import { LogCallSheet, AddTaskSheet, LostReasonPicker } from '@/components/leads';
 
 interface Lead {
   id: string;
@@ -106,13 +106,14 @@ function CallModeContent() {
 
   const [logCallOpen, setLogCallOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
+  const [lostOpen, setLostOpen] = useState(false);
 
-  const persistStatus = async (status: string) => {
+  const persistStatus = async (status: string, extra?: { lost_reason?: string }) => {
     if (!current) return;
     setBusy(true);
     setError('');
     try {
-      const updated = await update(current.id, { status } as Partial<Lead>);
+      const updated = await update(current.id, { status, ...extra } as Partial<Lead>);
       setLeads(prev => prev.map(l => l.id === current.id ? { ...l, ...updated } : l));
       const nextIdx = leads.findIndex((l, i) => i > index && l.status === 'new');
       if (nextIdx >= 0) setIndex(nextIdx);
@@ -125,6 +126,10 @@ function CallModeContent() {
   };
 
   const setStatus = async (status: string) => {
+    if (status === 'lost') {
+      setLostOpen(true);
+      return;
+    }
     await persistStatus(status);
   };
 
@@ -394,6 +399,16 @@ function CallModeContent() {
         open={followUpOpen}
         onClose={() => setFollowUpOpen(false)}
         onAdded={advance}
+      />
+
+      {/* Lost-reason prompt before marking the current lead lost */}
+      <LostReasonPicker
+        open={lostOpen}
+        onClose={() => setLostOpen(false)}
+        onPick={(lost_reason) => {
+          setLostOpen(false);
+          persistStatus('lost', { lost_reason });
+        }}
       />
 
       {/* Bottom nav */}

@@ -20,9 +20,15 @@ import {
 
 type ActionKind = "offer" | "contract" | "invoice" | "draft";
 
+// Statuses from which issuing an offer/contract should auto-advance the lead to
+// "proposal". Won/lost/proposal/on_hold are intentionally left untouched.
+const AUTO_PROPOSAL_FROM = new Set(["new", "in_process", "interested"]);
+
 interface Props {
   leadId: string;
   leadName: string;
+  leadStatus?: string;
+  onStatusChange?: (status: string) => void;
 }
 
 interface LineItem {
@@ -40,12 +46,33 @@ interface ActionResult {
   due_date?: string;
 }
 
-export function LeadActionsBar({ leadId, leadName }: Props) {
+export function LeadActionsBar({
+  leadId,
+  leadName,
+  leadStatus,
+  onStatusChange,
+}: Props) {
   const [open, setOpen] = useState<ActionKind | null>(null);
   const [lastResult, setLastResult] = useState<{
     kind: ActionKind;
     data: ActionResult;
   } | null>(null);
+
+  // After an offer/contract goes out, nudge the lead into "proposal" — but only
+  // from an earlier pipeline stage, never from won/lost/proposal/on_hold.
+  const advanceToProposal = async () => {
+    if (!leadStatus || !AUTO_PROPOSAL_FROM.has(leadStatus)) return;
+    try {
+      const res = await fetch(`/api/sales/leads/${leadId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "proposal" }),
+      });
+      if (res.ok) onStatusChange?.("proposal");
+    } catch {
+      /* non-blocking — the PDF was still issued */
+    }
+  };
 
   return (
     <div className="mb-6 rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-4 shadow-[var(--shadow-xs)]">
@@ -97,6 +124,7 @@ export function LeadActionsBar({ leadId, leadName }: Props) {
           onDone={(d) => {
             setOpen(null);
             setLastResult({ kind: "offer", data: d });
+            advanceToProposal();
           }}
         />
       )}
@@ -107,6 +135,7 @@ export function LeadActionsBar({ leadId, leadName }: Props) {
           onDone={(d) => {
             setOpen(null);
             setLastResult({ kind: "contract", data: d });
+            advanceToProposal();
           }}
         />
       )}

@@ -812,7 +812,9 @@ function AdminLeadsPageContent() {
                 <div className="flex items-center gap-2 shrink-0">
                   <StatusDropdown
                     currentStatus={lead.status}
-                    onSelect={(status) => updateLead(lead.id, { status })}
+                    onSelect={(status, extra) =>
+                      updateLead(lead.id, { status, ...extra })
+                    }
                   />
                   <LeadNotes
                     leadId={lead.id}

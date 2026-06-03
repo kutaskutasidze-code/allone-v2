@@ -605,7 +605,9 @@ function LeadsPageContent() {
                   <div className="flex items-center gap-2 shrink-0">
                     <StatusDropdown
                       currentStatus={l.status as string}
-                      onSelect={(status) => updateLead(l.id as string, { status })}
+                      onSelect={(status, extra) =>
+                        updateLead(l.id as string, { status, ...extra })
+                      }
                     />
                     <button
                       onClick={() => setTaskForLeadId(l.id as string)}

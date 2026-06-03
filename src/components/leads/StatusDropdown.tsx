@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { LEAD_STATUSES, LEAD_STATUS_STYLES } from "@/lib/validations/leads";
+import { LostReasonPicker } from "./LostReasonPicker";
 
 export function StatusDropdown({
   currentStatus,
   onSelect,
-  onPickCallback,
 }: {
   currentStatus: string;
-  onSelect: (status: string) => void;
-  onPickCallback?: () => void;
+  onSelect: (status: string, extra?: { lost_reason?: string }) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [lostOpen, setLostOpen] = useState(false);
 
   return (
     <div className="relative">
@@ -33,8 +33,8 @@ export function StatusDropdown({
                 key={s.value}
                 onClick={() => {
                   setOpen(false);
-                  if (s.value === "callback" && onPickCallback) {
-                    onPickCallback();
+                  if (s.value === "lost") {
+                    setLostOpen(true);
                   } else {
                     onSelect(s.value);
                   }
@@ -50,6 +50,14 @@ export function StatusDropdown({
           </div>
         </>
       )}
+      <LostReasonPicker
+        open={lostOpen}
+        onClose={() => setLostOpen(false)}
+        onPick={(lost_reason) => {
+          setLostOpen(false);
+          onSelect("lost", { lost_reason });
+        }}
+      />
     </div>
   );
 }
