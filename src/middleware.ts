@@ -3,14 +3,9 @@ import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
-  // Forward the pathname to Server Components (layout guards) so the login
-  // route can be skipped without causing a redirect loop.
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
-
   let response = NextResponse.next({
     request: {
-      headers: requestHeaders,
+      headers: request.headers,
     },
   });
 
@@ -28,7 +23,7 @@ export async function middleware(request: NextRequest) {
           );
           response = NextResponse.next({
             request: {
-              headers: requestHeaders,
+              headers: request.headers,
             },
           });
           cookiesToSet.forEach(({ name, value, options }) =>
