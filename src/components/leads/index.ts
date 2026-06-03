@@ -5,3 +5,7 @@ export { AddTaskSheet } from "./AddTaskSheet";
 export { TaskQueue } from "./TaskQueue";
 export { LeadStream } from "./LeadStream";
 export { LeadDetail } from "./LeadDetail";
+export { LeadNotes } from "./LeadNotes";
+export { LeadsPagination } from "./LeadsPagination";
+export { LeadCard } from "./LeadCard";
+export type { LeadCardData } from "./LeadCard";
