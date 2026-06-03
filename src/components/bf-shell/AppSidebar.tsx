@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "@/lib/next-auth-shim";
 import {
   salesNavBF,
   salesFooterBF,
@@ -282,6 +283,22 @@ export function AppSidebar() {
             const label = FOOTER_KEY[item.href]
               ? t(FOOTER_KEY[item.href])
               : item.label;
+            // Sign-out must clear the Supabase session client-side (a plain GET
+            // to /(admin|sales)/logout does NOT sign out and just bounces back).
+            if (item.href.endsWith("/logout")) {
+              const loginUrl = item.href.replace(/\/logout$/, "/login");
+              return (
+                <li key={item.href}>
+                  <button
+                    type="button"
+                    onClick={() => void signOut({ callbackUrl: loginUrl })}
+                    className="flex w-full items-center gap-3 rounded-[var(--radius-xs)] px-3 py-1.5 text-left text-[13px] transition text-[var(--ink-700)] hover:bg-[var(--bg-app)] hover:text-[var(--ink-900)]"
+                  >
+                    <span>{label}</span>
+                  </button>
+                </li>
+              );
+            }
             return (
               <li key={item.href}>
                 <Link
