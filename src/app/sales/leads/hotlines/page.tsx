@@ -3,9 +3,10 @@
 import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, X, Flame, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe, Trash2 } from 'lucide-react';
+import { Search, X, Flame, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
 import { LEAD_STATUSES, LEAD_STATUS_STYLES, HOTLINE_PHONE_PREFIX_PARAM, INFOSHOP_PATTERN } from '@/lib/validations/leads';
+import { safeHttpUrl } from '@/lib/utils';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { HotLinesDropdown } from '../HotLinesDropdown';
 
@@ -170,18 +171,6 @@ function HotLinesPageContent() {
     }
   };
 
-  const deleteLead = async (id: string) => {
-    if (!confirm('Delete this lead?')) return;
-    try {
-      const res = await fetch(`/api/sales/leads/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete');
-      setLeads(prev => prev.filter(l => (l as { id: string }).id !== id));
-      setTotal(t => t - 1);
-    } catch {
-      setError('Failed to delete lead');
-    }
-  };
-
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -282,19 +271,19 @@ function HotLinesPageContent() {
                         </a>
                       )}
                       {l.website && !INFOSHOP_PATTERN.test(l.website as string) ? (
-                        <a href={l.website as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-green-600 hover:underline">
+                        <a href={safeHttpUrl(l.website as string) ?? undefined} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-green-600 hover:underline">
                           <Globe className="w-3 h-3" />Website
                         </a>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-xs text-red-400"><Globe className="w-3 h-3" />No website</span>
                       )}
                       {l.facebook_url && (
-                        <a href={l.facebook_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[var(--ao-accent)] hover:underline">
+                        <a href={safeHttpUrl(l.facebook_url as string) ?? undefined} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[var(--ao-accent)] hover:underline">
                           <ExternalLink className="w-3 h-3" />Facebook
                         </a>
                       )}
                       {l.source_url && !INFOSHOP_PATTERN.test(l.source_url as string) && (
-                        <a href={l.source_url as string} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[var(--ink-500)] hover:text-[var(--ao-accent)]">
+                        <a href={safeHttpUrl(l.source_url as string) ?? undefined} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[var(--ink-500)] hover:text-[var(--ao-accent)]">
                           <ExternalLink className="w-3 h-3" />Source
                         </a>
                       )}
@@ -330,13 +319,6 @@ function HotLinesPageContent() {
                       initialNotes={(l.notes as string) || ''}
                       onSave={(id, notes) => updateLead(id, { notes })}
                     />
-                    <button
-                      onClick={() => deleteLead(l.id as string)}
-                      className="p-1 rounded hover:bg-red-50 text-[var(--ink-400)] hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
                   </div>
                 </div>
               </div>

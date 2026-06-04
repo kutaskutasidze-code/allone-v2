@@ -6,7 +6,6 @@ import {
   Search,
   X,
   Users,
-  Trash2,
   Sun,
   Moon,
   Inbox,
@@ -123,6 +122,7 @@ function LeadsPageContent() {
       if (!res.ok) throw new Error("Failed to fetch leads");
       const result = await res.json();
       let data: Record<string, unknown>[] = result.data || [];
+      let totalCount: number = result.pagination?.total || 0;
 
       if (scopeMode === "done") {
         const startOfDay = new Date();
@@ -132,10 +132,13 @@ function LeadsPageContent() {
           const changed = l.status_changed_at as string | undefined;
           return status !== "new" && changed && new Date(changed) >= startOfDay;
         });
+        // This scope is filtered client-side from the current page, so the
+        // server's unfiltered total would make the pager show phantom pages.
+        totalCount = data.length;
       }
 
       setLeads(data);
-      setTotal(result.pagination?.total || 0);
+      setTotal(totalCount);
     } catch {
       setError("Failed to load leads");
     } finally {
@@ -171,18 +174,6 @@ function LeadsPageContent() {
       );
     } catch {
       setError("Failed to update lead");
-    }
-  };
-
-  const deleteLead = async (id: string) => {
-    if (!confirm("Delete this lead?")) return;
-    try {
-      const res = await fetch(`/api/sales/leads/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete");
-      setLeads((prev) => prev.filter((l) => (l as { id: string }).id !== id));
-      setTotal((t) => t - 1);
-    } catch {
-      setError("Failed to delete lead");
     }
   };
 
@@ -428,13 +419,6 @@ function LeadsPageContent() {
                       initialNotes={l.notes || ""}
                       onSave={(id, notes) => updateLead(id, { notes })}
                     />
-                    <button
-                      onClick={() => deleteLead(l.id)}
-                      className="p-1 rounded hover:bg-red-50 text-[var(--ink-400)] hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
                   </>
                 }
               />

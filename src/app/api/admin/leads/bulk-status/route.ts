@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
       status,
       updated_at: new Date().toISOString(),
     };
+    // Moving to 'lost' records the reason; moving to anything else must CLEAR
+    // it, or the leads_lost_reason_requires_lost CHECK rejects the update.
     if (status === 'lost') update.lost_reason = lost_reason ?? null;
+    else update.lost_reason = null;
 
     const { error: dbError, count } = await admin
       .from('leads')

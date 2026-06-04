@@ -98,6 +98,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
     if (validated.notes !== undefined) updateData.notes = validated.notes;
     if (validated.lost_reason !== undefined)
       updateData.lost_reason = validated.lost_reason;
+    // Moving off 'lost' must clear lost_reason, or the DB CHECK rejects it.
+    if (validated.status !== undefined && validated.status !== "lost")
+      updateData.lost_reason = null;
 
     let updateQuery = supabase.from("leads").update(updateData).eq("id", id);
     if (isUnassigned && salesUser.role === "salesperson") {
@@ -154,6 +157,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { salesUser } = await requireSalesAuth();
+    // Salespeople cannot delete leads — only supervisors/admins may.
+    if (salesUser.role !== "supervisor" && salesUser.role !== "admin") {
+      return forbidden();
+    }
     const { id } = await params;
 
     const idResult = idParamSchema.safeParse({ id });

@@ -61,9 +61,16 @@ export async function PATCH(
 
     // Use service role to bypass RLS for the actual update
     const admin = createAdminClient();
+    const patch: Record<string, unknown> = {
+      ...result.data,
+      updated_at: new Date().toISOString(),
+    };
+    // Moving off 'lost' must clear lost_reason, or the DB CHECK rejects it.
+    if (result.data.status !== undefined && result.data.status !== 'lost')
+      patch.lost_reason = null;
     const { data, error } = await admin
       .from('leads')
-      .update({ ...result.data, updated_at: new Date().toISOString() })
+      .update(patch)
       .eq('id', id)
       .select()
       .single();
