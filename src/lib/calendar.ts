@@ -46,7 +46,19 @@ export async function buildCalendar(
   if (meetRes.error) throw new Error(meetRes.error.message);
 
   const nameOf = (lead: LeadRef | null) => lead?.company || lead?.name || null;
-  const events: CalendarEvent[] = [];
+  const toEvent = (
+    type: 'task' | 'meeting',
+    r: { id: string; title: string; status: string; lead_id: string; lead: LeadRef | null },
+    at: string,
+  ): CalendarEvent => ({
+    id: `${type}:${r.id}`,
+    type,
+    title: r.title,
+    at,
+    status: r.status,
+    leadId: r.lead_id,
+    leadName: nameOf(r.lead),
+  });
 
   const taskRows = (taskRes.data ?? []) as unknown as Array<{
     id: string;
@@ -56,18 +68,6 @@ export async function buildCalendar(
     lead_id: string;
     lead: LeadRef | null;
   }>;
-  for (const t of taskRows) {
-    events.push({
-      id: `task:${t.id}`,
-      type: 'task',
-      title: t.title,
-      at: t.due_at,
-      status: t.status,
-      leadId: t.lead_id,
-      leadName: nameOf(t.lead),
-    });
-  }
-
   const meetRows = (meetRes.data ?? []) as unknown as Array<{
     id: string;
     title: string;
@@ -76,17 +76,11 @@ export async function buildCalendar(
     lead_id: string;
     lead: LeadRef | null;
   }>;
-  for (const m of meetRows) {
-    events.push({
-      id: `meeting:${m.id}`,
-      type: 'meeting',
-      title: m.title,
-      at: m.starts_at,
-      status: m.status,
-      leadId: m.lead_id,
-      leadName: nameOf(m.lead),
-    });
-  }
+
+  const events: CalendarEvent[] = [
+    ...taskRows.map((t) => toEvent('task', t, t.due_at)),
+    ...meetRows.map((m) => toEvent('meeting', m, m.starts_at)),
+  ];
 
   return { events };
 }
