@@ -35,6 +35,7 @@ export const salesNavBF: NavConfig = {
     {
       label: "Overview",
       items: [
+        { label: "Overview", href: "/sales/dashboard", icon: "gauge" },
         { label: "Pipeline", href: "/sales/pipeline", icon: "trending-up" },
         { label: "Call Mode", href: "/sales/call", icon: "message-circle" },
         {
@@ -43,6 +44,7 @@ export const salesNavBF: NavConfig = {
           icon: "calendar",
         },
         { label: "Follow-ups", href: "/sales/follow-ups", icon: "calendar" },
+        { label: "Calendar", href: "/sales/calendar", icon: "calendar" },
         { label: "Analytics", href: "/sales/analytics", icon: "bar-chart-3" },
       ],
     },
@@ -84,11 +86,13 @@ export const adminNavBF: NavConfig = {
     {
       label: "Leads",
       items: [
+        { label: "Overview", href: "/admin/dashboard", icon: "gauge" },
         { label: "Pipeline", href: "/admin/pipeline", icon: "trending-up" },
         { label: "All Leads", href: "/admin/leads", icon: "user-check" },
         { label: "Assign Leads", href: "/admin/leads/assign", icon: "compass" },
         { label: "Hot Lines", href: "/admin/leads/hotlines", icon: "plane" },
         { label: "Team", href: "/admin/team", icon: "users" },
+        { label: "Calendar", href: "/admin/calendar", icon: "calendar" },
         { label: "Audit Log", href: "/admin/leads/audit", icon: "file-text" },
         {
           label: "Analytics",
