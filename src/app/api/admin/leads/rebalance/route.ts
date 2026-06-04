@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,18 +48,22 @@ async function selectMovableLeads(
 
   // One query for all reps; sort by sales_user_id then assigned_at so we can
   // slice per-rep without N round-trips.
-  const { data, error } = await admin
-    .from('leads')
-    .select('id, sales_user_id, assigned_at')
-    .in('sales_user_id', repIds)
-    .eq('status', 'new')
-    .order('sales_user_id', { ascending: true })
-    .order('assigned_at', { ascending: true, nullsFirst: true })
-    .limit(100000);
+  const data = await fetchAllRows<{
+    id: string;
+    sales_user_id: string | null;
+    assigned_at: string | null;
+  }>((from, to) =>
+    admin
+      .from('leads')
+      .select('id, sales_user_id, assigned_at')
+      .in('sales_user_id', repIds)
+      .eq('status', 'new')
+      .order('sales_user_id', { ascending: true })
+      .order('assigned_at', { ascending: true, nullsFirst: true })
+      .range(from, to),
+  );
 
-  if (error) throw new Error(`Failed to load candidate leads: ${error.message}`);
-
-  for (const row of data || []) {
+  for (const row of data) {
     if (!row.sales_user_id) continue;
     const need = perRepTakeCount.get(row.sales_user_id) || 0;
     const existing = result.get(row.sales_user_id) || [];
@@ -97,20 +102,25 @@ export async function POST(request: NextRequest) {
     }
     const repMeta = new Map((salesUsers || []).map(u => [u.id, u]));
 
-    const { data: assignedLeads, error: leadsErr } = await admin
-      .from('leads')
-      .select('sales_user_id, status')
-      .not('sales_user_id', 'is', null)
-      .eq('status', 'new')
-      .limit(100000);
-    if (leadsErr) {
-      logger.error('rebalance: load assigned leads failed', { error: leadsErr.message });
+    let assignedLeads: { sales_user_id: string | null; status: string }[];
+    try {
+      assignedLeads = await fetchAllRows<{ sales_user_id: string | null; status: string }>(
+        (from, to) =>
+          admin
+            .from('leads')
+            .select('sales_user_id, status')
+            .not('sales_user_id', 'is', null)
+            .eq('status', 'new')
+            .range(from, to),
+      );
+    } catch (e) {
+      logger.error('rebalance: load assigned leads failed', { error: String(e) });
       return NextResponse.json({ error: 'Failed to load leads' }, { status: 500 });
     }
 
     // untouched count per rep
     const untouched = new Map<string, number>();
-    for (const r of assignedLeads || []) {
+    for (const r of assignedLeads) {
       if (!r.sales_user_id) continue;
       untouched.set(r.sales_user_id, (untouched.get(r.sales_user_id) || 0) + 1);
     }
@@ -160,7 +170,8 @@ export async function POST(request: NextRequest) {
     const { error: updateErr } = await admin
       .from('leads')
       .update({ sales_user_id: null, assigned_by: null })
-      .in('id', allLeadIdsToMove);
+      .in('id', allLeadIdsToMove)
+      .eq('status', 'new');
     if (updateErr) {
       logger.error('rebalance: bulk-unassign failed', { error: updateErr.message });
       return NextResponse.json({ error: 'Failed to unassign leads' }, { status: 500 });

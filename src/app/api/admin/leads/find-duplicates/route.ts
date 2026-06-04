@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
 import { logger } from '@/lib/logger';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,15 +35,14 @@ export async function GET() {
   try {
     await requireRole(['admin', 'supervisor']);
     const admin = createAdminClient();
-    const { data, error } = await admin
-      .from('leads')
-      .select('id, name, company, phone, email, status, value, created_at');
-    if (error) {
-      logger.error('find-duplicates load failed', { error: error.message });
-      return NextResponse.json({ error: 'Failed to load leads' }, { status: 500 });
-    }
-
-    const rows = (data ?? []) as DupLead[];
+    // Page through ALL leads — a bare select is capped at 1000 rows by
+    // PostgREST, which would make the dedupe scan only ~4% of the table.
+    const rows = await fetchAllRows<DupLead>((from, to) =>
+      admin
+        .from('leads')
+        .select('id, name, company, phone, email, status, value, created_at')
+        .range(from, to),
+    );
     const byPhone = new Map<string, DupLead[]>();
     const byEmail = new Map<string, DupLead[]>();
     for (const l of rows) {

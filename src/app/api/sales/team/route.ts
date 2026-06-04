@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { requireSupervisorAuth } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
 import { getPeriod, round2, COMMISSION_RATES } from '@/lib/commissions';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 interface TeamMember {
   id: string;
@@ -29,10 +30,15 @@ export async function GET(request: NextRequest) {
       .select('id, name, email, role');
     if (usersErr) throw new Error(usersErr.message);
 
-    const { data: allLeads, error: leadsErr } = await supabase
-      .from('leads')
-      .select('id, sales_user_id, status, value, won_at');
-    if (leadsErr) throw new Error(leadsErr.message);
+    const allLeads = await fetchAllRows<{
+      id: string;
+      sales_user_id: string | null;
+      status: string;
+      value: number | null;
+      won_at: string | null;
+    }>((from, to) =>
+      supabase.from('leads').select('id, sales_user_id, status, value, won_at').range(from, to),
+    );
 
     const periodStart = period.start.getTime();
     const periodEnd = period.end.getTime();

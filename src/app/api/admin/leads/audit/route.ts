@@ -43,7 +43,10 @@ export async function GET(request: NextRequest) {
     if (salesUserId || search) {
       let leadQ = admin.from('leads').select('id');
       if (salesUserId) leadQ = leadQ.eq('sales_user_id', salesUserId);
-      if (search) leadQ = leadQ.or(`name.ilike.%${search}%,company.ilike.%${search}%`);
+      if (search) {
+        const s = search.replace(/[%_,()]/g, '');
+        leadQ = leadQ.or(`name.ilike.%${s}%,company.ilike.%${s}%`);
+      }
       const { data: matchingLeads, error: leadFilterErr } = await leadQ.limit(5000);
       if (leadFilterErr) {
         logger.error('Audit: lead-filter query failed', { error: leadFilterErr.message });

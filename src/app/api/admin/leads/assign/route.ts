@@ -90,7 +90,8 @@ export async function POST(request: NextRequest) {
     const { error: updateError } = await admin
       .from('leads')
       .update({ sales_user_id: salesUserId, assigned_by: actor?.id ?? null })
-      .in('id', assignable);
+      .in('id', assignable)
+      .eq('status', 'new');
     if (updateError) {
       logger.error('Failed to bulk-assign leads', { error: updateError.message });
       return NextResponse.json({ error: 'Failed to assign leads' }, { status: 500 });

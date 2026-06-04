@@ -4,6 +4,7 @@ import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
 import { getPeriod, round2, COMMISSION_RATES } from '@/lib/commissions';
 import { logger } from '@/lib/logger';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,14 +43,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to load team' }, { status: 500 });
     }
 
-    const { data: allLeads, error: leadsErr } = await admin
-      .from('leads')
-      .select('sales_user_id, status, value, won_at, assigned_at');
-
-    if (leadsErr) {
-      logger.error('Failed to load leads for team stats', { error: leadsErr.message });
-      return NextResponse.json({ error: 'Failed to load leads' }, { status: 500 });
-    }
+    const allLeads = await fetchAllRows<{
+      sales_user_id: string | null;
+      status: string;
+      value: number | null;
+      won_at: string | null;
+      assigned_at: string | null;
+    }>((from, to) =>
+      admin
+        .from('leads')
+        .select('sales_user_id, status, value, won_at, assigned_at')
+        .range(from, to),
+    );
 
     // Real call activity in the period, from the calls table. Supabase JS can't
     // GROUP BY, so fetch the period's calls and tally per rep in JS.

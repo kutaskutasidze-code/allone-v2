@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      const sanitized = search.replace(/[%_]/g, '');
+      const sanitized = search.replace(/[%_,()]/g, '');
       if (sanitized.length > 0) {
         query = query.or(`name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company.ilike.%${sanitized}%,phone.ilike.%${sanitized}%,city.ilike.%${sanitized}%`);
       }

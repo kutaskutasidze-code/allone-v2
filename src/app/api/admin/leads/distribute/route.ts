@@ -6,6 +6,7 @@ import { INFOSHOP_DOMAIN, parsePhonePrefixes } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 // Bulk-distribute the unassigned pool round-robin across the chosen reps.
 // Only leads with status = 'new' are eligible. Optional filters narrow the pool
@@ -62,44 +63,42 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     const want = perRep * reps.length;
-
-    // Pull a batch from the unassigned pool, respecting filters.
-    let poolQuery = admin
-      .from('leads')
-      .select('id')
-      .is('sales_user_id', null)
-      .eq('status', 'new')
-      .order('relevance_score', { ascending: false, nullsFirst: false })
-      .order('created_at', { ascending: false })
-      .limit(want);
-
-    if (filters?.industry && filters.industry !== 'all') {
-      poolQuery = poolQuery.eq('industry', filters.industry);
-    }
-    if (filters?.hasPhone) {
-      poolQuery = poolQuery.not('phone', 'is', null);
-    }
     const infoshopLike = `%${INFOSHOP_DOMAIN}%`;
-    if (filters?.hasWebsite === 'yes') {
-      poolQuery = poolQuery.not('website', 'is', null).not('website', 'ilike', infoshopLike);
-    } else if (filters?.hasWebsite === 'no') {
-      poolQuery = poolQuery.or(`website.is.null,website.ilike.${infoshopLike}`);
-    }
     const excludePrefixes = parsePhonePrefixes(filters?.excludePhonePrefix ?? null);
-    if (excludePrefixes.length === 1) {
-      poolQuery = poolQuery.or(`phone.is.null,phone.not.ilike.${excludePrefixes[0]}%`);
-    } else if (excludePrefixes.length > 1) {
-      const andClause = excludePrefixes.map(p => `phone.not.ilike.${p}%`).join(',');
-      poolQuery = poolQuery.or(`phone.is.null,and(${andClause})`);
-    }
 
-    const { data: pool, error: poolErr } = await poolQuery;
-    if (poolErr) {
-      logger.error('Failed to fetch pool for distribution', { error: poolErr.message });
+    // Pull from the unassigned pool, respecting filters. Page up to `want` rows
+    // — a single .limit(want) is capped at 1000 by PostgREST, silently
+    // under-distributing whenever want > 1000.
+    const buildPool = (from: number, to: number) => {
+      let q = admin
+        .from('leads')
+        .select('id')
+        .is('sales_user_id', null)
+        .eq('status', 'new')
+        .order('relevance_score', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+      if (filters?.industry && filters.industry !== 'all') q = q.eq('industry', filters.industry);
+      if (filters?.hasPhone) q = q.not('phone', 'is', null);
+      if (filters?.hasWebsite === 'yes') q = q.not('website', 'is', null).not('website', 'ilike', infoshopLike);
+      else if (filters?.hasWebsite === 'no') q = q.or(`website.is.null,website.ilike.${infoshopLike}`);
+      if (excludePrefixes.length === 1) q = q.or(`phone.is.null,phone.not.ilike.${excludePrefixes[0]}%`);
+      else if (excludePrefixes.length > 1) {
+        const andClause = excludePrefixes.map(p => `phone.not.ilike.${p}%`).join(',');
+        q = q.or(`phone.is.null,and(${andClause})`);
+      }
+      return q;
+    };
+
+    let pool: { id: string }[];
+    try {
+      pool = await fetchAllRows<{ id: string }>(buildPool, { max: want });
+    } catch (e) {
+      logger.error('Failed to fetch pool for distribution', { error: String(e) });
       return NextResponse.json({ error: 'Failed to fetch pool' }, { status: 500 });
     }
 
-    if (!pool || pool.length === 0) {
+    if (pool.length === 0) {
       return NextResponse.json({
         data: { totalAssigned: 0, totalRemaining: 0, perRep: {}, reason: 'Pool is empty' },
       });
@@ -127,7 +126,9 @@ export async function POST(request: NextRequest) {
       const { error: updErr } = await admin
         .from('leads')
         .update({ sales_user_id: r.id, assigned_by: actor?.id ?? null })
-        .in('id', ids);
+        .in('id', ids)
+        .is('sales_user_id', null)
+        .eq('status', 'new');
       if (updErr) {
         logger.error('Distribute: failed to assign batch', { error: updErr.message, repId: r.id });
         return NextResponse.json({ error: `Failed assigning to ${r.name}` }, { status: 500 });

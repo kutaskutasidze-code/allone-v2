@@ -5,6 +5,7 @@ import { leadStatusSchema, LEAD_STATUSES } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 type Status = typeof LEAD_STATUSES[number]['value'];
 
@@ -82,11 +83,13 @@ export async function GET() {
       ),
       // Total leads
       admin.from('leads').select('id', { count: 'exact', head: true }),
-      // Daily new leads (single page — 30 days rarely exceeds 1000 new leads)
-      admin.from('leads').select('created_at')
-        .gte('created_at', since.toISOString())
-        .order('created_at', { ascending: true })
-        .limit(5000),
+      // Daily new leads — paged so heavy-import days aren't truncated at 1000.
+      fetchAllRows<{ created_at: string }>((from, to) =>
+        admin.from('leads').select('created_at')
+          .gte('created_at', since.toISOString())
+          .order('created_at', { ascending: true })
+          .range(from, to),
+      ),
     ]);
 
     const statusCounts: Record<string, number> = {};
@@ -98,7 +101,7 @@ export async function GET() {
 
     const dailyNew: Record<string, number> = {};
     for (const key of buckets.keys()) dailyNew[key] = 0;
-    for (const row of dailyNewRows.data || []) {
+    for (const row of dailyNewRows) {
       const day = String(row.created_at).slice(0, 10);
       if (dailyNew[day] !== undefined) dailyNew[day]++;
     }

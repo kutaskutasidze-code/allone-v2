@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,19 +74,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Fetch the entire eligible pool. We don't pre-cap at perRep*reps.length
-    // because the routing fan-out is per-industry, not a flat round-robin.
-    const { data: pool, error: poolErr } = await admin
-      .from('leads')
-      .select('id, industry')
-      .is('sales_user_id', null)
-      .eq('status', 'new')
-      .order('relevance_score', { ascending: false, nullsFirst: false })
-      .order('created_at', { ascending: false })
-      .limit(50000);
-
-    if (poolErr) {
-      logger.error('distribute-by-specialty: failed to load pool', { error: poolErr.message });
+    // Page through the entire eligible pool — a bare/`.limit(50000)` select is
+    // capped at 1000 rows by PostgREST, so only the top 1000 would ever route.
+    let pool: { id: string; industry: string | null }[];
+    try {
+      pool = await fetchAllRows<{ id: string; industry: string | null }>((from, to) =>
+        admin
+          .from('leads')
+          .select('id, industry')
+          .is('sales_user_id', null)
+          .eq('status', 'new')
+          .order('relevance_score', { ascending: false, nullsFirst: false })
+          .order('created_at', { ascending: false })
+          .range(from, to),
+      );
+    } catch (e) {
+      logger.error('distribute-by-specialty: failed to load pool', { error: String(e) });
       return NextResponse.json({ error: 'Failed to load pool' }, { status: 500 });
     }
 
@@ -96,7 +100,7 @@ export async function POST(request: NextRequest) {
     const uncoveredByIndustry: Record<string, number> = {};
     const repIndustries = new Map<string, Set<string>>();   // for response: which industries fed each rep
 
-    for (const lead of pool || []) {
+    for (const lead of pool) {
       const ind = lead.industry as string | null;
       const candidates = ind ? industryToReps.get(ind) : undefined;
       if (!candidates || candidates.length === 0) {
@@ -171,7 +175,9 @@ export async function POST(request: NextRequest) {
         const { error } = await admin
           .from('leads')
           .update({ sales_user_id: repId, assigned_by: actor?.id ?? null })
-          .in('id', ids);
+          .in('id', ids)
+          .is('sales_user_id', null)
+          .eq('status', 'new');
         return { repId, ok: !error, error: error?.message };
       })
     );

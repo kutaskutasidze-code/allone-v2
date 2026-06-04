@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSalesAuth } from "@/lib/sales-auth";
 import { leadStatusSchema } from "@/lib/validations/leads";
+import { fetchAllRows } from "@/lib/supabase/paginate";
 
 export async function GET(request: NextRequest) {
   try {
@@ -84,15 +85,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Daily trend - fetch just dates from the period (limit higher)
-    const { data: recentDates } = await scope(
-      supabase.from("leads").select("created_at"),
-    )
-      .gte("created_at", startDate.toISOString())
-      .order("created_at", { ascending: true })
-      .limit(5000);
+    const recentDates = await fetchAllRows<{ created_at: string }>((from, to) =>
+      scope(supabase.from("leads").select("created_at"))
+        .gte("created_at", startDate.toISOString())
+        .order("created_at", { ascending: true })
+        .range(from, to),
+    );
 
     const dailyTrend: Record<string, number> = {};
-    for (const row of recentDates || []) {
+    for (const row of recentDates) {
       const date = new Date(row.created_at).toISOString().split("T")[0];
       dailyTrend[date] = (dailyTrend[date] || 0) + 1;
     }

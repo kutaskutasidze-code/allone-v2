@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { fetchAllRows } from '@/lib/supabase/paginate';
 
 export const COMMISSION_RATES = {
   salesperson: 0.10,
@@ -86,17 +87,19 @@ async function getWonLeadsBySalesperson(
   supabase: SupabaseClient,
   period: Period,
 ): Promise<WonAggregate[]> {
-  const { data, error } = await supabase
-    .from('leads')
-    .select('sales_user_id, value')
-    .eq('status', 'won')
-    .gte('won_at', period.start.toISOString())
-    .lt('won_at', period.end.toISOString());
-
-  if (error) throw new Error(`Failed to fetch won leads: ${error.message}`);
+  const data = await fetchAllRows<{ sales_user_id: string | null; value: number | null }>(
+    (from, to) =>
+      supabase
+        .from('leads')
+        .select('sales_user_id, value')
+        .eq('status', 'won')
+        .gte('won_at', period.start.toISOString())
+        .lt('won_at', period.end.toISOString())
+        .range(from, to),
+  );
 
   const grouped = new Map<string | null, WonAggregate>();
-  for (const lead of data || []) {
+  for (const lead of data) {
     const key = lead.sales_user_id;
     const existing = grouped.get(key) || { sales_user_id: key, won_count: 0, won_value: 0 };
     existing.won_count += 1;

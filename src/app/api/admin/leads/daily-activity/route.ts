@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
 import { requireRole } from "@/lib/sales-auth";
 import { AuthError } from "@/lib/auth";
+import { fetchAllRows } from "@/lib/supabase/paginate";
 
 export const dynamic = "force-dynamic";
 
@@ -89,18 +90,15 @@ export async function GET(request: Request) {
 
     // Real calls logged in the window, tallied per rep (total + connected).
     // Supabase JS can't GROUP BY, so fetch and tally in JS.
-    let callsQuery = admin.from("calls").select("sales_user_id, outcome");
-    if (sinceIso) callsQuery = callsQuery.gte("occurred_at", sinceIso);
-    const { data: callRows, error: callsError } = await callsQuery;
-    if (callsError) {
-      logger.error("Failed to load calls activity", { error: callsError.message });
-      return NextResponse.json(
-        { error: "Failed to load activity" },
-        { status: 500 },
-      );
-    }
+    const callRows = await fetchAllRows<{ sales_user_id: string | null; outcome: string }>(
+      (from, to) => {
+        let q = admin.from("calls").select("sales_user_id, outcome").range(from, to);
+        if (sinceIso) q = q.gte("occurred_at", sinceIso);
+        return q;
+      },
+    );
     const callsByRep = new Map<string, { called: number; connected: number }>();
-    for (const c of callRows || []) {
+    for (const c of callRows) {
       if (!c.sales_user_id) continue;
       const agg = callsByRep.get(c.sales_user_id) || { called: 0, connected: 0 };
       agg.called++;
