@@ -121,6 +121,9 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
   // Recent calls (always via /api/sales — it authorizes admins too)
   const [calls, setCalls] = useState<CallRow[]>([]);
 
+  // Rep roster for the manager-only reassign control (admin role only).
+  const [reps, setReps] = useState<{ id: string; name: string }[]>([]);
+
   const streamRef = useRef<LeadStreamHandle>(null);
 
   const applyLead = useCallback((l: LeadWithRep) => {
@@ -164,6 +167,19 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
     fetchLead();
     fetchCalls();
   }, [fetchLead, fetchCalls]);
+
+  useEffect(() => {
+    if (role !== "admin") return;
+    fetch("/api/admin/sales-users")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (j?.data) {
+          const users = j.data as { id: string; name: string; role?: string }[];
+          setReps(users.filter((u) => u.role !== "admin"));
+        }
+      })
+      .catch(() => {});
+  }, [role]);
 
   // Shared updater. Returns the updated lead row on success.
   const update = useCallback(
@@ -230,6 +246,23 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
       streamRef.current?.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to update status");
+    }
+  };
+
+  // Manager-only: move the lead to another rep (or back to the pool) via the
+  // override endpoint, then refresh to show the new owner.
+  const reassign = async (salesUserId: string | null) => {
+    setError("");
+    try {
+      const res = await fetch("/api/admin/leads/reassign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadIds: [leadId], salesUserId }),
+      });
+      if (!res.ok) throw new Error();
+      await fetchLead();
+    } catch {
+      setError("Failed to reassign lead");
     }
   };
 
@@ -571,13 +604,30 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
                   <dt className="text-xs text-[var(--ink-500)]">
                     Assigned rep
                   </dt>
-                  <dd className="text-[var(--ink-900)]">
-                    {lead.sales_user?.name || (
-                      <span className="text-[var(--ink-400)] italic">
-                        Unassigned
-                      </span>
-                    )}
-                  </dd>
+                  {role === "admin" ? (
+                    <dd className="mt-0.5">
+                      <select
+                        value={lead.sales_user?.id ?? ""}
+                        onChange={(e) => reassign(e.target.value || null)}
+                        className="w-full cursor-pointer rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1 text-sm text-[var(--ink-900)]"
+                      >
+                        <option value="">Unassigned</option>
+                        {reps.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </select>
+                    </dd>
+                  ) : (
+                    <dd className="text-[var(--ink-900)]">
+                      {lead.sales_user?.name || (
+                        <span className="text-[var(--ink-400)] italic">
+                          Unassigned
+                        </span>
+                      )}
+                    </dd>
+                  )}
                 </div>
               </div>
               <div className="flex items-start gap-3">

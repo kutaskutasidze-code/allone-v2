@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Phone, Mail, Globe, ExternalLink } from "lucide-react";
+import { Phone, Mail, Globe, ExternalLink, User } from "lucide-react";
 import { INFOSHOP_PATTERN } from "@/lib/validations/leads";
 
 export const PITCH_LABELS: Record<string, string> = {
@@ -45,6 +45,8 @@ export interface LeadCardData {
   notes: string | null;
   tags: string[] | null;
   created_at: string;
+  /** Assigned rep, when the caller joins it (admin list). Omit on rep-scoped lists. */
+  sales_user?: { id: string; name: string } | null;
 }
 
 interface LeadCardProps {
@@ -74,15 +76,69 @@ export function LeadCard({
   onSelectToggle,
 }: LeadCardProps) {
   const heading = lead.company || lead.name;
+
+  // Compact single-line row (Espo-style) for the leads lists.
+  if (variant === "row") {
+    return (
+      <div
+        className={`group px-4 py-2.5 transition-colors hover:bg-[var(--bg-surface-alt)] ${className}`.trim()}
+      >
+        <div className="flex items-center gap-3">
+          {selectable && (
+            <input
+              type="checkbox"
+              checked={!!selected}
+              onChange={onSelectToggle}
+              aria-label="Select lead"
+              className="h-4 w-4 shrink-0 cursor-pointer accent-[var(--ao-accent)]"
+            />
+          )}
+          {basePath ? (
+            <Link
+              href={`${basePath}/${lead.id}`}
+              className="shrink-0 max-w-[40%] truncate text-sm font-medium text-[var(--ink-900)] hover:underline"
+            >
+              {heading}
+            </Link>
+          ) : (
+            <span className="shrink-0 max-w-[40%] truncate text-sm font-medium text-[var(--ink-900)]">
+              {heading}
+            </span>
+          )}
+          <div className="flex min-w-0 flex-1 items-center gap-3 text-xs text-[var(--ink-400)]">
+            {lead.phone && (
+              <a
+                href={`tel:${lead.phone}`}
+                className="inline-flex shrink-0 items-center gap-1 text-[var(--ao-accent)] hover:underline"
+              >
+                <Phone className="h-3 w-3" />
+                {lead.phone}
+              </a>
+            )}
+            {lead.city && <span className="truncate">{lead.city}</span>}
+            <span className="shrink-0">{formatDate(lead.created_at)}</span>
+            {lead.sales_user && (
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--bg-surface-alt)] px-2 py-0.5 text-[11px] text-[var(--ink-700)]">
+                <User className="h-3 w-3" />
+                {lead.sales_user.name}
+              </span>
+            )}
+          </div>
+          {actions && (
+            <div className="flex shrink-0 items-center gap-2">{actions}</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Detailed card (hotlines).
   const visibleTags = (lead.tags ?? []).filter((t) => !HIDDEN_TAGS.has(t));
 
-  const base =
-    variant === "card"
-      ? "group bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] p-4 shadow-[var(--shadow-xs)] shadow-black/[0.02] hover:shadow-[var(--shadow-sm)] hover:shadow-black/[0.04] transition-shadow duration-200"
-      : "group p-4 transition-colors hover:bg-[var(--bg-surface-alt)]";
-
   return (
-    <div className={`${base} ${className}`.trim()}>
+    <div
+      className={`group rounded-[var(--radius-md)] border border-[var(--allone-line-soft)] bg-[var(--bg-surface)] p-4 shadow-[var(--shadow-xs)] shadow-black/[0.02] transition-shadow duration-200 hover:shadow-[var(--shadow-sm)] hover:shadow-black/[0.04] ${className}`.trim()}
+    >
       <div className="flex items-start justify-between gap-3">
         {selectable && (
           <input

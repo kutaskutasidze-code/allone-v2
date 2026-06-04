@@ -278,6 +278,7 @@ function AdminLeadsPageContent() {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkPendingLost, setBulkPendingLost] = useState(false);
+  const [reps, setReps] = useState<{ id: string; name: string }[]>([]);
   const limit = 50;
 
   const handleIndustrySelect = useCallback(
@@ -306,6 +307,19 @@ function AdminLeadsPageContent() {
     } catch {
       /* ignore */
     }
+  }, []);
+
+  // Roster of reps for the bulk "Assign to…" control (admin-only page).
+  useEffect(() => {
+    fetch("/api/admin/sales-users")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (j?.data) {
+          const users = j.data as { id: string; name: string; role?: string }[];
+          setReps(users.filter((u) => u.role !== "admin"));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const debouncedSearch = useDebounce(search, 350);
@@ -448,6 +462,22 @@ function AdminLeadsPageContent() {
       fetchStatusCounts();
     } catch {
       setError("Bulk delete failed");
+    }
+  };
+
+  const runBulkAssign = async (salesUserId: string | null) => {
+    const leadIds = Array.from(selected);
+    try {
+      const res = await fetch("/api/admin/leads/reassign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadIds, salesUserId }),
+      });
+      if (!res.ok) throw new Error();
+      fetchLeads();
+      fetchStatusCounts();
+    } catch {
+      setError("Bulk assign failed");
     }
   };
 
@@ -703,6 +733,23 @@ function AdminLeadsPageContent() {
                     {s.label}
                   </option>
                 ))}
+              </select>
+              <select
+                value=""
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v === "__unassign__") runBulkAssign(null);
+                  else if (v) runBulkAssign(v);
+                }}
+                className="px-3 py-1.5 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] cursor-pointer"
+              >
+                <option value="">Assign to…</option>
+                {reps.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}
+                  </option>
+                ))}
+                <option value="__unassign__">— Unassign —</option>
               </select>
               <button
                 onClick={runBulkDelete}
