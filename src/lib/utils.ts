@@ -31,3 +31,25 @@ export function formatRelative(iso: string): string {
   if (days < 30) return `${days}d ago`;
   return d.toLocaleDateString();
 }
+
+/**
+ * Returns the URL only if it is a safe http(s) link, else null. Guards `href`s
+ * built from untrusted (scraped) lead data against `javascript:`/`data:` URIs.
+ * A bare domain with no scheme is treated as https so legit links still work.
+ */
+export function safeHttpUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    try {
+      parsed = new URL(`https://${url}`);
+    } catch {
+      return null;
+    }
+  }
+  return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+    ? parsed.href
+    : null;
+}

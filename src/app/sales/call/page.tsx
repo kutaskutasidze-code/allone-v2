@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { safeHttpUrl } from '@/lib/utils';
 import {
   Phone,
   ChevronLeft,
@@ -255,7 +256,7 @@ function CallModeContent() {
               {current.city && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" />{current.city}</span>}
               {current.industry && <span className="inline-flex items-center gap-1"><Building2 className="w-3 h-3" />{current.industry}</span>}
               {current.website && !INFOSHOP_PATTERN.test(current.website) ? (
-                <a href={current.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-green-600 hover:underline">
+                <a href={safeHttpUrl(current.website) ?? undefined} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-green-600 hover:underline">
                   <Globe className="w-3 h-3" />Has website
                 </a>
               ) : (
@@ -313,7 +314,7 @@ function CallModeContent() {
               )}
               {current.facebook_url && (
                 <a
-                  href={current.facebook_url}
+                  href={safeHttpUrl(current.facebook_url) ?? undefined}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 py-3 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-md)] text-sm text-[var(--ink-700)] hover:bg-[var(--bg-surface-alt)]"

@@ -11,6 +11,10 @@ import {
   CalendarClock,
   User,
   Clock,
+  Globe,
+  Facebook,
+  MapPin,
+  ExternalLink,
 } from "lucide-react";
 import {
   StatusDropdown,
@@ -26,9 +30,10 @@ import {
   LEAD_STATUS_LABELS,
   LEAD_STATUS_STYLES,
   LOST_REASONS,
+  INFOSHOP_PATTERN,
 } from "@/lib/validations/leads";
 import { CALL_OUTCOME_LABELS } from "@/lib/validations/activity";
-import { formatRelative } from "@/lib/utils";
+import { formatRelative, safeHttpUrl } from "@/lib/utils";
 import type { Lead, LeadStatus } from "@/types/database";
 
 type Role = "admin" | "sales";
@@ -313,6 +318,15 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
   }
 
   const status = lead.status as LeadStatus;
+  const webHref =
+    lead.website && !INFOSHOP_PATTERN.test(lead.website)
+      ? safeHttpUrl(lead.website)
+      : null;
+  const fbHref = safeHttpUrl(lead.facebook_url);
+  const srcHref =
+    lead.source_url && !INFOSHOP_PATTERN.test(lead.source_url)
+      ? safeHttpUrl(lead.source_url)
+      : null;
 
   return (
     <div className="mx-auto w-full max-w-6xl">
@@ -591,6 +605,55 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
               </button>
             </div>
           </div>
+
+          {/* Research — the business's own web presence, for pre-call research */}
+          {(webHref || fbHref || srcHref) && (
+            <div className={CARD_CLS}>
+              <h2 className="mb-3 text-sm font-medium text-[var(--ink-900)]">
+                Research
+              </h2>
+              <div className="space-y-2">
+                {webHref && (
+                  <a
+                    href={webHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-2.5 text-sm text-[var(--ink-800)] transition-all hover:border-[var(--allone-line-strong)] hover:bg-[var(--bg-surface-alt)]"
+                  >
+                    <Globe className="h-4 w-4 text-green-600" />
+                    <span className="flex-1 truncate text-left">Website</span>
+                    <ExternalLink className="h-3.5 w-3.5 text-[var(--ink-400)]" />
+                  </a>
+                )}
+                {fbHref && (
+                  <a
+                    href={fbHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-2.5 text-sm text-[var(--ink-800)] transition-all hover:border-[var(--allone-line-strong)] hover:bg-[var(--bg-surface-alt)]"
+                  >
+                    <Facebook className="h-4 w-4 text-[#1877f2]" />
+                    <span className="flex-1 truncate text-left">Facebook</span>
+                    <ExternalLink className="h-3.5 w-3.5 text-[var(--ink-400)]" />
+                  </a>
+                )}
+                {srcHref && (
+                  <a
+                    href={srcHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex w-full items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-2.5 text-sm text-[var(--ink-800)] transition-all hover:border-[var(--allone-line-strong)] hover:bg-[var(--bg-surface-alt)]"
+                  >
+                    <MapPin className="h-4 w-4 text-[var(--ao-accent)]" />
+                    <span className="flex-1 truncate text-left">
+                      {/google/i.test(srcHref) ? "Google Maps" : "Source listing"}
+                    </span>
+                    <ExternalLink className="h-3.5 w-3.5 text-[var(--ink-400)]" />
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Metadata */}
           <div className={CARD_CLS}>

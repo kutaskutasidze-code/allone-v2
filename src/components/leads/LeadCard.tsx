@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Phone, Mail, Globe, ExternalLink, User } from "lucide-react";
+import { Phone, Mail, Globe, ExternalLink, User, Facebook, MapPin } from "lucide-react";
 import { INFOSHOP_PATTERN } from "@/lib/validations/leads";
+import { safeHttpUrl } from "@/lib/utils";
 
 export const PITCH_LABELS: Record<string, string> = {
   no_website: "No website",
@@ -79,6 +80,15 @@ export function LeadCard({
 
   // Compact single-line row (Espo-style) for the leads lists.
   if (variant === "row") {
+    const webHref =
+      lead.website && !INFOSHOP_PATTERN.test(lead.website)
+        ? safeHttpUrl(lead.website)
+        : null;
+    const fbHref = safeHttpUrl(lead.facebook_url);
+    const srcHref =
+      lead.source_url && !INFOSHOP_PATTERN.test(lead.source_url)
+        ? safeHttpUrl(lead.source_url)
+        : null;
     return (
       <div
         className={`group px-4 py-2.5 transition-colors hover:bg-[var(--bg-surface-alt)] ${className}`.trim()}
@@ -124,6 +134,43 @@ export function LeadCard({
               </span>
             )}
           </div>
+          {(webHref || fbHref || srcHref) && (
+            <span className="flex shrink-0 items-center gap-2.5">
+              {webHref && (
+                <a
+                  href={webHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Website"
+                  className="text-green-600 transition-opacity hover:opacity-60"
+                >
+                  <Globe className="h-3.5 w-3.5" />
+                </a>
+              )}
+              {fbHref && (
+                <a
+                  href={fbHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Facebook"
+                  className="text-[#1877f2] transition-opacity hover:opacity-60"
+                >
+                  <Facebook className="h-3.5 w-3.5" />
+                </a>
+              )}
+              {srcHref && (
+                <a
+                  href={srcHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Source listing (Google Maps / directory)"
+                  className="text-[var(--ao-accent)] transition-opacity hover:opacity-60"
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                </a>
+              )}
+            </span>
+          )}
           {actions && (
             <div className="flex shrink-0 items-center gap-2">{actions}</div>
           )}
@@ -134,6 +181,15 @@ export function LeadCard({
 
   // Detailed card (hotlines).
   const visibleTags = (lead.tags ?? []).filter((t) => !HIDDEN_TAGS.has(t));
+  const webHref =
+    lead.website && !INFOSHOP_PATTERN.test(lead.website)
+      ? safeHttpUrl(lead.website)
+      : null;
+  const fbHref = safeHttpUrl(lead.facebook_url);
+  const srcHref =
+    lead.source_url && !INFOSHOP_PATTERN.test(lead.source_url)
+      ? safeHttpUrl(lead.source_url)
+      : null;
 
   return (
     <div
@@ -188,9 +244,9 @@ export function LeadCard({
                 {lead.email}
               </a>
             )}
-            {lead.website && !INFOSHOP_PATTERN.test(lead.website) ? (
+            {webHref ? (
               <a
-                href={lead.website}
+                href={webHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-xs text-green-600 hover:underline"
@@ -204,9 +260,9 @@ export function LeadCard({
                 No website
               </span>
             )}
-            {lead.facebook_url && (
+            {fbHref && (
               <a
-                href={lead.facebook_url}
+                href={fbHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-xs text-[var(--ao-accent)] hover:underline"
@@ -215,9 +271,9 @@ export function LeadCard({
                 Facebook
               </a>
             )}
-            {lead.source_url && !INFOSHOP_PATTERN.test(lead.source_url) && (
+            {srcHref && (
               <a
-                href={lead.source_url}
+                href={srcHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-xs text-[var(--ink-500)] hover:text-[var(--ao-accent)]"
