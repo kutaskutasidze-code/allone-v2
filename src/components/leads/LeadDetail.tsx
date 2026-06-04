@@ -8,6 +8,7 @@ import {
   AlertCircle,
   Phone,
   CalendarPlus,
+  CalendarClock,
   User,
   Clock,
 } from "lucide-react";
@@ -15,6 +16,7 @@ import {
   StatusDropdown,
   LogCallSheet,
   AddTaskSheet,
+  ScheduleMeetingSheet,
   TaskQueue,
 } from "@/components/leads";
 import { LeadStream, type LeadStreamHandle } from "./LeadStream";
@@ -114,6 +116,7 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
   // Sheets
   const [logCallOpen, setLogCallOpen] = useState(false);
   const [addTaskOpen, setAddTaskOpen] = useState(false);
+  const [meetingOpen, setMeetingOpen] = useState(false);
 
   // Recent calls (always via /api/sales — it authorizes admins too)
   const [calls, setCalls] = useState<CallRow[]>([]);
@@ -291,6 +294,12 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
         open={addTaskOpen}
         onClose={() => setAddTaskOpen(false)}
         onAdded={afterActivity}
+      />
+      <ScheduleMeetingSheet
+        leadId={leadId}
+        open={meetingOpen}
+        onClose={() => setMeetingOpen(false)}
+        onScheduled={afterActivity}
       />
 
       {/* Back + header */}
@@ -539,6 +548,13 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
               >
                 <CalendarPlus className="w-4 h-4 text-[var(--ink-400)]" />
                 <span className="flex-1 text-left">Add follow-up</span>
+              </button>
+              <button
+                onClick={() => setMeetingOpen(true)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] text-sm text-[var(--ink-800)] hover:border-[var(--allone-line-strong)] hover:bg-[var(--bg-surface-alt)] transition-all"
+              >
+                <CalendarClock className="w-4 h-4 text-[var(--ink-400)]" />
+                <span className="flex-1 text-left">Schedule meeting</span>
               </button>
             </div>
           </div>

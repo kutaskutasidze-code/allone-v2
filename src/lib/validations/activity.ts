@@ -72,6 +72,42 @@ export const updateTaskSchema = z.object({
 });
 
 // ============================================
+// Meetings
+// ============================================
+
+export const MEETING_STATUSES = [
+  { value: 'scheduled', label: 'Scheduled' },
+  { value: 'held', label: 'Held' },
+  { value: 'no_show', label: 'No-show' },
+  { value: 'cancelled', label: 'Cancelled' },
+] as const;
+
+export const meetingStatusSchema = z.enum([
+  'scheduled',
+  'held',
+  'no_show',
+  'cancelled',
+]);
+
+// NOTE: lead_id comes from the route param, NOT the body.
+export const createMeetingSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(255, 'Title too long').default('Meeting'),
+  starts_at: z.string().datetime({ offset: true }),
+  ends_at: z.string().datetime({ offset: true }).optional(),
+  location: z.string().max(255, 'Location too long').optional().transform((val) => val || null),
+  notes: z.string().optional().transform((val) => val || null),
+});
+
+export const updateMeetingSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(255, 'Title too long').optional(),
+  starts_at: z.string().datetime({ offset: true }).optional(),
+  ends_at: z.string().datetime({ offset: true }).optional(),
+  location: z.string().max(255).optional().transform((val) => (val === undefined ? undefined : val || null)),
+  status: meetingStatusSchema.optional(),
+  notes: z.string().optional().transform((val) => (val === undefined ? undefined : val || null)),
+});
+
+// ============================================
 // Type Exports
 // ============================================
 
@@ -79,3 +115,5 @@ export type CallOutcomeValue = z.infer<typeof callOutcomeSchema>;
 export type CreateCall = z.infer<typeof createCallSchema>;
 export type CreateTask = z.infer<typeof createTaskSchema>;
 export type UpdateTask = z.infer<typeof updateTaskSchema>;
+export type CreateMeeting = z.infer<typeof createMeetingSchema>;
+export type UpdateMeeting = z.infer<typeof updateMeetingSchema>;
