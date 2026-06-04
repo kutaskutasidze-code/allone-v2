@@ -10,6 +10,8 @@ import {
   LeadNotes,
   LeadCard,
   LeadsPagination,
+  LostReasonPicker,
+  SavedViews,
 } from "@/components/leads";
 import {
   LEAD_STATUSES,
@@ -274,6 +276,8 @@ function AdminLeadsPageContent() {
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
   const [showAddLead, setShowAddLead] = useState(false);
   const [error, setError] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkPendingLost, setBulkPendingLost] = useState(false);
   const limit = 50;
 
   const handleIndustrySelect = useCallback(
@@ -309,6 +313,7 @@ function AdminLeadsPageContent() {
   const fetchLeads = useCallback(async () => {
     try {
       setIsLoading(true);
+      setSelected(new Set());
       const params = new URLSearchParams();
       if (statusFilter !== "all") params.set("status", statusFilter);
       if (serviceFilter !== "all") params.set("service", serviceFilter);
@@ -379,6 +384,88 @@ function AdminLeadsPageContent() {
     } catch {
       setError("Failed to delete lead");
     }
+  };
+
+  const toggleSelect = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const allOnPageSelected =
+    leads.length > 0 && leads.every((l) => selected.has(l.id));
+  const toggleSelectAll = () =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (allOnPageSelected) leads.forEach((l) => next.delete(l.id));
+      else leads.forEach((l) => next.add(l.id));
+      return next;
+    });
+
+  const runBulkStatus = async (status: string, lost_reason?: string) => {
+    const leadIds = Array.from(selected);
+    try {
+      const res = await fetch("/api/admin/leads/bulk-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          leadIds,
+          status,
+          ...(lost_reason ? { lost_reason } : {}),
+        }),
+      });
+      if (!res.ok) throw new Error();
+      fetchLeads();
+      fetchStatusCounts();
+    } catch {
+      setError("Bulk status update failed");
+    }
+  };
+
+  const handleBulkStatus = (status: string) => {
+    if (status === "lost") setBulkPendingLost(true);
+    else runBulkStatus(status);
+  };
+
+  const runBulkDelete = async () => {
+    const leadIds = Array.from(selected);
+    if (
+      !confirm(
+        `Delete ${leadIds.length} lead${leadIds.length === 1 ? "" : "s"}? This cannot be undone.`,
+      )
+    )
+      return;
+    try {
+      const res = await fetch("/api/admin/leads/bulk-delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadIds }),
+      });
+      if (!res.ok) throw new Error();
+      fetchLeads();
+      fetchStatusCounts();
+    } catch {
+      setError("Bulk delete failed");
+    }
+  };
+
+  const applyView = (f: {
+    status: string;
+    service: string;
+    website: string;
+    source: string;
+    industry: string | null;
+    search: string;
+  }) => {
+    setStatusFilter(f.status);
+    setServiceFilter(f.service);
+    setWebsiteFilter(f.website);
+    setSourceFilter(f.source);
+    handleIndustrySelect(f.industry);
+    setSearch(f.search);
+    setPage(1);
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -547,6 +634,20 @@ function AdminLeadsPageContent() {
               Clear
             </button>
           )}
+          <div className="ml-auto">
+            <SavedViews
+              storageKey="allone:admin-lead-views"
+              current={{
+                status: statusFilter,
+                service: serviceFilter,
+                website: websiteFilter,
+                source: sourceFilter,
+                industry: industryFilter,
+                search,
+              }}
+              onApply={applyView}
+            />
+          </div>
         </div>
 
         {/* Search */}
@@ -572,6 +673,61 @@ function AdminLeadsPageContent() {
           )}
         </div>
       </div>
+
+      {/* Bulk-select bar */}
+      {!isLoading && leads.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-2.5 shadow-[var(--shadow-xs)]">
+          <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-medium text-[var(--ink-700)]">
+            <input
+              type="checkbox"
+              checked={allOnPageSelected}
+              onChange={toggleSelectAll}
+              className="h-4 w-4 accent-[var(--ao-accent)]"
+            />
+            {selected.size > 0
+              ? `${selected.size} selected`
+              : "Select all on page"}
+          </label>
+          {selected.size > 0 && (
+            <>
+              <select
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) handleBulkStatus(e.target.value);
+                }}
+                className="px-3 py-1.5 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] cursor-pointer"
+              >
+                <option value="">Set status…</option>
+                {LEAD_STATUSES.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={runBulkDelete}
+                className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+              >
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </button>
+              <button
+                onClick={() => setSelected(new Set())}
+                className="ml-auto text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)]"
+              >
+                Clear
+              </button>
+            </>
+          )}
+        </div>
+      )}
+      <LostReasonPicker
+        open={bulkPendingLost}
+        onClose={() => setBulkPendingLost(false)}
+        onPick={(reason) => {
+          setBulkPendingLost(false);
+          runBulkStatus("lost", reason);
+        }}
+      />
 
       {/* Leads List */}
       {isLoading ? (
@@ -601,6 +757,9 @@ function AdminLeadsPageContent() {
               className={
                 idx > 0 ? "border-t border-[var(--allone-line-soft)]" : ""
               }
+              selectable
+              selected={selected.has(lead.id)}
+              onSelectToggle={() => toggleSelect(lead.id)}
               actions={
                 <>
                   <StatusDropdown

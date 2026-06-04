@@ -8,5 +8,6 @@ export { LeadStream } from "./LeadStream";
 export { LeadDetail } from "./LeadDetail";
 export { LeadNotes } from "./LeadNotes";
 export { LeadsPagination } from "./LeadsPagination";
+export { SavedViews } from "./SavedViews";
 export { LeadCard } from "./LeadCard";
 export type { LeadCardData } from "./LeadCard";

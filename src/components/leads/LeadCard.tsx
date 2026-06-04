@@ -57,6 +57,10 @@ interface LeadCardProps {
   className?: string;
   /** Right-side controls (status dropdown, follow-up, notes toggle, delete). */
   actions?: ReactNode;
+  /** Render a leading checkbox for bulk-select. */
+  selectable?: boolean;
+  selected?: boolean;
+  onSelectToggle?: () => void;
 }
 
 export function LeadCard({
@@ -65,6 +69,9 @@ export function LeadCard({
   variant = "row",
   className = "",
   actions,
+  selectable,
+  selected,
+  onSelectToggle,
 }: LeadCardProps) {
   const heading = lead.company || lead.name;
   const visibleTags = (lead.tags ?? []).filter((t) => !HIDDEN_TAGS.has(t));
@@ -77,6 +84,15 @@ export function LeadCard({
   return (
     <div className={`${base} ${className}`.trim()}>
       <div className="flex items-start justify-between gap-3">
+        {selectable && (
+          <input
+            type="checkbox"
+            checked={!!selected}
+            onChange={onSelectToggle}
+            aria-label="Select lead"
+            className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-[var(--ao-accent)]"
+          />
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             {basePath ? (
