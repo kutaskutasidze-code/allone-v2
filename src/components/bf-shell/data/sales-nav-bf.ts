@@ -91,6 +91,11 @@ export const adminNavBF: NavConfig = {
         { label: "All Leads", href: "/admin/leads", icon: "user-check" },
         { label: "Assign Leads", href: "/admin/leads/assign", icon: "compass" },
         { label: "Hot Lines", href: "/admin/leads/hotlines", icon: "plane" },
+        {
+          label: "Duplicates",
+          href: "/admin/leads/duplicates",
+          icon: "copy",
+        },
         { label: "Team", href: "/admin/team", icon: "users" },
         { label: "Calendar", href: "/admin/calendar", icon: "calendar" },
         { label: "Audit Log", href: "/admin/leads/audit", icon: "file-text" },
