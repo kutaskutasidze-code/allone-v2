@@ -9,7 +9,7 @@ import {
   CheckCircle,
   ArrowRight,
   Phone,
-  AlertTriangle,
+  CalendarClock,
   Sparkles,
 } from "lucide-react";
 import type { Lead, SalesUser } from "@/types/database";
@@ -20,14 +20,6 @@ import {
   TelegramConnect,
 } from "@/components/sales";
 import { formatCurrency } from "@/lib/utils";
-
-interface OverdueCallback {
-  id: string;
-  company: string | null;
-  name: string;
-  phone: string | null;
-  callback_date: string;
-}
 
 interface SalesDashboardContentProps {
   salesUser: SalesUser;
@@ -44,7 +36,8 @@ interface SalesDashboardContentProps {
   todaysCalls: number;
   todaysQueue: number;
   dailyTarget: number;
-  overdueCallbacks: OverdueCallback[];
+  followups: { overdue: number; dueToday: number };
+  forecast: number;
   demoStats?: {
     inFlight: number;
     awaitingReview: number;
@@ -55,15 +48,6 @@ interface SalesDashboardContentProps {
     connected: boolean;
     username: string | null;
   };
-}
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / 3600000);
-  if (hours < 1) return "just now";
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d overdue`;
 }
 
 // BF-style stat card. Icon disc top-left, optional arrow top-right, big
@@ -178,7 +162,8 @@ export function SalesDashboardContent({
   todaysCalls,
   todaysQueue,
   dailyTarget,
-  overdueCallbacks,
+  followups,
+  forecast,
   demoStats,
   telegramStatus,
 }: SalesDashboardContentProps) {
@@ -304,38 +289,29 @@ export function SalesDashboardContent({
 
         <StatCard
           icon={
-            <AlertTriangle
-              className={`h-4 w-4 ${overdueCallbacks.length > 0 ? "text-rose-500" : "text-emerald-500"}`}
+            <CalendarClock
+              className={`h-4 w-4 ${followups.overdue > 0 ? "text-rose-500" : "text-emerald-500"}`}
               strokeWidth={1.75}
             />
           }
-          label="Overdue Callbacks"
-          value={overdueCallbacks.length}
-          tone={overdueCallbacks.length > 0 ? "bad" : "good"}
-          hint={
-            overdueCallbacks.length === 0
-              ? "You're all caught up."
-              : `${overdueCallbacks.length} need a follow-up`
+          label="Follow-ups"
+          value={followups.overdue + followups.dueToday}
+          tone={
+            followups.overdue > 0
+              ? "bad"
+              : followups.dueToday > 0
+                ? "warn"
+                : "good"
           }
-        >
-          {overdueCallbacks.length > 0 && (
-            <ul className="mt-3 max-h-[120px] space-y-1.5 overflow-y-auto">
-              {overdueCallbacks.slice(0, 4).map((cb) => (
-                <li
-                  key={cb.id}
-                  className="flex items-center justify-between gap-2 border-t border-[var(--allone-line-soft)] pt-1.5 first:border-0 first:pt-0"
-                >
-                  <span className="min-w-0 truncate text-[12px] font-medium text-[var(--ink-900)]">
-                    {cb.company || cb.name}
-                  </span>
-                  <span className="shrink-0 text-[10.5px] font-medium text-rose-500">
-                    {timeAgo(cb.callback_date)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </StatCard>
+          href="/sales/follow-ups"
+          hint={
+            followups.overdue > 0
+              ? `${followups.overdue} overdue · ${followups.dueToday} due today`
+              : followups.dueToday > 0
+                ? `${followups.dueToday} due today`
+                : "You're all caught up."
+          }
+        />
       </section>
 
       {/* Aims & Telegram */}
@@ -412,7 +388,15 @@ export function SalesDashboardContent({
       {/* Money */}
       <section>
         <SectionHead title="Revenue" />
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            icon={<TrendingUp className="h-4 w-4" strokeWidth={1.75} />}
+            label="Expected to close"
+            value={formatCurrency(forecast)}
+            hint="Weighted, open stages"
+            tone="accent"
+            href="/sales/pipeline"
+          />
           <StatCard
             icon={<TrendingUp className="h-4 w-4" strokeWidth={1.75} />}
             label="Pipeline Value"

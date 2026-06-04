@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { redirect } from 'next/navigation';
+import { buildPipeline } from '@/lib/pipeline';
+import { weightedForecast } from '@/lib/forecasting';
 import { SalesDashboardContent } from '../SalesDashboardContent';
 
 async function getSalesUser() {
@@ -101,22 +103,50 @@ async function getTodaysCallsByMe(salesUserId: string) {
   return count || 0;
 }
 
-async function getOverdueCallbacks() {
-  // callback_date column will be added via Supabase dashboard
-  // For now return empty to avoid errors
-  return [];
+// Open follow-up tasks for this rep: overdue (past due) and coming up today.
+async function getFollowupCounts(salesUserId: string) {
+  const supabase = createAdminClient();
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setUTCHours(24, 0, 0, 0);
+
+  const [overdueRes, dueTodayRes] = await Promise.all([
+    supabase
+      .from('tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('sales_user_id', salesUserId)
+      .eq('status', 'open')
+      .lt('due_at', now.toISOString()),
+    supabase
+      .from('tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('sales_user_id', salesUserId)
+      .eq('status', 'open')
+      .gte('due_at', now.toISOString())
+      .lt('due_at', tomorrow.toISOString()),
+  ]);
+
+  return { overdue: overdueRes.count || 0, dueToday: dueTodayRes.count || 0 };
+}
+
+// Weighted "expected to close" for this rep's open pipeline (server-side).
+async function getForecast(salesUserId: string) {
+  const { stages } = await buildPipeline(createAdminClient(), { salesUserId });
+  return weightedForecast(stages);
 }
 
 export default async function SalesDashboard() {
   const salesUser = await getSalesUser();
 
-  const [stats, recentLeads, todaysQueue, todaysCalls, overdueCallbacks] = await Promise.all([
-    getLeadStats(salesUser.id),
-    getRecentLeads(salesUser.id),
-    getTodaysQueueCount(salesUser.id),
-    getTodaysCallsByMe(salesUser.id),
-    getOverdueCallbacks(),
-  ]);
+  const [stats, recentLeads, todaysQueue, todaysCalls, followups, forecast] =
+    await Promise.all([
+      getLeadStats(salesUser.id),
+      getRecentLeads(salesUser.id),
+      getTodaysQueueCount(salesUser.id),
+      getTodaysCallsByMe(salesUser.id),
+      getFollowupCounts(salesUser.id),
+      getForecast(salesUser.id),
+    ]);
 
   return (
     <SalesDashboardContent
@@ -126,7 +156,8 @@ export default async function SalesDashboard() {
       todaysCalls={todaysCalls}
       todaysQueue={todaysQueue}
       dailyTarget={salesUser.daily_target ?? 80}
-      overdueCallbacks={overdueCallbacks}
+      followups={followups}
+      forecast={forecast}
     />
   );
 }

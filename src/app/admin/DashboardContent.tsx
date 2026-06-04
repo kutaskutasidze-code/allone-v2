@@ -16,7 +16,8 @@ import {
   LEAD_STATUSES,
 } from "@/lib/validations/leads";
 import { DailyActivityCard } from "./DailyActivityCard";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { weightedForecast } from "@/lib/forecasting";
 import {
   LineChart,
   Line,
@@ -67,6 +68,45 @@ const PIE_COLORS = [
   "#dddddd",
 ];
 
+function KpiTile({
+  label,
+  value,
+  hint,
+  href,
+  tone = "default",
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  href?: string;
+  tone?: "accent" | "default";
+}) {
+  const toneClass =
+    tone === "accent"
+      ? "border-[var(--ao-accent-soft)] bg-[var(--ao-accent-soft)]/40"
+      : "border-[var(--allone-line)] bg-[var(--bg-surface)]";
+  const inner = (
+    <div
+      className={`flex h-full flex-col gap-2 rounded-[var(--radius-md)] border ${toneClass} p-4 shadow-[var(--shadow-xs)] transition hover:shadow-[var(--shadow-sm)]`}
+    >
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-500)]">
+        {label}
+      </div>
+      <div className="text-2xl font-semibold tracking-[-0.02em] text-[var(--ink-900)] tabular-nums">
+        {value}
+      </div>
+      {hint && <div className="text-[11.5px] text-[var(--ink-400)]">{hint}</div>}
+    </div>
+  );
+  return href ? (
+    <Link href={href} className="group block">
+      {inner}
+    </Link>
+  ) : (
+    <div>{inner}</div>
+  );
+}
+
 export function DashboardContent({
   counts,
   dailyRevenue,
@@ -77,6 +117,34 @@ export function DashboardContent({
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear(),
   );
+  const [team, setTeam] = useState<{
+    calledInPeriod: number;
+    connectedCalls: number;
+    wonCount: number;
+    wonRevenue: number;
+    pipelineValue: number;
+  } | null>(null);
+  const [forecast, setForecast] = useState<number | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/admin/team?period=month")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (active && j?.data?.totals) setTeam(j.data.totals);
+      })
+      .catch(() => {});
+    fetch("/api/admin/pipeline")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (active && j?.data?.stages)
+          setForecast(weightedForecast(j.data.stages));
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const formatCurrency = (value: number) => {
     if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
@@ -252,6 +320,39 @@ export function DashboardContent({
             </Link>
           );
         })}
+      </div>
+
+      {/* Team performance + forecast */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiTile
+          label="Expected to close"
+          value={forecast === null ? "…" : formatCurrency(forecast)}
+          hint="Weighted, open stages"
+          tone="accent"
+          href="/admin/pipeline"
+        />
+        <KpiTile
+          label="Calls this month"
+          value={team ? String(team.calledInPeriod) : "…"}
+          hint={team ? `${team.connectedCalls} connected` : undefined}
+          href="/admin/team"
+        />
+        <KpiTile
+          label="Won revenue (mo)"
+          value={team ? formatCurrency(team.wonRevenue) : "…"}
+          hint={
+            team
+              ? `${team.wonCount} ${team.wonCount === 1 ? "deal" : "deals"}`
+              : undefined
+          }
+          href="/admin/team"
+        />
+        <KpiTile
+          label="Pipeline value"
+          value={team ? formatCurrency(team.pipelineValue) : "…"}
+          hint="Active leads"
+          href="/admin/pipeline"
+        />
       </div>
 
       {/* Daily call activity by rep */}
