@@ -11,7 +11,6 @@ export async function GET() {
   const ADMIN_EMAILS = (process.env.ADMIN_EMAILS
     ? process.env.ADMIN_EMAILS.split(',')
     : [
-        'nikoloz.gaprindashvili@allonelabs.com',
         'luka.tsulukidze@allonelabs.com',
         'luka.adamia@allonelabs.com',
         'team@allonelabs.com',
