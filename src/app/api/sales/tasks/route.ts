@@ -1,5 +1,6 @@
 import { requireSalesAuth, canAccessLead } from "@/lib/sales-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { tbilisiDayStart } from "@/lib/time";
 import {
   success,
   successWithPagination,
@@ -41,8 +42,7 @@ export async function GET(request: Request) {
     const now = new Date().toISOString();
 
     if (scope === "due") {
-      const endOfToday = new Date();
-      endOfToday.setHours(23, 59, 59, 999);
+      const endOfToday = new Date(tbilisiDayStart().getTime() + 24 * 3600_000 - 1);
       query = query.eq("status", "open").lte("due_at", endOfToday.toISOString());
     } else if (scope === "overdue") {
       query = query.eq("status", "open").lt("due_at", now);

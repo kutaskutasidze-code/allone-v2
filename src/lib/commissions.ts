@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { fetchAllRows } from '@/lib/supabase/paginate';
+import { tbilisiMonthStart, tbilisiQuarterStart } from '@/lib/time';
 
 export const COMMISSION_RATES = {
   salesperson: 0.10,
@@ -34,24 +35,17 @@ export interface CommissionBreakdown {
 
 export function getCurrentMonth(): Period {
   const now = new Date();
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
-  return { start, end, label: 'This Month' };
+  return { start: tbilisiMonthStart(now, 0), end: tbilisiMonthStart(now, 1), label: 'This Month' };
 }
 
 export function getLastMonth(): Period {
   const now = new Date();
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  return { start, end, label: 'Last Month' };
+  return { start: tbilisiMonthStart(now, -1), end: tbilisiMonthStart(now, 0), label: 'Last Month' };
 }
 
 export function getQuarter(): Period {
-  const now = new Date();
-  const quarter = Math.floor(now.getUTCMonth() / 3);
-  const start = new Date(Date.UTC(now.getUTCFullYear(), quarter * 3, 1));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), quarter * 3 + 3, 1));
-  return { start, end, label: 'This Quarter' };
+  const start = tbilisiQuarterStart();
+  return { start, end: tbilisiMonthStart(start, 3), label: 'This Quarter' };
 }
 
 export function getAllTime(): Period {

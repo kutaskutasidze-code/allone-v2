@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSalesAuth } from "@/lib/sales-auth";
 import { leadStatusSchema } from "@/lib/validations/leads";
 import { fetchAllRows } from "@/lib/supabase/paginate";
+import { tbilisiDayStart, tbilisiWeekStart, tbilisiMonthStart } from "@/lib/time";
 
 export async function GET(request: NextRequest) {
   try {
@@ -105,13 +106,9 @@ export async function GET(request: NextRequest) {
     const monthTarget = dailyTarget * 21;
 
     const now = new Date();
-    const dayStart = new Date(now);
-    dayStart.setUTCHours(0, 0, 0, 0);
-    const weekStart = new Date(dayStart);
-    weekStart.setUTCDate(weekStart.getUTCDate() - weekStart.getUTCDay() + 1); // Monday-anchored
-    const monthStart = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
-    );
+    const dayStart = tbilisiDayStart(now);
+    const weekStart = tbilisiWeekStart(now);
+    const monthStart = tbilisiMonthStart(now);
 
     const callsRange = async (since: Date) => {
       // Real calls logged by this rep in the window.

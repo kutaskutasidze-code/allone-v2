@@ -12,6 +12,8 @@
 // metric records pulled by the caller) so we can unit-test without touching
 // Supabase.
 
+import { tbilisiDayStart, tbilisiWeekStart, tbilisiMonthStart } from "@/lib/time";
+
 export type Metric =
   | "leads_contacted"
   | "leads_qualified"
@@ -60,35 +62,22 @@ export function metricsOfInterest(): Metric[] {
   return [...ALL_METRICS];
 }
 
-// Anchor-relative window math (UTC math is fine because the caller already
-// shifts to the user's timezone before passing `now`).
+// Tbilisi-anchored window (UTC+4). Returns a closed [start, end] interval —
+// `end` is the last millisecond of the period.
 export function periodWindow(
   now: Date,
   period: Period,
 ): { start: Date; end: Date } {
   if (period === "day") {
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(start);
-    end.setHours(23, 59, 59, 999);
-    return { start, end };
+    const start = tbilisiDayStart(now);
+    return { start, end: new Date(start.getTime() + 24 * 3600_000 - 1) };
   }
   if (period === "week") {
-    // Week starts Monday
-    const start = new Date(now);
-    const day = (start.getDay() + 6) % 7; // 0 = Mon
-    start.setDate(start.getDate() - day);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 7);
-    end.setMilliseconds(-1);
-    return { start, end };
+    const start = tbilisiWeekStart(now);
+    return { start, end: new Date(start.getTime() + 7 * 24 * 3600_000 - 1) };
   }
-  // month
-  const start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0, 0);
-  end.setMilliseconds(-1);
-  return { start, end };
+  const start = tbilisiMonthStart(now, 0);
+  return { start, end: new Date(tbilisiMonthStart(now, 1).getTime() - 1) };
 }
 
 function sumInWindow(
