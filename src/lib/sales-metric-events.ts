@@ -6,6 +6,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { MetricEvent } from "./sales-aims";
+import { fetchAllRows } from "@/lib/supabase/paginate";
 
 const WINDOW_DAYS = 90;
 
@@ -23,17 +24,20 @@ export async function fetchMetricEventsForUser(
   // updated_at gets touched by every patch (including bulk imports), which
   // would lump 30k untouched leads into "today" the next time the importer
   // runs.
-  const { data: leads } = await supabase
-    .from("leads")
-    .select("id, status, value, status_changed_at, created_at")
-    .eq("sales_user_id", salesUserId)
-    .gte("status_changed_at", since);
-  for (const l of (leads as Array<{
+  const leads = await fetchAllRows<{
     status: string;
     value: number;
     status_changed_at: string | null;
     created_at: string;
-  }> | null) ?? []) {
+  }>((from, to) =>
+    supabase
+      .from("leads")
+      .select("id, status, value, status_changed_at, created_at")
+      .eq("sales_user_id", salesUserId)
+      .gte("status_changed_at", since)
+      .range(from, to),
+  );
+  for (const l of leads) {
     const t = l.status_changed_at ?? l.created_at;
     if (
       l.status === "interested" ||
@@ -53,12 +57,15 @@ export async function fetchMetricEventsForUser(
   }
 
   // leads_contacted = real calls logged by this rep (one event per call).
-  const { data: calls } = await supabase
-    .from("calls")
-    .select("occurred_at")
-    .eq("sales_user_id", salesUserId)
-    .gte("occurred_at", since);
-  for (const c of (calls as Array<{ occurred_at: string }> | null) ?? []) {
+  const calls = await fetchAllRows<{ occurred_at: string }>((from, to) =>
+    supabase
+      .from("calls")
+      .select("occurred_at")
+      .eq("sales_user_id", salesUserId)
+      .gte("occurred_at", since)
+      .range(from, to),
+  );
+  for (const c of calls) {
     events.push({
       metric: "leads_contacted",
       occurred_at: c.occurred_at,

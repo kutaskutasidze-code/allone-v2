@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { LEAD_STATUSES, parsePhonePrefixes } from '@/lib/validations/leads';
+import { LEAD_STATUSES, parsePhonePrefixes, INFOSHOP_DOMAIN } from '@/lib/validations/leads';
 import { logger } from '@/lib/logger';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
@@ -25,6 +25,14 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const includePrefixes = parsePhonePrefixes(searchParams.get('phone_prefix'));
     const excludePrefixes = parsePhonePrefixes(searchParams.get('exclude_phone_prefix'));
+    // Same narrowing filters as the leads list, so the chips match the list.
+    const industry = searchParams.get('industry');
+    const service = searchParams.get('service');
+    const hasWebsite = searchParams.get('has_website');
+    const hasSource = searchParams.get('has_source');
+    const hasAnySource = searchParams.get('has_any_source');
+    const search = (searchParams.get('search') || '').replace(/[%_,()]/g, '').slice(0, 100);
+    const infoshopLike = `%${INFOSHOP_DOMAIN}%`;
 
     const baseQuery = (statusValue: string | null) => {
       let q = admin.from('leads').select('id', { count: 'exact', head: true });
@@ -40,6 +48,15 @@ export async function GET(request: NextRequest) {
         const andClause = excludePrefixes.map(p => `phone.not.ilike.${p}%`).join(',');
         q = q.or(`phone.is.null,and(${andClause})`);
       }
+      if (industry && industry !== 'all') q = q.eq('industry', industry);
+      if (service && service !== 'all') q = q.eq('matched_service', service);
+      if (hasWebsite === 'yes') q = q.not('website', 'is', null).not('website', 'ilike', infoshopLike);
+      else if (hasWebsite === 'no') q = q.or(`website.is.null,website.ilike.${infoshopLike}`);
+      if (hasSource === 'yes') q = q.or(`and(source_url.not.is.null,source_url.not.ilike.${infoshopLike}),facebook_url.not.is.null`);
+      else if (hasSource === 'no') q = q.is('facebook_url', null).or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
+      if (hasAnySource === 'yes') q = q.or(`and(website.not.is.null,website.not.ilike.${infoshopLike}),facebook_url.not.is.null,and(source_url.not.is.null,source_url.not.ilike.${infoshopLike})`);
+      else if (hasAnySource === 'no') q = q.or(`website.is.null,website.ilike.${infoshopLike}`).is('facebook_url', null).or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
+      if (search) q = q.or(`name.ilike.%${search}%,email.ilike.%${search}%,company.ilike.%${search}%,phone.ilike.%${search}%,city.ilike.%${search}%`);
       return q;
     };
 

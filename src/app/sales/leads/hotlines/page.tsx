@@ -202,9 +202,9 @@ function HotLinesPageContent() {
           onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
           className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer font-medium"
         >
-          <option value="all">All Sources</option>
-          <option value="yes">Has Source</option>
-          <option value="no">No Source</option>
+          <option value="all">Any source</option>
+          <option value="yes">Has source (web / FB / maps)</option>
+          <option value="no">No source</option>
         </select>
         <HotLinesDropdown selectedIndustry={industryFilter} onSelect={handleIndustrySelect} phonePrefix={HOTLINE_PHONE_PREFIX_PARAM} />
         <button

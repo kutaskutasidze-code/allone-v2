@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { DashboardContent } from '../DashboardContent';
+import { buildPipeline } from '@/lib/pipeline';
 
 async function getStats() {
   const supabase = await createClient();
@@ -109,28 +110,25 @@ async function getLeadsData() {
     .order('created_at', { ascending: false })
     .limit(5);
 
-  // Get leads by status
-  const { data: allLeads } = await supabase
-    .from('leads')
-    .select('status, value');
+  // Per-status counts via exact head queries (a plain select caps at 1000 rows,
+  // which made the grid + pipeline-$ reflect only ~1000 of 25k leads); pipeline
+  // value via the paginated buildPipeline.
+  const statusKeys = ['new', 'in_process', 'interested', 'proposal', 'won', 'lost', 'on_hold'] as const;
+  const [statusCounts, pipeline] = await Promise.all([
+    Promise.all(
+      statusKeys.map(s =>
+        supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', s),
+      ),
+    ),
+    buildPipeline(supabase),
+  ]);
 
   const leadStats = {
-    new: 0,
-    in_process: 0,
-    interested: 0,
-    proposal: 0,
-    won: 0,
-    lost: 0,
-    on_hold: 0,
+    new: 0, in_process: 0, interested: 0, proposal: 0, won: 0, lost: 0, on_hold: 0,
     totalValue: 0,
   };
-
-  if (allLeads) {
-    allLeads.forEach(lead => {
-      leadStats[lead.status as keyof typeof leadStats]++;
-      leadStats.totalValue += lead.value || 0;
-    });
-  }
+  statusKeys.forEach((s, i) => { leadStats[s] = statusCounts[i].count || 0; });
+  leadStats.totalValue = pipeline.stages.reduce((sum, st) => sum + st.totalValue, 0);
 
   return {
     count: leadsCount || 0,

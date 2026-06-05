@@ -63,12 +63,27 @@ function CallModeContent() {
 
   useEffect(() => {
     let active = true;
-    const params = new URLSearchParams({ scope: 'today', limit: '200' });
-    fetch(`/api/sales/leads?${params.toString()}`)
-      .then(r => r.ok ? r.json() : Promise.reject(new Error('Failed')))
-      .then(json => { if (active) setLeads(json.data || []); })
-      .catch(() => { if (active) setError('Failed to load your queue'); })
-      .finally(() => { if (active) setIsLoading(false); });
+    // Page through all of today's queue — the API caps `limit` at 100, so a rep
+    // with >100 leads assigned today would otherwise see a truncated queue.
+    (async () => {
+      try {
+        const all: Lead[] = [];
+        for (let page = 1; ; page++) {
+          const params = new URLSearchParams({ scope: 'today', limit: '100', page: String(page) });
+          const res = await fetch(`/api/sales/leads?${params.toString()}`);
+          if (!res.ok) throw new Error('Failed');
+          const json = await res.json();
+          const batch: Lead[] = json.data || [];
+          all.push(...batch);
+          if (batch.length < 100) break;
+        }
+        if (active) setLeads(all);
+      } catch {
+        if (active) setError('Failed to load your queue');
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    })();
     return () => { active = false; };
   }, []);
 

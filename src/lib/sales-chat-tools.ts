@@ -5,6 +5,7 @@
 // result back into the conversation.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { fetchAllRows } from "@/lib/supabase/paginate";
 import {
   buildContractPdf,
   buildInvoicePdf,
@@ -565,20 +566,32 @@ async function exportSalesReport(
 
   // Pull leads (scoped) + sales users (always need all for the Team sheet
   // when privileged; otherwise just the caller).
-  let leadsQuery = ctx.supabase
-    .from("leads")
-    .select(
-      "id, name, company, email, status, value, source, sales_user_id, created_at, status_changed_at, callback_at",
-    )
-    .order("created_at", { ascending: false })
-    .limit(10000);
-  if (!isPrivileged) leadsQuery = leadsQuery.eq("sales_user_id", me.id);
-  const { data: rawLeads, error: leadsErr } = await leadsQuery;
-  if (leadsErr) {
+  // Page through all leads — a .limit(10000) is capped at 1000 by PostgREST, so
+  // a privileged export shipped 1k of ~25k rows (every total/% ~25× low).
+  type ExportLead = {
+    id: string; name: string | null; company: string | null; email: string | null;
+    status: string; value: number | null; source: string | null;
+    sales_user_id: string | null; created_at: string;
+    status_changed_at: string | null; callback_at: string | null;
+  };
+  let rawLeads: ExportLead[];
+  try {
+    rawLeads = await fetchAllRows<ExportLead>((from, to) => {
+      let q = ctx.supabase
+        .from("leads")
+        .select(
+          "id, name, company, email, status, value, source, sales_user_id, created_at, status_changed_at, callback_at",
+        )
+        .order("created_at", { ascending: false })
+        .range(from, to);
+      if (!isPrivileged) q = q.eq("sales_user_id", me.id);
+      return q;
+    });
+  } catch (e) {
     return {
       tool: "export_sales_report",
       ok: false,
-      error: `leads query failed: ${leadsErr.message}`,
+      error: `leads query failed: ${String(e)}`,
     };
   }
   const leads = (rawLeads as RawLead[] | null) ?? [];

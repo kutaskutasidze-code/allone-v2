@@ -27,8 +27,10 @@ interface SalesDashboardContentProps {
     new: number;
     in_process: number;
     interested: number;
+    proposal: number;
     won: number;
     lost: number;
+    on_hold: number;
     pipelineValue: number;
     wonValue: number;
   };
@@ -168,7 +170,7 @@ export function SalesDashboardContent({
   telegramStatus,
 }: SalesDashboardContentProps) {
   const totalLeads =
-    stats.new + stats.in_process + stats.interested + stats.won + stats.lost;
+    stats.new + stats.in_process + stats.interested + stats.proposal + stats.won + stats.lost + stats.on_hold;
   const conversionRate =
     totalLeads > 0 ? ((stats.won / totalLeads) * 100).toFixed(1) : "0";
   const callTarget = dailyTarget;

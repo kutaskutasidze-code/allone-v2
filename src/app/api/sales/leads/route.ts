@@ -85,9 +85,21 @@ export async function GET(request: Request) {
       query = query.or(`website.is.null,website.ilike.${infoshopLike}`);
     }
 
+    // "Has source" = a real research handle: website, Facebook, or non-infoshop
+    // source_url (e.g. Google Maps). Mirrors admin's has_any_source — the old
+    // version filtered the `source` text column ('infoshop.ge'/'manual'), which
+    // matched ~every lead.
     const hasSource = url.searchParams.get("has_source");
-    if (hasSource === "yes") query = query.not("source", "is", null);
-    else if (hasSource === "no") query = query.is("source", null);
+    if (hasSource === "yes") {
+      query = query.or(
+        `and(website.not.is.null,website.not.ilike.${infoshopLike}),facebook_url.not.is.null,and(source_url.not.is.null,source_url.not.ilike.${infoshopLike})`,
+      );
+    } else if (hasSource === "no") {
+      query = query
+        .or(`website.is.null,website.ilike.${infoshopLike}`)
+        .is("facebook_url", null)
+        .or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
+    }
 
     const includePrefixes = parsePhonePrefixes(
       url.searchParams.get("phone_prefix"),

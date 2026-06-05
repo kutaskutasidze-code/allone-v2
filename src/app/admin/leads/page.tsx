@@ -300,6 +300,10 @@ function AdminLeadsPageContent() {
       const params = new URLSearchParams({
         exclude_phone_prefix: HOTLINE_PHONE_PREFIX_PARAM,
       });
+      if (serviceFilter !== "all") params.set("service", serviceFilter);
+      if (websiteFilter !== "all") params.set("has_website", websiteFilter);
+      if (sourceFilter !== "all") params.set("has_source", sourceFilter);
+      if (industryFilter) params.set("industry", industryFilter);
       const res = await fetch(`/api/admin/leads/counts?${params.toString()}`);
       if (!res.ok) return;
       const result = await res.json();
@@ -307,7 +311,7 @@ function AdminLeadsPageContent() {
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [serviceFilter, websiteFilter, sourceFilter, industryFilter]);
 
   // Roster of reps for the bulk "Assign to…" control (admin-only page).
   useEffect(() => {

@@ -5,6 +5,7 @@ import { logger } from "@/lib/logger";
 import { requireRole } from "@/lib/sales-auth";
 import { AuthError } from "@/lib/auth";
 import { fetchAllRows } from "@/lib/supabase/paginate";
+import { tbilisiDayStart, tbilisiWeekStart, tbilisiMonthStart } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
@@ -26,18 +27,9 @@ type Range = "today" | "week" | "month" | "all";
 
 function windowStart(range: Range): Date | null {
   if (range === "all") return null;
-  const now = new Date();
-  const start = new Date(now);
-  start.setUTCHours(0, 0, 0, 0);
-  if (range === "week") {
-    // Monday-as-start-of-week
-    const day = start.getUTCDay(); // 0 Sun .. 6 Sat
-    const back = (day + 6) % 7; // Mon→0, Tue→1, ... Sun→6
-    start.setUTCDate(start.getUTCDate() - back);
-  } else if (range === "month") {
-    start.setUTCDate(1);
-  }
-  return start;
+  if (range === "week") return tbilisiWeekStart();
+  if (range === "month") return tbilisiMonthStart();
+  return tbilisiDayStart();
 }
 
 export async function GET(request: Request) {
@@ -66,10 +58,8 @@ export async function GET(request: Request) {
     const sinceIso = start ? start.toISOString() : null;
 
     // Today bucket for callbacks (unchanged across range)
-    const startOfDay = new Date();
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
+    const startOfDay = tbilisiDayStart();
+    const endOfDay = new Date(startOfDay.getTime() + 24 * 3600_000);
     const todayIso = startOfDay.toISOString();
     const tomorrowIso = endOfDay.toISOString();
 
@@ -185,16 +175,11 @@ export async function GET(request: Request) {
       if (!s) continue;
 
       if (sinceIso) {
+        // byStatus for windowed ranges is computed from lead_status_history
+        // below (transition counts), not this current-status snapshot.
         if (row.assigned_at && row.assigned_at >= sinceIso) {
           s.assigned++;
           totalAssigned++;
-        }
-        if (
-          row.status_changed_at &&
-          row.status_changed_at >= sinceIso &&
-          row.status !== "new"
-        ) {
-          s.byStatus[row.status] = (s.byStatus[row.status] || 0) + 1;
         }
       } else {
         // all-time: count each lead once in its current status
@@ -203,6 +188,32 @@ export async function GET(request: Request) {
           s.assigned++;
           totalAssigned++;
         }
+      }
+    }
+
+    // Windowed byStatus = transitions INTO each status during the window (from
+    // lead_status_history), not a current-status snapshot — a lead that moved
+    // new→in_process→won today counts under each step, attributed to its owner.
+    if (sinceIso) {
+      const transitions = await fetchAllRows<{ to_status: string; leads: unknown }>(
+        (from, to) =>
+          admin
+            .from("lead_status_history")
+            .select("to_status, leads!inner(sales_user_id)")
+            .gte("changed_at", sinceIso)
+            .neq("to_status", "new")
+            .range(from, to),
+      );
+      for (const t of transitions) {
+        const lead = (Array.isArray(t.leads) ? t.leads[0] : t.leads) as
+          | { sales_user_id: string | null }
+          | null
+          | undefined;
+        const uid = lead?.sales_user_id;
+        if (!uid) continue;
+        const s = perRep.get(uid);
+        if (!s) continue;
+        s.byStatus[t.to_status] = (s.byStatus[t.to_status] || 0) + 1;
       }
     }
 

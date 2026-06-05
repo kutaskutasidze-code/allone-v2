@@ -334,8 +334,8 @@ function LeadsPageContent() {
               }}
               className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
             >
-              <option value="all">All sources</option>
-              <option value="yes">Has source</option>
+              <option value="all">Any source</option>
+              <option value="yes">Has source (web / FB / maps)</option>
               <option value="no">No source</option>
             </select>
             <select

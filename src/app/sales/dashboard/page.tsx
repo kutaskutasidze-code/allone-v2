@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { redirect } from 'next/navigation';
 import { buildPipeline } from '@/lib/pipeline';
 import { weightedForecast } from '@/lib/forecasting';
+import { tbilisiDayStart } from '@/lib/time';
 import { SalesDashboardContent } from '../SalesDashboardContent';
 
 async function getSalesUser() {
@@ -31,7 +32,7 @@ async function getSalesUser() {
 // pipeline on /sales/*. Team-wide views live behind /admin.
 async function getLeadStats(salesUserId: string) {
   const supabase = createAdminClient();
-  const statuses = ['new', 'in_process', 'interested', 'won', 'lost'];
+  const statuses = ['new', 'in_process', 'interested', 'proposal', 'won', 'lost', 'on_hold'];
 
   const results = await Promise.all(
     statuses.map(s =>
@@ -50,7 +51,7 @@ async function getLeadStats(salesUserId: string) {
     .eq('status', 'won');
 
   const stats: Record<string, number> = {
-    new: 0, in_process: 0, interested: 0, won: 0, lost: 0,
+    new: 0, in_process: 0, interested: 0, proposal: 0, won: 0, lost: 0, on_hold: 0,
     pipelineValue: 0, wonValue: 0,
   };
 
@@ -75,8 +76,7 @@ async function getRecentLeads(salesUserId: string) {
 // Today's queue: leads assigned to this rep today.
 async function getTodaysQueueCount(salesUserId: string) {
   const supabase = createAdminClient();
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  const today = tbilisiDayStart();
 
   const { count } = await supabase
     .from('leads')
@@ -90,8 +90,7 @@ async function getTodaysQueueCount(salesUserId: string) {
 // Today's calls by this rep: leads they own whose status moved off 'new' since midnight.
 async function getTodaysCallsByMe(salesUserId: string) {
   const supabase = createAdminClient();
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
+  const today = tbilisiDayStart();
 
   const { count } = await supabase
     .from('leads')
@@ -107,8 +106,7 @@ async function getTodaysCallsByMe(salesUserId: string) {
 async function getFollowupCounts(salesUserId: string) {
   const supabase = createAdminClient();
   const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setUTCHours(24, 0, 0, 0);
+  const tomorrow = new Date(tbilisiDayStart().getTime() + 24 * 3600_000);
 
   const [overdueRes, dueTodayRes] = await Promise.all([
     supabase

@@ -26,10 +26,16 @@ export async function GET(request: NextRequest) {
 
     const admin = createAdminClient();
 
-    // Phase 1 — query lead_status_history with filters that live on this table.
+    // Phase 1 — query lead_status_history. When filtering by rep or lead-search,
+    // embed leads!inner so PostgREST filters server-side (the history table has
+    // no rep/name/company columns) — no capped lead-id list, no giant IN().
+    const needsLeadFilter = !!(salesUserId || search);
+    const selectCols = needsLeadFilter
+      ? 'id, lead_id, from_status, to_status, changed_at, leads!inner(sales_user_id, name, company)'
+      : 'id, lead_id, from_status, to_status, changed_at';
     let q = admin
       .from('lead_status_history')
-      .select('id, lead_id, from_status, to_status, changed_at', { count: 'exact' })
+      .select(selectCols, { count: 'exact' })
       .order('changed_at', { ascending: false });
 
     if (fromStatus && STATUS_VALUES.has(fromStatus)) q = q.eq('from_status', fromStatus);
@@ -38,25 +44,10 @@ export async function GET(request: NextRequest) {
     if (since) q = q.gte('changed_at', since);
     if (until) q = q.lt('changed_at', until);
 
-    // If filtering by rep or by lead-search, we resolve those to lead_ids first
-    // (the history table doesn't carry rep/name/company columns).
-    if (salesUserId || search) {
-      let leadQ = admin.from('leads').select('id');
-      if (salesUserId) leadQ = leadQ.eq('sales_user_id', salesUserId);
-      if (search) {
-        const s = search.replace(/[%_,()]/g, '');
-        leadQ = leadQ.or(`name.ilike.%${s}%,company.ilike.%${s}%`);
-      }
-      const { data: matchingLeads, error: leadFilterErr } = await leadQ.limit(5000);
-      if (leadFilterErr) {
-        logger.error('Audit: lead-filter query failed', { error: leadFilterErr.message });
-        return NextResponse.json({ error: 'Failed to filter leads' }, { status: 500 });
-      }
-      const ids = (matchingLeads || []).map(l => l.id);
-      if (ids.length === 0) {
-        return NextResponse.json({ data: [], meta: { total: 0, page, limit } });
-      }
-      q = q.in('lead_id', ids);
+    if (salesUserId) q = q.eq('leads.sales_user_id', salesUserId);
+    if (search) {
+      const s = search.replace(/[%_,()]/g, '');
+      q = q.or(`name.ilike.%${s}%,company.ilike.%${s}%`, { referencedTable: 'leads' });
     }
 
     const from = (page - 1) * limit;
@@ -68,7 +59,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to load audit log' }, { status: 500 });
     }
 
-    const rows = history || [];
+    const rows = (history ?? []) as Array<{
+      id: string;
+      lead_id: string;
+      from_status: string | null;
+      to_status: string;
+      changed_at: string;
+    }>;
 
     // Phase 2 — batch-fetch the related leads + reps.
     const uniqueLeadIds = Array.from(new Set(rows.map(r => r.lead_id)));
