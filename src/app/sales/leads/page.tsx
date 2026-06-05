@@ -99,7 +99,7 @@ function LeadsPageContent() {
       if (scopeMode === "today") {
         params.set("scope", "today");
       } else if (scopeMode === "callbacks") {
-        params.set("status", "in_process");
+        params.set("scope", "followups");
       }
 
       // Honor an explicit status pill click only when no scope filter overrides it.

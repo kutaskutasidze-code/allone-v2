@@ -18,6 +18,7 @@ import {
 } from "@/lib/validations/leads";
 import { logger } from "@/lib/logger";
 import { enqueueDemoJob } from "@/lib/demo-pipeline-trigger";
+import { fetchAllRows } from "@/lib/supabase/paginate";
 
 export async function GET(request: Request) {
   try {
@@ -40,6 +41,26 @@ export async function GET(request: Request) {
       const startOfDay = new Date();
       startOfDay.setUTCHours(0, 0, 0, 0);
       query = query.gte("assigned_at", startOfDay.toISOString());
+    }
+
+    // "Follow-ups" scope: only leads with an open follow-up task owed by this
+    // rep (replaces the old status=in_process proxy for the Callbacks tab).
+    if (url.searchParams.get("scope") === "followups") {
+      const taskRows = await fetchAllRows<{ lead_id: string | null }>((from, to) =>
+        supabase
+          .from("tasks")
+          .select("lead_id")
+          .eq("sales_user_id", salesUser.id)
+          .eq("status", "open")
+          .range(from, to),
+      );
+      const leadIds = [
+        ...new Set(taskRows.map((t) => t.lead_id).filter(Boolean)),
+      ] as string[];
+      if (leadIds.length === 0) {
+        return successWithPagination([], createPaginationMeta(page, limit, 0));
+      }
+      query = query.in("id", leadIds);
     }
 
     if (status && status !== "all") query = query.eq("status", status);

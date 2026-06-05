@@ -30,7 +30,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     const supabase = createAdminClient();
     const { data, error: dbError } = await supabase
       .from("leads")
-      .select("*")
+      .select("*, sales_user:sales_users!leads_sales_user_id_fkey(id, name, email)")
       .eq("id", id)
       .single();
 
