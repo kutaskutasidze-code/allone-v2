@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import DOMPurify from "isomorphic-dompurify";
 import { Send, Save, Trash2, Loader2, CheckCircle2 } from "lucide-react";
 
 interface DraftPanelProps {
@@ -131,7 +132,7 @@ export function DraftPanel({ draft, jobId, status }: DraftPanelProps) {
             ) : (
               <div
                 className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: bodyHtml }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(bodyHtml) }}
               />
             )}
           </div>

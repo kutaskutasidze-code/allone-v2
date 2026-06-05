@@ -207,84 +207,93 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
     [apiBase, leadId, updateMethod],
   );
 
-  const saveOverview = async () => {
-    setSavingOverview(true);
-    setError("");
-    try {
-      await update({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        company: form.company,
-      });
-      setOverviewSaved(true);
-      setTimeout(() => setOverviewSaved(false), 2000);
-      streamRef.current?.refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to update lead");
-    } finally {
-      setSavingOverview(false);
-    }
-  };
+  // Shared save wrapper: toggles the loading flag, clears/sets the error, flashes
+  // the "Saved" flag for 2s, and optionally refreshes the activity stream.
+  const runSave = useCallback(
+    async (
+      fn: () => Promise<unknown>,
+      opts: {
+        setSaving?: (b: boolean) => void;
+        setSaved?: (b: boolean) => void;
+        refreshStream?: boolean;
+        errorMsg?: string;
+      } = {},
+    ) => {
+      opts.setSaving?.(true);
+      setError("");
+      try {
+        await fn();
+        if (opts.setSaved) {
+          opts.setSaved(true);
+          setTimeout(() => opts.setSaved!(false), 2000);
+        }
+        if (opts.refreshStream) streamRef.current?.refresh();
+      } catch (e) {
+        setError(
+          e instanceof Error && e.message
+            ? e.message
+            : (opts.errorMsg ?? "Save failed"),
+        );
+      } finally {
+        opts.setSaving?.(false);
+      }
+    },
+    [],
+  );
 
-  const saveDetails = async () => {
-    setSavingDetails(true);
-    setError("");
-    try {
-      await update({ value: Number(value) || 0, source });
-      setDetailsSaved(true);
-      setTimeout(() => setDetailsSaved(false), 2000);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to update lead");
-    } finally {
-      setSavingDetails(false);
-    }
-  };
+  const saveOverview = () =>
+    runSave(
+      () =>
+        update({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          company: form.company,
+        }),
+      {
+        setSaving: setSavingOverview,
+        setSaved: setOverviewSaved,
+        refreshStream: true,
+        errorMsg: "Failed to update lead",
+      },
+    );
 
-  const changeStatus = async (
-    status: string,
-    extra?: { lost_reason?: string },
-  ) => {
-    setError("");
-    try {
-      await update({ status, ...extra });
-      streamRef.current?.refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to update status");
-    }
-  };
+  const saveDetails = () =>
+    runSave(() => update({ value: Number(value) || 0, source }), {
+      setSaving: setSavingDetails,
+      setSaved: setDetailsSaved,
+      errorMsg: "Failed to update lead",
+    });
+
+  const changeStatus = (status: string, extra?: { lost_reason?: string }) =>
+    runSave(() => update({ status, ...extra }), {
+      refreshStream: true,
+      errorMsg: "Failed to update status",
+    });
 
   // Manager-only: move the lead to another rep (or back to the pool) via the
   // override endpoint, then refresh to show the new owner.
-  const reassign = async (salesUserId: string | null) => {
-    setError("");
-    try {
-      const res = await fetch("/api/admin/leads/reassign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ leadIds: [leadId], salesUserId }),
-      });
-      if (!res.ok) throw new Error();
-      await fetchLead();
-    } catch {
-      setError("Failed to reassign lead");
-    }
-  };
+  const reassign = (salesUserId: string | null) =>
+    runSave(
+      async () => {
+        const res = await fetch("/api/admin/leads/reassign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ leadIds: [leadId], salesUserId }),
+        });
+        if (!res.ok) throw new Error("Failed to reassign lead");
+        await fetchLead();
+      },
+      { errorMsg: "Failed to reassign lead" },
+    );
 
-  const saveNote = async () => {
-    setSavingNote(true);
-    setError("");
-    try {
-      await update({ notes: note });
-      setNoteSaved(true);
-      setTimeout(() => setNoteSaved(false), 2000);
-      streamRef.current?.refresh();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to save note");
-    } finally {
-      setSavingNote(false);
-    }
-  };
+  const saveNote = () =>
+    runSave(() => update({ notes: note }), {
+      setSaving: setSavingNote,
+      setSaved: setNoteSaved,
+      refreshStream: true,
+      errorMsg: "Failed to save note",
+    });
 
   const afterActivity = () => {
     streamRef.current?.refresh();

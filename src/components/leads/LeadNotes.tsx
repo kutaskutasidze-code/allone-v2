@@ -15,6 +15,15 @@ export function LeadNotes({ leadId, initialNotes, onSave }: LeadNotesProps) {
   const [notes, setNotes] = useState(initialNotes);
   const [saved, setSaved] = useState(true);
 
+  // Resync the local draft when the parent supplies fresh notes (refetch /
+  // lead switch) — adjusted during render rather than in an effect.
+  const [syncedFrom, setSyncedFrom] = useState(initialNotes);
+  if (initialNotes !== syncedFrom) {
+    setSyncedFrom(initialNotes);
+    setNotes(initialNotes);
+    setSaved(true);
+  }
+
   const handleSave = () => {
     if (notes !== initialNotes) {
       onSave(leadId, notes);
