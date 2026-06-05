@@ -60,9 +60,10 @@ export async function middleware(request: NextRequest) {
       if (Array.isArray(rows) && rows[0]?.role) dbRole = rows[0].role as string;
     }
   }
-  // Authorization authority = sales_users.role. The admin-vs-supervisor split
-  // is enforced per-route by requireRole().
-  const isAdmin = dbRole === "admin";
+  // Authorization authority = sales_users.role. Supervisors and admins both
+  // reach the admin area; the finer admin-only split (e.g. sales-user
+  // management) is enforced per-route by requireRole().
+  const isAdminArea = dbRole === "admin" || dbRole === "supervisor";
   const isSalesUser = dbRole !== null;
 
   // Protect admin routes (except login)
@@ -74,8 +75,8 @@ export async function middleware(request: NextRequest) {
     if (!isAuthenticated) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
-    if (!isAdmin) {
-      // A non-admin who is a sales user belongs in the sales portal — not the
+    if (!isAdminArea) {
+      // A salesperson who is a sales user belongs in the sales portal — not the
       // public landing page (e.g. a rep who logged in via /admin/login).
       return NextResponse.redirect(new URL(isSalesUser ? "/sales" : "/", request.url));
     }
@@ -83,7 +84,7 @@ export async function middleware(request: NextRequest) {
 
   // Protect admin API routes
   if (request.nextUrl.pathname.startsWith("/api/admin")) {
-    if (!isAuthenticated || !isAdmin) {
+    if (!isAuthenticated || !isAdminArea) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
   }
