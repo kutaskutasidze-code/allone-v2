@@ -18,6 +18,7 @@ const bodySchema = z.object({
     industry: z.string().optional(),
     hasPhone: z.boolean().optional(),
     hasWebsite: z.enum(['yes', 'no']).optional(),
+    hasAnySource: z.enum(['yes', 'no']).optional(),
     excludePhonePrefix: z.string().optional(),
   }).optional(),
 });
@@ -82,6 +83,8 @@ export async function POST(request: NextRequest) {
       if (filters?.hasPhone) q = q.not('phone', 'is', null);
       if (filters?.hasWebsite === 'yes') q = q.not('website', 'is', null).not('website', 'ilike', infoshopLike);
       else if (filters?.hasWebsite === 'no') q = q.or(`website.is.null,website.ilike.${infoshopLike}`);
+      if (filters?.hasAnySource === 'yes') q = q.or(`and(website.not.is.null,website.not.ilike.${infoshopLike}),facebook_url.not.is.null,and(source_url.not.is.null,source_url.not.ilike.${infoshopLike})`);
+      else if (filters?.hasAnySource === 'no') q = q.or(`website.is.null,website.ilike.${infoshopLike}`).is('facebook_url', null).or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
       if (excludePrefixes.length === 1) q = q.or(`phone.is.null,phone.not.ilike.${excludePrefixes[0]}%`);
       else if (excludePrefixes.length > 1) {
         const andClause = excludePrefixes.map(p => `phone.not.ilike.${p}%`).join(',');

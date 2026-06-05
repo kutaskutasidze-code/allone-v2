@@ -75,6 +75,20 @@ export async function GET(request: NextRequest) {
         .or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
     }
 
+    // "Has any source" = at least one research handle: a real website, a
+    // Facebook page, or a real (non-scraper) source_url (e.g. Google Maps).
+    const hasAnySource = searchParams.get('has_any_source');
+    if (hasAnySource === 'yes') {
+      query = query.or(
+        `and(website.not.is.null,website.not.ilike.${infoshopLike}),facebook_url.not.is.null,and(source_url.not.is.null,source_url.not.ilike.${infoshopLike})`
+      );
+    } else if (hasAnySource === 'no') {
+      query = query
+        .or(`website.is.null,website.ilike.${infoshopLike}`)
+        .is('facebook_url', null)
+        .or(`source_url.is.null,source_url.ilike.${infoshopLike}`);
+    }
+
     const includePrefixes = parsePhonePrefixes(searchParams.get('phone_prefix'));
     if (includePrefixes.length === 1) {
       query = query.ilike('phone', `${includePrefixes[0]}%`);

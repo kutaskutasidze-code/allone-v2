@@ -71,6 +71,7 @@ function AssignLeadsContent() {
   const [assignedToFilter, setAssignedToFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [industry, setIndustry] = useState('all');
+  const [sourceFilter, setSourceFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -140,6 +141,7 @@ function AssignLeadsContent() {
       params.set('assignment', tab);
       if (tab === 'assigned' && assignedToFilter !== 'all') params.set('assigned_to', assignedToFilter);
       if (industry !== 'all') params.set('industry', industry);
+      if (sourceFilter !== 'all') params.set('has_any_source', sourceFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
       if (!includeHotlines) params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX_PARAM);
       params.set('page', String(page));
@@ -156,7 +158,7 @@ function AssignLeadsContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [tab, assignedToFilter, industry, debouncedSearch, page, includeHotlines]);
+  }, [tab, assignedToFilter, industry, sourceFilter, debouncedSearch, page, includeHotlines]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -209,6 +211,7 @@ function AssignLeadsContent() {
       const body: { perRep: number; repIds?: string[]; filters?: Record<string, string> } = { perRep: distributePerRep };
       if (distributeRepIds.size > 0) body.repIds = [...distributeRepIds];
       if (industry !== 'all') body.filters = { ...(body.filters || {}), industry };
+      if (sourceFilter !== 'all') body.filters = { ...(body.filters || {}), hasAnySource: sourceFilter };
       if (!includeHotlines) {
         body.filters = { ...(body.filters || {}), excludePhonePrefix: HOTLINE_PHONE_PREFIX_PARAM };
       }
@@ -827,6 +830,16 @@ function AssignLeadsContent() {
             >
               <option value="all">All categories</option>
               {LEAD_INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
+            </select>
+            <select
+              value={sourceFilter}
+              onChange={(e) => { setSourceFilter(e.target.value); setPage(1); }}
+              className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+              title="Filter by whether the lead has a website, Facebook page, or Google Maps / source link to research"
+            >
+              <option value="all">Any source</option>
+              <option value="yes">Has source (web / FB / maps)</option>
+              <option value="no">No source</option>
             </select>
             {tab === 'assigned' && (
               <select
