@@ -128,7 +128,7 @@ export function DashboardContent({
 
   useEffect(() => {
     let active = true;
-    fetch("/api/admin/team?period=month")
+    fetch("/api/admin/team/summary?period=month")
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (active && j?.data?.totals) setTeam(j.data.totals);
