@@ -21,6 +21,7 @@ import {
   LeadNotes,
   LeadCard,
   LeadsPagination,
+  LostReasonPicker,
   type LeadCardData,
 } from "@/components/leads";
 import {
@@ -58,6 +59,8 @@ function LeadsPageContent() {
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
   const [exporting, setExporting] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkPendingLost, setBulkPendingLost] = useState(false);
   const limit = 50;
 
   const exportMyLeads = async () => {
@@ -175,6 +178,48 @@ function LeadsPageContent() {
     } catch {
       setError("Failed to update lead");
     }
+  };
+
+  const leadId = (l: Record<string, unknown>) => (l as { id: string }).id;
+  const toggleSelect = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const allOnPageSelected =
+    leads.length > 0 && leads.every((l) => selected.has(leadId(l)));
+  const toggleSelectAll = () =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (allOnPageSelected) leads.forEach((l) => next.delete(leadId(l)));
+      else leads.forEach((l) => next.add(leadId(l)));
+      return next;
+    });
+
+  const runBulkStatus = async (status: string, lost_reason?: string) => {
+    const leadIds = Array.from(selected);
+    if (leadIds.length === 0) return;
+    try {
+      const res = await fetch("/api/sales/leads/bulk-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          leadIds,
+          status,
+          ...(lost_reason ? { lost_reason } : {}),
+        }),
+      });
+      if (!res.ok) throw new Error();
+      fetchLeads();
+    } catch {
+      setError("Bulk status update failed");
+    }
+  };
+  const handleBulkStatus = (status: string) => {
+    if (status === "lost") setBulkPendingLost(true);
+    else runBulkStatus(status);
   };
 
   const totalPages = Math.ceil(total / limit);
@@ -372,6 +417,55 @@ function LeadsPageContent() {
         </div>
       </div>
 
+      {/* Bulk-select bar — status change only (reps can't delete or reassign). */}
+      {!isLoading && leads.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-2.5 shadow-[var(--shadow-xs)]">
+          <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-medium text-[var(--ink-700)]">
+            <input
+              type="checkbox"
+              checked={allOnPageSelected}
+              onChange={toggleSelectAll}
+              className="h-4 w-4 accent-[var(--ao-accent)]"
+            />
+            {selected.size > 0
+              ? `${selected.size} selected`
+              : "Select all on page"}
+          </label>
+          {selected.size > 0 && (
+            <>
+              <select
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) handleBulkStatus(e.target.value);
+                }}
+                className="px-3 py-1.5 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] cursor-pointer"
+              >
+                <option value="">Set status…</option>
+                {LEAD_STATUSES.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => setSelected(new Set())}
+                className="ml-auto text-xs text-[var(--ink-500)] hover:text-[var(--ink-900)]"
+              >
+                Clear
+              </button>
+            </>
+          )}
+        </div>
+      )}
+      <LostReasonPicker
+        open={bulkPendingLost}
+        onClose={() => setBulkPendingLost(false)}
+        onPick={(reason) => {
+          setBulkPendingLost(false);
+          runBulkStatus("lost", reason);
+        }}
+      />
+
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
           <div className="w-5 h-5 border-2 border-[var(--allone-line)] border-t-gray-900 rounded-full animate-spin" />
@@ -399,6 +493,9 @@ function LeadsPageContent() {
                 className={
                   idx > 0 ? "border-t border-[var(--allone-line-soft)]" : ""
                 }
+                selectable
+                selected={selected.has(l.id)}
+                onSelectToggle={() => toggleSelect(l.id)}
                 actions={
                   <>
                     <StatusDropdown
