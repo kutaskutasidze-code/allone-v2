@@ -24,6 +24,7 @@ import {
   TaskQueue,
 } from "@/components/leads";
 import { LeadStream, type LeadStreamHandle } from "./LeadStream";
+import { LeadBilling } from "./LeadBilling";
 import { LeadActionsBar, DemoSection } from "@/components/sales";
 import {
   LEAD_SOURCES,
@@ -614,6 +615,11 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
               </button>
             </div>
           </div>
+
+          {/* Billing — payment schedule, for won/proposal deals */}
+          {(status === "won" || status === "proposal") && (
+            <LeadBilling leadId={leadId} value={lead.value || 0} />
+          )}
 
           {/* Research — the business's own web presence, for pre-call research */}
           {(webHref || fbHref || srcHref) && (
