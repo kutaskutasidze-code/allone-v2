@@ -104,6 +104,7 @@ export const adminNavBF: NavConfig = {
           href: "/admin/leads/analytics",
           icon: "bar-chart-3",
         },
+        { label: "Receivables", href: "/admin/receivables", icon: "receipt" },
       ],
     },
     {
