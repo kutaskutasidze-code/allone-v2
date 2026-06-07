@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
           .select('id, industry')
           .is('sales_user_id', null)
           .eq('status', 'new')
-          .order('relevance_score', { ascending: false, nullsFirst: false })
+          .order('lead_score', { ascending: false, nullsFirst: false })
           .order('created_at', { ascending: false })
           .range(from, to),
       );

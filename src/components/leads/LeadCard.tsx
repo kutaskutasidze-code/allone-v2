@@ -46,6 +46,9 @@ export interface LeadCardData {
   notes: string | null;
   tags: string[] | null;
   created_at: string;
+  /** Fit score 0-100 + the service to lead the pitch with (from lead scoring). */
+  lead_score?: number | null;
+  recommended_service?: string | null;
   /** Assigned rep, when the caller joins it (admin list). Omit on rep-scoped lists. */
   sales_user?: { id: string; name: string } | null;
 }
@@ -116,6 +119,25 @@ export function LeadCard({
             </span>
           )}
           <div className="flex min-w-0 flex-1 items-center gap-3 text-xs text-[var(--ink-400)]">
+            {typeof lead.lead_score === "number" && (
+              <span
+                title="Lead fit score"
+                className={`inline-flex shrink-0 items-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold ${
+                  lead.lead_score >= 80
+                    ? "bg-emerald-100 text-emerald-700"
+                    : lead.lead_score >= 50
+                      ? "bg-amber-100 text-amber-700"
+                      : "bg-[var(--bg-surface-alt)] text-[var(--ink-500)]"
+                }`}
+              >
+                {lead.lead_score}
+              </span>
+            )}
+            {lead.recommended_service && (
+              <span className="shrink-0 truncate font-medium text-[var(--ink-700)]">
+                {lead.recommended_service}
+              </span>
+            )}
             {lead.phone && (
               <a
                 href={`tel:${lead.phone}`}

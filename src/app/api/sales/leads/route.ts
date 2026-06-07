@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       .from("leads")
       .select("*", { count: "exact" })
       .eq("sales_user_id", salesUser.id)
-      .order("relevance_score", { ascending: false })
+      .order("lead_score", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false });
 
     if (url.searchParams.get("scope") === "today") {
