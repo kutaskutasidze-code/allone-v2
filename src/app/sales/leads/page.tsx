@@ -55,6 +55,7 @@ function LeadsPageContent() {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [websiteFilter, setWebsiteFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
+  const [originFilter, setOriginFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
@@ -116,6 +117,7 @@ function LeadsPageContent() {
       if (serviceFilter !== "all") params.set("service", serviceFilter);
       if (websiteFilter !== "all") params.set("has_website", websiteFilter);
       if (sourceFilter !== "all") params.set("has_source", sourceFilter);
+      if (originFilter !== "all") params.set("origin", originFilter);
       if (debouncedSearch) params.set("search", debouncedSearch);
       params.set("page", page.toString());
       params.set("limit", limit.toString());
@@ -153,6 +155,7 @@ function LeadsPageContent() {
     serviceFilter,
     websiteFilter,
     sourceFilter,
+    originFilter,
     debouncedSearch,
     page,
   ]);
@@ -384,6 +387,18 @@ function LeadsPageContent() {
               <option value="no">No source</option>
             </select>
             <select
+              value={originFilter}
+              onChange={(e) => {
+                setOriginFilter(e.target.value);
+                setPage(1);
+              }}
+              className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
+            >
+              <option value="all">All leads</option>
+              <option value="infoshop">Infoshop</option>
+              <option value="google">Google</option>
+            </select>
+            <select
               value={serviceFilter}
               onChange={(e) => {
                 setServiceFilter(e.target.value);
@@ -400,12 +415,14 @@ function LeadsPageContent() {
             </select>
             {(serviceFilter !== "all" ||
               websiteFilter !== "all" ||
-              sourceFilter !== "all") && (
+              sourceFilter !== "all" ||
+              originFilter !== "all") && (
               <button
                 onClick={() => {
                   setServiceFilter("all");
                   setWebsiteFilter("all");
                   setSourceFilter("all");
+                  setOriginFilter("all");
                   setPage(1);
                 }}
                 className="text-[11px] text-[var(--ink-500)] hover:text-[var(--ink-900)] underline-offset-2 hover:underline"

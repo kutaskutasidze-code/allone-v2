@@ -486,6 +486,18 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
             </div>
           </div>
 
+          {/* Listing description (from the infoshop.ge directory) — reference */}
+          {lead.description && (
+            <div className={CARD_CLS}>
+              <h2 className="mb-2 text-sm font-medium text-[var(--ink-900)]">
+                Listing
+              </h2>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-[var(--ink-700)]">
+                {lead.description}
+              </p>
+            </div>
+          )}
+
           {/* Details */}
           <div className={CARD_CLS}>
             <h2 className="mb-4 text-sm font-medium text-[var(--ink-900)]">
