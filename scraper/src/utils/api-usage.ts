@@ -1,37 +1,27 @@
 import { getSupabase } from '../database/client.js';
 
-export async function getTodayUsage(api: string): Promise<number> {
+// Sum api_usage counts for `api` since `sinceDate` (YYYY-MM-DD, inclusive).
+// Fail closed: if we can't read usage, throw rather than assume 0 — that would
+// bypass the daily/monthly caps and risk Google billing.
+async function getUsageSince(api: string, sinceDate: string): Promise<number> {
   const supabase = getSupabase();
-  const today = new Date().toISOString().slice(0, 10);
-  // Fail closed: if we can't read usage, refuse to assume 0 — that would
-  // bypass the daily cap and risk Google billing.
   const { data, error } = await supabase
     .from('api_usage')
     .select('count')
     .eq('api', api)
-    .eq('date', today)
-    .maybeSingle();
-  if (error) throw error;
-  return (data as { count: number } | null)?.count ?? 0;
-}
-
-export async function getMonthUsage(api: string): Promise<number> {
-  const supabase = getSupabase();
-  const now = new Date();
-  const monthStart = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-01`;
-  // Fail closed: if we can't read usage, refuse to assume 0 — that would
-  // bypass the monthly free-tier cap and risk Google billing.
-  const { data, error } = await supabase
-    .from('api_usage')
-    .select('count')
-    .eq('api', api)
-    .gte('date', monthStart);
+    .gte('date', sinceDate);
   if (error) throw error;
   return ((data as { count: number }[] | null) ?? []).reduce(
     (sum, r) => sum + (r.count ?? 0),
     0,
   );
 }
+
+const utcToday = () => new Date().toISOString().slice(0, 10);
+const utcMonthStart = () => utcToday().slice(0, 7) + '-01';
+
+export const getTodayUsage = (api: string) => getUsageSince(api, utcToday());
+export const getMonthUsage = (api: string) => getUsageSince(api, utcMonthStart());
 
 export async function incrementUsage(api: string): Promise<number> {
   const supabase = getSupabase();

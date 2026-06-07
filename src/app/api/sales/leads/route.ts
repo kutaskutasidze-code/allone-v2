@@ -78,9 +78,9 @@ export async function GET(request: Request) {
     // Lead origin: infoshop directory vs the scraper (google/automation = any
     // non-infoshop source, including the unlabeled NULL ones).
     const origin = url.searchParams.get("origin");
-    if (origin === "infoshop") query = query.eq("source", "infoshop.ge");
+    if (origin === "infoshop") query = query.eq("source", INFOSHOP_DOMAIN);
     else if (origin === "google")
-      query = query.or("source.is.null,source.neq.infoshop.ge");
+      query = query.or(`source.is.null,source.neq.${INFOSHOP_DOMAIN}`);
 
     const infoshopLike = `%${INFOSHOP_DOMAIN}%`;
     const hasWebsite = url.searchParams.get("has_website");

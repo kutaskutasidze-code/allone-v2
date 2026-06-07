@@ -43,13 +43,16 @@ export class GooglePlacesScraper extends BaseScraper {
       return { leads: [], errors: ['GOOGLE_PLACES_API_KEY not configured'], hasMore: false };
     }
 
-    const monthUsage = await getMonthUsage(API_USAGE_KEY);
+    const [monthUsage, todayUsage] = await Promise.all([
+      getMonthUsage(API_USAGE_KEY),
+      getTodayUsage(API_USAGE_KEY),
+    ]);
     if (monthUsage >= this.monthlyLimit) {
       this.log(`Monthly free-tier cap reached (${monthUsage}/${this.monthlyLimit}). Stopping.`, 'info');
       return { leads: [], errors: ['Monthly request cap reached'], hasMore: false };
     }
 
-    let usage = await getTodayUsage(API_USAGE_KEY);
+    let usage = todayUsage;
     if (usage >= this.dailyLimit) {
       this.log(`Daily request limit reached (${usage}/${this.dailyLimit}). Stopping.`, 'info');
       return { leads: [], errors: ['Daily request limit reached'], hasMore: false };

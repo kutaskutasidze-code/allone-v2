@@ -126,8 +126,12 @@ async function runRegistryCron() {
     let withPhone = 0;
     let duplicates = 0;
     let lookupsThisRun = 0;
-    let usage = await getTodayUsage(API_USAGE_KEY);
-    let monthUsage = await getMonthUsage(API_USAGE_KEY);
+    const [todayUsage, monthUsageStart] = await Promise.all([
+      getTodayUsage(API_USAGE_KEY),
+      getMonthUsage(API_USAGE_KEY),
+    ]);
+    let usage = todayUsage;
+    let monthUsage = monthUsageStart;
 
     for (const company of companies) {
       if (monthUsage >= monthlyBudget) {
