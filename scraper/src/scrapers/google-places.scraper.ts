@@ -5,7 +5,7 @@ import { normalizeGeorgianPhone } from '../utils/phone.js';
 import { calculateRelevanceScore } from '../utils/scoring.js';
 import { categorizeFromGoogleTypes } from '../categorizer/rules.js';
 import { logger } from '../utils/logger.js';
-import { getTodayUsage } from '../utils/api-usage.js';
+import { getTodayUsage, getMonthUsage } from '../utils/api-usage.js';
 import { searchText, API_USAGE_KEY } from '../utils/google-places.js';
 
 interface GooglePlace {
@@ -25,10 +25,12 @@ interface GooglePlacesResponse {
 
 export class GooglePlacesScraper extends BaseScraper {
   private dailyLimit: number;
+  private monthlyLimit: number;
 
   constructor(source: LeadSource) {
     super(source);
     this.dailyLimit = config.googlePlaces.dailyBudgetRequests;
+    this.monthlyLimit = config.googlePlaces.monthlyBudgetRequests;
   }
 
   getName(): string {
@@ -39,6 +41,12 @@ export class GooglePlacesScraper extends BaseScraper {
     const apiKey = config.googlePlaces.apiKey;
     if (!apiKey) {
       return { leads: [], errors: ['GOOGLE_PLACES_API_KEY not configured'], hasMore: false };
+    }
+
+    const monthUsage = await getMonthUsage(API_USAGE_KEY);
+    if (monthUsage >= this.monthlyLimit) {
+      this.log(`Monthly free-tier cap reached (${monthUsage}/${this.monthlyLimit}). Stopping.`, 'info');
+      return { leads: [], errors: ['Monthly request cap reached'], hasMore: false };
     }
 
     let usage = await getTodayUsage(API_USAGE_KEY);

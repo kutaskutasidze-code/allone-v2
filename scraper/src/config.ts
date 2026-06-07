@@ -28,7 +28,11 @@ export const config = {
   googlePlaces: {
     apiKey: process.env.GOOGLE_PLACES_API_KEY || '',
     maxPagesPerSearch: parseInt(process.env.GOOGLE_PLACES_MAX_PAGES || '3', 10),
-    dailyBudgetRequests: parseInt(process.env.GOOGLE_PLACES_DAILY_BUDGET || '160', 10),
+    // Text Search w/ phone+website = "Enterprise" SKU: only 1,000 free calls/mo.
+    // Daily 32 spreads ~1,000 across the month; the monthly cap is the hard
+    // guarantee we never cross the free tier (billed at $35/1k beyond it).
+    dailyBudgetRequests: parseInt(process.env.GOOGLE_PLACES_DAILY_BUDGET || '32', 10),
+    monthlyBudgetRequests: parseInt(process.env.GOOGLE_PLACES_MONTHLY_BUDGET || '1000', 10),
   },
   logLevel: process.env.LOG_LEVEL || 'info',
 };

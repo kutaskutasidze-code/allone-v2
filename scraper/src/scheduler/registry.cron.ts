@@ -6,7 +6,7 @@ import { normalizeGeorgianPhone } from '../utils/phone.js';
 import { calculateRelevanceScore } from '../utils/scoring.js';
 import { closeBrowser } from '../utils/browser.js';
 import { config } from '../config.js';
-import { getTodayUsage } from '../utils/api-usage.js';
+import { getTodayUsage, getMonthUsage } from '../utils/api-usage.js';
 import { searchText, API_USAGE_KEY } from '../utils/google-places.js';
 
 interface GooglePlace {
@@ -121,13 +121,19 @@ async function runRegistryCron() {
 
     // Step 2: Look up each company on Google Places (costs 1 request each)
     const dailyBudget = config.googlePlaces.dailyBudgetRequests;
+    const monthlyBudget = config.googlePlaces.monthlyBudgetRequests;
     let inserted = 0;
     let withPhone = 0;
     let duplicates = 0;
     let lookupsThisRun = 0;
     let usage = await getTodayUsage(API_USAGE_KEY);
+    let monthUsage = await getMonthUsage(API_USAGE_KEY);
 
     for (const company of companies) {
+      if (monthUsage >= monthlyBudget) {
+        logger.info(`Registry: hit monthly Google Places free-tier cap (${monthUsage}/${monthlyBudget}). Stopping until next month.`);
+        break;
+      }
       if (usage >= dailyBudget) {
         logger.info(`Registry: hit daily Google Places budget (${usage}/${dailyBudget}). Remaining companies saved for next run.`);
         break;
@@ -138,7 +144,10 @@ async function runRegistryCron() {
       searchName = searchName.replace(/^შპს\s*/i, '').replace(/^სს\s*/i, '').replace(/^ი\/მ\s*/i, '');
 
       const { place, newCount } = await lookupOnGooglePlaces(searchName);
-      if (newCount !== null) usage = newCount;
+      if (newCount !== null) {
+        usage = newCount;
+        monthUsage++;
+      }
       lookupsThisRun++;
 
       const rawPhone = place?.internationalPhoneNumber || place?.nationalPhoneNumber;
