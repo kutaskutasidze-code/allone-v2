@@ -38,7 +38,7 @@ IMPORTANT: This project uses `pnpm`, not `npm`. Adding packages with `npm instal
 
 ## Deployment
 - Hosted on Vercel, auto-deploys from `master` branch
-- Domain: allone.ge / allonelabs.com
+- Domain: allonelabs.com
 - IMPORTANT: Run `pnpm build` before pushing to catch errors Vercel will hit
 
 ## Common Gotchas
