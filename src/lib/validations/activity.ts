@@ -4,40 +4,52 @@ import { z } from 'zod';
 // Calls
 // ============================================
 
+// Q1 — Connection: did we reach a person?
 export const CALL_OUTCOMES = [
-  { value: 'connected', label: 'Connected' },
-  { value: 'no_answer', label: 'No Answer' },
-  { value: 'voicemail', label: 'Voicemail' },
-  { value: 'busy', label: 'Busy' },
-  { value: 'wrong_number', label: 'Wrong Number' },
-  { value: 'callback_requested', label: 'Callback Requested' },
-  { value: 'not_interested', label: 'Not Interested' },
+  { value: 'contacted', label: 'Contacted' },
+  { value: 'no_answer', label: 'No answer' },
+  { value: 'wrong_number', label: 'Wrong number' },
 ] as const;
 
 export const CALL_OUTCOME_LABELS: Record<string, string> = Object.fromEntries(
   CALL_OUTCOMES.map((o) => [o.value, o.label]),
 );
 
-export const callOutcomeSchema = z.enum([
-  'connected',
-  'no_answer',
-  'voicemail',
-  'busy',
-  'wrong_number',
-  'callback_requested',
+// Q2 — Disposition: the result, only meaningful when the call was "contacted".
+export const CALL_DISPOSITIONS = [
+  { value: 'interested', label: 'Interested' },
+  { value: 'not_interested', label: 'Not interested' },
+  { value: 'callback_requested', label: 'Wants a callback' },
+] as const;
+
+export const CALL_DISPOSITION_LABELS: Record<string, string> = Object.fromEntries(
+  CALL_DISPOSITIONS.map((d) => [d.value, d.label]),
+);
+
+export const callOutcomeSchema = z.enum(['contacted', 'no_answer', 'wrong_number']);
+export const callDispositionSchema = z.enum([
+  'interested',
   'not_interested',
+  'callback_requested',
 ]);
 
 export const callDirectionSchema = z.enum(['outbound', 'inbound']);
 
-// NOTE: lead_id comes from the route param, NOT the body.
-export const createCallSchema = z.object({
-  outcome: callOutcomeSchema,
-  direction: callDirectionSchema.default('outbound'),
-  duration_seconds: z.number().int().min(0, 'Duration cannot be negative').optional(),
-  notes: z.string().optional().transform((val) => val || null),
-  occurred_at: z.string().datetime({ offset: true }).optional(),
-});
+// NOTE: lead_id comes from the route param, NOT the body. `disposition` is only
+// allowed when the call connected (outcome='contacted').
+export const createCallSchema = z
+  .object({
+    outcome: callOutcomeSchema,
+    disposition: callDispositionSchema.optional(),
+    direction: callDirectionSchema.default('outbound'),
+    duration_seconds: z.number().int().min(0, 'Duration cannot be negative').optional(),
+    notes: z.string().optional().transform((val) => val || null),
+    occurred_at: z.string().datetime({ offset: true }).optional(),
+  })
+  .refine((d) => d.disposition === undefined || d.outcome === 'contacted', {
+    message: 'A disposition is only allowed when the call was contacted',
+    path: ['disposition'],
+  });
 
 // ============================================
 // Tasks

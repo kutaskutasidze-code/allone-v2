@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
       if (!c.sales_user_id) continue;
       const agg = callsByRep.get(c.sales_user_id) || { total: 0, connected: 0 };
       agg.total++;
-      if (c.outcome === 'connected') agg.connected++;
+      if (c.outcome === 'contacted') agg.connected++;
       callsByRep.set(c.sales_user_id, agg);
     }
 
@@ -92,8 +92,8 @@ export async function GET(request: NextRequest) {
         return t >= periodStart && t < periodEnd;
       }).length;
 
-      // "Called" = real calls logged in the period. "Connected" = those that
-      // reached the prospect (outcome='connected').
+      // "Called" = real calls logged in the period. "Contacted" = those that
+      // reached the prospect (outcome='contacted').
       const calledInPeriod = callAgg.total;
       const connectedCalls = callAgg.connected;
 

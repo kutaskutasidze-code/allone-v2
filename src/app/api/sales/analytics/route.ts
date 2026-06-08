@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
         .from("calls")
         .select("id", { count: "exact", head: true })
         .eq("sales_user_id", salesUser.id)
-        .eq("outcome", "connected")
+        .eq("outcome", "contacted")
         .gte("occurred_at", since.toISOString());
       return count ?? 0;
     };

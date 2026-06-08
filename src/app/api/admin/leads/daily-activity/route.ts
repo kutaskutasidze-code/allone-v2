@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 //
 //   - assigned       → leads.assigned_at within window
 //   - called         → real calls logged (calls.occurred_at) within window
-//   - connectedCalls → those calls with outcome='connected'
+//   - connectedCalls → those calls with outcome='contacted' (reached a person)
 //   - callbacks      → OPEN tasks (tasks.status='open') due within the today
 //                      bucket of the window (still useful as a "what's due now"
 //                      signal regardless of range — admins want to see today's
@@ -92,7 +92,7 @@ export async function GET(request: Request) {
       if (!c.sales_user_id) continue;
       const agg = callsByRep.get(c.sales_user_id) || { called: 0, connected: 0 };
       agg.called++;
-      if (c.outcome === "connected") agg.connected++;
+      if (c.outcome === "contacted") agg.connected++;
       callsByRep.set(c.sales_user_id, agg);
     }
 

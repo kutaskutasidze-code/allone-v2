@@ -729,7 +729,8 @@ export interface Database {
           lead_id: string;
           sales_user_id: string | null;
           direction: 'outbound' | 'inbound';
-          outcome: 'connected' | 'no_answer' | 'voicemail' | 'busy' | 'wrong_number' | 'callback_requested' | 'not_interested';
+          outcome: 'contacted' | 'no_answer' | 'wrong_number';
+          disposition: 'interested' | 'not_interested' | 'callback_requested' | null;
           duration_seconds: number | null;
           notes: string | null;
           occurred_at: string;
@@ -743,7 +744,8 @@ export interface Database {
           lead_id: string;
           sales_user_id?: string | null;
           direction?: 'outbound' | 'inbound';
-          outcome: 'connected' | 'no_answer' | 'voicemail' | 'busy' | 'wrong_number' | 'callback_requested' | 'not_interested';
+          outcome: 'contacted' | 'no_answer' | 'wrong_number';
+          disposition?: 'interested' | 'not_interested' | 'callback_requested' | null;
           duration_seconds?: number | null;
           notes?: string | null;
           occurred_at?: string;
@@ -757,7 +759,8 @@ export interface Database {
           lead_id?: string;
           sales_user_id?: string | null;
           direction?: 'outbound' | 'inbound';
-          outcome?: 'connected' | 'no_answer' | 'voicemail' | 'busy' | 'wrong_number' | 'callback_requested' | 'not_interested';
+          outcome?: 'contacted' | 'no_answer' | 'wrong_number';
+          disposition?: 'interested' | 'not_interested' | 'callback_requested' | null;
           duration_seconds?: number | null;
           notes?: string | null;
           occurred_at?: string;

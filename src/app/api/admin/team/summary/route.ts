@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
         .gte('occurred_at', startIso)
         .lt('occurred_at', endIso)
         .in('sales_user_id', activeIds)
-        .eq('outcome', 'connected'),
+        .eq('outcome', 'contacted'),
       // Won-in-period leads — a few hundred at most; fetch values and tally.
       fetchAllRows<{ value: number | null }>((from, to) =>
         admin

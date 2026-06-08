@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, AlertCircle } from 'lucide-react';
-import { CALL_OUTCOMES } from '@/lib/validations/activity';
+import { CALL_OUTCOMES, CALL_DISPOSITIONS } from '@/lib/validations/activity';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -30,6 +30,7 @@ function parseDuration(raw: string): number | null {
 
 export function LogCallSheet({ leadId, open, onClose, onLogged }: Props) {
   const [outcome, setOutcome] = useState<string>('');
+  const [disposition, setDisposition] = useState<string>('');
   const [duration, setDuration] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
@@ -39,6 +40,7 @@ export function LogCallSheet({ leadId, open, onClose, onLogged }: Props) {
 
   const reset = () => {
     setOutcome('');
+    setDisposition('');
     setDuration('');
     setNotes('');
     setError('');
@@ -64,6 +66,7 @@ export function LogCallSheet({ leadId, open, onClose, onLogged }: Props) {
     setError('');
     try {
       const body: Record<string, unknown> = { outcome };
+      if (outcome === 'contacted' && disposition) body.disposition = disposition;
       if (durationSeconds !== null) body.duration_seconds = durationSeconds;
       if (notes.trim()) body.notes = notes.trim();
       const res = await fetch(`/api/sales/leads/${leadId}/calls`, {
@@ -89,15 +92,18 @@ export function LogCallSheet({ leadId, open, onClose, onLogged }: Props) {
             <X className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-xs text-[var(--ink-500)] mb-4">How did the call go?</p>
+        <p className="text-xs text-[var(--ink-500)] mb-4">Did you reach someone?</p>
 
-        <div className="grid grid-cols-2 gap-2 mb-5">
+        <div className="grid grid-cols-3 gap-2">
           {CALL_OUTCOMES.map((o) => {
             const active = outcome === o.value;
             return (
               <button
                 key={o.value}
-                onClick={() => setOutcome(o.value)}
+                onClick={() => {
+                  setOutcome(o.value);
+                  if (o.value !== 'contacted') setDisposition('');
+                }}
                 className={cn(
                   'px-3 py-3 rounded-[var(--radius-md)] text-sm font-medium transition-all active:scale-[0.98]',
                   active
@@ -111,7 +117,37 @@ export function LogCallSheet({ leadId, open, onClose, onLogged }: Props) {
           })}
         </div>
 
-        <div className="border-t border-[var(--allone-line-soft)] pt-4 space-y-4">
+        {outcome === 'contacted' && (
+          <div className="mt-4">
+            <label className="block text-xs font-medium text-[var(--ink-700)] mb-2">
+              What did they say? <span className="text-[var(--ink-400)]">(optional)</span>
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {CALL_DISPOSITIONS.map((d) => {
+                const active = disposition === d.value;
+                return (
+                  <button
+                    key={d.value}
+                    onClick={() => setDisposition(active ? '' : d.value)}
+                    className={cn(
+                      'px-3 py-3 rounded-[var(--radius-md)] text-sm font-medium transition-all active:scale-[0.98]',
+                      active
+                        ? 'bg-[var(--ink-900)] text-white'
+                        : 'bg-[var(--bg-surface)] border border-[var(--allone-line)] text-[var(--ink-700)] hover:border-gray-400 hover:bg-[var(--bg-surface-alt)]',
+                    )}
+                  >
+                    {d.label}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-[11px] leading-relaxed text-[var(--ink-400)]">
+              Not interested marks the lead Lost · Wants a callback adds a follow-up task
+            </p>
+          </div>
+        )}
+
+        <div className="mt-5 border-t border-[var(--allone-line-soft)] pt-4 space-y-4">
           <div>
             <label className="block text-xs font-medium text-[var(--ink-700)] mb-2">
               Duration <span className="text-[var(--ink-400)]">(optional · seconds or mm:ss)</span>

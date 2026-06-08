@@ -812,7 +812,7 @@ export function TeamContent() {
                     {rep.calledInPeriod > 0 && (
                       <span className="text-[var(--ink-400)]">
                         {" "}
-                        ({rep.connectedCalls} conn)
+                        ({rep.connectedCalls} reached)
                       </span>
                     )}
                   </td>

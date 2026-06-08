@@ -11,7 +11,7 @@ import {
   Clock,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { CALL_OUTCOME_LABELS } from "@/lib/validations/activity";
+import { CALL_OUTCOMES, CALL_OUTCOME_LABELS } from "@/lib/validations/activity";
 
 const PERIODS = [
   { value: "month", label: "This Month" },
@@ -20,15 +20,7 @@ const PERIODS = [
   { value: "all", label: "All Time" },
 ];
 
-const OUTCOME_ORDER = [
-  "connected",
-  "no_answer",
-  "voicemail",
-  "busy",
-  "callback_requested",
-  "not_interested",
-  "wrong_number",
-];
+const OUTCOME_ORDER = CALL_OUTCOMES.map((o) => o.value);
 
 interface ActivityData {
   rep: {
@@ -189,9 +181,9 @@ export default function RepActivityPage({
               icon={<Phone className="w-3.5 h-3.5" />}
             />
             <StatCard
-              label="Connect rate"
+              label="Reach rate"
               value={`${connectRate}%`}
-              sub={`${data.calls.connected} connected`}
+              sub={`${data.calls.connected} contacted`}
               icon={<PhoneCall className="w-3.5 h-3.5" />}
             />
             <StatCard

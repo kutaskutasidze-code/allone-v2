@@ -141,6 +141,16 @@ export function DashboardContent({
       count: number;
     };
   } | null>(null);
+  const [calls, setCalls] = useState<{
+    connection: { contacted: number; no_answer: number; wrong_number: number };
+    disposition: {
+      interested: number;
+      not_interested: number;
+      callback_requested: number;
+    };
+    total: number;
+    reachRate: number;
+  } | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -161,6 +171,12 @@ export function DashboardContent({
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (active && j?.data) setRecv(j.data);
+      })
+      .catch(() => {});
+    fetch("/api/admin/calls/summary?period=month")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (active && j?.data) setCalls(j.data);
       })
       .catch(() => {});
     return () => {
@@ -356,7 +372,7 @@ export function DashboardContent({
         <KpiTile
           label="Calls this month"
           value={team ? String(team.calledInPeriod) : "…"}
-          hint={team ? `${team.connectedCalls} connected` : undefined}
+          hint={team ? `${team.connectedCalls} contacted` : undefined}
           href="/admin/team"
         />
         <KpiTile
@@ -390,6 +406,75 @@ export function DashboardContent({
           href="/admin/receivables"
         />
       </div>
+
+      {/* Call outcomes this month — connection split + disposition of contacted */}
+      {calls && (
+        <div className="p-6 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-[var(--ink-900)]">
+              Calls this month
+            </h2>
+            <span className="text-xs text-[var(--ink-500)]">
+              {calls.total} calls · {Math.round(calls.reachRate * 100)}% reached
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+                Contacted
+              </div>
+              <div className="mt-1 text-xl font-semibold text-emerald-600">
+                {calls.connection.contacted}
+              </div>
+            </div>
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+                No answer
+              </div>
+              <div className="mt-1 text-xl font-semibold text-[var(--ink-700)]">
+                {calls.connection.no_answer}
+              </div>
+            </div>
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+                Wrong number
+              </div>
+              <div className="mt-1 text-xl font-semibold text-[var(--ink-700)]">
+                {calls.connection.wrong_number}
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 mb-2 text-[11px] uppercase tracking-wider text-[var(--ink-400)]">
+            Of the contacted
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+                Interested
+              </div>
+              <div className="mt-1 text-xl font-semibold text-emerald-600">
+                {calls.disposition.interested}
+              </div>
+            </div>
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+                Not interested
+              </div>
+              <div className="mt-1 text-xl font-semibold text-red-500">
+                {calls.disposition.not_interested}
+              </div>
+            </div>
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+                Callback
+              </div>
+              <div className="mt-1 text-xl font-semibold text-amber-600">
+                {calls.disposition.callback_requested}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Receivables — collected vs owed across won deals */}
       <div className="p-6 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">

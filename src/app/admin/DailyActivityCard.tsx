@@ -187,10 +187,10 @@ export function DailyActivityCard() {
               </th>
               <th
                 className="text-right px-3 py-2.5 font-medium"
-                title="Connected calls / connect rate"
+                title="Contacted (reached) calls / reach rate"
               >
-                <span className="hidden md:inline">Connect</span>
-                <span className="md:hidden">Conn</span>
+                <span className="hidden md:inline">Reached</span>
+                <span className="md:hidden">Reach</span>
               </th>
               <th
                 className="text-right px-3 py-2.5 font-medium"

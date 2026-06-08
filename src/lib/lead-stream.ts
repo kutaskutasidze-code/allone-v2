@@ -1,6 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { LEAD_STATUS_LABELS } from '@/lib/validations/leads';
-import { CALL_OUTCOME_LABELS } from '@/lib/validations/activity';
+import {
+  CALL_OUTCOME_LABELS,
+  CALL_DISPOSITION_LABELS,
+} from '@/lib/validations/activity';
 
 /**
  * A single normalized entry in a lead's unified activity timeline.
@@ -43,6 +46,7 @@ interface CallRow {
   sales_user_id: string | null;
   direction: string;
   outcome: string;
+  disposition: string | null;
   duration_seconds: number | null;
   notes: string | null;
   occurred_at: string;
@@ -156,7 +160,7 @@ export async function buildLeadStream(
     safeRows<CallRow>(
       admin
         .from('calls')
-        .select('id, sales_user_id, direction, outcome, duration_seconds, notes, occurred_at')
+        .select('id, sales_user_id, direction, outcome, disposition, duration_seconds, notes, occurred_at')
         .eq('lead_id', leadId),
     ),
     safeRows<TaskRow>(
@@ -225,17 +229,21 @@ export async function buildLeadStream(
   // --- calls ---
   for (const r of callRows) {
     const outcome = CALL_OUTCOME_LABELS[r.outcome] ?? r.outcome;
+    const disposition = r.disposition
+      ? CALL_DISPOSITION_LABELS[r.disposition] ?? r.disposition
+      : null;
     events.push({
       id: `call:${r.id}`,
       kind: 'call',
       at: r.occurred_at,
       actorId: r.sales_user_id,
       actorName: null,
-      title: `Call — ${outcome}`,
+      title: disposition ? `Call — ${outcome} · ${disposition}` : `Call — ${outcome}`,
       detail: r.notes ?? undefined,
       meta: {
         direction: r.direction,
         outcome: r.outcome,
+        disposition: r.disposition,
         durationSeconds: r.duration_seconds,
       },
     });

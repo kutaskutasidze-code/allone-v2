@@ -33,7 +33,10 @@ import {
   LOST_REASONS,
   INFOSHOP_PATTERN,
 } from "@/lib/validations/leads";
-import { CALL_OUTCOME_LABELS } from "@/lib/validations/activity";
+import {
+  CALL_OUTCOME_LABELS,
+  CALL_DISPOSITION_LABELS,
+} from "@/lib/validations/activity";
 import { formatRelative, safeHttpUrl } from "@/lib/utils";
 import type { Lead, LeadStatus } from "@/types/database";
 
@@ -46,6 +49,7 @@ interface LeadWithRep extends Lead {
 interface CallRow {
   id: string;
   outcome: string;
+  disposition: string | null;
   direction: string;
   duration_seconds: number | null;
   notes: string | null;
@@ -773,6 +777,13 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
                     <div className="min-w-0 flex-1">
                       <p className="text-sm text-[var(--ink-900)]">
                         {CALL_OUTCOME_LABELS[c.outcome] || c.outcome}
+                        {c.disposition && (
+                          <span className="text-[var(--ink-500)]">
+                            {" · "}
+                            {CALL_DISPOSITION_LABELS[c.disposition] ||
+                              c.disposition}
+                          </span>
+                        )}
                       </p>
                       <p className="text-xs text-[var(--ink-500)]">
                         {formatRelative(c.occurred_at)}

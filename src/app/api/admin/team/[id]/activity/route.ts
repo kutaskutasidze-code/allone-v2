@@ -94,7 +94,7 @@ export async function GET(
       if (c.outcome in byOutcome) byOutcome[c.outcome]++;
       if (c.occurred_at >= todayIso && c.occurred_at < tomorrowIso) callsToday++;
     }
-    const connectedCalls = byOutcome['connected'] || 0;
+    const connectedCalls = byOutcome['contacted'] || 0;
 
     if (openErr) {
       logger.error('Failed to load open tasks for rep activity', { error: openErr.message, id });

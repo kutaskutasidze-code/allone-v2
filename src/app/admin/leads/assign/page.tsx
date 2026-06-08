@@ -72,6 +72,7 @@ function AssignLeadsContent() {
   const [search, setSearch] = useState('');
   const [industry, setIndustry] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
+  const [websiteFilter, setWebsiteFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -142,6 +143,7 @@ function AssignLeadsContent() {
       if (tab === 'assigned' && assignedToFilter !== 'all') params.set('assigned_to', assignedToFilter);
       if (industry !== 'all') params.set('industry', industry);
       if (sourceFilter !== 'all') params.set('has_any_source', sourceFilter);
+      if (websiteFilter !== 'all') params.set('has_website', websiteFilter);
       if (debouncedSearch) params.set('search', debouncedSearch);
       if (!includeHotlines) params.set('exclude_phone_prefix', HOTLINE_PHONE_PREFIX_PARAM);
       params.set('page', String(page));
@@ -158,7 +160,7 @@ function AssignLeadsContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [tab, assignedToFilter, industry, sourceFilter, debouncedSearch, page, includeHotlines]);
+  }, [tab, assignedToFilter, industry, sourceFilter, websiteFilter, debouncedSearch, page, includeHotlines]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
 
@@ -212,6 +214,7 @@ function AssignLeadsContent() {
       if (distributeRepIds.size > 0) body.repIds = [...distributeRepIds];
       if (industry !== 'all') body.filters = { ...(body.filters || {}), industry };
       if (sourceFilter !== 'all') body.filters = { ...(body.filters || {}), hasAnySource: sourceFilter };
+      if (websiteFilter !== 'all') body.filters = { ...(body.filters || {}), hasWebsite: websiteFilter };
       if (!includeHotlines) {
         body.filters = { ...(body.filters || {}), excludePhonePrefix: HOTLINE_PHONE_PREFIX_PARAM };
       }
@@ -840,6 +843,16 @@ function AssignLeadsContent() {
               <option value="all">Any source</option>
               <option value="yes">Has source (web / FB / maps)</option>
               <option value="no">No source</option>
+            </select>
+            <select
+              value={websiteFilter}
+              onChange={(e) => { setWebsiteFilter(e.target.value); setPage(1); }}
+              className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+              title="Filter by whether the lead has its own website"
+            >
+              <option value="all">Any website</option>
+              <option value="yes">Has website</option>
+              <option value="no">No website</option>
             </select>
             {tab === 'assigned' && (
               <select
