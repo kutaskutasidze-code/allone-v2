@@ -198,8 +198,8 @@ export function metricLabel(m: Metric): string {
 
 export function metricFormat(m: Metric, value: number): string {
   if (m === "leads_won_revenue") {
-    if (value >= 1000) return `$${(value / 1000).toFixed(1)}k`;
-    return `$${value.toFixed(0)}`;
+    if (value >= 1000) return `₾${(value / 1000).toFixed(1)}k`;
+    return `₾${value.toFixed(0)}`;
   }
   return String(Math.round(value));
 }

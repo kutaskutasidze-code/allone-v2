@@ -125,6 +125,22 @@ export function DashboardContent({
     pipelineValue: number;
   } | null>(null);
   const [forecast, setForecast] = useState<number | null>(null);
+  const [recv, setRecv] = useState<{
+    rows: {
+      leadId: string;
+      name: string | null;
+      company: string | null;
+      repName: string | null;
+      owed: number;
+      overdueAmount: number;
+    }[];
+    totals: {
+      outstanding: number;
+      overdue: number;
+      collected: number;
+      count: number;
+    };
+  } | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -141,15 +157,21 @@ export function DashboardContent({
           setForecast(weightedForecast(j.data.stages));
       })
       .catch(() => {});
+    fetch("/api/admin/receivables")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (active && j?.data) setRecv(j.data);
+      })
+      .catch(() => {});
     return () => {
       active = false;
     };
   }, []);
 
   const formatCurrency = (value: number) => {
-    if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`;
-    return `$${value.toFixed(0)}`;
+    if (value >= 1000000) return `₾${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `₾${(value / 1000).toFixed(0)}K`;
+    return `₾${value.toFixed(0)}`;
   };
 
   const availableYears = useMemo(() => {
@@ -323,7 +345,7 @@ export function DashboardContent({
       </div>
 
       {/* Team performance + forecast */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <KpiTile
           label="Expected to close"
           value={forecast === null ? "…" : formatCurrency(forecast)}
@@ -353,6 +375,99 @@ export function DashboardContent({
           hint="Active leads"
           href="/admin/pipeline"
         />
+        <KpiTile
+          label="Outstanding"
+          value={
+            recv
+              ? `₾${Math.round(recv.totals.outstanding).toLocaleString()}`
+              : "…"
+          }
+          hint={
+            recv && recv.totals.overdue > 0
+              ? `₾${Math.round(recv.totals.overdue).toLocaleString()} overdue`
+              : "owed on won deals"
+          }
+          href="/admin/receivables"
+        />
+      </div>
+
+      {/* Receivables — collected vs owed across won deals */}
+      <div className="p-6 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02]">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-[var(--ink-900)]">
+            Receivables
+          </h2>
+          <Link
+            href="/admin/receivables"
+            className="text-xs text-[var(--ao-accent)] hover:underline"
+          >
+            View all →
+          </Link>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+            <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+              Collected
+            </div>
+            <div className="mt-1 text-xl font-semibold text-emerald-600">
+              {recv
+                ? `₾${Math.round(recv.totals.collected).toLocaleString()}`
+                : "…"}
+            </div>
+          </div>
+          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+            <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+              Outstanding
+            </div>
+            <div className="mt-1 text-xl font-semibold text-amber-600">
+              {recv
+                ? `₾${Math.round(recv.totals.outstanding).toLocaleString()}`
+                : "…"}
+            </div>
+          </div>
+          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
+            <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+              Overdue
+            </div>
+            <div className="mt-1 text-xl font-semibold text-red-500">
+              {recv
+                ? `₾${Math.round(recv.totals.overdue).toLocaleString()}`
+                : "…"}
+            </div>
+          </div>
+        </div>
+        {recv &&
+          (recv.rows.length === 0 ? (
+            <p className="mt-4 text-xs text-[var(--ink-500)]">
+              No outstanding balances — every won deal is paid in full. 🎉
+            </p>
+          ) : (
+            <ul className="mt-4 space-y-1.5">
+              {recv.rows.slice(0, 5).map((r) => (
+                <li
+                  key={r.leadId}
+                  className="flex items-center gap-3 text-sm"
+                >
+                  <Link
+                    href={`/admin/leads/${r.leadId}`}
+                    className="min-w-0 flex-1 truncate text-[var(--ink-800)] hover:text-[var(--ao-accent)]"
+                  >
+                    {r.company || r.name || "Lead"}
+                  </Link>
+                  {r.repName && (
+                    <span className="shrink-0 text-xs text-[var(--ink-400)]">
+                      {r.repName}
+                    </span>
+                  )}
+                  <span
+                    className={`shrink-0 font-medium ${r.overdueAmount > 0 ? "text-red-500" : "text-[var(--ink-900)]"}`}
+                  >
+                    ₾{Math.round(r.owed).toLocaleString()}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ))}
       </div>
 
       {/* Daily call activity by rep */}

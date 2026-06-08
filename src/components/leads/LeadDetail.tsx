@@ -522,7 +522,7 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
                 </div>
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Value ($)">
+                <Field label="Value (₾)">
                   <input
                     type="number"
                     min={0}

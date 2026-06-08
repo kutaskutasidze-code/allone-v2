@@ -208,7 +208,7 @@ function ActionButton({
 
 // ── Forms ──────────────────────────────────────────────────────────────
 
-const CURRENCIES = ["USD", "EUR", "GEL"] as const;
+const CURRENCIES = ["GEL", "USD", "EUR"] as const;
 
 function OfferForm({
   leadId,
@@ -219,7 +219,7 @@ function OfferForm({
   onCancel: () => void;
   onDone: (data: ActionResult) => void;
 }) {
-  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("USD");
+  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("GEL");
   const [intro, setIntro] = useState("");
   const [paymentTerms, setPaymentTerms] = useState(
     "50% on signature, 50% on delivery",
@@ -304,7 +304,7 @@ function ContractForm({
   onCancel: () => void;
   onDone: (data: ActionResult) => void;
 }) {
-  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("USD");
+  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("GEL");
   const [total, setTotal] = useState(0);
   const [scope, setScope] = useState("");
   const [deliverables, setDeliverables] = useState<string[]>([""]);
@@ -445,7 +445,7 @@ function InvoiceForm({
   onCancel: () => void;
   onDone: (data: ActionResult) => void;
 }) {
-  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("USD");
+  const [currency, setCurrency] = useState<(typeof CURRENCIES)[number]>("GEL");
   const [dueInDays, setDueInDays] = useState(14);
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState<LineItem[]>([

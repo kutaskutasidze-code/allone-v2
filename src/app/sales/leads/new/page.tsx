@@ -129,7 +129,7 @@ export default function NewLeadPage() {
                 options={LEAD_STATUSES.map((s) => ({ value: s.value, label: s.label }))}
               />
               <Input
-                label="Value ($)"
+                label="Value (₾)"
                 type="number"
                 value={formData.value}
                 onChange={(e) => setFormData({ ...formData, value: Number(e.target.value) })}
