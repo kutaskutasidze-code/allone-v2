@@ -169,7 +169,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { supabase, salesUser } = await requireSalesAuth();
+    const { salesUser } = await requireSalesAuth();
     const body = await request.json();
 
     const result = createLeadSchema.safeParse(body);
@@ -177,6 +177,10 @@ export async function POST(request: Request) {
 
     const validated = result.data;
 
+    // Service-role client (RLS-bypassing), consistent with the GET + every other
+    // sales lead route — the user-session client tripped RLS on the lead
+    // triggers (status history), which blocked salespeople from creating leads.
+    const supabase = createAdminClient();
     const { data, error: dbError } = await supabase
       .from("leads")
       .insert({
