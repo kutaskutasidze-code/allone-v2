@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
   X,
@@ -35,6 +35,8 @@ type ScopeMode = "today" | "mine" | "callbacks" | "done";
 
 function LeadsPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const initialStatus = searchParams.get("status") || "all";
   const { theme, toggleTheme } = useSalesTheme();
   const [taskForLeadId, setTaskForLeadId] = useState<string | null>(null);
@@ -56,7 +58,10 @@ function LeadsPageContent() {
   const [websiteFilter, setWebsiteFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [originFilter, setOriginFilter] = useState("all");
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => {
+    const p = Number(searchParams.get("page"));
+    return p > 0 ? p : 1;
+  });
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
   const [exporting, setExporting] = useState(false);
@@ -163,6 +168,17 @@ function LeadsPageContent() {
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
+
+  // Keep `page` in the URL so returning from a lead (browser Back) restores the
+  // page the rep was on instead of resetting to page 1.
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (page > 1) params.set("page", String(page));
+    else params.delete("page");
+    const qs = params.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   const updateLead = async (id: string, updates: Record<string, unknown>) => {
     try {
