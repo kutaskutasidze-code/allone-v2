@@ -196,8 +196,19 @@ export function AppSidebar() {
   const navConfig = isAdmin ? adminNavBF : salesNavBF;
   const footerConfig = isAdmin ? adminFooterBF : salesFooterBF;
 
-  const matchesItem = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
+  // Highlight only the MOST SPECIFIC matching item. An item matches when the
+  // path equals its href or sits under it — but a parent like /admin/leads must
+  // not stay lit on /admin/leads/hotlines, so the longest matching href wins
+  // (and a lead detail /admin/leads/<id> still lights "All Leads").
+  const allHrefs = [
+    navConfig.top.href,
+    ...navConfig.sections.flatMap((s) => s.items.map((i) => i.href)),
+    ...footerConfig.map((f) => f.href),
+  ];
+  const bestMatch = allHrefs
+    .filter((h) => pathname === h || pathname.startsWith(h + "/"))
+    .sort((a, b) => b.length - a.length)[0];
+  const isActive = (href: string) => !!bestMatch && href === bestMatch;
 
   const isOnDetailFor = (itemHref: string) =>
     new RegExp(`^${itemHref}/[^/]+`).test(pathname);
@@ -218,7 +229,7 @@ export function AppSidebar() {
                   href={navConfig.top.href}
                   label={topLabel}
                   iconName={navConfig.top.icon}
-                  active={pathname === navConfig.top.href}
+                  active={isActive(navConfig.top.href)}
                 />
               );
             })()}
@@ -235,7 +246,7 @@ export function AppSidebar() {
             </div>
             <ul className="space-y-0.5">
               {section.items.map((item) => {
-                const active = matchesItem(item.href);
+                const active = isActive(item.href);
                 const expandSub =
                   !!item.subEntities && isOnDetailFor(item.href);
                 const key = navKey(item.href);
@@ -310,7 +321,7 @@ export function AppSidebar() {
                 <Link
                   href={item.href}
                   className={`flex items-center gap-3 rounded-[var(--radius-xs)] px-3 py-1.5 text-[13px] transition ${
-                    matchesItem(item.href)
+                    isActive(item.href)
                       ? "bg-[var(--bg-sunken)] text-[var(--ink-900)] font-medium"
                       : "text-[var(--ink-700)] hover:bg-[var(--bg-app)] hover:text-[var(--ink-900)]"
                   }`}
