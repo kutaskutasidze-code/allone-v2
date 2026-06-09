@@ -45,7 +45,7 @@ export function RealtimeStatusPill() {
     let cleanup: (() => void) | null = null;
     (async () => {
       try {
-        const { getRealtimeClient } = await import("@/app/lib/realtime");
+        const { getRealtimeClient } = await import("@/lib/realtime");
         const sb = getRealtimeClient();
         if (!sb) {
           setStatus("offline");

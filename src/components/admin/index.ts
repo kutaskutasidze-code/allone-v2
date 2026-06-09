@@ -1,4 +1,3 @@
-export { AdminSidebar } from './AdminSidebar';
 export { ArrayInput } from './ArrayInput';
 export { Card, CardHeader, CardSection } from './Card';
 export { ConfirmDialog } from './ConfirmDialog';

@@ -1,4 +1,3 @@
-export { SalesSidebar } from "./SalesSidebar";
 export { LeadStatusBadge } from "./LeadStatusBadge";
 // Master's lead-distribution work
 export { CommissionWidget } from "./CommissionWidget";
