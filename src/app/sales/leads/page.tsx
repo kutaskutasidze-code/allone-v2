@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, useEffect, useCallback } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Search,
   X,
@@ -35,7 +35,6 @@ type ScopeMode = "today" | "mine" | "callbacks" | "done";
 
 function LeadsPageContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
   const initialStatus = searchParams.get("status") || "all";
   const { theme, toggleTheme } = useSalesTheme();
@@ -193,7 +192,11 @@ function LeadsPageContent() {
     if (debouncedSearch) params.set("search", debouncedSearch);
     if (page > 1) params.set("page", String(page));
     const qs = params.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    // Use the native History API (not router.replace): a plain browser-history
+    // write persists across the lead-detail navigation so the Back button
+    // restores it verbatim, with no router navigation / RSC refetch. Next's App
+    // Router reads it back through useSearchParams on remount.
+    window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
   }, [
     scopeMode,
     statusFilter,
@@ -204,7 +207,6 @@ function LeadsPageContent() {
     debouncedSearch,
     page,
     pathname,
-    router,
   ]);
 
   const updateLead = async (id: string, updates: Record<string, unknown>) => {
