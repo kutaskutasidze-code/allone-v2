@@ -43,8 +43,10 @@ function LeadsPageContent() {
   const initialScopeParam = searchParams.get("scope");
 
   const [scopeMode, setScopeMode] = useState<ScopeMode>(
-    initialScopeParam === "today"
-      ? "today"
+    initialScopeParam === "today" ||
+      initialScopeParam === "callbacks" ||
+      initialScopeParam === "done"
+      ? (initialScopeParam as ScopeMode)
       : initialStatus === "callback"
         ? "callbacks"
         : "mine",
@@ -52,12 +54,20 @@ function LeadsPageContent() {
 
   const [leads, setLeads] = useState<Record<string, unknown>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [statusFilter, setStatusFilter] = useState(initialStatus);
-  const [serviceFilter, setServiceFilter] = useState("all");
-  const [websiteFilter, setWebsiteFilter] = useState("all");
-  const [sourceFilter, setSourceFilter] = useState("all");
-  const [originFilter, setOriginFilter] = useState("all");
+  const [serviceFilter, setServiceFilter] = useState(
+    searchParams.get("service") || "all",
+  );
+  const [websiteFilter, setWebsiteFilter] = useState(
+    searchParams.get("website") || "all",
+  );
+  const [sourceFilter, setSourceFilter] = useState(
+    searchParams.get("source") || "all",
+  );
+  const [originFilter, setOriginFilter] = useState(
+    searchParams.get("origin") || "all",
+  );
   const [page, setPage] = useState(() => {
     const p = Number(searchParams.get("page"));
     return p > 0 ? p : 1;
@@ -169,16 +179,33 @@ function LeadsPageContent() {
     fetchLeads();
   }, [fetchLeads]);
 
-  // Keep `page` in the URL so returning from a lead (browser Back) restores the
-  // page the rep was on instead of resetting to page 1.
+  // Mirror the full view (scope + filters + page) into the URL so returning from
+  // a lead (browser Back) restores exactly where the rep was, instead of
+  // resetting the filters and jumping back to page 1.
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
+    if (scopeMode !== "mine") params.set("scope", scopeMode);
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (serviceFilter !== "all") params.set("service", serviceFilter);
+    if (websiteFilter !== "all") params.set("website", websiteFilter);
+    if (sourceFilter !== "all") params.set("source", sourceFilter);
+    if (originFilter !== "all") params.set("origin", originFilter);
+    if (debouncedSearch) params.set("search", debouncedSearch);
     if (page > 1) params.set("page", String(page));
-    else params.delete("page");
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [
+    scopeMode,
+    statusFilter,
+    serviceFilter,
+    websiteFilter,
+    sourceFilter,
+    originFilter,
+    debouncedSearch,
+    page,
+    pathname,
+    router,
+  ]);
 
   const updateLead = async (id: string, updates: Record<string, unknown>) => {
     try {
