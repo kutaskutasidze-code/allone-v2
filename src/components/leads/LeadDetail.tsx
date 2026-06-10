@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   X,
@@ -95,6 +96,7 @@ function Field({
 export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
   const apiBase = role === "admin" ? "/api/admin" : "/api/sales";
   const backHref = role === "admin" ? "/admin/leads" : "/sales/leads";
+  const router = useRouter();
   const updateMethod = role === "admin" ? "PATCH" : "PUT";
 
   const [lead, setLead] = useState<LeadWithRep | null>(null);
@@ -318,6 +320,15 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
       <div className="max-w-2xl mx-auto">
         <Link
           href={backHref}
+          onClick={(e) => {
+            // Go back to the filtered list the rep came from (the list mirrors
+            // its filters into the URL). Fall through to the plain list href
+            // when there's no in-app history (e.g. opened via a direct link).
+            if (typeof window !== "undefined" && window.history.length > 1) {
+              e.preventDefault();
+              router.back();
+            }
+          }}
           className="inline-flex items-center gap-2 text-sm text-[var(--ink-500)] hover:text-[var(--ink-900)] mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -366,6 +377,12 @@ export function LeadDetail({ leadId, role }: { leadId: string; role: Role }) {
       {/* Back + header */}
       <Link
         href={backHref}
+        onClick={(e) => {
+          if (typeof window !== "undefined" && window.history.length > 1) {
+            e.preventDefault();
+            router.back();
+          }
+        }}
         className="inline-flex items-center gap-2 text-sm text-[var(--ink-500)] hover:text-[var(--ink-900)] mb-5"
       >
         <ArrowLeft className="h-4 w-4" />
