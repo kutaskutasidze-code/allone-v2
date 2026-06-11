@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams, usePathname } from "next/navigation";
 import { Search, X, Users, Trash2, BarChart3, Tag, Sun, Moon } from "lucide-react";
 import { EmptyState } from "@/components/admin";
 import {
@@ -255,7 +255,6 @@ function AddLeadModal({
 
 function AdminLeadsPageContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
   const { theme, toggleTheme } = useAdminTheme();
   const initialStatus = searchParams.get("status") || "all";
@@ -263,15 +262,21 @@ function AdminLeadsPageContent() {
 
   const [leads, setLeads] = useState<LeadWithSalesUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [statusFilter, setStatusFilter] = useState(initialStatus);
-  const [serviceFilter, setServiceFilter] = useState("all");
-  const [websiteFilter, setWebsiteFilter] = useState("all");
-  const [sourceFilter, setSourceFilter] = useState("all");
+  const [serviceFilter, setServiceFilter] = useState(
+    searchParams.get("service") || "all",
+  );
+  const [websiteFilter, setWebsiteFilter] = useState(
+    searchParams.get("website") || "all",
+  );
+  const [sourceFilter, setSourceFilter] = useState(
+    searchParams.get("source") || "all",
+  );
   const [industryFilter, setIndustryFilter] = useState<string | null>(
     initialIndustry,
   );
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => Number(searchParams.get("page")) || 1);
   const [total, setTotal] = useState(0);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
   const [showAddLead, setShowAddLead] = useState(false);
@@ -281,18 +286,10 @@ function AdminLeadsPageContent() {
   const [reps, setReps] = useState<{ id: string; name: string }[]>([]);
   const limit = 50;
 
-  const handleIndustrySelect = useCallback(
-    (industry: string | null) => {
-      setIndustryFilter(industry);
-      setPage(1);
-      const params = new URLSearchParams(searchParams.toString());
-      if (industry) params.set("industry", industry);
-      else params.delete("industry");
-      const qs = params.toString();
-      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-    },
-    [router, pathname, searchParams],
-  );
+  const handleIndustrySelect = useCallback((industry: string | null) => {
+    setIndustryFilter(industry);
+    setPage(1);
+  }, []);
 
   // Fetch all status counts in one request (the server fans out internally).
   const fetchStatusCounts = useCallback(async () => {
@@ -366,6 +363,32 @@ function AdminLeadsPageContent() {
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
+
+  // Mirror filters + page into the URL via history.replaceState (not
+  // router.replace — Next 16 doesn't restore that on Back) so the lead-detail
+  // "Back to Leads" (router.back) returns to the same filtered view.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (serviceFilter !== "all") params.set("service", serviceFilter);
+    if (websiteFilter !== "all") params.set("website", websiteFilter);
+    if (sourceFilter !== "all") params.set("source", sourceFilter);
+    if (industryFilter) params.set("industry", industryFilter);
+    if (debouncedSearch) params.set("search", debouncedSearch);
+    if (page > 1) params.set("page", String(page));
+    const qs = params.toString();
+    window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
+  }, [
+    statusFilter,
+    serviceFilter,
+    websiteFilter,
+    sourceFilter,
+    industryFilter,
+    debouncedSearch,
+    page,
+    pathname,
+  ]);
+
   useEffect(() => {
     fetchStatusCounts();
   }, [fetchStatusCounts]);

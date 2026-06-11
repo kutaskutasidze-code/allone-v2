@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, X, Flame, ChevronDown, MessageSquare, ExternalLink, Phone, Mail, Globe } from 'lucide-react';
 import { PageHeader, EmptyState } from '@/components/admin';
@@ -100,19 +100,18 @@ function LeadNotes({ leadId, initialNotes, onSave }: { leadId: string; initialNo
 
 function HotLinesPageContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
   const initialStatus = searchParams.get('status') || 'all';
   const initialIndustry = searchParams.get('industry');
 
   const [leads, setLeads] = useState<Record<string, unknown>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(searchParams.get('search') || '');
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [industryFilter, setIndustryFilter] = useState<string | null>(initialIndustry);
-  const [websiteFilter, setWebsiteFilter] = useState('all');
-  const [sourceFilter, setSourceFilter] = useState('all');
-  const [page, setPage] = useState(1);
+  const [websiteFilter, setWebsiteFilter] = useState(searchParams.get('website') || 'all');
+  const [sourceFilter, setSourceFilter] = useState(searchParams.get('source') || 'all');
+  const [page, setPage] = useState(() => Number(searchParams.get('page')) || 1);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState('');
   const limit = 50;
@@ -122,12 +121,7 @@ function HotLinesPageContent() {
   const handleIndustrySelect = useCallback((industry: string | null) => {
     setIndustryFilter(industry);
     setPage(1);
-    const params = new URLSearchParams(searchParams.toString());
-    if (industry) params.set('industry', industry);
-    else params.delete('industry');
-    const qs = params.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [router, pathname, searchParams]);
+  }, []);
 
   const fetchLeads = useCallback(async () => {
     try {
@@ -155,6 +149,20 @@ function HotLinesPageContent() {
   }, [statusFilter, industryFilter, websiteFilter, sourceFilter, debouncedSearch, page]);
 
   useEffect(() => { fetchLeads(); }, [fetchLeads]);
+
+  // Mirror filters + page into the URL (history.replaceState) so "Back to
+  // Leads" (router.back) returns to the same filtered Hot Lines view.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (statusFilter !== 'all') params.set('status', statusFilter);
+    if (industryFilter) params.set('industry', industryFilter);
+    if (websiteFilter !== 'all') params.set('website', websiteFilter);
+    if (sourceFilter !== 'all') params.set('source', sourceFilter);
+    if (debouncedSearch) params.set('search', debouncedSearch);
+    if (page > 1) params.set('page', String(page));
+    const qs = params.toString();
+    window.history.replaceState(null, '', qs ? `${pathname}?${qs}` : pathname);
+  }, [statusFilter, industryFilter, websiteFilter, sourceFilter, debouncedSearch, page, pathname]);
 
   const updateLead = async (id: string, updates: Record<string, unknown>) => {
     try {
