@@ -142,7 +142,7 @@ export default function CommissionsPage() {
                 <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-500)]">
                   Team breakdown
                 </h2>
-                <div className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] shadow-[var(--shadow-xs)]">
+                <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] shadow-[var(--shadow-xs)]">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-[var(--allone-line-soft)] text-left text-[11px] uppercase tracking-wider text-[var(--ink-500)]">

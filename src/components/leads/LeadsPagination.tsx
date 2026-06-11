@@ -22,12 +22,17 @@ export function LeadsPagination({
     "px-2.5 py-1.5 text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] hover:bg-[var(--bg-surface-alt)] disabled:opacity-30 transition-colors";
 
   return (
-    <div className="flex items-center justify-between pt-4">
-      <span className="text-xs text-[var(--ink-500)]">
+    <div className="flex items-center justify-between gap-2 pt-4">
+      {/* The lead count crowds the controls on phones — desktop only. */}
+      <span className="hidden text-xs text-[var(--ink-500)] sm:inline">
         {formatTotal ? formatTotal(total) : `${total} leads`}
       </span>
-      <div className="flex items-center gap-1.5">
-        <button onClick={() => onPageChange(1)} disabled={page === 1} className={btn}>
+      <div className="flex w-full items-center justify-between gap-1.5 sm:w-auto sm:justify-end">
+        <button
+          onClick={() => onPageChange(1)}
+          disabled={page === 1}
+          className={`hidden sm:inline-flex ${btn}`}
+        >
           First
         </button>
         <button
@@ -54,9 +59,11 @@ export function LeadsPagination({
               const v = parseInt(e.target.value);
               if (v >= 1 && v <= totalPages) onPageChange(v);
             }}
-            className="w-12 py-1.5 text-center text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="hidden sm:block w-12 py-1.5 text-center text-xs rounded-[var(--radius-sm)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
-          <span>of {totalPages}</span>
+          <span className="whitespace-nowrap">
+            <span className="sm:hidden">{page} </span>of {totalPages}
+          </span>
         </div>
         <button
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
@@ -68,7 +75,7 @@ export function LeadsPagination({
         <button
           onClick={() => onPageChange(totalPages)}
           disabled={page === totalPages}
-          className={btn}
+          className={`hidden sm:inline-flex ${btn}`}
         >
           Last
         </button>

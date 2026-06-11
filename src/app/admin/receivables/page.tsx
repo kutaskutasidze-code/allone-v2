@@ -116,13 +116,13 @@ export default function ReceivablesPage() {
                 <th className="px-4 py-2.5 text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium">
                   Client
                 </th>
-                <th className="px-4 py-2.5 text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium">
+                <th className="hidden sm:table-cell px-4 py-2.5 text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium">
                   Rep
                 </th>
-                <th className="px-4 py-2.5 text-right text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium">
+                <th className="hidden sm:table-cell px-4 py-2.5 text-right text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium">
                   Value
                 </th>
-                <th className="px-4 py-2.5 text-right text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium">
+                <th className="hidden sm:table-cell px-4 py-2.5 text-right text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium">
                   Paid
                 </th>
                 <th className="px-4 py-2.5 text-right text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium">
@@ -149,13 +149,13 @@ export default function ReceivablesPage() {
                         {r.company || r.name || "Lead"}
                       </Link>
                     </td>
-                    <td className="px-4 py-2.5 text-[var(--ink-700)]">
+                    <td className="hidden sm:table-cell px-4 py-2.5 text-[var(--ink-700)]">
                       {r.repName || "—"}
                     </td>
-                    <td className="px-4 py-2.5 text-right text-[var(--ink-700)]">
+                    <td className="hidden sm:table-cell px-4 py-2.5 text-right text-[var(--ink-700)]">
                       {fmt(r.value)}
                     </td>
-                    <td className="px-4 py-2.5 text-right text-emerald-600">
+                    <td className="hidden sm:table-cell px-4 py-2.5 text-right text-emerald-600">
                       {fmt(r.paid)}
                     </td>
                     <td className="px-4 py-2.5 text-right font-semibold text-[var(--ink-900)]">

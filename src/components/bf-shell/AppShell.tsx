@@ -205,7 +205,7 @@ export function AppShell({
               onClick={() => setSidebarOpen(false)}
               className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm transition-opacity"
             />
-            <div className="fixed inset-y-2 left-2 z-50 w-[78vw] max-w-[300px] animate-tp-slide-in overflow-hidden rounded-[var(--radius-lg)] bg-[var(--bg-surface-alt)] shadow-[var(--shadow-lg)]">
+            <div className="pb-safe fixed inset-y-2 left-2 z-50 w-[78vw] max-w-[300px] animate-tp-slide-in overflow-hidden rounded-[var(--radius-lg)] bg-[var(--bg-surface-alt)] shadow-[var(--shadow-lg)]">
               <AppSidebar />
             </div>
           </>

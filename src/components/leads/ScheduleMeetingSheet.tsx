@@ -71,7 +71,7 @@ export function ScheduleMeetingSheet({ leadId, open, onClose, onScheduled }: Pro
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
-      <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-t-2xl sm:rounded-[var(--radius-lg)] shadow-xl w-full sm:max-w-md p-5 max-h-[90vh] overflow-y-auto">
+      <div className="pb-safe bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-t-2xl sm:rounded-[var(--radius-lg)] shadow-xl w-full sm:max-w-md p-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-base font-semibold text-[var(--ink-900)]">Schedule meeting</h2>
           <button onClick={close} className="text-[var(--ink-400)] hover:text-[var(--ink-900)]">

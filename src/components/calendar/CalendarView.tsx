@@ -127,8 +127,85 @@ export function CalendarView({ role }: { role: "sales" | "admin" }) {
         </div>
       )}
 
+      {/* Mobile (< sm): agenda list — the 7-col month grid is unreadable at
+          ~53px/cell on a phone. Same data, grouped by day. */}
       <div
-        className={`overflow-hidden rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] transition-opacity ${
+        className={`sm:hidden overflow-hidden rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] transition-opacity ${
+          loading ? "opacity-60" : ""
+        }`}
+      >
+        {(() => {
+          const days = grid.filter(
+            (d) =>
+              d.getMonth() === cursor.getMonth() &&
+              (byDay.get(dayKey(d))?.length ?? 0) > 0,
+          );
+          if (days.length === 0) {
+            return (
+              <p className="p-4 text-sm text-[var(--ink-500)]">
+                No follow-ups or meetings this month.
+              </p>
+            );
+          }
+          return days.map((d) => {
+            const k = dayKey(d);
+            const dayEvents = byDay.get(k) || [];
+            const isToday = k === todayKey;
+            return (
+              <div
+                key={k}
+                className="border-b border-[var(--allone-line-soft)] px-3 py-2.5 last:border-b-0"
+              >
+                <div
+                  className={`mb-1.5 text-xs font-semibold ${
+                    isToday ? "text-[var(--ao-accent)]" : "text-[var(--ink-700)]"
+                  }`}
+                >
+                  {d.toLocaleDateString("en-US", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                  {isToday ? " · Today" : ""}
+                </div>
+                <div className="space-y-1">
+                  {dayEvents.map((e) => (
+                    <Link
+                      key={e.id}
+                      href={`${detailBase}/${e.leadId}`}
+                      className={`flex items-center gap-2 rounded px-2 py-1.5 text-xs transition-opacity hover:opacity-80 ${
+                        e.type === "meeting"
+                          ? "bg-purple-50 text-purple-700"
+                          : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {e.type === "meeting" ? (
+                        <CalendarIcon className="h-3 w-3 shrink-0" />
+                      ) : (
+                        <CheckSquare className="h-3 w-3 shrink-0" />
+                      )}
+                      <span className="min-w-0 flex-1 truncate">
+                        {e.leadName || e.title}
+                      </span>
+                      <span className="shrink-0 text-[10.5px] opacity-70">
+                        {new Date(e.at).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false,
+                        })}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          });
+        })()}
+      </div>
+
+      {/* Desktop (sm:+): the month grid. */}
+      <div
+        className={`hidden sm:block overflow-hidden rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] transition-opacity ${
           loading ? "opacity-60" : ""
         }`}
       >

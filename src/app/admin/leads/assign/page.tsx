@@ -520,7 +520,7 @@ function AssignLeadsContent() {
       {/* Distribute modal */}
       {distributeOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-md w-full p-6">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-md w-full p-4 sm:p-6">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-emerald-50 flex items-center justify-center">
@@ -609,7 +609,7 @@ function AssignLeadsContent() {
       {/* Rebalance modal */}
       {rebalanceOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-md w-full p-6">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-md w-full p-4 sm:p-6">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-amber-50 flex items-center justify-center">
@@ -683,7 +683,7 @@ function AssignLeadsContent() {
       {/* Distribute-by-specialty modal */}
       {specialtyOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-lg)] shadow-xl max-w-2xl w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-[var(--radius-sm)] bg-sky-50 flex items-center justify-center">
@@ -876,7 +876,7 @@ function AssignLeadsContent() {
           </div>
 
           {tab === 'assigned' && repLoads && repLoads.reps.filter(r => r.isActive).length > 0 && (
-            <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] overflow-hidden">
+            <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] overflow-x-auto">
               <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--allone-line-soft)] bg-[var(--bg-surface-alt)]">
                 <div className="text-xs font-medium text-[var(--ink-700)]">
                   Rep loads

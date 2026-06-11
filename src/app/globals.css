@@ -1007,3 +1007,14 @@ h6 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =============================================
+   MOBILE SAFE AREAS
+   Clears the iOS home indicator / notch on fixed
+   overlays (sidebar drawer, bottom sheets).
+   viewportFit: "cover" is set in app/layout.tsx.
+   ============================================= */
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}

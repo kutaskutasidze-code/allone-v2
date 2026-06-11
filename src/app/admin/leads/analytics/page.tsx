@@ -127,12 +127,12 @@ export default function LeadsAnalyticsPage() {
             key={s.value}
             className="p-3 bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] shadow-black/[0.02]"
           >
-            <div className="flex items-center gap-1.5 mb-1">
+            <div className="flex min-w-0 items-center gap-1.5 mb-1">
               <span
-                className="w-2.5 h-2.5 rounded-sm"
+                className="w-2.5 h-2.5 shrink-0 rounded-sm"
                 style={{ backgroundColor: LEAD_STATUS_COLORS[s.value] }}
               />
-              <span className="text-[11px] text-[var(--ink-500)] uppercase tracking-wider">{s.label}</span>
+              <span className="truncate text-[10px] sm:text-[11px] text-[var(--ink-500)] uppercase tracking-wider">{s.label}</span>
             </div>
             <div className="text-lg font-semibold text-[var(--ink-900)]">
               {overview?.statusCounts[s.value]?.toLocaleString() ?? totalsByStatus[s.value] ?? 0}

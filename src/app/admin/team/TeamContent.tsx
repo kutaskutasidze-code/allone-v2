@@ -719,23 +719,25 @@ export function TeamContent() {
 
       {/* Team table */}
       <div className="bg-[var(--bg-surface)] border border-[var(--allone-line-soft)] rounded-[var(--radius-md)] shadow-[var(--shadow-xs)] shadow-black/[0.02] overflow-x-auto">
-        <table className="w-full min-w-[900px] text-sm">
+        {/* Below lg the low-value columns hide so Rep/Assigned/Calls/Won/Revenue
+            stay readable on a phone without a 900px scroll. */}
+        <table className="w-full lg:min-w-[900px] text-sm">
           <thead>
             <tr className="bg-[var(--bg-surface-alt)] text-[11px] text-[var(--ink-500)] uppercase tracking-wider">
               <th className="text-left px-4 py-3 font-medium">Rep</th>
-              <th className="text-left px-3 py-3 font-medium">
+              <th className="hidden lg:table-cell text-left px-3 py-3 font-medium">
                 <span className="inline-flex items-center gap-1">
                   <Tag className="w-3 h-3" /> Industries
                 </span>
               </th>
-              <th className="text-right px-3 py-3 font-medium">Target</th>
+              <th className="hidden lg:table-cell text-right px-3 py-3 font-medium">Target</th>
               <th className="text-right px-3 py-3 font-medium">Assigned</th>
               <th className="text-right px-3 py-3 font-medium">Calls</th>
               <th className="text-right px-3 py-3 font-medium">Won</th>
-              <th className="text-right px-3 py-3 font-medium">Conv%</th>
-              <th className="text-right px-3 py-3 font-medium">Pipeline</th>
+              <th className="hidden lg:table-cell text-right px-3 py-3 font-medium">Conv%</th>
+              <th className="hidden lg:table-cell text-right px-3 py-3 font-medium">Pipeline</th>
               <th className="text-right px-3 py-3 font-medium">Revenue</th>
-              <th className="text-right px-3 py-3 font-medium">Commission</th>
+              <th className="hidden lg:table-cell text-right px-3 py-3 font-medium">Commission</th>
               <th className="w-10 px-3 py-3"></th>
             </tr>
           </thead>
@@ -792,13 +794,13 @@ export function TeamContent() {
                       {rep.email}
                     </div>
                   </td>
-                  <td className="px-3 py-3">
+                  <td className="hidden lg:table-cell px-3 py-3">
                     <IndustriesCell
                       rep={rep}
                       onSave={(industries) => patchRep(rep.id, { industries })}
                     />
                   </td>
-                  <td className="px-3 py-3 text-right">
+                  <td className="hidden lg:table-cell px-3 py-3 text-right">
                     <InlineNumberEdit
                       value={rep.dailyTarget}
                       onSave={(n) => patchRep(rep.id, { daily_target: n })}
@@ -824,18 +826,18 @@ export function TeamContent() {
                       {rep.wonCount}
                     </span>
                   </td>
-                  <td className="px-3 py-3 text-right tabular-nums text-[var(--ink-700)]">
+                  <td className="hidden lg:table-cell px-3 py-3 text-right tabular-nums text-[var(--ink-700)]">
                     {rep.calledInPeriod > 0
                       ? `${(rep.conversionRate * 100).toFixed(1)}%`
                       : "—"}
                   </td>
-                  <td className="px-3 py-3 text-right tabular-nums text-[var(--ink-700)]">
+                  <td className="hidden lg:table-cell px-3 py-3 text-right tabular-nums text-[var(--ink-700)]">
                     {formatCurrency(rep.pipelineValue)}
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-[var(--ink-900)] font-medium">
                     {formatCurrency(rep.wonRevenue)}
                   </td>
-                  <td className="px-3 py-3 text-right tabular-nums text-emerald-700 font-medium">
+                  <td className="hidden lg:table-cell px-3 py-3 text-right tabular-nums text-emerald-700 font-medium">
                     {formatCurrency(rep.commission)}
                   </td>
                   <td className="px-3 py-3 text-right">

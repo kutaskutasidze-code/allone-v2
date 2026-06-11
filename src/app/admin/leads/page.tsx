@@ -733,7 +733,7 @@ function AdminLeadsPageContent() {
 
       {/* Bulk-select bar */}
       {!isLoading && leads.length > 0 && (
-        <div className="flex flex-wrap items-center gap-3 rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-2.5 shadow-[var(--shadow-xs)]">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 sm:px-4 py-2.5 shadow-[var(--shadow-xs)]">
           <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-medium text-[var(--ink-700)]">
             <input
               type="checkbox"

@@ -189,11 +189,8 @@ export function AppTopbar({
         <LanguageToggle />
         <RealtimeStatusPill />
         <ThemeToggle />
-        <div className="hidden sm:flex sm:items-center sm:gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <NotificationsMenu />
-          <AccountMenu />
-        </div>
-        <div className="flex items-center sm:hidden">
           <AccountMenu />
         </div>
       </div>

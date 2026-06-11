@@ -419,27 +419,27 @@ export function DashboardContent({
             </span>
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
                 Contacted
               </div>
-              <div className="mt-1 text-xl font-semibold text-emerald-600">
+              <div className="mt-1 text-lg sm:text-xl font-semibold text-emerald-600">
                 {calls.connection.contacted}
               </div>
             </div>
-            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
                 No answer
               </div>
-              <div className="mt-1 text-xl font-semibold text-[var(--ink-700)]">
+              <div className="mt-1 text-lg sm:text-xl font-semibold text-[var(--ink-700)]">
                 {calls.connection.no_answer}
               </div>
             </div>
-            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
                 Wrong number
               </div>
-              <div className="mt-1 text-xl font-semibold text-[var(--ink-700)]">
+              <div className="mt-1 text-lg sm:text-xl font-semibold text-[var(--ink-700)]">
                 {calls.connection.wrong_number}
               </div>
             </div>
@@ -448,27 +448,27 @@ export function DashboardContent({
             Of the contacted
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
                 Interested
               </div>
-              <div className="mt-1 text-xl font-semibold text-emerald-600">
+              <div className="mt-1 text-lg sm:text-xl font-semibold text-emerald-600">
                 {calls.disposition.interested}
               </div>
             </div>
-            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
                 Not interested
               </div>
-              <div className="mt-1 text-xl font-semibold text-red-500">
+              <div className="mt-1 text-lg sm:text-xl font-semibold text-red-500">
                 {calls.disposition.not_interested}
               </div>
             </div>
-            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-              <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+            <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+              <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
                 Callback
               </div>
-              <div className="mt-1 text-xl font-semibold text-amber-600">
+              <div className="mt-1 text-lg sm:text-xl font-semibold text-amber-600">
                 {calls.disposition.callback_requested}
               </div>
             </div>
@@ -490,31 +490,31 @@ export function DashboardContent({
           </Link>
         </div>
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-            <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+            <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
               Collected
             </div>
-            <div className="mt-1 text-xl font-semibold text-emerald-600">
+            <div className="mt-1 text-lg sm:text-xl font-semibold text-emerald-600">
               {recv
                 ? `₾${Math.round(recv.totals.collected).toLocaleString()}`
                 : "…"}
             </div>
           </div>
-          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-            <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+            <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
               Outstanding
             </div>
-            <div className="mt-1 text-xl font-semibold text-amber-600">
+            <div className="mt-1 text-lg sm:text-xl font-semibold text-amber-600">
               {recv
                 ? `₾${Math.round(recv.totals.outstanding).toLocaleString()}`
                 : "…"}
             </div>
           </div>
-          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-3">
-            <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+          <div className="rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] p-2 sm:p-3">
+            <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
               Overdue
             </div>
-            <div className="mt-1 text-xl font-semibold text-red-500">
+            <div className="mt-1 text-lg sm:text-xl font-semibold text-red-500">
               {recv
                 ? `₾${Math.round(recv.totals.overdue).toLocaleString()}`
                 : "…"}

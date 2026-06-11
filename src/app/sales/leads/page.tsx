@@ -406,14 +406,14 @@ function LeadsPageContent() {
               </button>
             )}
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="grid grid-cols-2 items-center gap-2 sm:flex sm:flex-wrap">
             <select
               value={websiteFilter}
               onChange={(e) => {
                 setWebsiteFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
+              className="w-full sm:w-auto px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
             >
               <option value="all">All websites</option>
               <option value="yes">Has website</option>
@@ -425,7 +425,7 @@ function LeadsPageContent() {
                 setSourceFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
+              className="w-full sm:w-auto px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
             >
               <option value="all">Any source</option>
               <option value="yes">Has source (web / FB / maps)</option>
@@ -437,7 +437,7 @@ function LeadsPageContent() {
                 setOriginFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
+              className="w-full sm:w-auto px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
             >
               <option value="all">All leads</option>
               <option value="infoshop">Infoshop</option>
@@ -449,7 +449,7 @@ function LeadsPageContent() {
                 setServiceFilter(e.target.value);
                 setPage(1);
               }}
-              className="px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
+              className="w-full sm:w-auto px-3 py-2 text-xs rounded-[var(--radius-sm)] bg-[var(--bg-surface-alt)] border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none cursor-pointer"
             >
               <option value="all">All services</option>
               <option value="website">Website</option>

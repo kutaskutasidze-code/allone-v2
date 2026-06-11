@@ -122,7 +122,7 @@ export function ReferencesManagerContent({
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+        <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--allone-line)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">

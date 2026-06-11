@@ -96,7 +96,9 @@ export function LeadCard({
       <div
         className={`group px-4 py-2.5 transition-colors hover:bg-[var(--bg-surface-alt)] ${className}`.trim()}
       >
-        <div className="flex items-center gap-3">
+        {/* Mobile: name + icons on line 1, meta wraps to line 2 (order-last).
+            Desktop (sm:+): unchanged single line. */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 sm:flex-nowrap">
           {selectable && (
             <input
               type="checkbox"
@@ -109,16 +111,16 @@ export function LeadCard({
           {basePath ? (
             <Link
               href={`${basePath}/${lead.id}`}
-              className="shrink-0 max-w-[40%] truncate text-sm font-medium text-[var(--ink-900)] hover:underline"
+              className="min-w-0 flex-1 truncate text-sm font-medium text-[var(--ink-900)] hover:underline sm:flex-none sm:max-w-[40%]"
             >
               {heading}
             </Link>
           ) : (
-            <span className="shrink-0 max-w-[40%] truncate text-sm font-medium text-[var(--ink-900)]">
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-[var(--ink-900)] sm:flex-none sm:max-w-[40%]">
               {heading}
             </span>
           )}
-          <div className="flex min-w-0 flex-1 items-center gap-3 text-xs text-[var(--ink-400)]">
+          <div className="order-last flex w-full flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[var(--ink-400)] sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:flex-nowrap">
             {typeof lead.lead_score === "number" && (
               <span
                 title="Lead fit score"

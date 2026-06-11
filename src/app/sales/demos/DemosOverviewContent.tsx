@@ -183,16 +183,16 @@ export function DemosOverviewContent({
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+        <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--allone-line)] text-left text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
-                <th className="px-5 py-3 font-medium">Lead</th>
-                <th className="px-5 py-3 font-medium">Status</th>
-                <th className="px-5 py-3 font-medium">Audit</th>
-                <th className="px-5 py-3 font-medium">Engagement</th>
-                <th className="px-5 py-3 font-medium">Created</th>
-                <th className="px-5 py-3 font-medium" />
+                <th className="px-3 sm:px-5 py-3 font-medium">Lead</th>
+                <th className="px-3 sm:px-5 py-3 font-medium">Status</th>
+                <th className="hidden sm:table-cell px-5 py-3 font-medium">Audit</th>
+                <th className="hidden sm:table-cell px-5 py-3 font-medium">Engagement</th>
+                <th className="hidden sm:table-cell px-5 py-3 font-medium">Created</th>
+                <th className="px-3 sm:px-5 py-3 font-medium" />
               </tr>
             </thead>
             <tbody>
@@ -214,7 +214,7 @@ function Row({ job }: { job: Job }) {
 
   return (
     <tr className="border-b border-[var(--bg-sunken)] last:border-b-0">
-      <td className="px-5 py-3">
+      <td className="px-3 sm:px-5 py-3">
         <Link
           href={`/sales/demos/${job.id}`}
           className="block transition hover:opacity-80"
@@ -227,7 +227,7 @@ function Row({ job }: { job: Job }) {
           </div>
         </Link>
       </td>
-      <td className="px-5 py-3">
+      <td className="px-3 sm:px-5 py-3">
         {inProgress ? (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--ao-accent-soft)] px-2.5 py-0.5 text-xs font-medium text-[var(--ao-accent-hover)]">
             <Loader2 className="h-3 w-3 animate-spin" />
@@ -245,7 +245,7 @@ function Row({ job }: { job: Job }) {
           <span className="text-xs text-[var(--ink-500)]">{job.status}</span>
         )}
       </td>
-      <td className="px-5 py-3">
+      <td className="hidden sm:table-cell px-5 py-3">
         {audit != null ? (
           <span className="font-mono text-xs text-[var(--ink-700)]">
             {audit}/100
@@ -254,7 +254,7 @@ function Row({ job }: { job: Job }) {
           <span className="text-xs text-[var(--ink-400)]">—</span>
         )}
       </td>
-      <td className="px-5 py-3 text-xs text-[var(--ink-700)]">
+      <td className="hidden sm:table-cell px-5 py-3 text-xs text-[var(--ink-700)]">
         {job.engagement_count > 0 ? (
           <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
             {job.engagement_count}
@@ -263,10 +263,10 @@ function Row({ job }: { job: Job }) {
           <span className="text-[var(--ink-400)]">—</span>
         )}
       </td>
-      <td className="px-5 py-3 text-xs text-[var(--ink-500)]">
+      <td className="hidden sm:table-cell px-5 py-3 text-xs text-[var(--ink-500)]">
         {new Date(job.created_at).toLocaleDateString()}
       </td>
-      <td className="px-5 py-3 text-right">
+      <td className="px-3 sm:px-5 py-3 text-right">
         {job.demo_url && (
           <a
             href={job.demo_url}

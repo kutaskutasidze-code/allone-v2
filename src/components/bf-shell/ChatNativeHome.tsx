@@ -108,7 +108,7 @@ export function ChatNativeHome({
       style={{ borderRadius: 20, minHeight: "calc(100vh - 8rem)" }}
     >
       {/* Header */}
-      <div className="px-8 pt-8 pb-4">
+      <div className="px-4 pt-6 pb-4 sm:px-8 sm:pt-8">
         <div
           className="mb-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium"
           style={{
@@ -129,13 +129,13 @@ export function ChatNativeHome({
       </div>
 
       {/* Chat thread */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-8 pb-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 pb-4 sm:px-8">
         {!startersOnEmpty && (
           <div className="flex flex-col gap-4">
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed ${
+                className={`max-w-[88%] sm:max-w-[80%] rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed ${
                   m.role === "user"
                     ? "ml-auto bg-[color:var(--ao-accent)] text-white"
                     : "mr-auto bg-[color:var(--bg-sunken)] text-[color:var(--ink-800)]"
@@ -156,7 +156,7 @@ export function ChatNativeHome({
       {/* Composer */}
       <form
         onSubmit={(e) => send(undefined, e)}
-        className="border-t px-8 py-4"
+        className="border-t px-4 py-4 sm:px-8"
         style={{ borderColor: "var(--allone-line-soft)" }}
       >
         <div className="bf-card-sunken flex items-end gap-2 px-3 py-2">
