@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Users,
   Sparkles,
+  Bot,
   Mail,
   BarChart3,
   Database,
@@ -24,6 +25,7 @@ export const salesNav: NavSection[] = [
     items: [
       { label: "Leads", href: "/sales/leads", icon: Users },
       { label: "Demos", href: "/sales/demos", icon: Sparkles },
+      { label: "Bots", href: "/sales/bots", icon: Bot },
       { label: "Campaigns", href: "/sales/campaigns", icon: Mail },
     ],
   },
