@@ -282,12 +282,13 @@ function AssignLeadsContent() {
   // mutation that changes assignment (distribute, assign, unassign, rebalance).
   const fetchRepLoads = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/leads/rep-loads');
+      const qs = includeHotlines ? '' : `?exclude_phone_prefix=${encodeURIComponent(HOTLINE_PHONE_PREFIX_PARAM)}`;
+      const res = await fetch(`/api/admin/leads/rep-loads${qs}`);
       if (!res.ok) return;
       const json = await res.json();
       setRepLoads(json.data);
     } catch { /* ignore — non-blocking */ }
-  }, []);
+  }, [includeHotlines]);
 
   useEffect(() => {
     if (tab === 'assigned') fetchRepLoads();
