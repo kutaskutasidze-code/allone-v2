@@ -1,19 +1,35 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireRole } from '@/lib/sales-auth';
 import { AuthError } from '@/lib/auth';
 import { logger } from '@/lib/logger';
+import { parsePhonePrefixes } from '@/lib/validations/leads';
 
 export const dynamic = 'force-dynamic';
 
 // Per-rep current load: total assigned + untouched-count (the movable subset).
 // Powers the "Rep loads" panel on /admin/leads/assign and the dry-run preview
 // for rebalance.
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireRole(['admin', 'supervisor']);
 
     const admin = createAdminClient();
+
+    // Mirror the page's hotline toggle so the per-rep counts match the pool/list.
+    const excludePrefixes = parsePhonePrefixes(
+      new URL(request.url).searchParams.get('exclude_phone_prefix'),
+    );
+    const applyExclude = <T extends { or: (f: string) => T }>(q: T): T => {
+      if (excludePrefixes.length === 1) {
+        return q.or(`phone.is.null,phone.not.ilike.${excludePrefixes[0]}%`);
+      }
+      if (excludePrefixes.length > 1) {
+        const andClause = excludePrefixes.map(p => `phone.not.ilike.${p}%`).join(',');
+        return q.or(`phone.is.null,and(${andClause})`);
+      }
+      return q;
+    };
 
     const { data: salesUsers, error: usersErr } = await admin
       .from('sales_users')
@@ -30,15 +46,19 @@ export async function GET() {
     const reps = await Promise.all(
       (salesUsers || []).map(async u => {
         const [{ count: total }, { count: untouched }] = await Promise.all([
-          admin
-            .from('leads')
-            .select('id', { count: 'exact', head: true })
-            .eq('sales_user_id', u.id),
-          admin
-            .from('leads')
-            .select('id', { count: 'exact', head: true })
-            .eq('sales_user_id', u.id)
-            .eq('status', 'new'),
+          applyExclude(
+            admin
+              .from('leads')
+              .select('id', { count: 'exact', head: true })
+              .eq('sales_user_id', u.id),
+          ),
+          applyExclude(
+            admin
+              .from('leads')
+              .select('id', { count: 'exact', head: true })
+              .eq('sales_user_id', u.id)
+              .eq('status', 'new'),
+          ),
         ]);
         return {
           id: u.id,

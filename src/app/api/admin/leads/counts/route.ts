@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
     const hasWebsite = searchParams.get('has_website');
     const hasSource = searchParams.get('has_source');
     const hasAnySource = searchParams.get('has_any_source');
+    const assignedTo = searchParams.get('assigned_to');
     const search = (searchParams.get('search') || '').replace(/[%_,()]/g, '').slice(0, 100);
     const infoshopLike = `%${INFOSHOP_DOMAIN}%`;
 
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest) {
         q = q.or(`phone.is.null,and(${andClause})`);
       }
       if (industry && industry !== 'all') q = q.eq('industry', industry);
+      if (assignedTo && assignedTo !== 'all') q = q.eq('sales_user_id', assignedTo);
       if (service && service !== 'all') q = q.eq('matched_service', service);
       if (hasWebsite === 'yes') q = q.not('website', 'is', null).not('website', 'ilike', infoshopLike);
       else if (hasWebsite === 'no') q = q.or(`website.is.null,website.ilike.${infoshopLike}`);
