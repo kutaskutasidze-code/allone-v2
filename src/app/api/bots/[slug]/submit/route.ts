@@ -22,16 +22,27 @@ export async function POST(
   if (!body?.answers || typeof body.answers !== "object") {
     return NextResponse.json({ error: "answers required" }, { status: 400 });
   }
-  const cfg = await getBotConfigBySlug(slug);
-  if (!cfg) return NextResponse.json({ error: "not found" }, { status: 404 });
+  // Public endpoint: cap the payload so a known slug can't be used to bloat the
+  // table with megabytes of JSON.
+  if (JSON.stringify(body.answers).length > 50_000) {
+    return NextResponse.json({ error: "answers too large" }, { status: 413 });
+  }
 
-  const row = buildResponseRow(
-    slug,
-    cfg.lead_id,
-    cfg.client_name,
-    body.answers,
-    req.headers.get("user-agent"),
-  );
-  await insertResponse(row);
-  return NextResponse.json({ ok: true });
+  try {
+    const cfg = await getBotConfigBySlug(slug);
+    if (!cfg) return NextResponse.json({ error: "not found" }, { status: 404 });
+
+    const row = buildResponseRow(
+      slug,
+      cfg.lead_id,
+      cfg.client_name,
+      body.answers,
+      req.headers.get("user-agent"),
+    );
+    await insertResponse(row);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[bots/submit] save failed", err);
+    return NextResponse.json({ error: "save failed" }, { status: 500 });
+  }
 }
