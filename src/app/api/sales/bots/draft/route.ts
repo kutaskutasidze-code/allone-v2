@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
   const msg = await client.messages.create({
-    model: "claude-opus-4-5",
+    model: "claude-opus-4-8",
     max_tokens: 2000,
     system:
       "You design Georgian (ka) requirements questionnaires for client discovery. " +
