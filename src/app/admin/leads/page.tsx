@@ -276,6 +276,9 @@ function AdminLeadsPageContent() {
   const [industryFilter, setIndustryFilter] = useState<string | null>(
     initialIndustry,
   );
+  const [salesFilter, setSalesFilter] = useState(
+    searchParams.get("sales") || "all",
+  );
   const [page, setPage] = useState(() => Number(searchParams.get("page")) || 1);
   const [total, setTotal] = useState(0);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
@@ -301,6 +304,7 @@ function AdminLeadsPageContent() {
       if (websiteFilter !== "all") params.set("has_website", websiteFilter);
       if (sourceFilter !== "all") params.set("has_source", sourceFilter);
       if (industryFilter) params.set("industry", industryFilter);
+      if (salesFilter !== "all") params.set("assigned_to", salesFilter);
       const res = await fetch(`/api/admin/leads/counts?${params.toString()}`);
       if (!res.ok) return;
       const result = await res.json();
@@ -308,7 +312,7 @@ function AdminLeadsPageContent() {
     } catch {
       /* ignore */
     }
-  }, [serviceFilter, websiteFilter, sourceFilter, industryFilter]);
+  }, [serviceFilter, websiteFilter, sourceFilter, industryFilter, salesFilter]);
 
   // Roster of reps for the bulk "Assign to…" control (admin-only page).
   useEffect(() => {
@@ -335,6 +339,7 @@ function AdminLeadsPageContent() {
       if (websiteFilter !== "all") params.set("has_website", websiteFilter);
       if (sourceFilter !== "all") params.set("has_source", sourceFilter);
       if (industryFilter) params.set("industry", industryFilter);
+      if (salesFilter !== "all") params.set("assigned_to", salesFilter);
       if (debouncedSearch) params.set("search", debouncedSearch);
       params.set("page", page.toString());
       params.set("limit", limit.toString());
@@ -356,6 +361,7 @@ function AdminLeadsPageContent() {
     websiteFilter,
     sourceFilter,
     industryFilter,
+    salesFilter,
     debouncedSearch,
     page,
   ]);
@@ -374,6 +380,7 @@ function AdminLeadsPageContent() {
     if (websiteFilter !== "all") params.set("website", websiteFilter);
     if (sourceFilter !== "all") params.set("source", sourceFilter);
     if (industryFilter) params.set("industry", industryFilter);
+    if (salesFilter !== "all") params.set("sales", salesFilter);
     if (debouncedSearch) params.set("search", debouncedSearch);
     if (page > 1) params.set("page", String(page));
     const qs = params.toString();
@@ -384,6 +391,7 @@ function AdminLeadsPageContent() {
     websiteFilter,
     sourceFilter,
     industryFilter,
+    salesFilter,
     debouncedSearch,
     page,
     pathname,
@@ -669,6 +677,21 @@ function AdminLeadsPageContent() {
             <option value="consulting">Consulting</option>
             <option value="custom_ai">Custom AI</option>
           </select>
+          <select
+            value={salesFilter}
+            onChange={(e) => {
+              setSalesFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-3 py-2 text-sm rounded-[var(--radius-sm)] bg-[var(--bg-surface)] border border-[var(--allone-line)] focus:border-gray-400 focus:outline-none cursor-pointer"
+          >
+            <option value="all">All Sales</option>
+            {reps.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
           <HotLinesDropdown
             selectedIndustry={industryFilter}
             onSelect={handleIndustrySelect}
@@ -679,10 +702,11 @@ function AdminLeadsPageContent() {
             iconClassName="text-sky-500"
             activeClassName="bg-sky-500 text-white shadow-[var(--shadow-xs)]"
           />
-          {(serviceFilter !== "all" || industryFilter) && (
+          {(serviceFilter !== "all" || industryFilter || salesFilter !== "all") && (
             <button
               onClick={() => {
                 setServiceFilter("all");
+                setSalesFilter("all");
                 handleIndustrySelect(null);
                 setPage(1);
               }}
