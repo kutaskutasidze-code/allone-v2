@@ -24,7 +24,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
+// ISR — serve a fast, CDN-cached response (crawler-friendly); refresh every 5 min.
+export const revalidate = 300;
 
 export default async function CareersPage() {
   const vacancies = await getOpenVacancies();
