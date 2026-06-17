@@ -7,8 +7,14 @@ import {
   CheckCircle2,
   ExternalLink,
   Save,
+  FileText,
 } from "lucide-react";
-import type { Proposal, OfferDraft, OfferScopeLine } from "@/lib/offers/types";
+import type {
+  Proposal,
+  OfferDraft,
+  OfferScopeLine,
+  Recipient,
+} from "@/lib/offers/types";
 import type { QuestionnaireResponse } from "@/lib/bots/types";
 
 interface Props {
@@ -122,7 +128,15 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [approveError, setApproveError] = useState<string | null>(null);
 
+  // Document generation state (approved proposals)
+  const [recipient, setRecipient] = useState<Recipient>(
+    initial.recipient ?? { name: initial.client_name },
+  );
+  const [generating, setGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
+
   const isDraft = proposal.status === "draft";
+  const isApproved = proposal.status === "approved";
 
   async function handleSave() {
     setSaving(true);
@@ -178,6 +192,34 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
       );
     } finally {
       setApproving(false);
+    }
+  }
+
+  async function handleGenerateDocs() {
+    setGenerating(true);
+    setGenerateError(null);
+    try {
+      const res = await fetch(`/api/sales/proposals/${proposal.id}/documents`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipient }),
+      });
+      if (!res.ok) {
+        const json = (await res.json()) as { error?: string };
+        throw new Error(
+          json.error ?? `სერვისი მიუწვდომელია (HTTP ${res.status})`,
+        );
+      }
+      const json = (await res.json()) as { proposal: Proposal };
+      setProposal(json.proposal);
+    } catch (err) {
+      setGenerateError(
+        err instanceof Error
+          ? err.message
+          : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
+      );
+    } finally {
+      setGenerating(false);
     }
   }
 
@@ -275,7 +317,7 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
         </span>
       </div>
 
-      {/* PDF link (approved) */}
+      {/* PDF link (offer — approved) */}
       {proposal.offer_pdf_url && (
         <a
           href={proposal.offer_pdf_url}
@@ -286,6 +328,132 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
           <ExternalLink className="h-3 w-3" />
           PDF გახსნა
         </a>
+      )}
+
+      {/* Document generation panel (approved proposals) */}
+      {isApproved && (
+        <div className="mt-4 rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-sunken)] p-4 space-y-4">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
+            მიმღების დეტალები (ხელშეკრულება / ინვოისი)
+          </p>
+
+          {/* Recipient fields */}
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                სახელი *
+              </label>
+              <input
+                type="text"
+                value={recipient.name}
+                onChange={(e) =>
+                  setRecipient((r) => ({ ...r, name: e.target.value }))
+                }
+                placeholder={proposal.client_name}
+                className="rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1.5 text-xs text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                ს/ნ (ID კოდი)
+              </label>
+              <input
+                type="text"
+                value={recipient.id_code ?? ""}
+                onChange={(e) =>
+                  setRecipient((r) => ({ ...r, id_code: e.target.value }))
+                }
+                placeholder="405826361"
+                className="rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1.5 text-xs text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                მისამართი
+              </label>
+              <input
+                type="text"
+                value={recipient.address ?? ""}
+                onChange={(e) =>
+                  setRecipient((r) => ({ ...r, address: e.target.value }))
+                }
+                placeholder="თბილისი, ..."
+                className="rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1.5 text-xs text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                წარმომადგენელი
+              </label>
+              <input
+                type="text"
+                value={recipient.representative ?? ""}
+                onChange={(e) =>
+                  setRecipient((r) => ({
+                    ...r,
+                    representative: e.target.value,
+                  }))
+                }
+                placeholder="სახელი გვარი"
+                className="rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1.5 text-xs text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Generated document links */}
+          {(proposal.contract_pdf_url || proposal.invoice_pdf_url) && (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {proposal.contract_pdf_url && (
+                <a
+                  href={proposal.contract_pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:underline"
+                >
+                  <FileText className="h-3 w-3" />
+                  ხელშეკრულება
+                </a>
+              )}
+              {proposal.invoice_pdf_url && (
+                <a
+                  href={proposal.invoice_pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ink-700)] hover:underline"
+                >
+                  <FileText className="h-3 w-3" />
+                  ინვოისი
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Generate button + error */}
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => void handleGenerateDocs()}
+              disabled={generating || !recipient.name.trim()}
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--ink-900)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+            >
+              {generating ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <FileText className="h-3 w-3" />
+              )}
+              {generating
+                ? "გენერაცია…"
+                : proposal.contract_pdf_url
+                  ? "განახლება"
+                  : "ხელშეკრ. + ინვოისი"}
+            </button>
+            {generateError && (
+              <p className="w-full rounded-[var(--radius-xs)] border border-red-100 bg-red-50 px-2 py-1 text-[11px] text-red-700">
+                {generateError}
+              </p>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Actions (draft only) */}

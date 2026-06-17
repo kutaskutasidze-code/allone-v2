@@ -8,6 +8,7 @@ import demosRouter from "./routes/demos.js";
 import draftsRouter from "./routes/drafts.js";
 import internalRouter from "./routes/internal.js";
 import offersRouter from "./routes/offers.js";
+import docsRouter from "./routes/docs.js";
 
 validateConfig();
 
@@ -37,6 +38,7 @@ app.use(demosRouter);
 app.use(draftsRouter);
 app.use(internalRouter);
 app.use(offersRouter);
+app.use(docsRouter);
 
 app.listen(config.port, () => {
   logger.info(`Offer generator running on port ${config.port}`);
