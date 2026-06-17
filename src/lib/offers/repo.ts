@@ -62,16 +62,24 @@ export async function updateProposal(
 }
 
 // ---------------------------------------------------------------------------
-// Doc-number: AL-2026-<seq> where seq = count+30, zero-padded to 3 digits
+// Doc-number: AL-2026-<seq>. Derive seq from the MAX existing AL-2026-NNN
+// sequence + 1 (not row count) so deleting a proposal can't reuse a number and
+// the value stays monotonic. Seeds at 030.
 // ---------------------------------------------------------------------------
 
 export async function nextDocNumber(): Promise<string> {
   const db = createAdminClient();
-  const { count, error } = await db
+  const { data, error } = await db
     .from("proposals")
-    .select("*", { count: "exact", head: true });
+    .select("doc_number")
+    .like("doc_number", "AL-2026-%");
   if (error) throw error;
-  const seq = ((count ?? 0) + 30 + 1).toString().padStart(3, "0");
+  let max = 30;
+  for (const r of (data as { doc_number: string | null }[]) ?? []) {
+    const m = r.doc_number?.match(/^AL-2026-(\d+)$/);
+    if (m) max = Math.max(max, parseInt(m[1], 10));
+  }
+  const seq = (max + 1).toString().padStart(3, "0");
   return `AL-2026-${seq}`;
 }
 

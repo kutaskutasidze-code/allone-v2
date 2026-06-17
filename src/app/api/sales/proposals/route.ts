@@ -113,6 +113,20 @@ export async function POST(req: NextRequest) {
 
     const svcJson = (await svcRes.json()) as { offer: OfferDraft };
     offer = svcJson.offer;
+    // Guard against a malformed/oversized model response landing in the DB.
+    if (
+      !offer ||
+      typeof offer.price !== "number" ||
+      !Array.isArray(offer.scope_lines)
+    ) {
+      return NextResponse.json(
+        { error: "offer service returned malformed offer" },
+        { status: 502 },
+      );
+    }
+    if (JSON.stringify(offer).length > 50_000) {
+      return NextResponse.json({ error: "offer too large" }, { status: 502 });
+    }
   } catch (fetchErr) {
     return NextResponse.json(
       {
