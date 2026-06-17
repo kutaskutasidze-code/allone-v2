@@ -14,6 +14,13 @@ export const metadata: Metadata = {
     title: 'Careers at AllOne',
     description: 'See our open roles and apply to join the team.',
     url: '/careers',
+    images: [{ url: 'https://allonelabs.com/images/careers-og.png', width: 1200, height: 630, alt: 'AllOne' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Careers at AllOne',
+    description: 'See our open roles and apply to join the team.',
+    images: ['https://allonelabs.com/images/careers-og.png'],
   },
 };
 
