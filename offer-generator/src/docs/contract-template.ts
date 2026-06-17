@@ -269,8 +269,8 @@ ${scheduleList(offer.schedule)}
       <div class="sig-row"><strong>${esc(issuer)}</strong></div>
       <div class="sig-row">ს/კ ${ISSUER.id_code}</div>
       <div class="sig-row">იურიდიული მის: ${esc(ISSUER.address_ka)}</div>
-      <div class="sig-row">ბანკი: <span class="sig-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
-      <div class="sig-row">ა/ა: <span class="sig-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+      <div class="sig-row">ბანკი: ${esc(ISSUER.bank)}</div>
+      <div class="sig-row">ა/ა (IBAN): ${ISSUER.iban}</div>
       <div class="sig-row">დირექტორი: ${esc(ISSUER.director)}</div>
       <div class="sig-row" style="margin-top:10px;">ხელმოწერა: <span class="sig-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
     </div>
