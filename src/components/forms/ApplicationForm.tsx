@@ -3,11 +3,11 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Loader2, CheckCircle2, Upload, FileText, X } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { CV_ACCEPT, CV_EXT_RE } from '@/lib/validations/careers';
 
 const inputClass =
   'w-full px-4 py-3 bg-white border border-[#EBEBEB] rounded-xl text-[#071D2F] text-sm placeholder:text-[#071D2F]/30 focus:outline-none focus:border-[#071D2F]/20 focus:shadow-[0_0_0_3px_rgba(7,29,47,0.04)] transition-all';
-
-const MAX_CV_BYTES = 5 * 1024 * 1024;
 
 export function ApplicationForm({
   vacancyId,
@@ -20,7 +20,6 @@ export function ApplicationForm({
     name: '',
     email: '',
     phone: '',
-    projects: '',
     note: '',
     website_url: '', // honeypot
   });
@@ -35,12 +34,8 @@ export function ApplicationForm({
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
-    if (f && f.type !== 'application/pdf') {
-      setError('Your CV must be a PDF file.');
-      return;
-    }
-    if (f && f.size > MAX_CV_BYTES) {
-      setError('Your CV must be 5 MB or smaller.');
+    if (f && !CV_EXT_RE.test(f.name)) {
+      setError('Use a PDF or Word document for your CV.');
       return;
     }
     setError(null);
@@ -50,24 +45,44 @@ export function ApplicationForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cv) {
-      setError('Please attach your CV (PDF).');
+      setError('Please attach your CV.');
       return;
     }
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const body = new FormData();
-      body.set('vacancy_id', vacancyId);
-      body.set('name', form.name);
-      body.set('email', form.email);
-      body.set('phone', form.phone);
-      body.set('projects', form.projects);
-      body.set('note', form.note);
-      body.set('website_url', form.website_url);
-      body.set('cv', cv);
+      // 1) Get a one-time signed upload URL.
+      const urlRes = await fetch('/api/careers/cv-upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vacancy_id: vacancyId, filename: cv.name }),
+      });
+      const urlData = await urlRes.json();
+      if (!urlRes.ok) throw new Error(urlData.error || 'Could not start the upload');
+      const { path, token } = urlData.data;
 
-      const res = await fetch('/api/careers/apply', { method: 'POST', body });
+      // 2) Upload the CV straight to Storage (no API body-size limit).
+      const supabase = createClient();
+      const { error: upErr } = await supabase.storage
+        .from('applications')
+        .uploadToSignedUrl(path, token, cv);
+      if (upErr) throw new Error('Could not upload your CV. Please try again.');
+
+      // 3) Submit the application referencing the uploaded CV.
+      const res = await fetch('/api/careers/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vacancy_id: vacancyId,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          note: form.note,
+          website_url: form.website_url,
+          cv_path: path,
+        }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to submit application');
 
@@ -130,25 +145,16 @@ export function ApplicationForm({
 
       <textarea
         rows={4}
-        value={form.projects}
-        onChange={set('projects')}
-        className={`${inputClass} resize-none`}
-        placeholder="Share your projects — GitHub, portfolio, live demos, or a short description of what you've built"
-        style={{ fontSize: '16px' }}
-      />
-
-      <textarea
-        rows={3}
         value={form.note}
         onChange={set('note')}
         className={`${inputClass} resize-none`}
-        placeholder="Anything else you'd like us to know (optional)"
+        placeholder="Tell us how you use AI in your work — and anything else you'd like us to know (optional)"
         style={{ fontSize: '16px' }}
       />
 
       {/* CV upload */}
       <div>
-        <input ref={fileRef} type="file" accept="application/pdf" onChange={onFile} className="hidden" />
+        <input ref={fileRef} type="file" accept={CV_ACCEPT} onChange={onFile} className="hidden" />
         {cv ? (
           <div className="flex items-center gap-3 px-4 py-3 bg-white border border-[#EBEBEB] rounded-xl">
             <FileText className="w-5 h-5 text-[#0369a1] shrink-0" />
@@ -164,7 +170,7 @@ export function ApplicationForm({
             className="flex items-center gap-2 w-full px-4 py-3 bg-white border border-dashed border-[#CBD5E1] rounded-xl text-sm text-[#4D4D4D] hover:border-[#0369a1] hover:text-[#071D2F] transition-all"
           >
             <Upload className="w-4 h-4" />
-            Upload your CV (PDF, max 5 MB)
+            Upload your CV (PDF or Word)
           </button>
         )}
       </div>

@@ -54,6 +54,10 @@ export interface JobApplication {
 const employmentTypeEnum = z.enum(['internship', 'full_time', 'part_time', 'contract']);
 const applicationStatusEnum = z.enum(['new', 'reviewing', 'shortlisted', 'rejected', 'hired']);
 
+// Accepted CV formats (the upload goes straight to Storage, so no body-size cap).
+export const CV_ACCEPT = '.pdf,.doc,.docx,.odt,.rtf';
+export const CV_EXT_RE = /\.(pdf|docx?|odt|rtf)$/i;
+
 export function slugify(input: string): string {
   return input
     .toLowerCase()
@@ -76,14 +80,14 @@ export const vacancySchema = z.object({
   sort_order: z.coerce.number().int().default(0),
 });
 
-// Public application — text fields only; the CV file is validated separately.
+// Public application. The CV is uploaded to Storage first; cv_path references it.
 export const applicationSchema = z.object({
   vacancy_id: z.string().uuid(),
   name: z.string().min(1, 'Name is required').max(160),
   email: z.string().email('A valid email is required').max(255),
   phone: z.string().max(50).optional().or(z.literal('')),
-  projects: z.string().max(5000).optional().or(z.literal('')),
   note: z.string().max(5000).optional().or(z.literal('')),
+  cv_path: z.string().min(1).max(300),
 });
 
 export const applicationStatusUpdateSchema = z.object({

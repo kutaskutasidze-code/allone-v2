@@ -1,16 +1,17 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, ArrowRight, Briefcase } from 'lucide-react';
 import { getOpenVacancies } from '@/lib/careers';
 import { employmentTypeLabel } from '@/lib/validations/careers';
 
 export const metadata: Metadata = {
-  title: 'Careers at ALLONE — Open Roles & Internships',
+  title: 'Careers at AllOne — Open Roles',
   description:
-    'Join ALLONE. We build AI chatbots, custom AI solutions, workflow automation, and websites for businesses in Georgia and Europe. See our open roles and apply.',
+    'Join AllOne, an AI company in Tbilisi. We build AI chatbots, custom AI solutions, workflow automation, and websites. See our open roles and apply.',
   alternates: { canonical: '/careers' },
   openGraph: {
-    title: 'Careers at ALLONE',
+    title: 'Careers at AllOne',
     description: 'See our open roles and apply to join the team.',
     url: '/careers',
   },
@@ -22,18 +23,22 @@ export default async function CareersPage() {
   const vacancies = await getOpenVacancies();
 
   return (
-    <section className="min-h-screen pt-32 pb-24">
+    <section className="min-h-screen pt-16 pb-24">
       <div className="max-w-5xl mx-auto px-6">
+        <Image
+          src="/images/allone-wordmark.png"
+          alt="AllOne"
+          width={150}
+          height={41}
+          priority
+          className="mb-10 h-auto w-[130px] sm:w-[150px]"
+        />
         <span className="font-mono text-xs font-medium text-[#4D4D4D] uppercase tracking-normal mb-3 block">
           Careers
         </span>
         <h1 className="font-instrument text-[clamp(28px,5vw,52px)] font-medium tracking-[-0.02em] leading-[1.05] text-[#071D2F]">
-          Build AI that ships.
+          Build with AI at AllOne.
         </h1>
-        <p className="mt-4 max-w-2xl text-[#4D4D4D] text-base leading-relaxed">
-          We build AI chatbots, custom AI solutions, automation, and websites for real clients.
-          If you like shipping fast and learning faster, take a look at our open roles.
-        </p>
 
         <div className="mt-12">
           {vacancies.length === 0 ? (
@@ -85,6 +90,13 @@ export default async function CareersPage() {
             </div>
           )}
         </div>
+
+        <p className="mt-12 text-sm text-[#4D4D4D]">
+          Questions? Email{' '}
+          <a href="mailto:info@allonelabs.com" className="text-[#0369a1] underline">
+            info@allonelabs.com
+          </a>
+        </p>
       </div>
     </section>
   );

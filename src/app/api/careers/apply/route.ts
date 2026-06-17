@@ -2,12 +2,12 @@ import { NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { sendApplicationNotification } from '@/lib/email';
 import { success, error, validationError, rateLimited, methodNotAllowed } from '@/lib/api-response';
-import { applicationSchema } from '@/lib/validations/careers';
+import { applicationSchema, CV_EXT_RE } from '@/lib/validations/careers';
 import { checkCareersRateLimit, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
-const MAX_CV_BYTES = 5 * 1024 * 1024; // 5 MB
-
+// The CV was already uploaded to Storage (see /api/careers/cv-upload-url); the
+// body just references it via cv_path.
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
 
@@ -18,60 +18,31 @@ export async function POST(request: NextRequest) {
       return rateLimited();
     }
 
-    const form = await request.formData();
+    const body = await request.json().catch(() => null);
 
     // Honeypot — bots fill this hidden field.
-    if (form.get('website_url')) {
+    if (body?.website_url) {
       logger.info('Application honeypot triggered', { ip });
       return success({ message: 'Application received' });
     }
 
-    const result = applicationSchema.safeParse({
-      vacancy_id: form.get('vacancy_id'),
-      name: form.get('name'),
-      email: form.get('email'),
-      phone: form.get('phone') ?? '',
-      projects: form.get('projects') ?? '',
-      note: form.get('note') ?? '',
-    });
-    if (!result.success) {
-      return validationError(result.error);
-    }
+    const result = applicationSchema.safeParse(body);
+    if (!result.success) return validationError(result.error);
     const v = result.data;
 
-    const cv = form.get('cv');
-    if (!(cv instanceof File) || cv.size === 0) {
-      return error('A CV file (PDF) is required.', 400);
-    }
-    if (cv.type !== 'application/pdf') {
-      return error('CV must be a PDF file.', 400);
-    }
-    if (cv.size > MAX_CV_BYTES) {
-      return error('CV must be 5 MB or smaller.', 400);
-    }
+    if (!CV_EXT_RE.test(v.cv_path)) return error('Unsupported CV file type.', 400);
 
     const supabase = createAdminClient();
 
-    // Resolve the vacancy (must exist and be open) and snapshot its title.
     const { data: vacancy } = await supabase
       .from('vacancies')
       .select('id, slug, title, is_open')
       .eq('id', v.vacancy_id)
       .maybeSingle();
-    if (!vacancy || !vacancy.is_open) {
-      return error('This position is no longer open.', 400);
-    }
+    if (!vacancy || !vacancy.is_open) return error('This position is no longer open.', 400);
 
-    // Upload the CV to the private bucket.
-    const cvPath = `${vacancy.slug}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.pdf`;
-    const bytes = new Uint8Array(await cv.arrayBuffer());
-    const { error: uploadError } = await supabase.storage
-      .from('applications')
-      .upload(cvPath, bytes, { contentType: 'application/pdf', upsert: false });
-    if (uploadError) {
-      logger.error('CV upload failed', { error: uploadError.message, ip });
-      return error('Could not upload your CV. Please try again.');
-    }
+    // The CV path must live in this vacancy's folder (it was issued server-side).
+    if (!v.cv_path.startsWith(`${vacancy.slug}/`)) return error('Invalid CV reference.', 400);
 
     const { error: dbError } = await supabase.from('job_applications').insert({
       vacancy_id: vacancy.id,
@@ -79,8 +50,7 @@ export async function POST(request: NextRequest) {
       name: v.name,
       email: v.email,
       phone: v.phone || null,
-      cv_path: cvPath,
-      projects: v.projects || null,
+      cv_path: v.cv_path,
       note: v.note || null,
       status: 'new',
     });
@@ -89,14 +59,12 @@ export async function POST(request: NextRequest) {
       return error('Could not submit your application. Please try again.');
     }
 
-    // Notify the team (non-fatal).
     try {
       await sendApplicationNotification({
         name: v.name,
         email: v.email,
         phone: v.phone,
         vacancyTitle: vacancy.title,
-        projects: v.projects,
         note: v.note,
         hasCv: true,
       });
