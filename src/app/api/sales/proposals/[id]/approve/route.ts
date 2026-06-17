@@ -13,6 +13,30 @@ interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
+// The render service (Fly) can be briefly unreachable during a cold start
+// (machine booting, port not yet listening) → fetch throws "fetch failed".
+// Retry a few times with a short delay so a transient connection error doesn't
+// surface to the salesperson. Each attempt allows up to 120s (cold Puppeteer).
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  attempts = 3,
+): Promise<Response> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fetch(url, {
+        ...init,
+        signal: AbortSignal.timeout(120_000),
+      });
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
+  throw lastErr;
+}
+
 export async function POST(_req: NextRequest, context: RouteContext) {
   try {
     await requireSalesAuth();
@@ -42,7 +66,7 @@ export async function POST(_req: NextRequest, context: RouteContext) {
   // Proxy to the offer-generator service to render the PDF
   let pdf_url: string;
   try {
-    const svcRes = await fetch(`${OFFER_API_URL}/api/offers/render`, {
+    const svcRes = await fetchWithRetry(`${OFFER_API_URL}/api/offers/render`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
