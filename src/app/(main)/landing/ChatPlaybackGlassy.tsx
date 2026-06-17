@@ -12,7 +12,7 @@ interface Message {
 
 const BotAvatar = memo(() => (
   <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 ring-1 ring-white/80 shadow-[0_2px_6px_rgba(0,0,0,0.1)]">
-    <Image src="/images/allone-logo.png" alt="ALLONE" width={24} height={24} className="object-contain" />
+    <Image src="/images/allone-icon.png" alt="ALLONE" width={24} height={24} className="object-contain" />
   </div>
 ));
 BotAvatar.displayName = 'BotAvatar';

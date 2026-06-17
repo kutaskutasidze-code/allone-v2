@@ -118,6 +118,7 @@ export const adminNavBF: NavConfig = {
     {
       label: "Website",
       items: [
+        { label: "Careers", href: "/admin/careers", icon: "briefcase" },
         { label: "Services", href: "/admin/services", icon: "tags" },
         { label: "Projects", href: "/admin/projects", icon: "building" },
         { label: "Clients", href: "/admin/clients", icon: "users" },

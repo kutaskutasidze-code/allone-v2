@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { Header, Footer } from '@/components/layout';
 import { ContactInfoProvider } from '@/contexts';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -11,15 +12,18 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  // Careers is a standalone recruitment landing — no site navbar or footer.
+  const standalone = pathname?.startsWith('/careers');
   return (
     <I18nProvider>
       <ContactInfoProvider>
         <ChatProvider>
           <ErrorBoundary>
             <SmoothScroll>
-              <Header />
+              {!standalone && <Header />}
               <main className="min-h-screen relative">{children}</main>
-              <Footer />
+              {!standalone && <Footer />}
             </SmoothScroll>
           </ErrorBoundary>
         </ChatProvider>
