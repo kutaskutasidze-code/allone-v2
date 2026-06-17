@@ -10,6 +10,28 @@ export const dynamic = "force-dynamic";
 const OFFER_API_URL = process.env.OFFER_API_URL ?? "http://localhost:3100";
 const OFFER_API_KEY = process.env.OFFER_API_KEY ?? "";
 
+// Retry on transient connection errors (service cold-start window) so a blip
+// doesn't surface as "fetch failed". 120s/attempt covers a cold send.
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  attempts = 3,
+): Promise<Response> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fetch(url, {
+        ...init,
+        signal: AbortSignal.timeout(120_000),
+      });
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
+  throw lastErr;
+}
+
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
@@ -176,7 +198,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   // Proxy to service — NO DB write before this succeeds
   let svcData: ServiceSendResponse;
   try {
-    const svcRes = await fetch(`${OFFER_API_URL}/api/docs/send`, {
+    const svcRes = await fetchWithRetry(`${OFFER_API_URL}/api/docs/send`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

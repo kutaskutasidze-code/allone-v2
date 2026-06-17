@@ -37,6 +37,28 @@ function georgianDateLabel(date: Date): string {
   return `${year} წლის ${day} ${month}`;
 }
 
+// Retry on transient connection errors (e.g. service cold-start window) so a
+// blip doesn't surface as "fetch failed". 120s/attempt covers a cold render.
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  attempts = 3,
+): Promise<Response> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fetch(url, {
+        ...init,
+        signal: AbortSignal.timeout(120_000),
+      });
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
+  throw lastErr;
+}
+
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
@@ -98,7 +120,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   // Proxy to the offer-generator service — NO DB writes before this resolves
   let svcData: DocsServiceResponse;
   try {
-    const svcRes = await fetch(`${OFFER_API_URL}/api/docs/generate`, {
+    const svcRes = await fetchWithRetry(`${OFFER_API_URL}/api/docs/generate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
