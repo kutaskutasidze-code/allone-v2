@@ -44,6 +44,8 @@ export const salesNavBF: NavConfig = {
         { label: "Leads", href: "/sales/leads", icon: "users" },
         { label: "Hot Lines", href: "/sales/leads/hotlines", icon: "map-pin" },
         { label: "Demos", href: "/sales/demos", icon: "globe" },
+        { label: "Bots", href: "/sales/bots", icon: "message-circle" },
+        { label: "Proposals", href: "/sales/proposals", icon: "file-text" },
         { label: "Pipeline", href: "/sales/pipeline", icon: "trending-up" },
       ],
     },
@@ -52,7 +54,11 @@ export const salesNavBF: NavConfig = {
       items: [
         { label: "Overview", href: "/sales/dashboard", icon: "gauge" },
         { label: "Analytics", href: "/sales/analytics", icon: "bar-chart-3" },
-        { label: "Commissions", href: "/sales/commissions", icon: "dollar-sign" },
+        {
+          label: "Commissions",
+          href: "/sales/commissions",
+          icon: "dollar-sign",
+        },
       ],
     },
   ],
@@ -75,7 +81,11 @@ export const adminNavBF: NavConfig = {
       items: [
         { label: "Overview", href: "/admin/dashboard", icon: "gauge" },
         { label: "Pipeline", href: "/admin/pipeline", icon: "trending-up" },
-        { label: "Analytics", href: "/admin/leads/analytics", icon: "bar-chart-3" },
+        {
+          label: "Analytics",
+          href: "/admin/leads/analytics",
+          icon: "bar-chart-3",
+        },
         { label: "Receivables", href: "/admin/receivables", icon: "receipt" },
       ],
     },
