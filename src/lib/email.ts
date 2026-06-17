@@ -131,6 +131,7 @@ interface ApplicationEmailData {
   name: string;
   email: string;
   phone?: string | null;
+  linkedin?: string | null;
   vacancyTitle: string;
   projects?: string | null;
   note?: string | null;
@@ -146,6 +147,7 @@ export async function sendApplicationNotification(data: ApplicationEmailData): P
     console.log('Name:', data.name);
     console.log('Email:', data.email);
     if (data.phone) console.log('Phone:', data.phone);
+    if (data.linkedin) console.log('LinkedIn:', data.linkedin);
     if (data.projects) console.log('Projects:', data.projects);
     if (data.note) console.log('Note:', data.note);
     console.log('CV attached:', data.hasCv ? 'yes' : 'no');
@@ -182,6 +184,7 @@ export async function sendApplicationNotification(data: ApplicationEmailData): P
             <p style="margin: 0;"><a href="mailto:${escapeHtml(data.email)}" style="color: #06b6d4; font-size: 16px; text-decoration: none;">${escapeHtml(data.email)}</a></p>
           </div>
           ${block('Phone', data.phone)}
+          ${block('LinkedIn', data.linkedin)}
           ${block('Projects', data.projects)}
           ${block('Note', data.note)}
           <div style="margin: 0; padding-top: 20px; border-top: 1px solid #e2e8f0;">
