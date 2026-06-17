@@ -39,8 +39,8 @@ export async function POST(
       body.answers,
       req.headers.get("user-agent"),
     );
-    await insertResponse(row);
-    return NextResponse.json({ ok: true });
+    const responseId = await insertResponse(row);
+    return NextResponse.json({ ok: true, response_id: responseId });
   } catch (err) {
     console.error("[bots/submit] save failed", err);
     return NextResponse.json({ error: "save failed" }, { status: 500 });
