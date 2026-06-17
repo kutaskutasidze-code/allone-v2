@@ -8,6 +8,9 @@ import {
   ExternalLink,
   Save,
   FileText,
+  Send,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import type {
   Proposal,
@@ -112,6 +115,256 @@ function ResponseCard({ response }: { response: QuestionnaireResponse }) {
 }
 
 // ---------------------------------------------------------------------------
+// Helpers for the send panel
+// ---------------------------------------------------------------------------
+
+/** Escape HTML special chars and wrap each non-empty line in a <p> tag */
+function bodyToHtml(text: string): string {
+  return text
+    .split("\n")
+    .map((line) => {
+      const escaped = line
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      return escaped.trim() ? `<p>${escaped}</p>` : "<p>&nbsp;</p>";
+    })
+    .join("");
+}
+
+const DEFAULT_BODY =
+  "გამარჯობა,\n\nგიგზავნით ჩვენს შეთავაზებას. დეტალები თანდართულ დოკუმენტებშია.\n\nპატივისცემით,\nAllone Labs";
+
+interface SendResult {
+  sentAt: string;
+}
+
+interface SendPanelProps {
+  proposal: Proposal;
+  onSent: (updated: Proposal) => void;
+}
+
+function SendPanel({ proposal, onSent }: SendPanelProps) {
+  const defaultSubject = `${proposal.client_name} — შეთავაზება / Allone Labs`;
+
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState(
+    proposal.recipient_email ?? proposal.lead_email ?? "",
+  );
+  const [subject, setSubject] = useState(defaultSubject);
+  const [body, setBody] = useState(DEFAULT_BODY);
+  const [docOffer, setDocOffer] = useState(true);
+  const [docContract, setDocContract] = useState(false);
+  const [docInvoice, setDocInvoice] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [sentResult, setSentResult] = useState<SendResult | null>(null);
+
+  const hasOffer = Boolean(proposal.offer_pdf_url);
+  const hasContract = Boolean(proposal.contract_pdf_url);
+  const hasInvoice = Boolean(proposal.invoice_pdf_url);
+
+  function resetForm() {
+    setSentResult(null);
+    setSendError(null);
+    setOpen(true);
+  }
+
+  async function handleSend() {
+    setSending(true);
+    setSendError(null);
+    try {
+      const res = await fetch(`/api/sales/proposals/${proposal.id}/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: email.trim(),
+          subject: subject.trim(),
+          html: bodyToHtml(body),
+          docs: {
+            offer: docOffer,
+            contract: docContract,
+            invoice: docInvoice,
+          },
+        }),
+      });
+      const json = (await res.json()) as {
+        proposal?: Proposal;
+        error?: string;
+      };
+      if (!res.ok) {
+        throw new Error(json.error ?? `HTTP ${res.status}`);
+      }
+      const updated = json.proposal!;
+      setSentResult({ sentAt: updated.sent_at ?? new Date().toISOString() });
+      setOpen(false);
+      onSent(updated);
+    } catch (err) {
+      setSendError(
+        err instanceof Error
+          ? err.message
+          : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
+      );
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="mt-4 rounded-[var(--radius-md)] border border-sky-100 bg-sky-50/40">
+      {/* Collapsible header */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left"
+      >
+        <span className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-sky-700">
+          <Send className="h-3 w-3" />
+          კლიენტთან გაგზავნა
+        </span>
+        {open ? (
+          <ChevronUp className="h-3.5 w-3.5 text-sky-500" />
+        ) : (
+          <ChevronDown className="h-3.5 w-3.5 text-sky-500" />
+        )}
+      </button>
+
+      {/* Success banner (collapsed form) */}
+      {sentResult && !open && (
+        <div className="flex items-center justify-between border-t border-sky-100 px-4 py-2.5">
+          <span className="text-xs font-medium text-sky-700">
+            გაიგზავნა ✓&nbsp;
+            <span className="font-normal text-sky-500">
+              {new Date(sentResult.sentAt).toLocaleString("ka-GE")}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={resetForm}
+            className="text-[11px] text-sky-600 underline underline-offset-2 hover:text-sky-800"
+          >
+            ხელახლა გაგზავნა
+          </button>
+        </div>
+      )}
+
+      {/* Form */}
+      {open && (
+        <div className="border-t border-sky-100 p-4 space-y-3">
+          {/* To */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-mono uppercase tracking-wider text-sky-600">
+              მიმღები (email) *
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="client@example.com"
+              className="rounded-[var(--radius-xs)] border border-sky-200 bg-white px-2 py-1.5 text-xs text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-sky-400 focus:outline-none"
+            />
+          </div>
+
+          {/* Subject */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-mono uppercase tracking-wider text-sky-600">
+              სათაური *
+            </label>
+            <input
+              type="text"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="rounded-[var(--radius-xs)] border border-sky-200 bg-white px-2 py-1.5 text-xs text-[var(--ink-900)] focus:border-sky-400 focus:outline-none"
+            />
+          </div>
+
+          {/* Body */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-mono uppercase tracking-wider text-sky-600">
+              ტექსტი *
+            </label>
+            <textarea
+              rows={5}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              className="rounded-[var(--radius-xs)] border border-sky-200 bg-white px-2 py-1.5 text-xs text-[var(--ink-900)] focus:border-sky-400 focus:outline-none resize-y"
+            />
+          </div>
+
+          {/* Document checkboxes — only show if the URL exists */}
+          {(hasOffer || hasContract || hasInvoice) && (
+            <div className="flex flex-col gap-1">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-sky-600">
+                თანდართული დოკუმენტები
+              </p>
+              <div className="flex flex-wrap gap-4 pt-0.5">
+                {hasOffer && (
+                  <label className="flex items-center gap-1.5 text-xs text-[var(--ink-700)] cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={docOffer}
+                      onChange={(e) => setDocOffer(e.target.checked)}
+                      className="accent-sky-600"
+                    />
+                    შეთავაზება
+                  </label>
+                )}
+                {hasContract && (
+                  <label className="flex items-center gap-1.5 text-xs text-[var(--ink-700)] cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={docContract}
+                      onChange={(e) => setDocContract(e.target.checked)}
+                      className="accent-sky-600"
+                    />
+                    ხელშეკრულება
+                  </label>
+                )}
+                {hasInvoice && (
+                  <label className="flex items-center gap-1.5 text-xs text-[var(--ink-700)] cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={docInvoice}
+                      onChange={(e) => setDocInvoice(e.target.checked)}
+                      className="accent-sky-600"
+                    />
+                    ინვოისი
+                  </label>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Send button + error */}
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => void handleSend()}
+              disabled={
+                sending || !email.trim() || !subject.trim() || !body.trim()
+              }
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-sky-700 px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+            >
+              {sending ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Send className="h-3 w-3" />
+              )}
+              {sending ? "იგზავნება…" : "გაგზავნა"}
+            </button>
+            {sendError && (
+              <p className="w-full rounded-[var(--radius-xs)] border border-red-100 bg-red-50 px-2 py-1 text-[11px] text-red-700">
+                {sendError}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Proposal card (editable)
 // ---------------------------------------------------------------------------
 
@@ -137,6 +390,7 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
 
   const isDraft = proposal.status === "draft";
   const isApproved = proposal.status === "approved";
+  const canSend = proposal.status === "approved" || proposal.status === "sent";
 
   async function handleSave() {
     setSaving(true);
@@ -454,6 +708,14 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
             )}
           </div>
         </div>
+      )}
+
+      {/* Send to client panel (approved or sent) */}
+      {canSend && (
+        <SendPanel
+          proposal={proposal}
+          onSent={(updated) => setProposal(updated)}
+        />
       )}
 
       {/* Actions (draft only) */}

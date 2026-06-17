@@ -54,6 +54,11 @@ export interface Proposal {
   recipient?: Recipient | null;
   created_by: string | null;
   created_at: string;
+  // send-layer fields
+  sent_at?: string | null;
+  recipient_email?: string | null;
+  /** Joined from leads.email — not a DB column on proposals */
+  lead_email?: string | null;
 }
 
 export interface CreateProposalInput {
@@ -77,4 +82,6 @@ export interface UpdateProposalPatch {
   contract_pdf_url?: string;
   invoice_pdf_url?: string;
   recipient?: Recipient;
+  sent_at?: string | null;
+  recipient_email?: string | null;
 }

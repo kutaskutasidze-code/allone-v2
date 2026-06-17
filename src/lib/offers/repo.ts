@@ -11,27 +11,38 @@ import type {
 // Proposals CRUD
 // ---------------------------------------------------------------------------
 
+// Raw shape returned by Supabase when the `leads(email)` join is included
+type ProposalRow = Omit<Proposal, "lead_email"> & {
+  leads: { email: string | null } | null;
+};
+
+function flattenLeadEmail(row: ProposalRow): Proposal {
+  const { leads, ...rest } = row;
+  return { ...rest, lead_email: leads?.email ?? null };
+}
+
 export async function listProposals(leadId?: string): Promise<Proposal[]> {
   const db = createAdminClient();
   let q = db
     .from("proposals")
-    .select("*")
+    .select("*, leads(email)")
     .order("created_at", { ascending: false });
   if (leadId) q = q.eq("lead_id", leadId);
   const { data, error } = await q;
   if (error) throw error;
-  return (data as Proposal[]) ?? [];
+  return ((data as ProposalRow[]) ?? []).map(flattenLeadEmail);
 }
 
 export async function getProposal(id: string): Promise<Proposal | null> {
   const db = createAdminClient();
   const { data, error } = await db
     .from("proposals")
-    .select("*")
+    .select("*, leads(email)")
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
-  return (data as Proposal) ?? null;
+  if (!data) return null;
+  return flattenLeadEmail(data as ProposalRow);
 }
 
 export async function createProposal(
