@@ -33,6 +33,22 @@ export async function listProposals(leadId?: string): Promise<Proposal[]> {
   return ((data as ProposalRow[]) ?? []).map(flattenLeadEmail);
 }
 
+export async function getProposalByResponseId(
+  rid: string,
+): Promise<Proposal | null> {
+  const db = createAdminClient();
+  const { data, error } = await db
+    .from("proposals")
+    .select("*, leads(email)")
+    .eq("source_response_id", rid)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle(); // .limit(1) → "latest or null" (a response can have >1 proposal)
+  if (error) throw error;
+  if (!data) return null;
+  return flattenLeadEmail(data as ProposalRow);
+}
+
 export async function getProposal(id: string): Promise<Proposal | null> {
   const db = createAdminClient();
   const { data, error } = await db

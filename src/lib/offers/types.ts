@@ -59,6 +59,8 @@ export interface Proposal {
   recipient_email?: string | null;
   /** Joined from leads.email — not a DB column on proposals */
   lead_email?: string | null;
+  /** Documents delivered to the client's chat thread */
+  chat_documents?: { kind: string; label: string; url: string }[];
 }
 
 export interface CreateProposalInput {
@@ -84,4 +86,5 @@ export interface UpdateProposalPatch {
   recipient?: Recipient;
   sent_at?: string | null;
   recipient_email?: string | null;
+  chat_documents?: { kind: string; label: string; url: string }[];
 }

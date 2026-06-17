@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OTHER_LABEL, type BotQuestion } from "@/lib/bots/types";
 
 export function BotChat({
@@ -17,12 +17,27 @@ export function BotChat({
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [done, setDone] = useState(false);
 
+  // On mount: resume existing thread if one was stored for this slug.
+  // This runs only on the /b/[slug] bot page (not on /b/[slug]/c/[rid]).
+  useEffect(() => {
+    const stored = localStorage.getItem(`bot_thread_${slug}`);
+    if (stored) {
+      window.location.assign(`/b/${slug}/c/${stored}`);
+    }
+  }, [slug]);
+
   async function submit(all: Record<string, string | string[]>) {
-    await fetch(`/api/bots/${slug}/submit`, {
+    const res = await fetch(`/api/bots/${slug}/submit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ answers: all }),
     });
+    const data = (await res.json()) as { ok?: boolean; response_id?: string };
+    if (data.response_id) {
+      localStorage.setItem(`bot_thread_${slug}`, data.response_id);
+      window.location.assign(`/b/${slug}/c/${data.response_id}`);
+      return;
+    }
     setDone(true);
   }
 

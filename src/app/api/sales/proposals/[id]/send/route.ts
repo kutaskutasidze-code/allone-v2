@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSalesAuth } from "@/lib/sales-auth";
 import { AuthError } from "@/lib/auth";
 import { getProposal, updateProposal } from "@/lib/offers/repo";
+import { getResponse } from "@/lib/bots/repo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -131,6 +132,47 @@ export async function POST(req: NextRequest, context: RouteContext) {
     );
   }
 
+  // Build chat_documents — same selection as attachments, with Georgian labels
+  const CHAT_LABELS: Record<"offer" | "contract" | "invoice", string> = {
+    offer: "შეთავაზება",
+    contract: "ხელშეკრულება",
+    invoice: "ინვოისი",
+  };
+  const chatDocuments: { kind: string; label: string; url: string }[] = [];
+  if (docs.offer && proposal.offer_pdf_url) {
+    chatDocuments.push({
+      kind: "offer",
+      label: CHAT_LABELS.offer,
+      url: proposal.offer_pdf_url,
+    });
+  }
+  if (docs.contract && proposal.contract_pdf_url) {
+    chatDocuments.push({
+      kind: "contract",
+      label: CHAT_LABELS.contract,
+      url: proposal.contract_pdf_url,
+    });
+  }
+  if (docs.invoice && proposal.invoice_pdf_url) {
+    chatDocuments.push({
+      kind: "invoice",
+      label: CHAT_LABELS.invoice,
+      url: proposal.invoice_pdf_url,
+    });
+  }
+
+  // Resolve the bot thread link (if this proposal came from a bot response)
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://allonelabs.com";
+  let emailHtml = html;
+  if (proposal.source_response_id) {
+    const botResp = await getResponse(proposal.source_response_id);
+    if (botResp?.bot_slug) {
+      emailHtml +=
+        `<p><a href="${base}/b/${botResp.bot_slug}/c/${proposal.source_response_id}">` +
+        `ნახეთ ჩატში →</a></p>`;
+    }
+  }
+
   // Proxy to service — NO DB write before this succeeds
   let svcData: ServiceSendResponse;
   try {
@@ -140,7 +182,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${OFFER_API_KEY}`,
       },
-      body: JSON.stringify({ to, subject, html, attachments }),
+      body: JSON.stringify({ to, subject, html: emailHtml, attachments }),
     });
 
     if (!svcRes.ok) {
@@ -171,11 +213,12 @@ export async function POST(req: NextRequest, context: RouteContext) {
     );
   }
 
-  // Service succeeded — now write to DB
+  // Service succeeded — now write to DB (chat_documents + status in one patch)
   const updated = await updateProposal(id, {
     status: "sent",
     sent_at: new Date().toISOString(),
     recipient_email: to,
+    chat_documents: chatDocuments,
   });
 
   return NextResponse.json({ proposal: updated });

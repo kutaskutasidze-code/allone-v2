@@ -77,10 +77,28 @@ export async function createBotConfig(input: {
 
 export async function insertResponse(
   row: ReturnType<typeof buildResponseRow>,
-): Promise<void> {
+): Promise<string> {
   const db = createAdminClient();
-  const { error } = await db.from("questionnaire_responses").insert(row);
+  const { data, error } = await db
+    .from("questionnaire_responses")
+    .insert(row)
+    .select("id")
+    .single();
   if (error) throw error;
+  return (data as { id: string }).id;
+}
+
+export async function getResponse(
+  id: string,
+): Promise<QuestionnaireResponse | null> {
+  const db = createAdminClient();
+  const { data, error } = await db
+    .from("questionnaire_responses")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as QuestionnaireResponse) ?? null;
 }
 
 export async function listResponses(
