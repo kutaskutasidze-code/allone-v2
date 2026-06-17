@@ -4,6 +4,7 @@ import type {
   Proposal,
   CreateProposalInput,
   UpdateProposalPatch,
+  OfferStage,
 } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -81,6 +82,27 @@ export async function nextDocNumber(): Promise<string> {
   }
   const seq = (max + 1).toString().padStart(3, "0");
   return `AL-2026-${seq}`;
+}
+
+// ---------------------------------------------------------------------------
+// Payment seeding: insert one lead_payments row per offer stage.
+// No-op if schedule is empty or leadId is falsy.
+// ---------------------------------------------------------------------------
+
+export async function seedPaymentsFromSchedule(
+  leadId: string,
+  schedule: OfferStage[],
+): Promise<void> {
+  if (!leadId || schedule.length === 0) return;
+  const db = createAdminClient();
+  const rows = schedule.map((stage) => ({
+    lead_id: leadId,
+    amount: stage.amount,
+    label: stage.label,
+    due_date: null as string | null,
+  }));
+  const { error } = await db.from("lead_payments").insert(rows);
+  if (error) throw error;
 }
 
 // ---------------------------------------------------------------------------

@@ -24,6 +24,15 @@ export interface OfferDraft {
   addons?: OfferScopeLine[];
 }
 
+// ---- Recipient: client's legal details for contract/invoice ----
+
+export interface Recipient {
+  name: string;
+  id_code?: string;
+  address?: string;
+  representative?: string;
+}
+
 // ---- Proposal: mirrors the proposals DB table ----
 
 export type ProposalStatus = "draft" | "approved" | "sent";
@@ -40,6 +49,9 @@ export interface Proposal {
   currency: string;
   status: ProposalStatus;
   offer_pdf_url: string | null;
+  contract_pdf_url?: string | null;
+  invoice_pdf_url?: string | null;
+  recipient?: Recipient | null;
   created_by: string | null;
   created_at: string;
 }
@@ -62,4 +74,7 @@ export interface UpdateProposalPatch {
   price?: number;
   status?: ProposalStatus;
   offer_pdf_url?: string;
+  contract_pdf_url?: string;
+  invoice_pdf_url?: string;
+  recipient?: Recipient;
 }
