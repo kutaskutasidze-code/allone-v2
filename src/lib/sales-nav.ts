@@ -10,6 +10,7 @@ import {
   FileText,
   Send,
   Target,
+  ClipboardList,
 } from "lucide-react";
 import type { NavSection } from "@/components/bf-shell";
 
@@ -26,6 +27,7 @@ export const salesNav: NavSection[] = [
       { label: "Leads", href: "/sales/leads", icon: Users },
       { label: "Demos", href: "/sales/demos", icon: Sparkles },
       { label: "Bots", href: "/sales/bots", icon: Bot },
+      { label: "Proposals", href: "/sales/proposals", icon: ClipboardList },
       { label: "Campaigns", href: "/sales/campaigns", icon: Mail },
     ],
   },
