@@ -42,7 +42,8 @@ export async function getProposalByResponseId(
     .select("*, leads(email)")
     .eq("source_response_id", rid)
     .order("created_at", { ascending: false })
-    .maybeSingle();
+    .limit(1)
+    .maybeSingle(); // .limit(1) → "latest or null" (a response can have >1 proposal)
   if (error) throw error;
   if (!data) return null;
   return flattenLeadEmail(data as ProposalRow);

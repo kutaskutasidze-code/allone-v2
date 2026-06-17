@@ -11,20 +11,30 @@ export async function GET(
 ) {
   const { slug, rid } = await params;
 
-  const response = await getResponse(rid);
-  if (!response || response.bot_slug !== slug) {
-    return NextResponse.json({ error: "not found" }, { status: 404 });
+  try {
+    const response = await getResponse(rid);
+    if (!response || response.bot_slug !== slug) {
+      return NextResponse.json({ error: "not found" }, { status: 404 });
+    }
+
+    const proposal = await getProposalByResponseId(rid);
+    const hasDocuments = (proposal?.chat_documents?.length ?? 0) > 0;
+
+    return NextResponse.json({
+      status: proposal?.status ?? "received",
+      intro: hasDocuments
+        ? "თქვენი დოკუმენტები მზადაა — იხილეთ ქვემოთ."
+        : "მადლობა! თქვენი მოთხოვნა მიღებულია. შეთავაზებას მალე მოგაწვდით აქვე.",
+      documents: proposal?.chat_documents ?? [],
+    });
+  } catch (err) {
+    // Public client-facing endpoint: never hard-500 the client's thread on a
+    // transient DB hiccup — degrade to the neutral "received" state.
+    console.error("[bots/thread] error", err);
+    return NextResponse.json({
+      status: "received",
+      intro: "მადლობა! თქვენი მოთხოვნა მიღებულია.",
+      documents: [],
+    });
   }
-
-  const proposal = await getProposalByResponseId(rid);
-
-  const hasDocuments = (proposal?.chat_documents?.length ?? 0) > 0;
-
-  return NextResponse.json({
-    status: proposal?.status ?? "received",
-    intro: hasDocuments
-      ? "თქვენი დოკუმენტები მზადაა — იხილეთ ქვემოთ."
-      : "მადლობა! თქვენი მოთხოვნა მიღებულია. შეთავაზებას მალე მოგაწვდით აქვე.",
-    documents: proposal?.chat_documents ?? [],
-  });
 }
