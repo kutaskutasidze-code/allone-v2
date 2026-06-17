@@ -146,8 +146,9 @@ export async function POST(req: NextRequest, context: RouteContext) {
     recipient: mergedRecipient,
   });
 
-  // Seed lead_payments from the offer schedule (no-op if no lead_id or empty schedule)
-  if (proposal.lead_id) {
+  // Seed lead_payments from the offer schedule — only on FIRST generation
+  // (no contract yet), so re-generating the docs doesn't duplicate the rows.
+  if (proposal.lead_id && !proposal.contract_pdf_url) {
     await seedPaymentsFromSchedule(
       proposal.lead_id,
       proposal.offer.schedule ?? [],
