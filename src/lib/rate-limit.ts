@@ -212,3 +212,16 @@ export async function checkStrictRateLimit(request: Request): Promise<RateLimitR
     prefix: 'strict',
   });
 }
+
+/**
+ * Rate limit for job applications
+ * 5 submissions per 10 minutes per IP
+ */
+export async function checkCareersRateLimit(request: Request): Promise<RateLimitResult> {
+  const ip = getClientIp(request);
+  return checkRateLimit(ip, {
+    maxRequests: 5,
+    windowSeconds: 600,
+    prefix: 'careers',
+  });
+}

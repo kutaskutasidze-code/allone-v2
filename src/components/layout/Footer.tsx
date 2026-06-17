@@ -46,6 +46,9 @@ export function Footer() {
                 <Link href="/work" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.work')}
                 </Link>
+                <Link href="/careers" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
+                  Careers
+                </Link>
                 <Link href="/contact" className="block text-sm text-[#7E8A97] hover:text-[#071D2F] transition-colors duration-200">
                   {t('footer.link.contact')}
                 </Link>
