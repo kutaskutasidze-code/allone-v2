@@ -24,18 +24,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${vacancy.title} — AllOne Careers`,
     description: vacancy.summary || `Apply for ${vacancy.title} at AllOne.`,
-    alternates: { canonical: `/careers/${vacancy.slug}` },
+    alternates: { canonical: `https://www.allonelabs.com/careers/${vacancy.slug}` },
     openGraph: {
       title: `${vacancy.title} — AllOne Careers`,
       description: vacancy.summary || `Apply for ${vacancy.title} at AllOne.`,
-      url: `/careers/${vacancy.slug}`,
-      images: [{ url: 'https://allonelabs.com/images/careers-og.png', width: 1200, height: 630, alt: 'AllOne' }],
+      url: `https://www.allonelabs.com/careers/${vacancy.slug}`,
+      images: [{ url: 'https://www.allonelabs.com/images/careers-og.png', width: 1200, height: 630, alt: 'AllOne' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${vacancy.title} — AllOne Careers`,
       description: vacancy.summary || `Apply for ${vacancy.title} at AllOne.`,
-      images: ['https://allonelabs.com/images/careers-og.png'],
+      images: ['https://www.allonelabs.com/images/careers-og.png'],
     },
   };
 }
