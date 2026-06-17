@@ -13,7 +13,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export const dynamic = 'force-dynamic';
+// ISR — serve a fast, CDN-cached response (crawler-friendly); refresh every 5 min.
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
