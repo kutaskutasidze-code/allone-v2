@@ -1,19 +1,22 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@anthropic-ai/sdk", () => ({
-  default: class {
-    messages = {
-      create: async () => ({
-        content: [
-          {
-            type: "text",
-            text: '{"client_name":"Acme","summary":"ს","scope_lines":[{"label":"საიტი","description":"d","price":800}],"price":800,"currency":"GEL","schedule":[{"label":"წინასწარი","amount":800,"when":"ხელმოწერა"}],"monthly_opex":"100 ₾","timeline":"4 კვირა"}',
-          },
-        ],
-      }),
-    };
-  },
-}));
+const OFFER_JSON =
+  '{"client_name":"Acme","summary":"ს","scope_lines":[{"label":"საიტი","description":"d","price":800}],"price":800,"currency":"GEL","schedule":[{"label":"წინასწარი","amount":800,"when":"ხელმოწერა"}],"monthly_opex":"100 ₾","timeline":"4 კვირა"}';
+
+// draftOffer routes through the claude-bridge HTTP endpoint, so we mock fetch
+// to return the bridge's {text} shape and set the bridge env vars.
+beforeEach(() => {
+  process.env.CLAUDE_BRIDGE_URL = "http://bridge.test";
+  process.env.CLAUDE_BRIDGE_TOKEN = "test-token";
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ text: OFFER_JSON }),
+    })),
+  );
+});
 
 import { draftOffer } from "./draft.js";
 

@@ -1,8 +1,51 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { config } from "../config.js";
 import { PRICE_ANCHORS, type OfferDraft } from "./anchors.js";
 
-const MODEL = "claude-opus-4-8";
+// The offer drafter routes its LLM call through the subscription-billed
+// claude-bridge (HTTP service on Hetzner, chat.allonelabs.com) — the same
+// bridge the CRM uses — so drafting never burns Anthropic API credits.
+// POST {CLAUDE_BRIDGE_URL}/chat  {system, messages:[{role,content}]} -> {text}.
+function bridgeUrl(): string {
+  return process.env.CLAUDE_BRIDGE_URL || "";
+}
+function bridgeToken(): string {
+  return process.env.CLAUDE_BRIDGE_TOKEN || "";
+}
+
+async function callBridge(
+  system: string,
+  userMessage: string,
+): Promise<string> {
+  const url = bridgeUrl();
+  const token = bridgeToken();
+  if (!url || !token) {
+    throw new Error(
+      "draftOffer: claude bridge not configured — set CLAUDE_BRIDGE_URL and CLAUDE_BRIDGE_TOKEN.",
+    );
+  }
+  const res = await fetch(`${url.replace(/\/$/, "")}/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      system,
+      messages: [{ role: "user", content: userMessage }],
+    }),
+    signal: AbortSignal.timeout(180_000),
+  });
+  const text = await res.text();
+  let data: { text?: string; error?: string };
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`draftOffer: bridge bad json — ${text.slice(0, 200)}`);
+  }
+  if (!res.ok || typeof data.text !== "string") {
+    throw new Error(data.error || `draftOffer: bridge HTTP ${res.status}`);
+  }
+  return data.text;
+}
 
 const SYSTEM_PROMPT = `შენ ხარ Allone Labs-ის კომერციული შეთავაზების შემქმნელი.
 კლიენტის კითხვარის პასუხების მიხედვით შექმენი სტრუქტურირებული კომერციული შეთავაზება ქართულ ენაზე.
@@ -40,23 +83,9 @@ export async function draftOffer(
   answers: Record<string, unknown>,
   clientName: string,
 ): Promise<OfferDraft> {
-  const anthropic = new Anthropic({ apiKey: config.anthropicApiKey });
-
   const userMessage = `კლიენტი: ${clientName}\n\nკითხვარის პასუხები:\n${JSON.stringify(answers, null, 2)}`;
 
-  const msg = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: 2048,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: userMessage }],
-  });
-
-  const textBlock = msg.content.find((c) => c.type === "text");
-  if (!textBlock || !("text" in textBlock)) {
-    throw new Error("draftOffer: no text block in Anthropic response");
-  }
-
-  const raw = textBlock.text;
+  const raw = await callBridge(SYSTEM_PROMPT, userMessage);
 
   // Extract first { ... last } to handle any accidental preamble/postamble
   const start = raw.indexOf("{");
