@@ -485,6 +485,33 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
     );
   }
 
+  // Close deal — permanent: deletes the PDFs + the proposal row (and revokes
+  // the client's in-chat access). Behind an explicit confirm.
+  const [closed, setClosed] = useState(false);
+  const [confirmClose, setConfirmClose] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const [closeError, setCloseError] = useState<string | null>(null);
+
+  async function handleCloseDeal() {
+    setClosing(true);
+    setCloseError(null);
+    try {
+      const res = await fetch(`/api/sales/proposals/${proposal.id}`, {
+        method: "DELETE",
+      });
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "deletion failed");
+      }
+      setClosed(true);
+    } catch (e) {
+      setCloseError(e instanceof Error ? e.message : "deletion failed");
+      setClosing(false);
+    }
+  }
+
+  if (closed) return null;
+
   return (
     <div className="rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-5 shadow-[var(--shadow-xs)]">
       {/* Header */}
@@ -761,6 +788,50 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
           )}
         </div>
       )}
+
+      {/* Close deal — permanent delete */}
+      <div className="mt-4 border-t border-[var(--allone-line)] pt-3">
+        {!confirmClose ? (
+          <button
+            type="button"
+            onClick={() => setConfirmClose(true)}
+            className="text-[11px] font-medium text-[var(--ink-400)] hover:text-red-600 transition-colors"
+          >
+            გარიგების დახურვა და დოკუმენტების წაშლა
+          </button>
+        ) : (
+          <div className="space-y-2 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 p-3">
+            <p className="text-[11px] leading-relaxed text-red-800">
+              სამუდამოდ წაიშლება შეთავაზება, ხელშეკრულება და ინვოისი (ფაილებიც),
+              ასევე გაუქმდება კლიენტის წვდომა ჩატში. ეს ქმედება შეუქცევადია.
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void handleCloseDeal()}
+                disabled={closing}
+                className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {closing && <Loader2 className="h-3 w-3 animate-spin" />}
+                {closing ? "იშლება…" : "დიახ, სამუდამოდ წაშლა"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmClose(false)}
+                disabled={closing}
+                className="rounded-[var(--radius-sm)] px-3 py-1.5 text-xs font-medium text-[var(--ink-500)] hover:text-[var(--ink-900)] disabled:opacity-50"
+              >
+                გაუქმება
+              </button>
+            </div>
+            {closeError && (
+              <p className="rounded-[var(--radius-xs)] border border-red-200 bg-white px-2 py-1 text-[11px] text-red-700">
+                {closeError}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

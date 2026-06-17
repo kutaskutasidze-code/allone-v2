@@ -33,6 +33,38 @@ export async function listProposals(leadId?: string): Promise<Proposal[]> {
   return ((data as ProposalRow[]) ?? []).map(flattenLeadEmail);
 }
 
+// Extract the in-bucket object path from a public Storage URL
+// (…/object/public/offers/<path>). Returns null for non-matching/empty urls.
+function bucketPathFromUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const parts = url.split("/storage/v1/object/public/offers/");
+  return parts[1] ? decodeURIComponent(parts[1]) : null;
+}
+
+/**
+ * Permanently delete a proposal and its generated PDFs.
+ * Removes the offer/contract/invoice objects from Storage (best-effort), then
+ * deletes the proposal row. Once the row is gone, the client's chat thread
+ * (which reads the proposal) shows no documents — so this also revokes chat
+ * access. Irreversible. Used by "Close deal".
+ */
+export async function deleteProposalAndDocuments(
+  proposal: Proposal,
+): Promise<void> {
+  const db = createAdminClient();
+  const paths = [
+    bucketPathFromUrl(proposal.offer_pdf_url),
+    bucketPathFromUrl(proposal.contract_pdf_url),
+    bucketPathFromUrl(proposal.invoice_pdf_url),
+  ].filter((p): p is string => !!p);
+  if (paths.length) {
+    // Best-effort: a missing object must not block deleting the row.
+    await db.storage.from("offers").remove(paths);
+  }
+  const { error } = await db.from("proposals").delete().eq("id", proposal.id);
+  if (error) throw error;
+}
+
 export async function getProposalByResponseId(
   rid: string,
 ): Promise<Proposal | null> {
