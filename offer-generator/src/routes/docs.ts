@@ -16,6 +16,7 @@ import { htmlToPdf } from "../docs/render.js";
 import type { Recipient } from "../docs/issuer.js";
 import { supabase } from "../database/client.js";
 import { logger } from "../utils/logger.js";
+import { sendDocsEmail, type DocAttachment } from "../sender/send-docs.js";
 
 const BUCKET = "offers";
 
@@ -125,6 +126,64 @@ router.post(
         error: err instanceof Error ? err.message : "generate failed",
       });
     }
+  },
+);
+
+// POST /api/docs/send
+//   Body: { to, from_name?, subject, html, attachments: [{url, filename}] }
+//   Returns: { ok: true, resendId } or 502 { error }
+router.post(
+  "/api/docs/send",
+  async (req: Request, res: Response): Promise<void> => {
+    const { to, from_name, subject, html, attachments } = req.body as {
+      to?: string;
+      from_name?: string;
+      subject?: string;
+      html?: string;
+      attachments?: DocAttachment[];
+    };
+
+    if (!to || typeof to !== "string" || !to.trim()) {
+      res.status(400).json({ error: "to (recipient email) is required" });
+      return;
+    }
+    if (!subject || typeof subject !== "string" || !subject.trim()) {
+      res.status(400).json({ error: "subject is required" });
+      return;
+    }
+    if (!html || typeof html !== "string" || !html.trim()) {
+      res.status(400).json({ error: "html body is required" });
+      return;
+    }
+    if (!Array.isArray(attachments) || attachments.length === 0) {
+      res
+        .status(400)
+        .json({
+          error: "attachments must be a non-empty array of {url, filename}",
+        });
+      return;
+    }
+
+    const result = await sendDocsEmail({
+      to: to.trim(),
+      fromName: from_name,
+      subject: subject.trim(),
+      html,
+      attachments,
+    });
+
+    if (!result.ok) {
+      logger.error("POST /api/docs/send failed", { error: result.error, to });
+      res.status(502).json({ error: result.error });
+      return;
+    }
+
+    logger.info("POST /api/docs/send: sent", {
+      to,
+      resendId: result.resendId,
+      attachmentCount: attachments.length,
+    });
+    res.json({ ok: true, resendId: result.resendId });
   },
 );
 
