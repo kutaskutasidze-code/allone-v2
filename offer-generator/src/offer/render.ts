@@ -9,12 +9,11 @@ import { config } from "../config.js";
 import type { OfferDraft } from "./anchors.js";
 import { renderOfferHtml } from "./template.js";
 
-export async function renderOfferPdf(
-  offer: OfferDraft,
-  docNumber?: string,
-): Promise<Buffer> {
-  const html = renderOfferHtml(offer, docNumber);
-
+/**
+ * Reusable Puppeteer renderer: launch → setContent → fonts.ready → A4 PDF.
+ * Used by renderOfferPdf and the docs templates (invoice / contract).
+ */
+export async function htmlToPdf(html: string): Promise<Buffer> {
   const browser = await puppeteer.launch({
     headless: true,
     executablePath: config.puppeteer.executablePath,
@@ -46,4 +45,12 @@ export async function renderOfferPdf(
   } finally {
     await browser.close();
   }
+}
+
+export async function renderOfferPdf(
+  offer: OfferDraft,
+  docNumber?: string,
+): Promise<Buffer> {
+  const html = renderOfferHtml(offer, docNumber);
+  return htmlToPdf(html);
 }
