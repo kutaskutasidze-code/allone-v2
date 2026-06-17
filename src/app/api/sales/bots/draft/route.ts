@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { requireSalesAuth } from "@/lib/sales-auth";
 import { AuthError } from "@/lib/auth";
+import { callBridge, bridgeConfigured } from "@/lib/claude-bridge";
 import type { BotQuestion } from "@/lib/bots/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const SYSTEM =
+  "You design Georgian (ka) requirements questionnaires for client discovery. " +
+  "Return ONLY a JSON array of questions. Each question: " +
+  "{id: string, text: string, type: 'single'|'multi'|'text', " +
+  "options?: string[], allowOther?: boolean, hint?: string}. " +
+  "12-18 questions. All text must be in Georgian (ka).";
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,23 +39,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "brief required" }, { status: 400 });
   }
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
-  const msg = await client.messages.create({
-    model: "claude-opus-4-8",
-    max_tokens: 2000,
-    system:
-      "You design Georgian (ka) requirements questionnaires for client discovery. " +
-      "Return ONLY a JSON array of questions. Each question: " +
-      "{id: string, text: string, type: 'single'|'multi'|'text', " +
-      "options?: string[], allowOther?: boolean, hint?: string}. " +
-      "12-18 questions. All text must be in Georgian (ka).",
-    messages: [{ role: "user", content: `Brief: ${brief}` }],
-  });
+  if (!bridgeConfigured()) {
+    return NextResponse.json(
+      { error: "chat bridge not configured" },
+      { status: 503 },
+    );
+  }
 
-  const block = msg.content.find((b) => b.type === "text");
-  const raw = block && "text" in block ? block.text : "[]";
+  // Route through the subscription-billed claude-bridge (same as the offer
+  // drafter / sales chat) — no Anthropic API credits.
+  let raw: string;
+  try {
+    raw = await callBridge({
+      system: SYSTEM,
+      messages: [{ role: "user", content: `Brief: ${brief}` }],
+    });
+  } catch (err) {
+    return NextResponse.json(
+      {
+        error:
+          err instanceof Error
+            ? err.message
+            : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
+      },
+      { status: 502 },
+    );
+  }
+
   const json = raw.slice(raw.indexOf("["), raw.lastIndexOf("]") + 1);
-
   let questions: BotQuestion[];
   try {
     questions = JSON.parse(json) as BotQuestion[];
