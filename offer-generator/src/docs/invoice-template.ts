@@ -236,7 +236,7 @@ export function renderInvoiceHtml(
     day: "numeric",
   });
   const issuer = issuerName(language);
-  const clientName = recipient.name || esc(offer.client_name);
+  const clientName = recipient.name || offer.client_name;
 
   const totalRow = `
     <tr class="total-row">

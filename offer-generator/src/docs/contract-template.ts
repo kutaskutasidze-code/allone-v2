@@ -4,6 +4,7 @@ import type {
   OfferStage,
 } from "../offer/anchors.js";
 import { ISSUER, issuerName, type Recipient } from "./issuer.js";
+import { gelWords } from "./gel-words.js";
 import type { ProposalLike } from "./invoice-template.js";
 
 function esc(s: string): string {
@@ -168,7 +169,7 @@ export function renderContractHtml(
 ): string {
   const { doc_number, language, offer } = proposal;
   const issuer = issuerName(language);
-  const clientName = recipient.name || esc(offer.client_name);
+  const clientName = recipient.name || offer.client_name;
   const idCode = recipient.id_code ? `(პ/ნ ${esc(recipient.id_code)})` : "";
 
   // §1 — scope (variable)
@@ -182,7 +183,7 @@ ${scopeList(offer.scope_lines)}
 
   // §2 — price & schedule (variable)
   const sec2 = `<h2 class="sec-head">2. მომსახურების ღირებულება და ანგარიშსწორების წესი</h2>
-<p class="sec-p">2.1. წინამდებარე ხელშეკრულებით განსაზღვრული მომსახურების ღირებულება ჯამურად შეადგენს <strong>${fmt(offer.price)} ₾</strong> გადასახადების ჩათვლით.</p>
+<p class="sec-p">2.1. წინამდებარე ხელშეკრულებით განსაზღვრული მომსახურების ღირებულება ჯამურად შეადგენს <strong>${fmt(offer.price)} (${gelWords(offer.price)}) ₾</strong> გადასახადების ჩათვლით.</p>
 <p class="sec-p">2.2. საქართველოს კანონმდებლობით გათვალისწინებული გადასახადების გადახდა ევალება შემსრულებელს.</p>
 <p class="sec-p">2.3. მომსახურების ღირებულების გადახდა მოხდება შემდეგი გრაფიკით:</p>
 <ul class="sec-list">
