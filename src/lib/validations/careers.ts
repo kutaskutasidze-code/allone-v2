@@ -43,6 +43,7 @@ export interface JobApplication {
   name: string;
   email: string;
   phone: string | null;
+  linkedin: string | null;
   cv_path: string | null;
   projects: string | null;
   note: string | null;
@@ -86,6 +87,7 @@ export const applicationSchema = z.object({
   name: z.string().min(1, 'Name is required').max(160),
   email: z.string().email('A valid email is required').max(255),
   phone: z.string().max(50).optional().or(z.literal('')),
+  linkedin: z.string().max(300).optional().or(z.literal('')),
   note: z.string().max(5000).optional().or(z.literal('')),
   cv_path: z.string().min(1).max(300),
 });

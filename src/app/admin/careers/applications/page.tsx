@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ArrowLeft, Download, Mail, Phone } from 'lucide-react';
+import { ArrowLeft, Download, Mail, Phone, Linkedin } from 'lucide-react';
 import { PageHeader } from '@/components/admin';
 import {
   APPLICATION_STATUSES,
@@ -111,6 +111,16 @@ function ApplicationsContent() {
                     </a>
                     {a.phone && (
                       <span className="inline-flex items-center gap-1"><Phone className="h-3.5 w-3.5" />{a.phone}</span>
+                    )}
+                    {a.linkedin && (
+                      <a
+                        href={a.linkedin.startsWith('http') ? a.linkedin : `https://${a.linkedin}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 hover:text-[var(--ink-900)]"
+                      >
+                        <Linkedin className="h-3.5 w-3.5" />LinkedIn
+                      </a>
                     )}
                     <span>{new Date(a.created_at).toLocaleDateString()}</span>
                   </div>

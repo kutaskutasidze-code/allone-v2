@@ -20,6 +20,7 @@ export function ApplicationForm({
     name: '',
     email: '',
     phone: '',
+    linkedin: '',
     note: '',
     website_url: '', // honeypot
   });
@@ -78,6 +79,7 @@ export function ApplicationForm({
           name: form.name,
           email: form.email,
           phone: form.phone,
+          linkedin: form.linkedin,
           note: form.note,
           website_url: form.website_url,
           cv_path: path,
@@ -142,6 +144,8 @@ export function ApplicationForm({
       </div>
 
       <input type="tel" value={form.phone} onChange={set('phone')} className={inputClass} placeholder="Phone (optional)" style={{ fontSize: '16px' }} />
+
+      <input type="url" value={form.linkedin} onChange={set('linkedin')} className={inputClass} placeholder="LinkedIn profile URL (optional)" style={{ fontSize: '16px' }} />
 
       <textarea
         rows={4}
