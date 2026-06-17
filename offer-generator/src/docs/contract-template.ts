@@ -194,7 +194,7 @@ ${scheduleList(offer.schedule)}
 <html lang="ka">
 <head>
   <meta charset="utf-8" />
-  <title>მომსახურების ხელშეკრულება N${esc(doc_number)}</title>
+  <title>მომსახურების ხელშეკრულება ${esc(doc_number)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -206,7 +206,7 @@ ${scheduleList(offer.schedule)}
 <body>
 <div class="page">
 
-  <div class="doc-title">მომსახურების ხელშეკრულება N${esc(doc_number)}</div>
+  <div class="doc-title">მომსახურების ხელშეკრულება ${esc(doc_number)}</div>
 
   <div class="doc-meta">
     <span>ქ. თბილისი</span>
