@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { CV_ACCEPT, CV_EXT_RE } from '@/lib/validations/careers';
 
 const inputClass =
-  'w-full px-4 py-3 bg-white border border-[#EBEBEB] rounded-xl text-[#071D2F] text-sm placeholder:text-[#071D2F]/30 focus:outline-none focus:border-[#071D2F]/20 focus:shadow-[0_0_0_3px_rgba(7,29,47,0.04)] transition-all';
+  'w-full px-4 py-3 bg-white border border-[#0c1016]/10 rounded-xl text-[#0c1016] text-sm placeholder:text-[#0c1016]/35 focus:outline-none focus:border-[#2776ea]/60 focus:shadow-[0_0_0_3px_rgba(39,118,234,0.08)] transition-all';
 
 export function ApplicationForm({
   vacancyId,
@@ -101,13 +101,13 @@ export function ApplicationForm({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white border border-[#EBEBEB] rounded-2xl p-10 text-center"
+        className="bg-white border border-[#0c1016]/10 rounded-2xl p-10 text-center"
       >
-        <div className="w-14 h-14 rounded-full bg-[#071D2F]/[0.06] flex items-center justify-center mx-auto mb-4">
-          <CheckCircle2 className="w-7 h-7 text-[#071D2F]" />
+        <div className="w-14 h-14 rounded-full bg-[#2776ea]/10 flex items-center justify-center mx-auto mb-4">
+          <CheckCircle2 className="w-7 h-7 text-[#2776ea]" />
         </div>
-        <h3 className="font-display text-xl font-semibold text-[#071D2F] mb-2">Application received</h3>
-        <p className="text-sm text-[#4D4D4D]">
+        <h3 className="text-xl font-bold text-[#0c1016] mb-2">Application received</h3>
+        <p className="text-sm text-[#565f6b]">
           Thanks for applying for {vacancyTitle}. If it&apos;s a fit, we&apos;ll reach out by email.
         </p>
       </motion.div>
@@ -160,10 +160,10 @@ export function ApplicationForm({
       <div>
         <input ref={fileRef} type="file" accept={CV_ACCEPT} onChange={onFile} className="hidden" />
         {cv ? (
-          <div className="flex items-center gap-3 px-4 py-3 bg-white border border-[#EBEBEB] rounded-xl">
-            <FileText className="w-5 h-5 text-[#0369a1] shrink-0" />
-            <span className="flex-1 text-sm text-[#071D2F] truncate">{cv.name}</span>
-            <button type="button" onClick={() => { setCv(null); if (fileRef.current) fileRef.current.value = ''; }} className="text-[#4D4D4D] hover:text-[#071D2F]">
+          <div className="flex items-center gap-3 px-4 py-3 bg-white border border-[#0c1016]/10 rounded-xl">
+            <FileText className="w-5 h-5 text-[#2776ea] shrink-0" />
+            <span className="flex-1 text-sm text-[#0c1016] truncate">{cv.name}</span>
+            <button type="button" onClick={() => { setCv(null); if (fileRef.current) fileRef.current.value = ''; }} className="text-[#6b7480] hover:text-[#0c1016]">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -171,7 +171,7 @@ export function ApplicationForm({
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="flex items-center gap-2 w-full px-4 py-3 bg-white border border-dashed border-[#CBD5E1] rounded-xl text-sm text-[#4D4D4D] hover:border-[#0369a1] hover:text-[#071D2F] transition-all"
+            className="flex items-center gap-2 w-full px-4 py-3 bg-white border border-dashed border-[#0c1016]/20 rounded-xl text-sm text-[#6b7480] hover:border-[#2776ea] hover:text-[#0c1016] transition-all"
           >
             <Upload className="w-4 h-4" />
             Upload your CV (PDF or Word)
@@ -182,7 +182,7 @@ export function ApplicationForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex items-center justify-center gap-2 h-12 px-8 text-sm font-medium text-white bg-[#071D2F] rounded-full hover:bg-[#0a2a45] disabled:opacity-50 transition-all duration-150 w-full sm:w-auto cursor-pointer"
+        className="flex items-center justify-center gap-2 h-12 px-8 text-sm font-medium text-white bg-[#2776ea] rounded-full hover:bg-[#1f63c9] disabled:opacity-50 transition-all duration-150 w-full sm:w-auto cursor-pointer"
       >
         {isSubmitting ? (
           <Loader2 className="w-4 h-4 animate-spin" />
