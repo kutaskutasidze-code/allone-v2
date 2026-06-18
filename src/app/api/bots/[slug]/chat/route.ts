@@ -1,54 +1,157 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBotConfigBySlug } from "@/lib/bots/repo";
 import { callBridge, bridgeConfigured } from "@/lib/claude-bridge";
-import { callGemini, geminiConfigured } from "@/lib/gemini";
+import {
+  callGemini,
+  callGeminiStructured,
+  geminiConfigured,
+} from "@/lib/gemini";
 import type { ChatMessage } from "@/lib/llm-types";
 import type { BotQuestion } from "@/lib/bots/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Conversational intake agent. The bot's goal is to gather the info described
-// by its configured questions — but conversationally: one thing at a time,
-// answering the visitor's own questions along the way. When it has everything,
-// it emits a closing message, then a line "<<COMPLETE>>" and a JSON object
-// mapping each question id → the gathered answer. The client detects that,
-// submits the answers, and moves the visitor into their thread.
+// Conversational intake agent (Gemini primary, claude-bridge fallback).
+//
+// Two passes, kept separate so each does one job well:
+//   1. CONVERSATION — the bot drives a warm chat to learn the business. When the
+//      core topics are covered it ends with a bare "<<COMPLETE>>" marker.
+//   2. EXTRACTION — once complete (or after a turn cap forces it), a dedicated
+//      structured call reads the transcript and returns STRICT JSON: only what
+//      the client actually said, null for anything not covered (no fabrication,
+//      no snapping to the nearest option).
 
-function buildSystem(
+const COMPLETE_MARKER = "<<COMPLETE>>";
+const SEED_PREFIX = "(ვიზიტორმა"; // hidden opening seed — not a real client turn
+// Hard stop so a looping conversation always reaches the thread (and can never
+// grow into the 60KB request cap as a raw error).
+const FORCE_COMPLETE_AFTER_TURNS = 12;
+
+function buildConversationSystem(
   clientName: string,
   intro: string | null,
   questions: BotQuestion[],
 ): string {
-  const goals = questions
+  const optional = questions
     .map((q, i) => {
       const opts = q.options?.length ? ` (მაგ.: ${q.options.join(" / ")})` : "";
-      return `${i + 1}. [${q.id}] ${q.text}${opts}`;
+      return `${i + 1}. ${q.text}${opts}`;
     })
     .join("\n");
   return [
     `შენ ხარ AllOne-ის ინტეიქ-აგენტი "${clientName}"-ისთვის. საუბრობ ქართულად, თბილად და პროფესიონალურად.`,
     intro ? `კონტექსტი: ${intro}` : "",
-    `შენი მიზანია ბუნებრივ საუბარში მოიპოვო რაც შეიძლება მეტი ინფორმაცია კლიენტის ბიზნესისა და საჭიროებების შესახებ — ქვემოთ ჩამოთვლილი თემების მიხედვით.`,
+    `შენი მიზანია ბუნებრივ საუბარში გაიგო კლიენტის ბიზნესი და საჭიროებები.`,
+    ``,
     `წესები:`,
-    `- ერთ ჯერზე დასვი მხოლოდ ერთი მოკლე კითხვა (არა სიის სახით).`,
-    `- თუ კლიენტი რამეს გკითხავს, ჯერ უპასუხე დამხმარედ, მერე ბუნებრივად დააბრუნე საუბარი შენს კითხვაზე.`,
-    `- იყავი მოქნილი — არ დაჟინდე ზუსტ ფორმულირებაზე; მთავარია არსი მოიპოვო.`,
-    `- ნუ გადაამეტებ — როცა საკმარისი ინფორმაცია გექნება, დაასრულე.`,
+    `- მისალმება მხოლოდ ერთხელ — შენს პირველ შეტყობინებაში. შემდეგ აღარასოდეს მიესალმო ("გამარჯობა" აღარ თქვა).`,
+    `- ერთ ჯერზე მხოლოდ ერთი მოკლე კითხვა (არასდროს სიის სახით).`,
+    `- თუ კლიენტი გკითხავს, ჯერ მოკლედ უპასუხე დამხმარედ, მერე ბუნებრივად დაუბრუნდი შენს კითხვას.`,
+    `- იყავი მოქნილი. თუ კლიენტმა კონკრეტულ კითხვას არ უპასუხა, მაქსიმუმ ერთხელ გადაჰკითხე — მერე გადადი შემდეგ თემაზე. არასოდეს გაიმეორო ერთი და იგივე კითხვა რამდენჯერმე.`,
+    `- ფასებს ნუ დაასახელებ — შეთავაზებას გუნდი მოამზადებს.`,
+    `- წერე მხოლოდ სუფთა ქართულად (მხედრული). ნუ აურევ ლათინურ ან კირილიცის ასოებს.`,
     ``,
-    `მოსაპოვებელი ინფორმაცია:`,
-    goals,
+    `მთავარი (აუცილებელი) თემები — სცადე ეს დაფარო:`,
+    `- რა სჭირდება (პროდუქტი/სეგმენტი) და რა საქმიანობს;`,
+    `- მთავარი სასურველი ფუნქციონალი;`,
+    `- ბიუჯეტი და სასურველი ვადა;`,
+    `- არსებული მასალები: ვებსაიტი / სოციალური ქსელები / ბრენდინგი (ლოგო, ფერები) — ან მოკლე აღწერა, თუ არაფერი აქვს.`,
     ``,
-    `ასევე — აუცილებლად მოიპოვე კლიენტის არსებული მასალები, რომ მათი დემო ავაწყოთ:`,
-    `- მიმდინარე ვებსაიტის ბმული (თუ აქვს);`,
-    `- სოციალური ქსელების ბმულები (Facebook / Instagram / სხვა);`,
-    `- სხვა მასალები (ლოგო, ფერები, ბრენდბუქი — თუ აქვს);`,
-    `- თუ არცერთი არ აქვს, სთხოვე მოკლე აღწერა: რას აკეთებენ, ბრენდის სტილი/ფერები რა სურთ.`,
+    `დამატებითი თემები (სურვილისამებრ, არ არის სავალდებულო ყველა — ჰკითხე მხოლოდ თუ საუბარი ბუნებრივად უშვებს):`,
+    optional,
     ``,
-    `როცა საკმარისი ინფორმაცია გექნება ყველა (ან თითქმის ყველა) თემაზე და ასევე არსებულ მასალებზე: დაწერე მოკლე დამამთავრებელი წინადადება (მადლობა + რომ მალე გადასცემ შეთავაზებას), შემდეგ ახალ ხაზზე ზუსტად "<<COMPLETE>>", შემდეგ ახალ ხაზზე JSON ობიექტი. JSON-ში შედის: თითო კითხვის id→პასუხი, პლუს ეს გასაღებები — "current_website" (URL ან null), "social_links" (მასივი ან []), "brand_assets" (აღწერა ან null), "business_description" (მოკლე აღწერა). სხვა არაფერი JSON-ის შემდეგ.`,
+    `როცა მთავარი თემები დაფარულია, ნუ გააჭიანურებ — სცადე ~6-8 გაცვლაში დაასრულო. დასასრულებლად: დაწერე მოკლე დამამთავრებელი წინადადება (მადლობა + რომ მალე მიიღებენ შეთავაზებას აქვე), შემდეგ ახალ ხაზზე ზუსტად "${COMPLETE_MARKER}". მარკერის შემდეგ აღარაფერი დაამატო — JSON არ დაწერო.`,
   ]
     .filter(Boolean)
     .join("\n");
+}
+
+// Strict extractor: only what the client said; null otherwise; literal values,
+// not option-buckets.
+function buildExtractionSystem(questions: BotQuestion[]): string {
+  const list = questions
+    .map((q) => {
+      const opts = q.options?.length
+        ? ` — ვარიანტები (მხოლოდ მინიშნებად): ${q.options.join(" / ")}`
+        : "";
+      return `[${q.id}] ${q.text}${opts}`;
+    })
+    .join("\n");
+  return [
+    `შენ ხარ მონაცემთა ექსტრაქტორი. ქვემოთ მოცემულია ინტეიქ-საუბრის ტრანსკრიპტი კლიენტსა და აგენტს შორის. ამოიღე მხოლოდ ის, რაც კლიენტმა *რეალურად* თქვა.`,
+    ``,
+    `მკაცრი წესები:`,
+    `- თუ თემა საუბარში არ განხილულა ან კლიენტს არ უპასუხია — დააბრუნე null (social_links-ისთვის ცარიელი მასივი []).`,
+    `- არასოდეს გამოიგონო, არ ჩასვა ნაგულისხმევი მნიშვნელობა და არ მიამიდე უახლოეს ვარიანტს.`,
+    `- შეინახე კლიენტის ნამდვილი, კონკრეტული პასუხი მისივე სიტყვებით (მაგ. ბიუჯეტი "2000 ₾", ვადა "3 კვირა") — არა დიაპაზონი ან კატეგორია.`,
+    `- ვარიანტები მხოლოდ მინიშნებაა შენთვის — არ ჩათვალო პასუხად.`,
+    ``,
+    `კითხვები:`,
+    list,
+  ].join("\n");
+}
+
+// Gemini responseSchema (OpenAPI subset): every question id → nullable string,
+// plus the asset keys.
+function buildAnswersSchema(questions: BotQuestion[]): object {
+  const properties: Record<string, object> = {};
+  for (const q of questions) {
+    properties[q.id] = { type: "STRING", nullable: true };
+  }
+  properties.current_website = { type: "STRING", nullable: true };
+  properties.social_links = { type: "ARRAY", items: { type: "STRING" } };
+  properties.brand_assets = { type: "STRING", nullable: true };
+  properties.business_description = { type: "STRING", nullable: true };
+  return { type: "OBJECT", properties };
+}
+
+function transcriptOf(messages: ChatMessage[]): string {
+  return messages
+    .filter((m) => !(m.role === "user" && m.content.startsWith(SEED_PREFIX)))
+    .map((m) => `${m.role === "user" ? "კლიენტი" : "აგენტი"}: ${m.content}`)
+    .join("\n");
+}
+
+// Extract the answers JSON. Prefer Gemini's schema-validated output; fall back
+// to a bridge call that returns JSON (brace-sliced) if Gemini isn't available.
+async function extractAnswers(
+  messages: ChatMessage[],
+  questions: BotQuestion[],
+): Promise<Record<string, unknown>> {
+  const system = buildExtractionSystem(questions);
+  const userText = `ტრანსკრიპტი:\n${transcriptOf(messages)}`;
+  if (geminiConfigured()) {
+    const out = await callGeminiStructured({
+      system,
+      userText,
+      schema: buildAnswersSchema(questions),
+    });
+    return out as Record<string, unknown>;
+  }
+  const sys = `${system}\n\nდააბრუნე მხოლოდ JSON ობიექტი: თითო კითხვის id→პასუხი ან null, ასევე current_website, social_links, brand_assets, business_description. JSON-ის გარდა აღარაფერი.`;
+  const raw = await callBridge({
+    system: sys,
+    messages: [{ role: "user", content: userText }],
+  });
+  const js = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
+  return JSON.parse(js) as Record<string, unknown>;
+}
+
+// One conversation turn, Gemini-first with bridge fallback.
+async function converse(
+  system: string,
+  messages: ChatMessage[],
+): Promise<string> {
+  if (geminiConfigured()) {
+    try {
+      return await callGemini({ system, messages });
+    } catch (err) {
+      if (!bridgeConfigured()) throw err;
+      return await callBridge({ system, messages });
+    }
+  }
+  return await callBridge({ system, messages });
 }
 
 export async function POST(
@@ -67,7 +170,6 @@ export async function POST(
   if (messages.length === 0) {
     return NextResponse.json({ error: "messages required" }, { status: 400 });
   }
-  // Cap to keep the bridge prompt bounded.
   if (JSON.stringify(messages).length > 60_000) {
     return NextResponse.json(
       { error: "conversation too long" },
@@ -85,64 +187,54 @@ export async function POST(
     );
   }
 
-  const system = buildSystem(
-    cfg.client_name,
-    cfg.intro,
-    (cfg.questions as BotQuestion[]) ?? [],
-  );
+  const questions = (cfg.questions as BotQuestion[]) ?? [];
+  const system = buildConversationSystem(cfg.client_name, cfg.intro, questions);
 
-  // Gemini is the primary brain (no token-rotation flakiness); the
-  // subscription claude-bridge CLI is the fallback if Gemini errors out.
+  // 1. Conversation turn.
   let raw: string;
   try {
-    if (geminiConfigured()) {
-      raw = await callGemini({ system, messages });
-    } else {
-      raw = await callBridge({ system, messages });
-    }
-  } catch (geminiErr) {
-    if (!bridgeConfigured()) {
-      return NextResponse.json(
-        {
-          error:
-            geminiErr instanceof Error
-              ? geminiErr.message
-              : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
-        },
-        { status: 502 },
-      );
-    }
-    try {
-      raw = await callBridge({ system, messages });
-    } catch (bridgeErr) {
-      return NextResponse.json(
-        {
-          error:
-            bridgeErr instanceof Error
-              ? bridgeErr.message
-              : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
-        },
-        { status: 502 },
-      );
-    }
+    raw = await converse(system, messages);
+  } catch (err) {
+    return NextResponse.json(
+      {
+        error:
+          err instanceof Error
+            ? err.message
+            : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
+      },
+      { status: 502 },
+    );
   }
 
-  // Split off the completion signal if present.
-  const marker = raw.indexOf("<<COMPLETE>>");
-  if (marker === -1) {
+  const marker = raw.indexOf(COMPLETE_MARKER);
+  const modelDone = marker !== -1;
+  const realUserTurns = messages.filter(
+    (m) => m.role === "user" && !m.content.startsWith(SEED_PREFIX),
+  ).length;
+  const forced = !modelDone && realUserTurns >= FORCE_COMPLETE_AFTER_TURNS;
+
+  // Not done yet → just return the reply and keep chatting.
+  if (!modelDone && !forced) {
     return NextResponse.json({ reply: raw.trim(), complete: false });
   }
 
-  const reply = raw.slice(0, marker).trim();
-  const after = raw.slice(marker + "<<COMPLETE>>".length);
-  const js = after.slice(after.indexOf("{"), after.lastIndexOf("}") + 1);
-  let answers: Record<string, unknown> = {};
+  // 2. Completion → extract the structured answers.
+  const closing = modelDone
+    ? raw.slice(0, marker).trim() ||
+      "მადლობა! მალე მიიღებთ თქვენს შეთავაზებას აქვე."
+    : "გმადლობთ ინფორმაციისთვის! ვამზადებთ თქვენს შეთავაზებას და მალე მოგაწვდით აქვე. 🙌";
+
+  const fullTranscript: ChatMessage[] = [
+    ...messages,
+    { role: "assistant", content: closing },
+  ];
+  let answers: Record<string, unknown>;
   try {
-    answers = JSON.parse(js);
+    answers = await extractAnswers(fullTranscript, questions);
   } catch {
-    // If the JSON is malformed, treat as not-complete so the conversation
-    // continues rather than submitting garbage.
-    return NextResponse.json({ reply: reply || raw.trim(), complete: false });
+    // Extraction failed — don't submit garbage; keep the conversation going.
+    return NextResponse.json({ reply: closing, complete: false });
   }
-  return NextResponse.json({ reply, complete: true, answers });
+
+  return NextResponse.json({ reply: closing, complete: true, answers });
 }
