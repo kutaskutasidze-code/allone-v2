@@ -11,6 +11,7 @@ import {
   AlertCircle,
   X,
   ListTodo,
+  Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TASK_DUE_PRESETS, fmtLocalInputValue } from './AddTaskSheet';
@@ -22,6 +23,7 @@ interface Task {
   due_at: string | null;
   status: string;
   notes: string | null;
+  lead: { company: string | null; name: string | null } | null;
 }
 
 type Scope = 'due' | 'overdue' | 'open' | 'all';
@@ -268,6 +270,12 @@ export function TaskQueue({ scope = 'due', leadId }: Props) {
                         </span>
                       )}
                     </div>
+                    {(task.lead?.company || task.lead?.name) && (
+                      <div className="flex items-center gap-1.5 mt-0.5 text-xs text-[var(--ink-600)]">
+                        <Building2 className="w-3 h-3 shrink-0 text-[var(--ink-400)]" />
+                        <span className="truncate">{task.lead?.company || task.lead?.name}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-3 mt-1 flex-wrap">
                       <span
                         className={cn(
