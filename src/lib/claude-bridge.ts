@@ -33,6 +33,19 @@ export function bridgeConfigured(): boolean {
 
 // ── Plain text turn ────────────────────────────────────────────────────
 
+// The bridge wraps a `claude -p` subprocess whose OAuth token auto-refreshes.
+// During a refresh window some calls transiently fail with "Not logged in" /
+// "Invalid authentication credentials" / a 5xx while others succeed. Retrying a
+// beat later almost always lands on a healthy subprocess, so we never surface
+// that flake to the (customer-facing) chat.
+function isTransientBridgeError(msg: string): boolean {
+  return /not logged in|invalid authentication|authentication_error|401|50\d|fetch failed|timed? ?out|terminated|ECONNRESET|socket/i.test(
+    msg,
+  );
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export async function callBridge(req: {
   system: string;
   messages: ChatMessage[];
@@ -44,26 +57,39 @@ export async function callBridge(req: {
       "Claude bridge not configured — set CLAUDE_BRIDGE_URL and CLAUDE_BRIDGE_TOKEN.",
     );
   }
-  const res = await fetch(`${url.replace(/\/$/, "")}/chat`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ system: req.system, messages: req.messages }),
-    signal: AbortSignal.timeout(180_000),
-  });
-  const text = await res.text();
-  let data: { text?: string; error?: string };
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error(`bridge: bad json — ${text.slice(0, 200)}`);
+
+  const attempts = 3;
+  let lastErr: Error | null = null;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(`${url.replace(/\/$/, "")}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ system: req.system, messages: req.messages }),
+        signal: AbortSignal.timeout(180_000),
+      });
+      const text = await res.text();
+      let data: { text?: string; error?: string };
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`bridge: bad json — ${text.slice(0, 200)}`);
+      }
+      if (!res.ok || typeof data.text !== "string") {
+        throw new Error(data.error || `bridge HTTP ${res.status}`);
+      }
+      return data.text;
+    } catch (err) {
+      lastErr = err instanceof Error ? err : new Error(String(err));
+      const last = i === attempts - 1;
+      if (last || !isTransientBridgeError(lastErr.message)) throw lastErr;
+      await sleep(1500 * (i + 1)); // 1.5s, 3s — ride out the token-refresh window
+    }
   }
-  if (!res.ok || typeof data.text !== "string") {
-    throw new Error(data.error || `bridge HTTP ${res.status}`);
-  }
-  return data.text;
+  throw lastErr ?? new Error("bridge: unknown error");
 }
 
 // ── Tool-aware turn (text-marker protocol) ────────────────────────────
