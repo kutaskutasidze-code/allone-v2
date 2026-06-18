@@ -1,45 +1,44 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { OTHER_LABEL, type BotQuestion } from "@/lib/bots/types";
 import { AssistantThinking } from "@/components/bf-shell/AssistantThinking";
 import { StreamingText } from "@/components/bf-shell/StreamingText";
 
-// Questionnaire as a real Business-Forge-style chat: a persistent composer
-// textbox (type any answer), optional suggestion chips for the current
-// question (tap or ignore), assistant text revealed via StreamingText, a
-// pulsing thinking indicator between turns, and the BF chat shell frame.
+// Conversational intake agent, Business-Forge chat styling. The bot drives a
+// free conversation (goal: gather the company's info), answers the visitor's
+// questions, and when it has enough, the /chat endpoint returns complete:true
+// + the gathered answers → we submit them and move the visitor to their thread.
 
 interface Msg {
   role: "bot" | "user";
   text: string;
   streaming?: boolean;
 }
+interface ApiMsg {
+  role: "user" | "assistant";
+  content: string;
+}
+
+const SEED =
+  "(ვიზიტორმა გახსნა ჩატი — მომესალმე ქართულად და დასვი პირველი კითხვა.)";
 
 export function BotChat({
   slug,
   title,
-  intro,
-  questions,
 }: {
   slug: string;
   title: string;
   intro: string | null;
-  questions: BotQuestion[];
 }) {
-  const [messages, setMessages] = useState<Msg[]>([]);
-  const [step, setStep] = useState(-1); // question awaiting an answer; -1 = none
+  const [display, setDisplay] = useState<Msg[]>([]);
   const [thinking, setThinking] = useState(false);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
+  const [busy, setBusy] = useState(false); // submitting / redirecting
   const [input, setInput] = useState("");
+  const apiRef = useRef<ApiMsg[]>([{ role: "user", content: SEED }]);
   const startedRef = useRef(false);
-
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
-  // Resume an existing thread if one was stored for this slug.
   useEffect(() => {
     const stored = localStorage.getItem(`bot_thread_${slug}`);
     if (stored) window.location.assign(`/b/${slug}/c/${stored}`);
@@ -50,109 +49,99 @@ export function BotChat({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages, thinking, step]);
+  }, [display, thinking]);
 
-  const ask = useCallback(
-    (i: number) => {
-      const q = questions[i];
-      if (!q) return;
-      setThinking(true);
-      setStep(-1);
-      setTimeout(() => {
-        setThinking(false);
-        const text = q.hint ? `${q.text}\n${q.hint}` : q.text;
-        setMessages((m) => [...m, { role: "bot", text, streaming: true }]);
-        setStep(i);
-      }, 650);
-    },
-    [questions],
-  );
+  // One agent turn: send apiRef history, append the reply, handle completion.
+  const turn = useCallback(async () => {
+    setThinking(true);
+    try {
+      const res = await fetch(`/api/bots/${slug}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: apiRef.current }),
+      });
+      const data = (await res.json()) as {
+        reply?: string;
+        complete?: boolean;
+        answers?: Record<string, unknown>;
+        error?: string;
+      };
+      setThinking(false);
+      const reply =
+        data.reply ||
+        (data.error ? "ბოდიში, დროებითი შეფერხებაა — სცადეთ ისევ." : "…");
+      apiRef.current = [
+        ...apiRef.current,
+        { role: "assistant", content: reply },
+      ];
+      setDisplay((d) => [...d, { role: "bot", text: reply, streaming: true }]);
 
-  // Auto-start the conversation on first mount (after the resume check).
+      if (data.complete && data.answers) {
+        setBusy(true);
+        const res2 = await fetch(`/api/bots/${slug}/submit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ answers: data.answers }),
+        });
+        const sub = (await res2.json()) as { response_id?: string };
+        if (sub.response_id) {
+          localStorage.setItem(`bot_thread_${slug}`, sub.response_id);
+          // give the closing message a moment to render, then move to thread
+          setTimeout(
+            () => window.location.assign(`/b/${slug}/c/${sub.response_id}`),
+            2200,
+          );
+        }
+      }
+    } catch {
+      setThinking(false);
+      setDisplay((d) => [
+        ...d,
+        { role: "bot", text: "კავშირის შეფერხება — სცადეთ მოგვიანებით." },
+      ]);
+    }
+  }, [slug]);
+
+  // Kick off the opening turn on mount.
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
-    const greeting =
-      intro ?? "გამარჯობა! მოდით, რამდენიმე კითხვას გავუსვათ ერთმანეთს.";
-    setMessages([{ role: "bot", text: greeting, streaming: true }]);
-    setThinking(true);
-    const t = setTimeout(() => ask(0), 1100);
-    return () => clearTimeout(t);
-  }, [intro, ask]);
+    void turn();
+  }, [turn]);
 
-  async function submitAll(all: Record<string, string>) {
-    setSubmitting(true);
-    setThinking(true);
-    try {
-      const res = await fetch(`/api/bots/${slug}/submit`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers: all }),
-      });
-      const data = (await res.json()) as { ok?: boolean; response_id?: string };
-      if (data.response_id) {
-        localStorage.setItem(`bot_thread_${slug}`, data.response_id);
-        window.location.assign(`/b/${slug}/c/${data.response_id}`);
-        return;
-      }
-      setDone(true);
-    } finally {
-      setSubmitting(false);
-      setThinking(false);
-    }
-  }
-
-  // Send the current message (typed or from a tapped suggestion) as the
-  // answer to the active question, then advance.
   function send(text: string) {
-    const value = text.trim();
-    if (!value || step < 0 || thinking || submitting) return;
-    const q = questions[step];
-    if (!q) return;
-    setMessages((m) => [...m, { role: "user", text: value }]);
+    const v = text.trim();
+    if (!v || thinking || busy) return;
+    apiRef.current = [...apiRef.current, { role: "user", content: v }];
+    setDisplay((d) => [...d, { role: "user", text: v }]);
     setInput("");
     if (taRef.current) taRef.current.style.height = "auto";
-    const next = { ...answers, [q.id]: value };
-    setAnswers(next);
-    if (step + 1 >= questions.length) void submitAll(next);
-    else ask(step + 1);
+    void turn();
   }
 
-  const q = step >= 0 ? questions[step] : undefined;
-  const suggestions = q
-    ? [...(q.options ?? [])].filter((o) => o !== OTHER_LABEL)
-    : [];
-  const canSend = !!q && !thinking && !submitting && !done;
+  const canSend = !thinking && !busy;
   const initial = title.trim().charAt(0) || "A";
-  const answered = step >= 0 ? step : Object.keys(answers).length;
 
   return (
-    <aside className="mx-auto flex h-dvh max-w-2xl flex-col bg-[var(--bg-surface)]">
-      {/* header — chat frame only */}
-      <div className="flex items-center gap-3 border-b border-[var(--allonce-line,#ececec)] px-4 py-3.5">
+    <aside className="mx-auto flex h-dvh max-w-4xl flex-col bg-[var(--bg-surface)]">
+      <div className="flex items-center gap-3 border-b border-[var(--allonce-line,#ececec)] px-5 py-3.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ink-900)] text-[13px] font-semibold text-white">
           {initial}
         </div>
-        <div className="min-w-0 flex flex-col">
-          <span className="truncate text-[14px] font-medium text-[var(--ink-900)]">
-            {title}
-          </span>
-          <span className="text-[11px] text-[var(--ink-400)]">
-            {Math.min(answered, questions.length)} / {questions.length}
-          </span>
-        </div>
+        <span className="truncate text-[14px] font-medium text-[var(--ink-900)]">
+          {title}
+        </span>
       </div>
 
-      {/* messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-5">
-        <ul className="space-y-5">
-          {messages.map((m, i) => (
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-6">
+        <ul className="mx-auto max-w-2xl space-y-5">
+          {display.map((m, i) => (
             <li key={i} className="space-y-1.5">
               <div className="text-[11px] font-medium text-[var(--ink-500)]">
                 {m.role === "user" ? "თქვენ" : title}
               </div>
               <div
-                className={`whitespace-pre-wrap break-words text-[14.5px] leading-[1.6] ${
+                className={`whitespace-pre-wrap break-words text-[15px] leading-[1.65] ${
                   m.role === "user"
                     ? "inline-block max-w-full rounded-[28px] bg-[var(--bg-sunken,#f4f4f5)] px-4 py-2.5 text-[var(--ink-900)]"
                     : "py-0.5 text-[var(--ink-900)]"
@@ -164,7 +153,7 @@ export function BotChat({
                     text={m.text}
                     charsPerSecond={55}
                     onDone={() =>
-                      setMessages((curr) => {
+                      setDisplay((curr) => {
                         const next = [...curr];
                         if (next[i]?.streaming)
                           next[i] = { ...next[i]!, streaming: false };
@@ -188,33 +177,11 @@ export function BotChat({
               </div>
             </li>
           )}
-          {done && (
-            <li className="py-0.5 text-[14.5px] text-[var(--ink-900)]">
-              მადლობა! 🙌
-            </li>
-          )}
         </ul>
       </div>
 
-      {/* composer + optional suggestion chips */}
-      <div className="px-4 pb-4">
-        {canSend && suggestions.length > 0 && (
-          <div className="mb-2 flex flex-wrap gap-2">
-            {suggestions.map((o) => (
-              <button
-                key={o}
-                type="button"
-                onClick={() => send(o)}
-                className="rounded-full border border-[var(--allonce-line,#e4e4e7)] bg-[var(--bg-surface)] px-3.5 py-1.5 text-[13px] text-[var(--ink-700,#3f3f46)] transition hover:bg-[var(--bg-surface-alt,#f7f7f8)] hover:text-[var(--ink-900)] active:scale-[0.98]"
-              >
-                {o}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* ChatGPT-style composer — same shape as the BF side-chat */}
-        <div className="relative rounded-[1.625rem] border border-[var(--allonce-line,#e4e4e7)] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_4px_16px_-4px_rgba(0,0,0,0.06)]">
+      <div className="px-5 pb-4">
+        <div className="relative mx-auto max-w-2xl rounded-[1.625rem] border border-[var(--allonce-line,#e4e4e7)] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_4px_16px_-4px_rgba(0,0,0,0.06)]">
           <textarea
             ref={taRef}
             value={input}
@@ -226,14 +193,14 @@ export function BotChat({
             }}
             rows={1}
             disabled={!canSend}
-            placeholder={done ? "დასრულდა" : canSend ? "დაწერეთ პასუხი…" : "…"}
+            placeholder={busy ? "მზადდება…" : "დაწერეთ პასუხი ან შეკითხვა…"}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 send(input);
               }
             }}
-            className="block w-full resize-none rounded-[1.625rem] bg-transparent px-4 pt-3 pb-11 text-[14.5px] leading-[1.5] text-[var(--ink-900)] outline-none placeholder:text-[var(--ink-400)] disabled:opacity-60"
+            className="block w-full resize-none rounded-[1.625rem] bg-transparent px-4 pt-3 pb-11 text-[15px] leading-[1.5] text-[var(--ink-900)] outline-none placeholder:text-[var(--ink-400)] disabled:opacity-60"
           />
           <button
             type="button"

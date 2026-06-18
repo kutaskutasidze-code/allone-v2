@@ -12,12 +12,5 @@ export default async function BotPage({
   const { slug } = await params;
   const cfg = await getBotConfigBySlug(slug);
   if (!cfg) notFound();
-  return (
-    <BotChat
-      slug={cfg.slug}
-      title={cfg.title}
-      intro={cfg.intro}
-      questions={cfg.questions}
-    />
-  );
+  return <BotChat slug={cfg.slug} title={cfg.title} intro={cfg.intro} />;
 }
