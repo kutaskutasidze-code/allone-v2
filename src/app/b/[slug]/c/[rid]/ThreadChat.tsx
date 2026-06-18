@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { AssistantThinking } from "@/components/bf-shell/AssistantThinking";
+import { StreamingText } from "@/components/bf-shell/StreamingText";
 import { AutolabOffer, type OfferData } from "./AutolabOffer";
+
+interface ConvMsg {
+  role: "bot" | "user";
+  text: string;
+  streaming?: boolean;
+}
 
 interface ThreadDocument {
   kind: string;
@@ -35,8 +42,45 @@ export function ThreadChat({
 }) {
   const [thread, setThread] = useState<ThreadStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [conv, setConv] = useState<ConvMsg[]>([]);
+  const [input, setInput] = useState("");
+  const [chatThinking, setChatThinking] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const apiRef = useRef<{ role: "user" | "assistant"; content: string }[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const taRef = useRef<HTMLTextAreaElement>(null);
+
+  // Continue the conversation in the thread (client can keep asking).
+  async function send(text: string) {
+    const v = text.trim();
+    if (!v || chatThinking) return;
+    apiRef.current = [...apiRef.current, { role: "user", content: v }];
+    setConv((c) => [...c, { role: "user", text: v }]);
+    setInput("");
+    if (taRef.current) taRef.current.style.height = "auto";
+    setChatThinking(true);
+    try {
+      const res = await fetch(`/api/bots/${slug}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: apiRef.current }),
+      });
+      const data = (await res.json()) as { reply?: string };
+      const reply = data.reply || "ბოდიში, სცადეთ ისევ.";
+      apiRef.current = [
+        ...apiRef.current,
+        { role: "assistant", content: reply },
+      ];
+      setConv((c) => [...c, { role: "bot", text: reply, streaming: true }]);
+    } catch {
+      setConv((c) => [
+        ...c,
+        { role: "bot", text: "კავშირის შეფერხება — სცადეთ მოგვიანებით." },
+      ]);
+    } finally {
+      setChatThinking(false);
+    }
+  }
 
   useEffect(() => {
     async function poll() {
@@ -69,7 +113,7 @@ export function ThreadChat({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [thread]);
+  }, [thread, conv, chatThinking]);
 
   const initial = title.trim().charAt(0) || "A";
 
@@ -119,6 +163,11 @@ export function ThreadChat({
                   offer={thread.offer}
                   docNumber={thread.doc_number ?? ""}
                   dateLabel={new Date().toLocaleDateString("ka-GE")}
+                  onConfirm={(sel) =>
+                    void send(
+                      `ვირჩევ: ${sel.items.join(", ")} — სულ ${sel.total.toLocaleString("en-US")} ₾`,
+                    )
+                  }
                 />
               </li>
             )}
@@ -170,8 +219,94 @@ export function ThreadChat({
                 </div>
               </li>
             )}
+
+            {/* continued conversation */}
+            {conv.map((m, i) => (
+              <li key={`c${i}`} className="space-y-1.5">
+                <div className="text-[11px] font-medium text-[var(--ink-500)]">
+                  {m.role === "user" ? "თქვენ" : title}
+                </div>
+                <div
+                  className={`whitespace-pre-wrap break-words text-[14.5px] leading-[1.6] ${
+                    m.role === "user"
+                      ? "inline-block max-w-full rounded-[28px] bg-[var(--bg-sunken,#f4f4f5)] px-4 py-2.5 text-[var(--ink-900)]"
+                      : "py-0.5 text-[var(--ink-900)]"
+                  }`}
+                  style={{ overflowWrap: "anywhere" }}
+                >
+                  {m.role === "bot" && m.streaming ? (
+                    <StreamingText
+                      text={m.text}
+                      charsPerSecond={55}
+                      onDone={() =>
+                        setConv((curr) => {
+                          const next = [...curr];
+                          if (next[i]?.streaming)
+                            next[i] = { ...next[i]!, streaming: false };
+                          return next;
+                        })
+                      }
+                    />
+                  ) : (
+                    m.text
+                  )}
+                </div>
+              </li>
+            ))}
+            {chatThinking && (
+              <li className="py-0.5">
+                <AssistantThinking />
+              </li>
+            )}
           </ul>
         )}
+      </div>
+
+      {/* persistent composer — the chat stays a chat */}
+      <div className="px-5 pb-4">
+        <div className="relative mx-auto max-w-2xl rounded-[1.625rem] border border-[var(--allonce-line,#e4e4e7)] bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.02),0_4px_16px_-4px_rgba(0,0,0,0.06)]">
+          <textarea
+            ref={taRef}
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              const ta = e.currentTarget;
+              ta.style.height = "auto";
+              ta.style.height = Math.min(ta.scrollHeight, 200) + "px";
+            }}
+            rows={1}
+            disabled={chatThinking}
+            placeholder="დაწერეთ შეტყობინება…"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                void send(input);
+              }
+            }}
+            className="block w-full resize-none rounded-[1.625rem] bg-transparent px-4 pt-3 pb-11 text-[15px] leading-[1.5] text-[var(--ink-900)] outline-none placeholder:text-[var(--ink-400)] disabled:opacity-60"
+          />
+          <button
+            type="button"
+            aria-label="გაგზავნა"
+            disabled={chatThinking || !input.trim()}
+            onClick={() => void send(input)}
+            className="absolute bottom-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ink-900)] text-white transition hover:opacity-90 disabled:opacity-30"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
