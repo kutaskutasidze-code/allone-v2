@@ -1,12 +1,8 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
-import { Inter } from 'next/font/google';
 import { MapPin, ArrowRight, Briefcase } from 'lucide-react';
 import { getOpenVacancies } from '@/lib/careers';
 import { employmentTypeLabel } from '@/lib/validations/careers';
-
-const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] });
 
 export const metadata: Metadata = {
   title: 'Careers at AllOne — Open Roles',
@@ -34,16 +30,8 @@ export default async function CareersPage() {
   const vacancies = await getOpenVacancies();
 
   return (
-    <section className={`${inter.className} min-h-screen pt-16 pb-24 bg-[#f1f0ee] text-[#0c1016]`}>
+    <section className="pt-12 lg:pt-16 pb-8">
       <div className="max-w-5xl mx-auto px-6">
-        <Image
-          src="/images/allone-wordmark.png"
-          alt="AllOne"
-          width={150}
-          height={41}
-          priority
-          className="mb-10 h-auto w-[130px] sm:w-[150px]"
-        />
         <span className="font-mono text-xs font-medium text-[#2776ea] uppercase tracking-[0.18em] mb-3 block">
           Careers
         </span>
