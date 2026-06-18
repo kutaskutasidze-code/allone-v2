@@ -19,13 +19,23 @@ export async function GET(
 
     const proposal = await getProposalByResponseId(rid);
     const hasDocuments = (proposal?.chat_documents?.length ?? 0) > 0;
+    // Once the offer is approved/sent, expose the structured offer so the
+    // client sees it rendered in-chat (autolab style), not just a PDF link.
+    const offerReady =
+      proposal &&
+      (proposal.status === "approved" || proposal.status === "sent") &&
+      proposal.offer;
 
     return NextResponse.json({
       status: proposal?.status ?? "received",
-      intro: hasDocuments
-        ? "თქვენი დოკუმენტები მზადაა — იხილეთ ქვემოთ."
-        : "მადლობა! თქვენი მოთხოვნა მიღებულია. შეთავაზებას მალე მოგაწვდით აქვე.",
+      intro: offerReady
+        ? "თქვენი შეთავაზება მზადაა 👇"
+        : hasDocuments
+          ? "თქვენი დოკუმენტები მზადაა — იხილეთ ქვემოთ."
+          : "მადლობა! თქვენი მოთხოვნა მიღებულია. შეთავაზებას მალე მოგაწვდით აქვე.",
       documents: proposal?.chat_documents ?? [],
+      offer: offerReady ? proposal.offer : null,
+      doc_number: offerReady ? (proposal.doc_number ?? "") : null,
     });
   } catch (err) {
     // Public client-facing endpoint: never hard-500 the client's thread on a

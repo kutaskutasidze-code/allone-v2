@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { AssistantThinking } from "@/components/bf-shell/AssistantThinking";
+import { AutolabOffer, type OfferData } from "./AutolabOffer";
 
 interface ThreadDocument {
   kind: string;
@@ -13,6 +14,8 @@ interface ThreadStatus {
   status: string;
   intro: string;
   documents: ThreadDocument[];
+  offer?: OfferData | null;
+  doc_number?: string | null;
 }
 
 const LABEL_MAP: Record<string, string> = {
@@ -45,7 +48,8 @@ export function ThreadChat({
         }
         const data = (await res.json()) as ThreadStatus;
         setThread(data);
-        if (data.status === "sent" && data.documents.length > 0) {
+        // Slow the poll once we have something to show (offer or documents).
+        if (data.offer || data.documents.length > 0) {
           if (intervalRef.current !== null) clearInterval(intervalRef.current);
           intervalRef.current = setInterval(() => void poll(), 15_000);
         }
@@ -70,7 +74,7 @@ export function ThreadChat({
   const initial = title.trim().charAt(0) || "A";
 
   return (
-    <div className="mx-auto flex h-dvh max-w-2xl flex-col bg-[var(--bg-surface)]">
+    <div className="mx-auto flex h-dvh max-w-4xl flex-col bg-[var(--bg-surface)]">
       <header className="flex items-center gap-3 border-b border-[var(--allone-line,#ececec)] px-5 py-3.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ink-900)] text-[13px] font-semibold text-white">
           {initial}
@@ -108,6 +112,17 @@ export function ThreadChat({
               </div>
             </li>
 
+            {/* in-chat offer (autolab style) */}
+            {thread.offer && (
+              <li>
+                <AutolabOffer
+                  offer={thread.offer}
+                  docNumber={thread.doc_number ?? ""}
+                  dateLabel={new Date().toLocaleDateString("ka-GE")}
+                />
+              </li>
+            )}
+
             {/* delivered documents as cards */}
             {thread.documents.map((doc, i) => (
               <li key={i} className="space-y-1.5">
@@ -144,14 +159,14 @@ export function ThreadChat({
               </li>
             ))}
 
-            {/* waiting for documents */}
-            {thread.status !== "sent" && (
+            {/* waiting — only before anything is delivered */}
+            {!thread.offer && thread.documents.length === 0 && (
               <li className="space-y-1.5">
                 <div className="text-[11px] font-medium text-[var(--ink-500)]">
                   {title}
                 </div>
                 <div className="py-0.5">
-                  <AssistantThinking stage="ვამზადებთ თქვენს დოკუმენტებს" />
+                  <AssistantThinking stage="ვამზადებთ თქვენს შეთავაზებას" />
                 </div>
               </li>
             )}
