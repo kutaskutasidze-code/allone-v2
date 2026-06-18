@@ -36,6 +36,10 @@ export async function GET(
       documents: proposal?.chat_documents ?? [],
       offer: offerReady ? proposal.offer : null,
       doc_number: offerReady ? (proposal.doc_number ?? "") : null,
+      // e-sign: surface the contract for in-chat signing
+      contract_url: proposal?.contract_pdf_url ?? null,
+      signed: !!proposal?.contract_signed_at,
+      signer_name: proposal?.signer_name ?? null,
     });
   } catch (err) {
     // Public client-facing endpoint: never hard-500 the client's thread on a

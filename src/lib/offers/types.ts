@@ -61,6 +61,10 @@ export interface Proposal {
   lead_email?: string | null;
   /** Documents delivered to the client's chat thread */
   chat_documents?: { kind: string; label: string; url: string }[];
+  // e-signature
+  contract_signed_at?: string | null;
+  signer_name?: string | null;
+  signer_id_code?: string | null;
 }
 
 export interface CreateProposalInput {
@@ -87,4 +91,9 @@ export interface UpdateProposalPatch {
   sent_at?: string | null;
   recipient_email?: string | null;
   chat_documents?: { kind: string; label: string; url: string }[];
+  contract_signed_at?: string | null;
+  signer_name?: string | null;
+  signer_id_code?: string | null;
+  signature_image?: string | null;
+  signer_ip?: string | null;
 }

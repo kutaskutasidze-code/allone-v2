@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { AssistantThinking } from "@/components/bf-shell/AssistantThinking";
 import { StreamingText } from "@/components/bf-shell/StreamingText";
 import { AutolabOffer, type OfferData } from "./AutolabOffer";
+import { SignPanel } from "./SignPanel";
 
 interface ConvMsg {
   role: "bot" | "user";
@@ -23,6 +24,9 @@ interface ThreadStatus {
   documents: ThreadDocument[];
   offer?: OfferData | null;
   doc_number?: string | null;
+  contract_url?: string | null;
+  signed?: boolean;
+  signer_name?: string | null;
 }
 
 const LABEL_MAP: Record<string, string> = {
@@ -207,6 +211,25 @@ export function ThreadChat({
                 </div>
               </li>
             ))}
+
+            {/* e-sign the contract once it's available */}
+            {thread.contract_url && (
+              <li className="space-y-1.5">
+                <div className="text-[11px] font-medium text-[var(--ink-500)]">
+                  {title}
+                </div>
+                <SignPanel
+                  slug={slug}
+                  rid={rid}
+                  contractUrl={thread.contract_url}
+                  signed={!!thread.signed}
+                  signerName={thread.signer_name ?? null}
+                  onSigned={() =>
+                    setThread((t) => (t ? { ...t, signed: true } : t))
+                  }
+                />
+              </li>
+            )}
 
             {/* waiting — only before anything is delivered */}
             {!thread.offer && thread.documents.length === 0 && (
