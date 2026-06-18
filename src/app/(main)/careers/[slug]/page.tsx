@@ -1,16 +1,12 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getVacancyBySlug } from '@/lib/careers';
-import { Inter } from 'next/font/google';
 import { employmentTypeLabel } from '@/lib/validations/careers';
 import { ApplicationForm } from '@/components/forms/ApplicationForm';
-
-const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] });
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -54,16 +50,8 @@ export default async function VacancyPage({ params }: PageProps) {
   if (!vacancy || !vacancy.is_open) notFound();
 
   return (
-    <section className={`${inter.className} min-h-screen pt-16 pb-24 bg-[#f1f0ee] text-[#0c1016]`}>
+    <section className="pt-12 lg:pt-16 pb-8">
       <div className="max-w-3xl mx-auto px-6">
-        <Image
-          src="/images/allone-wordmark.png"
-          alt="AllOne"
-          width={130}
-          height={36}
-          priority
-          className="mb-8 h-auto w-[120px]"
-        />
         <Link
           href="/careers"
           className="inline-flex items-center gap-1.5 text-sm text-[#6b7480] hover:text-[#0c1016] transition-colors mb-8"
