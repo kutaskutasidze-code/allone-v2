@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       logger.error('createSignedUploadUrl failed', { error: signErr?.message, ip });
       return error('Could not start the upload. Please try again.');
     }
-    return success({ path: data.path, token: data.token });
+    return success({ path: data.path, token: data.token, signedUrl: data.signedUrl });
   } catch (err) {
     logger.error('cv-upload-url error', { error: String(err), ip });
     return error('Something went wrong. Please try again.');
