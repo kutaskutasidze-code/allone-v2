@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
+import { CareersNav } from './CareersNav';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] });
 
@@ -8,18 +9,7 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '
 export default function CareersLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`${inter.className} min-h-screen flex flex-col bg-[#f1f0ee] text-[#0c1016]`}>
-      <header className="sticky top-0 z-40 bg-[#f1f0ee]/85 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-5 lg:px-8 h-[72px] flex items-center justify-between">
-          <a href="/" aria-label="AllOne home" className="block">
-            <Image src="/images/allone-mark.webp" alt="AllOne" width={120} height={40} priority className="h-8 w-auto object-contain" />
-          </a>
-          <nav className="flex items-center gap-1.5 sm:gap-2 text-sm font-medium">
-            <a href="/studio" className="hidden sm:inline-flex px-3 py-2 rounded-full text-[#0c1016]/65 hover:text-[#0c1016] hover:bg-[#0c1016]/[0.04] transition-colors">Studio</a>
-            <a href="/work" className="hidden sm:inline-flex px-3 py-2 rounded-full text-[#0c1016]/65 hover:text-[#0c1016] hover:bg-[#0c1016]/[0.04] transition-colors">Work</a>
-            <a href="/contact" className="inline-flex items-center px-4 py-2 rounded-full bg-[#2776ea] text-white hover:bg-[#1f63c9] transition-colors">Services</a>
-          </nav>
-        </div>
-      </header>
+      <CareersNav />
 
       <div className="flex-1">{children}</div>
 
