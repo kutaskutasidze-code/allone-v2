@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import { CareersNav } from './CareersNav';
+import { CareersCursor } from './CareersCursor';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'] });
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
@@ -10,6 +11,7 @@ const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', 
 export default function CareersLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`${inter.className} min-h-screen flex flex-col bg-[#f1f0ee] text-[#0c1016]`}>
+      <CareersCursor />
       <CareersNav />
 
       <div className="flex-1">{children}</div>
