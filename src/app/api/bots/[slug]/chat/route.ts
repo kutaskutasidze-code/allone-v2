@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBotConfigBySlug } from "@/lib/bots/repo";
 import { callBridge, bridgeConfigured } from "@/lib/claude-bridge";
+import { callGemini, geminiConfigured } from "@/lib/gemini";
 import type { ChatMessage } from "@/lib/llm-types";
 import type { BotQuestion } from "@/lib/bots/types";
 
@@ -77,9 +78,9 @@ export async function POST(
   const cfg = await getBotConfigBySlug(slug);
   if (!cfg) return NextResponse.json({ error: "not found" }, { status: 404 });
 
-  if (!bridgeConfigured()) {
+  if (!geminiConfigured() && !bridgeConfigured()) {
     return NextResponse.json(
-      { error: "chat bridge not configured" },
+      { error: "chat brain not configured" },
       { status: 503 },
     );
   }
@@ -90,19 +91,40 @@ export async function POST(
     (cfg.questions as BotQuestion[]) ?? [],
   );
 
+  // Gemini is the primary brain (no token-rotation flakiness); the
+  // subscription claude-bridge CLI is the fallback if Gemini errors out.
   let raw: string;
   try {
-    raw = await callBridge({ system, messages });
-  } catch (err) {
-    return NextResponse.json(
-      {
-        error:
-          err instanceof Error
-            ? err.message
-            : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
-      },
-      { status: 502 },
-    );
+    if (geminiConfigured()) {
+      raw = await callGemini({ system, messages });
+    } else {
+      raw = await callBridge({ system, messages });
+    }
+  } catch (geminiErr) {
+    if (!bridgeConfigured()) {
+      return NextResponse.json(
+        {
+          error:
+            geminiErr instanceof Error
+              ? geminiErr.message
+              : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
+        },
+        { status: 502 },
+      );
+    }
+    try {
+      raw = await callBridge({ system, messages });
+    } catch (bridgeErr) {
+      return NextResponse.json(
+        {
+          error:
+            bridgeErr instanceof Error
+              ? bridgeErr.message
+              : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
+        },
+        { status: 502 },
+      );
+    }
   }
 
   // Split off the completion signal if present.
