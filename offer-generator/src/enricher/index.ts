@@ -1,7 +1,6 @@
 import * as cheerio from "cheerio";
-import Anthropic from "@anthropic-ai/sdk";
-import { config } from "../config.js";
 import { logger } from "../utils/logger.js";
+import { bridgeChat, bridgeConfigured } from "../utils/bridge.js";
 import type { AnalysisData } from "../types/analysis.js";
 import type { CompanySpec, Segment } from "../types/demo.js";
 
@@ -64,12 +63,11 @@ export async function classifySegment(
   hint?: string,
 ): Promise<Segment> {
   if (!analysis && !hint) return "other";
-  if (!config.anthropicApiKey) {
-    logger.warn('classifySegment: no ANTHROPIC_API_KEY, returning "other"');
+  if (!bridgeConfigured()) {
+    logger.warn('classifySegment: bridge not configured, returning "other"');
     return "other";
   }
 
-  const client = new Anthropic({ apiKey: config.anthropicApiKey });
   const summary = [
     analysis?.company.name && `Company: ${analysis.company.name}`,
     analysis?.company.industry && `Industry: ${analysis.company.industry}`,
@@ -90,20 +88,12 @@ ${summary}
 Respond with ONLY the segment name. If none clearly fit, respond "other".`;
 
   try {
-    const msg = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 8,
-      messages: [{ role: "user", content: prompt }],
-    });
-    const text = msg.content
-      .map((b) => (b.type === "text" ? b.text : ""))
-      .join("")
-      .trim()
-      .toLowerCase();
+    const reply = await bridgeChat("", prompt);
+    const text = reply.trim().toLowerCase();
     const match = SEGMENTS.find((s) => text.includes(s));
     return match ?? "other";
   } catch (err) {
-    logger.warn("classifySegment: anthropic call failed", {
+    logger.warn("classifySegment: bridge call failed", {
       error: err instanceof Error ? err.message : String(err),
     });
     return "other";

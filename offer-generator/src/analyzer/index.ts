@@ -9,9 +9,8 @@
 // keep the same AnalysisData contract so call sites don't change.
 
 import * as cheerio from "cheerio";
-import Anthropic from "@anthropic-ai/sdk";
-import { config } from "../config.js";
 import { logger } from "../utils/logger.js";
+import { bridgeChat, bridgeConfigured } from "../utils/bridge.js";
 import type { AnalysisData, Issue, IssueSeverity } from "../types/analysis.js";
 
 const FETCH_TIMEOUT_MS = 15_000;
@@ -103,8 +102,8 @@ async function extractCompanyFacts(
   // Page body text (capped) for the LLM
   const bodyText = $("body").text().replace(/\s+/g, " ").trim().slice(0, 6000);
 
-  // If Anthropic isn't configured, return the seed values as-is.
-  if (!config.anthropicApiKey) {
+  // If the bridge isn't configured, return the seed values as-is.
+  if (!bridgeConfigured()) {
     return {
       name: seedName || undefined,
       industry: undefined,
@@ -113,52 +112,38 @@ async function extractCompanyFacts(
     };
   }
 
-  // Anthropic enrichment: ask for normalized company facts + products list.
+  // Company-fact enrichment via the claude-bridge (subscription-billed, no
+  // Anthropic API credits). Output ONLY JSON.
   try {
-    const anthropic = new Anthropic({ apiKey: config.anthropicApiKey });
-    const msg = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 600,
-      system:
-        "You extract company facts from a website's text. Output ONLY JSON with this shape: " +
+    const reply = await bridgeChat(
+      "You extract company facts from a website's text. Output ONLY JSON with this shape: " +
         '{ "name": string|null, "industry": string|null, "description": string|null, "products": string[] }. ' +
         "description should be 1-2 sentences. industry should be a noun phrase like 'photography studio' or 'B2B SaaS'. " +
         "products is up to 8 concise nouns/services the company sells. No commentary.",
-      messages: [
-        {
-          role: "user",
-          content: `URL: ${url}\nSeed name: ${seedName}\nSeed description: ${seedDesc}\n\n--- PAGE TEXT ---\n${bodyText}`,
-        },
-      ],
-    });
-    const textBlock = msg.content.find((c) => c.type === "text");
-    if (textBlock && "text" in textBlock) {
-      const cleaned = textBlock.text.replace(/^```json\s*|\s*```$/g, "").trim();
-      const parsed = JSON.parse(cleaned) as Partial<AnalysisData["company"]> & {
-        name?: string | null;
-        industry?: string | null;
-        description?: string | null;
-        products?: unknown;
-      };
-      return {
-        name: parsed.name ?? seedName ?? undefined,
-        industry: parsed.industry ?? undefined,
-        description: parsed.description ?? seedDesc ?? undefined,
-        products: Array.isArray(parsed.products)
-          ? (parsed.products as unknown[])
-              .filter((x): x is string => typeof x === "string")
-              .slice(0, 8)
-          : [],
-      };
-    }
-  } catch (err) {
-    logger.warn(
-      "analyzer: Anthropic enrichment failed; falling back to seeds",
-      {
-        error: err instanceof Error ? err.message : String(err),
-        url,
-      },
+      `URL: ${url}\nSeed name: ${seedName}\nSeed description: ${seedDesc}\n\n--- PAGE TEXT ---\n${bodyText}`,
     );
+    const cleaned = reply.slice(reply.indexOf("{"), reply.lastIndexOf("}") + 1);
+    const parsed = JSON.parse(cleaned) as Partial<AnalysisData["company"]> & {
+      name?: string | null;
+      industry?: string | null;
+      description?: string | null;
+      products?: unknown;
+    };
+    return {
+      name: parsed.name ?? seedName ?? undefined,
+      industry: parsed.industry ?? undefined,
+      description: parsed.description ?? seedDesc ?? undefined,
+      products: Array.isArray(parsed.products)
+        ? (parsed.products as unknown[])
+            .filter((x): x is string => typeof x === "string")
+            .slice(0, 8)
+        : [],
+    };
+  } catch (err) {
+    logger.warn("analyzer: bridge enrichment failed; falling back to seeds", {
+      error: err instanceof Error ? err.message : String(err),
+      url,
+    });
   }
 
   return {
