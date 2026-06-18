@@ -5,6 +5,7 @@ import { AssistantThinking } from "@/components/bf-shell/AssistantThinking";
 import { StreamingText } from "@/components/bf-shell/StreamingText";
 import { AutolabOffer, type OfferData } from "./AutolabOffer";
 import { SignPanel } from "./SignPanel";
+import { PaymentPanel } from "./PaymentPanel";
 
 interface ConvMsg {
   role: "bot" | "user";
@@ -27,6 +28,9 @@ interface ThreadStatus {
   contract_url?: string | null;
   signed?: boolean;
   signer_name?: string | null;
+  invoice_url?: string | null;
+  paid?: boolean;
+  pay_gel?: number;
 }
 
 const LABEL_MAP: Record<string, string> = {
@@ -226,6 +230,25 @@ export function ThreadChat({
                   signerName={thread.signer_name ?? null}
                   onSigned={() =>
                     setThread((t) => (t ? { ...t, signed: true } : t))
+                  }
+                />
+              </li>
+            )}
+
+            {/* payment — once there's an amount due */}
+            {(thread.pay_gel ?? 0) > 0 && (
+              <li className="space-y-1.5">
+                <div className="text-[11px] font-medium text-[var(--ink-500)]">
+                  {title}
+                </div>
+                <PaymentPanel
+                  slug={slug}
+                  rid={rid}
+                  amountGel={thread.pay_gel ?? 0}
+                  invoiceUrl={thread.invoice_url ?? null}
+                  paid={!!thread.paid}
+                  onPaid={() =>
+                    setThread((t) => (t ? { ...t, paid: true } : t))
                   }
                 />
               </li>

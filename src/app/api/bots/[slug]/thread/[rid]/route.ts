@@ -40,6 +40,12 @@ export async function GET(
       contract_url: proposal?.contract_pdf_url ?? null,
       signed: !!proposal?.contract_signed_at,
       signer_name: proposal?.signer_name ?? null,
+      // payment
+      invoice_url: proposal?.invoice_pdf_url ?? null,
+      paid: !!proposal?.paid_at,
+      pay_gel: offerReady
+        ? (proposal.offer?.schedule?.[0]?.amount ?? proposal.price ?? 0)
+        : 0,
     });
   } catch (err) {
     // Public client-facing endpoint: never hard-500 the client's thread on a

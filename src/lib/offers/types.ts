@@ -65,6 +65,12 @@ export interface Proposal {
   contract_signed_at?: string | null;
   signer_name?: string | null;
   signer_id_code?: string | null;
+  // payment
+  paid_at?: string | null;
+  paid_amount_usd?: number | null;
+  paid_amount_gel?: number | null;
+  paypal_order_id?: string | null;
+  paypal_capture_id?: string | null;
 }
 
 export interface CreateProposalInput {
@@ -96,4 +102,9 @@ export interface UpdateProposalPatch {
   signer_id_code?: string | null;
   signature_image?: string | null;
   signer_ip?: string | null;
+  paid_at?: string | null;
+  paid_amount_usd?: number | null;
+  paid_amount_gel?: number | null;
+  paypal_order_id?: string | null;
+  paypal_capture_id?: string | null;
 }
