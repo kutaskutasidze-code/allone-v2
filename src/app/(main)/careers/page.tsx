@@ -9,18 +9,18 @@ export const metadata: Metadata = {
   title: 'Careers at AllOne — Open Roles',
   description:
     'Join AllOne, an AI company in Tbilisi. We build AI chatbots, custom AI solutions, workflow automation, and websites. See our open roles and apply.',
-  alternates: { canonical: 'https://www.allonelabs.com/careers' },
+  alternates: { canonical: 'https://allonelabs.com/careers' },
   openGraph: {
     title: 'Careers at AllOne',
     description: 'See our open roles and apply to join the team.',
-    url: 'https://www.allonelabs.com/careers',
-    images: [{ url: 'https://www.allonelabs.com/images/careers-og.jpg', width: 1200, height: 630, alt: 'AllOne' }],
+    url: 'https://allonelabs.com/careers',
+    images: [{ url: 'https://app.allonelabs.com/images/careers-og.jpg', width: 1200, height: 630, alt: 'AllOne' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Careers at AllOne',
     description: 'See our open roles and apply to join the team.',
-    images: ['https://www.allonelabs.com/images/careers-og.jpg'],
+    images: ['https://app.allonelabs.com/images/careers-og.jpg'],
   },
 };
 

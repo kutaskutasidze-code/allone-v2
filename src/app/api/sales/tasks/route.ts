@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from("tasks")
-      .select("*", { count: "exact" })
+      .select("*, lead:leads(company, name)", { count: "exact" })
       .order("due_at", { ascending: true, nullsFirst: false });
 
     if (!wantsAll) query = query.eq("sales_user_id", salesUser.id);
