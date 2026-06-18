@@ -281,7 +281,7 @@ export function TaskQueue({ scope = 'due', leadId }: Props) {
                       </span>
                       {task.lead_id && (
                         <Link
-                          href={`/sales/leads?lead=${task.lead_id}`}
+                          href={`/sales/leads/${task.lead_id}`}
                           className="inline-flex items-center gap-1 text-xs text-[var(--ao-accent)] hover:underline"
                         >
                           <ExternalLink className="w-3 h-3" />
