@@ -157,7 +157,9 @@ export async function POST(
   await logSelfServe(ip);
 
   const offer_url = offerThreadUrl(slug, response!.id);
-  await sendSelfServeOfferNotice({
+  // Best-effort: fire-and-forget so a notification failure can never fail the
+  // offer response (the callee already swallows its own errors).
+  void sendSelfServeOfferNotice({
     clientName: client_name,
     contactName: contact.name,
     contactEmail: contact.email,
@@ -165,7 +167,7 @@ export async function POST(
     docNumber: doc_number,
     price: offer.price,
     offerUrl: offer_url,
-  });
+  }).catch(() => {});
 
   return NextResponse.json({ offer_url, pdf_url, doc_number });
 }
