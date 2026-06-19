@@ -194,3 +194,29 @@ export async function listOpenResponses(): Promise<QuestionnaireResponse[]> {
   const rows = (responses as QuestionnaireResponse[]) ?? [];
   return rows.filter((r) => !usedIds.has(r.id));
 }
+
+// ---------------------------------------------------------------------------
+// Self-serve rate-limit log (table: self_serve_rl). Coarse abuse guard for the
+// public auto-offer endpoint.
+// ---------------------------------------------------------------------------
+
+export async function countRecentSelfServe(
+  ip: string,
+  sinceMs: number,
+): Promise<number> {
+  const db = createAdminClient();
+  const since = new Date(Date.now() - sinceMs).toISOString();
+  const { count, error } = await db
+    .from("self_serve_rl")
+    .select("id", { count: "exact", head: true })
+    .eq("ip", ip)
+    .gte("created_at", since);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+export async function logSelfServe(ip: string): Promise<void> {
+  const db = createAdminClient();
+  const { error } = await db.from("self_serve_rl").insert({ ip });
+  if (error) throw error;
+}

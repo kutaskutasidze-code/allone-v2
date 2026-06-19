@@ -53,6 +53,7 @@ export interface Proposal {
   invoice_pdf_url?: string | null;
   recipient?: Recipient | null;
   created_by: string | null;
+  source?: string | null;
   created_at: string;
   // send-layer fields
   sent_at?: string | null;
@@ -84,6 +85,7 @@ export interface CreateProposalInput {
   currency: string;
   status: ProposalStatus;
   created_by: string | null;
+  source?: string;
 }
 
 export interface UpdateProposalPatch {
@@ -107,4 +109,5 @@ export interface UpdateProposalPatch {
   paid_amount_gel?: number | null;
   paypal_order_id?: string | null;
   paypal_capture_id?: string | null;
+  source?: string;
 }
