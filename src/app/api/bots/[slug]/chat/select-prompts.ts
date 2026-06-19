@@ -5,6 +5,19 @@ import {
   buildWebsiteAnswersSchema,
 } from "@/lib/bots/website-prompt";
 
+// Single source of truth — imported by route.ts so detection and prompt text
+// always use the same string.
+export const COMPLETE_MARKER = "<<COMPLETE>>";
+
+// Bridge fallback suffix for the Georgian intake path. Must remain byte-for-byte
+// identical to the original so existing bots are unchanged when Gemini is down.
+const GEORGIAN_BRIDGE_SUFFIX =
+  "დააბრუნე მხოლოდ JSON ობიექტი: თითო კითხვის id→პასუხი ან null, ასევე current_website, social_links, brand_assets, business_description. JSON-ის გარდა აღარაფერი.";
+
+// Bridge fallback suffix for the website (knowledge) path.
+const WEBSITE_BRIDGE_SUFFIX =
+  "Return ONLY a JSON object mapping each question id→answer or null, plus current_website, social_links, brand_assets, business_description, contact_name, contact_email, contact_phone. Nothing but JSON.";
+
 function buildConversationSystem(
   clientName: string,
   intro: string | null,
@@ -16,7 +29,6 @@ function buildConversationSystem(
       return `${i + 1}. ${q.text}${opts}`;
     })
     .join("\n");
-  const COMPLETE_MARKER = "<<COMPLETE>>";
   return [
     `შენ ხარ AllOne-ის ინტეიქ-აგენტი "${clientName}"-ისთვის. საუბრობ ქართულად, თბილად და პროფესიონალურად.`,
     intro ? `კონტექსტი: ${intro}` : "",
@@ -89,7 +101,12 @@ export function selectSystemPrompts(cfg: {
   intro: string | null;
   knowledge: string | null;
   questions: BotQuestion[];
-}): { conversation: string; extraction: string; schema: object } {
+}): {
+  conversation: string;
+  extraction: string;
+  schema: object;
+  bridgeSuffix: string;
+} {
   const questions = cfg.questions ?? [];
   if (cfg.knowledge && cfg.knowledge.trim()) {
     return {
@@ -101,6 +118,7 @@ export function selectSystemPrompts(cfg: {
       ),
       extraction: buildWebsiteExtractionSystem(questions),
       schema: buildWebsiteAnswersSchema(questions),
+      bridgeSuffix: WEBSITE_BRIDGE_SUFFIX,
     };
   }
   return {
@@ -111,5 +129,6 @@ export function selectSystemPrompts(cfg: {
     ),
     extraction: buildExtractionSystem(questions),
     schema: buildAnswersSchema(questions),
+    bridgeSuffix: GEORGIAN_BRIDGE_SUFFIX,
   };
 }

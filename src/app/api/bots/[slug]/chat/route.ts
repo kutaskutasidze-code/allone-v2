@@ -8,7 +8,7 @@ import {
 } from "@/lib/gemini";
 import type { ChatMessage } from "@/lib/llm-types";
 import type { BotQuestion } from "@/lib/bots/types";
-import { selectSystemPrompts } from "./select-prompts";
+import { selectSystemPrompts, COMPLETE_MARKER } from "./select-prompts";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,8 +22,6 @@ export const dynamic = "force-dynamic";
 //      structured call reads the transcript and returns STRICT JSON: only what
 //      the client actually said, null for anything not covered (no fabrication,
 //      no snapping to the nearest option).
-
-const COMPLETE_MARKER = "<<COMPLETE>>";
 const SEED_PREFIX = "(ვიზიტორმა"; // hidden opening seed — not a real client turn
 // Hard stop so a looping conversation always reaches the thread (and can never
 // grow into the 60KB request cap as a raw error).
@@ -38,10 +36,13 @@ function transcriptOf(messages: ChatMessage[]): string {
 
 // Extract the answers JSON. Prefer Gemini's schema-validated output; fall back
 // to a bridge call that returns JSON (brace-sliced) if Gemini isn't available.
+// `bridgeSuffix` is path-specific: Georgian bots get the Georgian suffix so
+// their behavior is byte-for-byte unchanged when Gemini is down.
 async function extractAnswers(
   messages: ChatMessage[],
   extractionSystem: string,
   schema: object,
+  bridgeSuffix: string,
 ): Promise<Record<string, unknown>> {
   const userText = `ტრანსკრიპტი:\n${transcriptOf(messages)}`;
   if (geminiConfigured()) {
@@ -52,7 +53,7 @@ async function extractAnswers(
     });
     return out as Record<string, unknown>;
   }
-  const sys = `${extractionSystem}\n\nReturn ONLY a JSON object mapping each question id→answer or null, plus current_website, social_links, brand_assets, business_description, contact_name, contact_email, contact_phone. Nothing but JSON.`;
+  const sys = `${extractionSystem}\n\n${bridgeSuffix}`;
   const raw = await callBridge({
     system: sys,
     messages: [{ role: "user", content: userText }],
@@ -163,6 +164,7 @@ export async function POST(
       fullTranscript,
       prompts.extraction,
       prompts.schema,
+      prompts.bridgeSuffix,
     );
   } catch {
     // Extraction failed — don't submit garbage; keep the conversation going.

@@ -1,18 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
-
-// Mock server-only modules before importing the route
-vi.mock("@/lib/claude-bridge", () => ({
-  callBridge: vi.fn(),
-  bridgeConfigured: vi.fn(() => false),
-}));
-vi.mock("@/lib/gemini", () => ({
-  callGemini: vi.fn(),
-  callGeminiStructured: vi.fn(),
-  geminiConfigured: vi.fn(() => false),
-}));
-vi.mock("@/lib/bots/repo", () => ({
-  getBotConfigBySlug: vi.fn(),
-}));
+import { describe, it, expect } from "vitest";
 
 import { selectSystemPrompts } from "./select-prompts";
 import type { BotConfig } from "@/lib/bots/types";
@@ -43,5 +29,25 @@ describe("selectSystemPrompts", () => {
     });
     expect(conversation).toContain("FAQ_X");
     expect(conversation.toLowerCase()).toContain("contact");
+  });
+
+  describe("bridgeSuffix", () => {
+    it("returns the Georgian bridge suffix for the no-knowledge path", () => {
+      const { bridgeSuffix } = selectSystemPrompts({
+        ...base,
+        knowledge: null,
+      });
+      expect(bridgeSuffix).toContain("დააბრუნე");
+      expect(bridgeSuffix).not.toContain("contact_email");
+    });
+
+    it("returns the English/contact bridge suffix for the knowledge path", () => {
+      const { bridgeSuffix } = selectSystemPrompts({
+        ...base,
+        knowledge: "FAQ_X",
+      });
+      expect(bridgeSuffix).toContain("contact_email");
+      expect(bridgeSuffix).not.toContain("დააბრუნე");
+    });
   });
 });
