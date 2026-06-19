@@ -32,7 +32,7 @@ floating launcher bottom-right.
 ```
 allonelabs.com (allone-studio, static)        app.allonelabs.com (allone-website, Next.js)
 ┌──────────────────────────┐                  ┌─────────────────────────────────────────┐
-│ chat-widget.js + .css    │   CORS fetch     │ POST /api/bots/allone-web/chat  (extend) │
+│ chat-widget.js + .css    │  same-origin →   │ POST /api/bots/allone-web/chat  (extend) │
 │ floating launcher → panel│ ───────────────▶ │ POST /api/bots/allone-web/submit (reuse) │
 │ angular, #2776EA, Geist  │                  │ POST /api/bots/allone-web/self-offer (NEW)│
 └──────────────────────────┘                  │      ↓ offer-generator (Fly) draft+render │
@@ -89,11 +89,14 @@ allonelabs.com (allone-studio, static)        app.allonelabs.com (allone-website
   the interactive offer (`AutolabOffer`) + PDF and supports continued chat. No new render
   surface needed.
 
-**4. CORS (new, `allone-website`)**
+**4. Same-origin via Vercel rewrite proxy (new, `allone-studio`) — no CORS**
 
-- The three routes the widget calls (`chat`, `submit`, `self-offer`) must return CORS
-  headers allowing origin `https://allonelabs.com` (and `https://www.allonelabs.com`).
-  Handle `OPTIONS` preflight. Allowlist only those origins.
+- `allone-studio` already proxies `/api/careers/*` → `https://app.allonelabs.com/api/careers/*`
+  via a `vercel.json` rewrite. We reuse that exact pattern: add a rewrite
+  `/api/bots/:path*` → `https://app.allonelabs.com/api/bots/:path*`. The widget then calls
+  **same-origin** `/api/bots/allone-web/chat|submit|self-offer`; Vercel proxies server-side,
+  so there is no browser CORS preflight and no header changes on `allone-website`. (Chosen
+  over CORS during planning — cleaner and matches the existing house pattern.)
 
 **5. Notification (new, `allone-website`)**
 
@@ -124,7 +127,8 @@ allonelabs.com (allone-studio, static)        app.allonelabs.com (allone-website
 - **Rate limiting / abuse:** per-session (client-generated id) + per-IP limit on
   `/self-offer`. All rows tagged `source:'website-self-serve'` so auto-offers are
   distinguishable in the CRM. (Exact limits decided in the plan.)
-- **CORS preflight failures:** explicit `OPTIONS` handler; origin allowlist.
+- **Cross-origin:** handled by the Vercel rewrite proxy (same-origin to the browser), so no
+  CORS preflight path exists to fail.
 
 ## Language
 
@@ -134,17 +138,17 @@ or instructs the bot to translate FAQ content as needed.
 
 ## Reuse vs new (surface summary)
 
-| Piece                                          | Status                               |
-| ---------------------------------------------- | ------------------------------------ |
-| `/api/bots/[slug]/chat`                        | **Extend** (inject `knowledge`)      |
-| `/api/bots/[slug]/submit`                      | **Reuse as-is**                      |
-| `/b/[slug]/c/[rid]` thread + `AutolabOffer`    | **Reuse as-is** (the offer link)     |
-| offer-generator draft + render + PDF + Storage | **Reuse as-is**                      |
-| `bot_configs` `allone-web` row                 | **New** (data, + `knowledge` column) |
-| `/api/bots/[slug]/self-offer`                  | **New**                              |
-| CORS on widget-facing routes                   | **New**                              |
-| Resend notification                            | **New**                              |
-| `chat-widget.js` / `.css` in allone-studio     | **New**                              |
+| Piece                                               | Status                               |
+| --------------------------------------------------- | ------------------------------------ |
+| `/api/bots/[slug]/chat`                             | **Extend** (inject `knowledge`)      |
+| `/api/bots/[slug]/submit`                           | **Reuse as-is**                      |
+| `/b/[slug]/c/[rid]` thread + `AutolabOffer`         | **Reuse as-is** (the offer link)     |
+| offer-generator draft + render + PDF + Storage      | **Reuse as-is**                      |
+| `bot_configs` `allone-web` row                      | **New** (data, + `knowledge` column) |
+| `/api/bots/[slug]/self-offer`                       | **New**                              |
+| Vercel rewrite proxy `/api/bots/*` in allone-studio | **New**                              |
+| Resend notification                                 | **New**                              |
+| `chat-widget.js` / `.css` in allone-studio          | **New**                              |
 
 ## Out of scope (v1)
 
