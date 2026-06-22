@@ -283,12 +283,15 @@ export async function sendSelfServeOfferNotice(
     );
     return;
   }
+  // Every field below is visitor-controlled (extracted from anonymous chat),
+  // so escape it — same rule as every other builder in this file.
+  const esc = (v: string | null) => (v ? escapeHtml(v) : "—");
   const html = `
-    <h2>New self-serve offer — ${n.docNumber}</h2>
-    <p><strong>Client:</strong> ${n.clientName}</p>
-    <p><strong>Contact:</strong> ${n.contactName ?? "—"} · ${n.contactEmail ?? "—"} · ${n.contactPhone ?? "—"}</p>
+    <h2>New self-serve offer — ${escapeHtml(n.docNumber)}</h2>
+    <p><strong>Client:</strong> ${esc(n.clientName)}</p>
+    <p><strong>Contact:</strong> ${esc(n.contactName)} · ${esc(n.contactEmail)} · ${esc(n.contactPhone)}</p>
     <p><strong>Price:</strong> ${n.price} GEL</p>
-    <p><a href="${n.offerUrl}">Open the offer thread →</a></p>
+    <p><a href="${escapeHtml(n.offerUrl)}">Open the offer thread →</a></p>
     <p style="color:#888">Auto-generated from allonelabs.com chat. Refine in /sales/proposals.</p>`;
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -302,7 +305,7 @@ export async function sendSelfServeOfferNotice(
       body: JSON.stringify({
         from,
         to,
-        subject: `🌐 Self-serve offer ${n.docNumber} — ${n.clientName}`,
+        subject: `🌐 Self-serve offer ${n.docNumber} — ${n.clientName.replace(/[\r\n]+/g, " ").slice(0, 120)}`,
         html,
       }),
     });

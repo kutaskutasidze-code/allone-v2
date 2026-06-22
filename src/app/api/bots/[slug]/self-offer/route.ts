@@ -15,6 +15,9 @@ import { selfOfferGuard, RL_WINDOW_MS, RL_MAX } from "./guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// Cap total function time so a slow offer-generator can't pin a serverless
+// instance. Two external calls (draft + render), bounded below.
+export const maxDuration = 150;
 
 const OFFER_API_URL = process.env.OFFER_API_URL ?? "http://localhost:3100";
 const OFFER_API_KEY = process.env.OFFER_API_KEY ?? "";
@@ -22,14 +25,14 @@ const OFFER_API_KEY = process.env.OFFER_API_KEY ?? "";
 async function fetchWithRetry(
   url: string,
   init: RequestInit,
-  attempts = 3,
+  attempts = 2,
 ): Promise<Response> {
   let lastErr: unknown;
   for (let i = 0; i < attempts; i++) {
     try {
       return await fetch(url, {
         ...init,
-        signal: AbortSignal.timeout(120_000),
+        signal: AbortSignal.timeout(30_000),
       });
     } catch (err) {
       lastErr = err;
