@@ -22,6 +22,9 @@ export interface BotConfig {
   lead_id: string | null;
   active: boolean;
   created_at: string;
+  /** Optional FAQ/knowledge block. When present, the /chat route runs the
+   *  FAQ-aware bilingual website bot instead of the Georgian intake bot. */
+  knowledge: string | null;
 }
 
 /** Shape sent to the public bot page (no internal columns). */
