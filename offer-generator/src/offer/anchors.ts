@@ -14,10 +14,11 @@ export interface OfferDraft {
   client_name: string;
   summary: string; // 2-4 Georgian sentences
   scope_lines: OfferScopeLine[];
-  price: number; // total GEL
+  price: number; // one-time total GEL
   currency: "GEL";
   schedule: OfferStage[]; // payment stages summing to price
-  monthly_opex: string; // e.g. "100–200 ₾/თვე"
+  monthly_price?: number; // structured recurring GEL/month (display now, bill later)
+  monthly_opex: string; // legacy free-text e.g. "100–200 ₾/თვე" (fallback)
   timeline: string; // e.g. "4 სამუშაო კვირა"
   addons?: OfferScopeLine[]; // optional suggested extras
 }

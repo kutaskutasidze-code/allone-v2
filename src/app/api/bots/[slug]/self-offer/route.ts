@@ -25,14 +25,21 @@ const OFFER_API_KEY = process.env.OFFER_API_KEY ?? "";
 async function fetchWithRetry(
   url: string,
   init: RequestInit,
-  attempts = 2,
+  // The offer DRAFT goes through the claude-bridge LLM and legitimately takes
+  // ~50-90s — so the per-attempt timeout must be generous. attempts kept low so
+  // the total stays under maxDuration (150s). Callers pass a shorter timeout
+  // for the fast render call.
+  {
+    timeoutMs = 110_000,
+    attempts = 1,
+  }: { timeoutMs?: number; attempts?: number } = {},
 ): Promise<Response> {
   let lastErr: unknown;
   for (let i = 0; i < attempts; i++) {
     try {
       return await fetch(url, {
         ...init,
-        signal: AbortSignal.timeout(30_000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
     } catch (err) {
       lastErr = err;

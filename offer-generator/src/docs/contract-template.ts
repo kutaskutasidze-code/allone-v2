@@ -79,79 +79,96 @@ const SEC9 = `<h2 class="sec-head">9. დასკვნითი დებუ�
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Real AllOne lockup (matches the offer) — currentColor so it inks black here.
+const LOGO = `<svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="13 -52 1364 425" fill="currentColor" aria-label="AllOne"><g transform="translate(0,372) scale(0.1,-0.1)"><path d="M3210 1340 l0 -1100 200 0 200 0 0 1100 0 1100 -200 0 -200 0 0 -1100z"/><path d="M4220 1340 l0 -1100 205 0 205 0 0 1100 0 1100 -205 0 -205 0 0 -1100z"/><path d="M6215 2399 c-524 -48 -835 -208 -981 -504 -83 -169 -88 -202 -89 -580 0 -311 1 -335 23 -420 12 -49 43 -132 68 -184 39 -80 60 -108 138 -185 132 -132 262 -201 482 -257 212 -53 324 -64 684 -63 283 0 343 3 465 22 432 67 686 213 818 470 86 166 107 288 107 612 0 242 -13 367 -51 480 -120 364 -456 560 -1044 610 -139 11 -489 11 -620 -1z m617 -390 c382 -41 573 -179 624 -449 22 -117 15 -478 -11 -560 -74 -237 -257 -357 -610 -400 -129 -16 -472 -16 -600 0 -55 6 -141 22 -192 35 -246 63 -384 194 -429 407 -21 99 -15 509 9 579 47 140 128 235 252 294 85 41 233 81 350 94 117 13 488 13 607 0z"/><path d="M785 1319 c-313 -583 -572 -1064 -573 -1070 -2 -5 87 -9 226 -9 l230 0 108 210 109 210 679 -3 680 -2 107 -205 108 -205 231 -3 231 -2 -41 77 c-22 43 -280 524 -573 1068 l-532 990 -210 2 -210 3 -570 -1061z m1039 143 c135 -260 246 -477 246 -482 0 -6 -180 -10 -505 -10 -367 0 -505 3 -505 11 0 22 503 970 510 962 4 -4 118 -221 254 -481z"/><path d="M9570 1804 c-228 -26 -336 -51 -443 -105 -121 -62 -205 -129 -274 -223 l-43 -58 0 176 0 176 -185 0 -185 0 0 -765 0 -765 205 0 205 0 0 388 c0 413 4 450 52 550 37 77 121 158 212 202 145 72 209 83 461 84 200 1 227 -1 298 -22 177 -51 256 -124 310 -285 20 -58 21 -88 25 -489 l4 -428 205 0 205 0 -5 482 c-4 541 -6 551 -78 706 -30 66 -54 99 -111 156 -110 108 -237 167 -431 201 -87 15 -359 27 -427 19z"/><path d="M11950 1804 c-375 -35 -565 -97 -710 -231 -85 -79 -142 -185 -165 -306 -21 -109 -20 -431 0 -535 51 -256 238 -419 558 -488 195 -42 627 -59 878 -34 460 45 694 179 754 431 8 35 15 85 15 112 l0 47 -210 0 -210 0 0 -30 c0 -50 -36 -108 -88 -141 -118 -75 -306 -103 -642 -96 -260 6 -339 18 -451 69 -115 52 -179 138 -194 261 l-7 57 901 0 901 0 0 143 c0 158 -11 241 -41 322 -92 245 -338 375 -789 415 -105 9 -415 11 -500 4z m505 -329 c169 -26 265 -65 332 -138 42 -45 82 -144 68 -167 -4 -7 -238 -10 -687 -10 l-681 0 7 42 c9 54 52 133 91 165 60 51 183 95 318 112 111 15 444 12 552 -4z"/></g><g transform="translate(964,-44) scale(1.0)"><g transform="translate(-32.3,256.8) scale(0.1,-0.1)"><path d="M1302 2512 c234 -189 328 -392 272 -583 -84 -285 -514 -557 -1158 -733 -149 -41 -140 -43 182 -52 858 -23 1837 165 2225 428 l57 39 -16 32 c-63 120 -386 332 -904 591 -241 120 -618 295 -720 334 -8 3 20 -22 62 -56z"/><path d="M3017 2296 c-208 -75 -272 -329 -124 -493 121 -133 350 -123 458 21 178 236 -59 570 -334 472z"/></g></g></svg>`;
+
 const CSS = `
   :root {
-    --ink: #0a0a0a;
-    --muted: #6b6b6b;
-    --faint: #9a9a9a;
-    --line: #e7e5e4;
-    --bg: #ffffff;
-    --soft: #f5f5f4;
+    --ink: #0c1016;
+    --ink-2: #11181C;
+    --muted: #4a5058;
+    --steel: #6b7480;
+    --line: #D9D7D1;
+    --bg: #F1F0EE;
+    --accent: #2776EA;
+    --head: 'Space Grotesk','Noto Sans Georgian',system-ui,sans-serif;
+    --mono: 'JetBrains Mono','Noto Sans Georgian',ui-monospace,SFMono-Regular,Menlo,monospace;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   @page { size: A4; margin: 0; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body {
-    font-family: "Noto Sans Georgian", "Geist", system-ui, sans-serif;
-    color: var(--ink);
+    font-family: "Geist", "Noto Sans Georgian", system-ui, sans-serif;
+    color: var(--ink-2);
     background: var(--bg);
     font-size: 11px;
-    line-height: 1.65;
-    letter-spacing: -0.01em;
+    line-height: 1.6;
+    letter-spacing: -0.005em;
   }
   .page {
     width: 210mm;
     min-height: 297mm;
-    padding: 18mm 18mm 16mm;
+    padding: 16mm 18mm 14mm;
     position: relative;
     page-break-after: always;
   }
   .page:last-child { page-break-after: auto; }
 
+  /* branded header */
+  .brand-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 18px;
+  }
+  .brand-head .logo { height: 26px; width: auto; color: var(--ink); display: block; }
+  .brand-head .kind {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--accent); font-weight: 600;
+  }
   .doc-title {
-    font-size: 22px; font-weight: 800;
-    letter-spacing: -0.03em; text-align: center;
-    margin-bottom: 16px;
+    font-family: var(--head); font-size: 24px; font-weight: 700;
+    letter-spacing: -0.02em; color: var(--ink); margin-bottom: 6px;
   }
   .doc-meta {
     display: flex; justify-content: space-between;
-    font-size: 11px; margin-bottom: 14px;
+    font-family: var(--mono); font-size: 10px; color: var(--steel);
+    letter-spacing: .03em; margin-bottom: 16px;
   }
   .parties-intro {
     font-size: 11px; line-height: 1.75;
-    margin-bottom: 16px;
+    margin-bottom: 16px; color: var(--ink-2);
   }
   hr.divider {
     border: none; border-top: 1px solid var(--line);
-    margin: 12px 0;
+    margin: 7px 0;
   }
 
   .sec-head {
-    font-size: 13px; font-weight: 700;
-    letter-spacing: -0.01em;
-    margin-top: 14px; margin-bottom: 6px;
+    font-family: var(--head); font-size: 13.5px; font-weight: 700;
+    letter-spacing: -0.01em; color: var(--ink);
+    margin-top: 9px; margin-bottom: 4px;
   }
   .sec-p {
-    font-size: 11px; line-height: 1.7;
-    margin-bottom: 4px; color: var(--ink);
+    font-size: 11px; line-height: 1.52;
+    margin-bottom: 3px; color: var(--ink);
   }
   .sec-list {
-    font-size: 11px; line-height: 1.7;
-    margin: 6px 0 6px 20px;
+    font-size: 11px; line-height: 1.52;
+    margin: 5px 0 5px 20px;
   }
-  .sec-list li { margin-bottom: 3px; }
+  .sec-list li { margin-bottom: 2px; }
 
-  /* signature block */
+  /* signature block — keep whole, never split across pages */
   .sig-grid {
     display: grid; grid-template-columns: 1fr 1fr;
-    gap: 32px; margin-top: 24px;
+    gap: 32px; margin-top: 14px;
+    break-inside: avoid; page-break-inside: avoid;
   }
   .sig-col-head {
     font-size: 13px; font-weight: 700;
     margin-bottom: 10px;
   }
   .sig-row {
-    font-size: 11px; line-height: 1.9;
+    font-size: 11px; line-height: 1.6;
   }
   .sig-row strong { font-weight: 600; }
   .sig-blank {
@@ -199,7 +216,7 @@ ${scheduleList(offer.schedule)}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+Georgian:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
   <style>${CSS}</style>
@@ -207,7 +224,12 @@ ${scheduleList(offer.schedule)}
 <body>
 <div class="page">
 
-  <div class="doc-title">მომსახურების ხელშეკრულება ${esc(doc_number)}</div>
+  <div class="brand-head">
+    ${LOGO}
+    <span class="kind">ხელშეკრულება · ${esc(doc_number)}</span>
+  </div>
+
+  <div class="doc-title">მომსახურების ხელშეკრულება</div>
 
   <div class="doc-meta">
     <span>ქ. თბილისი</span>

@@ -10,7 +10,7 @@ export const ISSUER = {
   name_en: "AllOne",
   id_code: "405826361",
   address_ka: "საქართველო, თბილისი, რაიონი საბურთალო, ტაშკენტის ქ. N 10ა ბ. 6ა",
-  director: "ნინო მესხიძე",
+  director: "ლუკა ადამია",
   bank: 'სს „საქართველოს ბანკი"',
   iban: "GE82BG0000000612104254",
   email: "luka.adamia@allonelabs.com",
