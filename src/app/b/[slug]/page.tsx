@@ -12,5 +12,11 @@ export default async function BotPage({
   const { slug } = await params;
   const cfg = await getBotConfigBySlug(slug);
   if (!cfg) notFound();
-  return <BotChat slug={cfg.slug} title={cfg.title} intro={cfg.intro} />;
+  // Full-bleed pure white — overrides the app's blue-tinted --background so the
+  // chat reads as one clean white surface (matching the composer).
+  return (
+    <div className="min-h-dvh bg-white">
+      <BotChat slug={cfg.slug} title={cfg.title} intro={cfg.intro} />
+    </div>
+  );
 }

@@ -145,7 +145,7 @@ export function ThreadChat({
   const initial = title.trim().charAt(0) || "A";
 
   return (
-    <div className="mx-auto flex h-dvh max-w-4xl flex-col bg-[var(--bg-surface)]">
+    <div className="mx-auto flex h-dvh max-w-4xl flex-col bg-white">
       <header className="flex items-center gap-3 border-b border-[var(--allone-line,#ececec)] px-5 py-3.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ink-900)] text-[13px] font-semibold text-white">
           {initial}

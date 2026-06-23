@@ -19,5 +19,11 @@ export default async function ThreadPage({
   if (!response || response.bot_slug !== slug) notFound();
   if (!cfg) notFound();
 
-  return <ThreadChat slug={slug} rid={rid} title={cfg.title} />;
+  // Full-bleed pure white — overrides the app's blue-tinted --background so the
+  // chat reads as one clean white surface (matching the composer).
+  return (
+    <div className="min-h-dvh bg-white">
+      <ThreadChat slug={slug} rid={rid} title={cfg.title} />
+    </div>
+  );
 }
