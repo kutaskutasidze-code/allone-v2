@@ -28,6 +28,8 @@ interface ThreadStatus {
   contract_url?: string | null;
   signed?: boolean;
   signer_name?: string | null;
+  signer_prefill_name?: string | null;
+  signer_prefill_id?: string | null;
   invoice_url?: string | null;
   paid?: boolean;
   pay_gel?: number;
@@ -228,6 +230,8 @@ export function ThreadChat({
                   contractUrl={thread.contract_url}
                   signed={!!thread.signed}
                   signerName={thread.signer_name ?? null}
+                  prefillName={thread.signer_prefill_name ?? null}
+                  prefillIdCode={thread.signer_prefill_id ?? null}
                   onSigned={() =>
                     setThread((t) => (t ? { ...t, signed: true } : t))
                   }

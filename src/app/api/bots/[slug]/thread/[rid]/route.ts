@@ -36,10 +36,14 @@ export async function GET(
       documents: proposal?.chat_documents ?? [],
       offer: offerReady ? proposal.offer : null,
       doc_number: offerReady ? (proposal.doc_number ?? "") : null,
-      // e-sign: surface the contract for in-chat signing
+      // e-sign: surface the contract for in-chat signing + prefill the signer's
+      // identity from the recipient/client so they don't retype it (#13).
       contract_url: proposal?.contract_pdf_url ?? null,
       signed: !!proposal?.contract_signed_at,
       signer_name: proposal?.signer_name ?? null,
+      signer_prefill_name:
+        proposal?.recipient?.name ?? proposal?.client_name ?? null,
+      signer_prefill_id: proposal?.recipient?.id_code ?? null,
       // payment
       invoice_url: proposal?.invoice_pdf_url ?? null,
       paid: !!proposal?.paid_at,
