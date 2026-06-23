@@ -19,6 +19,7 @@ export interface OfferDraft {
   price: number;
   currency: "GEL";
   schedule: OfferStage[];
+  monthly_price?: number;
   monthly_opex: string;
   timeline: string;
   addons?: OfferScopeLine[];

@@ -14,6 +14,93 @@ export const dynamic = "force-dynamic";
 const OFFER_API_URL = process.env.OFFER_API_URL ?? "http://localhost:3100";
 const OFFER_API_KEY = process.env.OFFER_API_KEY ?? "";
 
+type ScopeLine = { label: string; description: string; price: number };
+
+// Build a clean OfferDraft from sales-entered fields. Enforces the pricing
+// single-source-of-truth: offer.price === Σ scope_lines, and the schedule sums
+// to that total (default: one stage). Everything here is sales-controlled.
+function normalizeManualOffer(
+  raw: unknown,
+  clientNameRaw: unknown,
+): { offer: OfferDraft } | { error: string } {
+  if (!raw || typeof raw !== "object") return { error: "offer required" };
+  const o = raw as Record<string, unknown>;
+  const client_name =
+    (typeof clientNameRaw === "string" && clientNameRaw.trim()) ||
+    (typeof o.client_name === "string" && o.client_name.trim()) ||
+    "";
+  if (!client_name) return { error: "client_name required" };
+
+  const linesIn = Array.isArray(o.scope_lines) ? o.scope_lines : [];
+  const scope_lines: ScopeLine[] = linesIn
+    .map((l) => {
+      const x = (l ?? {}) as Record<string, unknown>;
+      return {
+        label: typeof x.label === "string" ? x.label.trim() : "",
+        description: typeof x.description === "string" ? x.description : "",
+        price: Number(x.price) || 0,
+      };
+    })
+    .filter((l) => l.label);
+  if (scope_lines.length === 0)
+    return { error: "at least one scope line required" };
+
+  const price = scope_lines.reduce((s, l) => s + l.price, 0);
+
+  // Schedule: keep sales-provided stages if they sum to the total; else one stage.
+  const stagesIn = Array.isArray(o.schedule) ? o.schedule : [];
+  let schedule = stagesIn
+    .map((s) => {
+      const x = (s ?? {}) as Record<string, unknown>;
+      return {
+        label: typeof x.label === "string" ? x.label : "",
+        amount: Number(x.amount) || 0,
+        when: typeof x.when === "string" ? x.when : "",
+      };
+    })
+    .filter((s) => s.label);
+  const schedSum = schedule.reduce((s, x) => s + x.amount, 0);
+  if (schedule.length === 0 || schedSum !== price) {
+    schedule = [
+      { label: "გადახდა", amount: price, when: "ხელშეკრულების გაფორმებისას" },
+    ];
+  }
+
+  const monthly_price =
+    Number(o.monthly_price) > 0 ? Number(o.monthly_price) : undefined;
+
+  const addonsIn = Array.isArray(o.addons) ? o.addons : [];
+  const addons: ScopeLine[] = addonsIn
+    .map((l) => {
+      const x = (l ?? {}) as Record<string, unknown>;
+      return {
+        label: typeof x.label === "string" ? x.label.trim() : "",
+        description: typeof x.description === "string" ? x.description : "",
+        price: Number(x.price) || 0,
+      };
+    })
+    .filter((l) => l.label);
+
+  const offer: OfferDraft = {
+    client_name,
+    summary: typeof o.summary === "string" ? o.summary : "",
+    scope_lines,
+    price,
+    currency: "GEL",
+    schedule,
+    monthly_price,
+    monthly_opex:
+      typeof o.monthly_opex === "string"
+        ? o.monthly_opex
+        : monthly_price
+          ? `${monthly_price.toLocaleString("en-US")} ₾/თვე`
+          : "",
+    timeline: typeof o.timeline === "string" ? o.timeline : "",
+    addons: addons.length ? addons : undefined,
+  };
+  return { offer };
+}
+
 export async function GET() {
   try {
     await requireSalesAuth();
@@ -45,11 +132,42 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { response_id?: unknown };
+  let body: {
+    response_id?: unknown;
+    manual?: unknown;
+    client_name?: unknown;
+    offer?: unknown;
+    language?: unknown;
+  };
   try {
-    body = (await req.json()) as { response_id?: unknown };
+    body = await req.json();
   } catch {
     return NextResponse.json({ error: "bad json" }, { status: 400 });
+  }
+
+  // ── Manual path: sales authors the offer directly, no bot/claude-bridge.
+  // "as if the bot said it" — same OfferDraft shape, same downstream
+  // offer/contract/invoice generation, but the content is sales-controlled.
+  if (body.manual) {
+    const manualOffer = normalizeManualOffer(body.offer, body.client_name);
+    if ("error" in manualOffer) {
+      return NextResponse.json({ error: manualOffer.error }, { status: 400 });
+    }
+    const doc_number = await nextDocNumber();
+    const proposal = await createProposal({
+      lead_id: null,
+      source_response_id: null,
+      client_name: manualOffer.offer.client_name,
+      doc_number,
+      language: body.language === "en" ? "en" : "ka",
+      offer: manualOffer.offer,
+      price: manualOffer.offer.price,
+      currency: manualOffer.offer.currency ?? "GEL",
+      status: "draft",
+      created_by: salesUserId,
+      source: "manual",
+    });
+    return NextResponse.json({ proposal }, { status: 201 });
   }
 
   if (typeof body.response_id !== "string") {
