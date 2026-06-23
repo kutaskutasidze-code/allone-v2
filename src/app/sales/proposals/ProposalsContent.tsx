@@ -11,6 +11,7 @@ import {
   Send,
   ChevronDown,
   ChevronUp,
+  Plus,
 } from "lucide-react";
 import type {
   Proposal,
@@ -918,6 +919,270 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
 // Page-level component
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Manual offer authoring — create a proposal WITHOUT the bot. Sales types the
+// scope/prices/texts directly; the result is an identical draft proposal that
+// flows into the same offer/contract/invoice generation ("as if the bot said
+// it"). Price is derived server-side from the scope lines (the SSOT).
+// ---------------------------------------------------------------------------
+
+function ManualOfferForm() {
+  const [open, setOpen] = useState(false);
+  const [clientName, setClientName] = useState("");
+  const [summary, setSummary] = useState("");
+  const [language, setLanguage] = useState<"ka" | "en">("ka");
+  const [monthly, setMonthly] = useState("");
+  const [timeline, setTimeline] = useState("");
+  const [lines, setLines] = useState<OfferScopeLine[]>([
+    { label: "", description: "", price: 0 },
+  ]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const total = lines.reduce((s, l) => s + (Number(l.price) || 0), 0);
+  const canSubmit =
+    clientName.trim() !== "" && lines.some((l) => l.label.trim() !== "");
+
+  function setLine(i: number, field: keyof OfferScopeLine, val: string) {
+    setLines((prev) =>
+      prev.map((l, idx) =>
+        idx === i
+          ? {
+              ...l,
+              [field]: field === "price" ? parseFloat(val) || 0 : val,
+            }
+          : l,
+      ),
+    );
+  }
+
+  async function handleCreate() {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/sales/proposals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          manual: true,
+          client_name: clientName.trim(),
+          language,
+          offer: {
+            client_name: clientName.trim(),
+            summary: summary.trim(),
+            scope_lines: lines.filter((l) => l.label.trim() !== ""),
+            monthly_price: monthly !== "" ? parseFloat(monthly) : undefined,
+            timeline: timeline.trim(),
+          },
+        }),
+      });
+      if (!res.ok) {
+        const json = (await res.json()) as { error?: string };
+        throw new Error(json.error ?? `HTTP ${res.status}`);
+      }
+      location.reload();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "ვერ მოხერხდა — სცადეთ მოგვიანებით",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <section className="rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between px-5 py-3.5 text-left"
+      >
+        <span className="flex items-center gap-2 text-sm font-medium text-[var(--ink-900)]">
+          <Plus className="h-4 w-4 text-[var(--ao-accent)]" />
+          ახალი შეთავაზება (ბოტის გარეშე)
+        </span>
+        {open ? (
+          <ChevronUp className="h-4 w-4 text-[var(--ink-400)]" />
+        ) : (
+          <ChevronDown className="h-4 w-4 text-[var(--ink-400)]" />
+        )}
+      </button>
+
+      {open && (
+        <div className="space-y-4 border-t border-[var(--allone-line)] p-5">
+          {/* Client + language */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                კლიენტი *
+              </label>
+              <input
+                type="text"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                placeholder="კომპანიის სახელი"
+                className="rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-1.5 text-sm text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                ენა
+              </label>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as "ka" | "en")}
+                className="rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-1.5 text-sm text-[var(--ink-900)] focus:border-[var(--ao-accent)] focus:outline-none"
+              >
+                <option value="ka">ქართული</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+              შეჯამება (კლიენტი ხედავს)
+            </label>
+            <textarea
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              rows={3}
+              placeholder="შეთავაზების შესავალი ტექსტი…"
+              className="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-2 text-xs leading-relaxed text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+            />
+          </div>
+
+          {/* Scope lines */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+              სერვისები
+            </label>
+            {lines.map((line, i) => (
+              <div
+                key={i}
+                className="rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] p-2.5"
+              >
+                <div className="flex items-start gap-2">
+                  <div className="flex-1 space-y-1.5">
+                    <input
+                      type="text"
+                      value={line.label}
+                      onChange={(e) => setLine(i, "label", e.target.value)}
+                      placeholder="სერვისის დასახელება"
+                      className="w-full rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1 text-xs font-medium text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+                    />
+                    <textarea
+                      value={line.description}
+                      onChange={(e) =>
+                        setLine(i, "description", e.target.value)
+                      }
+                      rows={2}
+                      placeholder="აღწერა (კლიენტი ხედავს)"
+                      className="w-full resize-y rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1 text-[11px] leading-relaxed text-[var(--ink-700)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <input
+                      type="number"
+                      min={0}
+                      value={String(line.price)}
+                      onChange={(e) => setLine(i, "price", e.target.value)}
+                      className="w-24 rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1 text-xs focus:border-[var(--ao-accent)] focus:outline-none"
+                    />
+                    {lines.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setLines((prev) => prev.filter((_, idx) => idx !== i))
+                        }
+                        className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)] hover:text-red-500"
+                      >
+                        წაშლა
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                setLines((prev) => [
+                  ...prev,
+                  { label: "", description: "", price: 0 },
+                ])
+              }
+              className="text-[11px] font-mono uppercase tracking-wider text-[var(--ao-accent)] hover:underline"
+            >
+              + სერვისის დამატება
+            </button>
+          </div>
+
+          {/* Monthly + timeline */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                ყოველთვიური (₾, არასავალდებულო)
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={monthly}
+                onChange={(e) => setMonthly(e.target.value)}
+                placeholder="150"
+                className="rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-1.5 text-sm text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                ვადა (არასავალდებულო)
+              </label>
+              <input
+                type="text"
+                value={timeline}
+                onChange={(e) => setTimeline(e.target.value)}
+                placeholder="4–6 კვირა"
+                className="rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-1.5 text-sm text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Total + submit */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--allone-line)] pt-3">
+            <span className="text-sm text-[var(--ink-700)]">
+              სულ:{" "}
+              <strong className="text-[var(--ink-900)]">
+                {total.toLocaleString("en-US")} ₾
+              </strong>
+            </span>
+            <button
+              type="button"
+              onClick={() => void handleCreate()}
+              disabled={saving || !canSubmit}
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--ink-900)] px-4 py-2 text-xs font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {saving ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <ClipboardList className="h-3 w-3" />
+              )}
+              {saving ? "იქმნება…" : "შეთავაზების შექმნა"}
+            </button>
+          </div>
+          {error && (
+            <p className="rounded-[var(--radius-xs)] border border-red-100 bg-red-50 px-2 py-1 text-[11px] text-red-700">
+              {error}
+            </p>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function ProposalsContent({ proposals, openResponses }: Props) {
   return (
     <div className="mx-auto w-full max-w-4xl space-y-10">
@@ -936,6 +1201,9 @@ export function ProposalsContent({ proposals, openResponses }: Props) {
           {proposals.length} proposal{proposals.length !== 1 ? "s" : ""}
         </span>
       </div>
+
+      {/* Author an offer without the bot */}
+      <ManualOfferForm />
 
       {/* New answers inbox */}
       {openResponses.length > 0 && (
