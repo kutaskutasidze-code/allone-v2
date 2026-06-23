@@ -118,7 +118,11 @@ export function PaymentPanel({
   const usdApprox = (amountGel / 2.7).toFixed(0);
 
   return (
-    <div className="max-w-[92%] rounded-2xl border border-[var(--allone-line,#ececec)] bg-[var(--bg-surface)] p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+    // Brand-accent scoped to match the in-chat offer + sign panel (one blue).
+    <div
+      style={{ "--ao-accent": "#2776EA" } as React.CSSProperties}
+      className="max-w-[92%] rounded-2xl border border-[var(--allone-line,#ececec)] bg-[var(--bg-surface)] p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+    >
       <div className="mb-1 text-[14px] font-medium text-[var(--ink-900)]">
         გადახდა
       </div>

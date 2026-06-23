@@ -111,7 +111,12 @@ export function SignPanel({
   }
 
   return (
-    <div className="max-w-[92%] rounded-2xl border border-[var(--allone-line,#ececec)] bg-[var(--bg-surface)] p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+    // Brand-accent scoped to the client thread so sign + pay + offer read as one
+    // consistent blue (#2776EA), matching the in-chat offer card.
+    <div
+      style={{ "--ao-accent": "#2776EA" } as React.CSSProperties}
+      className="max-w-[92%] rounded-2xl border border-[var(--allone-line,#ececec)] bg-[var(--bg-surface)] p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+    >
       <div className="mb-2 text-[14px] font-medium text-[var(--ink-900)]">
         ხელშეკრულების ხელმოწერა
       </div>
