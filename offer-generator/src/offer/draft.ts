@@ -1,4 +1,4 @@
-import { PRICE_ANCHORS, type OfferDraft } from "./anchors.js";
+import { PRICE_ANCHORS, STYLE_EXEMPLAR, type OfferDraft } from "./anchors.js";
 
 // The offer drafter routes its LLM call through the subscription-billed
 // claude-bridge (HTTP service on Hetzner, chat.allonelabs.com) — the same
@@ -52,6 +52,9 @@ const SYSTEM_PROMPT = `შენ ხარ Allone Labs-ის კომერც
 
 ფასების საორიენტაციო ჩარჩო (GEL):
 ${PRICE_ANCHORS}
+
+სტილისა და ტონის ნიმუში (Allone Labs-ის რეალური შეთავაზებებიდან — გაიმეორე ხარისხი და ფორმა, არა ტექსტი სიტყვასიტყვით):
+${STYLE_EXEMPLAR}
 
 დააბრუნე ᲛᲮᲝᲚᲝᲓ JSON შემდეგი სტრუქტურით, სხვა ტექსტი არ დაამატო:
 {

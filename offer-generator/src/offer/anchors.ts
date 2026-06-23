@@ -32,3 +32,21 @@ Add-ons: Stripe 300-400; Instagram Shop 250-400; Meta Pixel+Conversion API 200-3
 Recurring: support 100-200/mo; infra opex ~7-200/mo.
 Payment: advance/middle/final (e.g. 200/800/500) or equal monthly stages. Timeline ~4 working weeks for a full build.
 `.trim();
+
+// Distilled from Allone Labs' best real offers (Tama AL-2026-028 — the
+// gold-standard structure). NOT to be copied verbatim — it shows the TONE and
+// SHAPE the drafted texts should match: specific, audit-grounded, premium, and
+// free of fabrication. Passed into the drafter so output reads like our real
+// work, not a generic template.
+export const STYLE_EXEMPLAR = `
+SUMMARY — example tone (TAMA, real offer):
+"TAMA-მ მოახერხა იშვიათი რამ ქართულ ბაზარზე: ფესვებიდან ამოზრდილი ცნობადობა + სიცხადე ვიზუალურ ენაში. თუმცა, თქვენი ციფრული აქტივი დღეს ბრენდს უკან ჩამორჩება — ის დგას ტექნოლოგიაზე, რომელმაც სიცოცხლის ბოლოს 2022-ში მიაღწია, და ფარულად კარგავს ტრაფიკს. ჩვენი წინადადება — სრულად ახალი საიტი თანამედროვე სტეკზე, რომელიც ინარჩუნებს ბრენდს, მაგრამ ცვლის ფუნდამენტს."
+→ ჯერ აღიარე რას აკეთებს კლიენტი კარგად (კონკრეტულად), მერე დაასახელე ნამდვილი ხარვეზი, ბოლოს — გადაწყვეტა. პატივისცემით, არა მაამებლურად.
+
+SCOPE LINE descriptions — example style (real):
+- "სრული რეპლატფორმინგი Next.js 15 + Node 20-ზე — ვცვლით ფუნდამენტს (PHP 7.4 → თანამედროვე სტეკი), ვინარჩუნებთ ბრენდის ვიზუალურ ენას."
+- "AI ფენა: მომხმარებლის ჩატბოტი + სმარტ პერსონალიზაცია + ბუნებრივი ადმინ-აგენტი ქართულად."
+→ თითო ხაზი = კონკრეტული შედეგი + რას იღებს კლიენტი. არა ბუნდოვანი ფრაზები („მოდერნიზაცია").
+
+WHAT TO AVOID: ზოგადი დაპირებები რიცხვების/სპეციფიკის გარეშე; ფუნქციები, რომლებიც პასუხებში არ ჩანს; ანგლიციზმები.
+`.trim();
