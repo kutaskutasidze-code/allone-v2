@@ -36,8 +36,22 @@ export async function POST(
 
     const cap = await captureOrder(body.orderID);
     if (!cap.ok) {
+      // Diagnostic trail: which proposal, what PayPal said, and the debug_id to
+      // quote to PayPal support. (captureOrder already logged the raw reason.)
+      console.error("[pay/capture] not completed", {
+        proposalId: proposal.id,
+        docNumber: proposal.doc_number,
+        orderID: body.orderID,
+        status: cap.status,
+        reason: cap.reason,
+        debugId: cap.debugId,
+      });
       return NextResponse.json(
-        { error: `payment not completed (${cap.status ?? "unknown"})` },
+        {
+          error: `payment not completed (${cap.reason ?? cap.status ?? "unknown"})`,
+          status: cap.status,
+          debugId: cap.debugId,
+        },
         { status: 402 },
       );
     }

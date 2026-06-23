@@ -92,12 +92,24 @@ export function PaymentPanel({
                   body: JSON.stringify({ orderID: data.orderID }),
                 },
               );
-              const d = (await res.json()) as { ok?: boolean; error?: string };
-              if (!d.ok) throw new Error(d.error || "capture failed");
+              const d = (await res.json()) as {
+                ok?: boolean;
+                error?: string;
+                debugId?: string;
+              };
+              if (!d.ok) {
+                console.error("[PaymentPanel] capture failed", d);
+                throw new Error(d.error || "capture failed");
+              }
               setDone(true);
               onPaid();
             },
-            onError: () => setErr("გადახდა ვერ დასრულდა — სცადეთ ისევ."),
+            // Surface the real failure (PayPal SDK or our capture error) to the
+            // console for diagnosis (#5); keep a calm message for the client.
+            onError: (e: unknown) => {
+              console.error("[PaymentPanel] payment error", e);
+              setErr("გადახდა ვერ დასრულდა — სცადეთ ისევ.");
+            },
           })
           .render(ref.current);
       })

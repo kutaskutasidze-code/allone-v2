@@ -60,9 +60,33 @@ export async function createOrder(opts: {
       ],
     }),
   });
-  const data = (await res.json()) as { id?: string };
-  if (!res.ok || !data.id) throw new Error("PayPal create-order failed");
+  const data = (await res.json()) as { id?: string } & PayPalError;
+  if (!res.ok || !data.id) {
+    const reason = paypalReason(data);
+    console.error("[paypal.createOrder] failed", {
+      httpStatus: res.status,
+      reason,
+      debugId: data.debug_id,
+    });
+    throw new Error(`PayPal create-order failed: ${reason}`);
+  }
   return { id: data.id };
+}
+
+// PayPal surfaces failure detail in a consistent shape — capture it so a
+// decline can be diagnosed from logs instead of a generic "failed".
+interface PayPalError {
+  name?: string;
+  message?: string;
+  debug_id?: string;
+  details?: { issue?: string; description?: string }[];
+}
+
+export function paypalReason(d: PayPalError): string {
+  const detail = d.details?.[0];
+  return (
+    detail?.issue || detail?.description || d.message || d.name || "unknown"
+  );
 }
 
 export interface CaptureResult {
@@ -70,6 +94,10 @@ export interface CaptureResult {
   captureId?: string;
   amountUsd?: number;
   status?: string;
+  /** PayPal failure reason (issue/message), populated when ok=false. */
+  reason?: string;
+  /** PayPal debug_id — quote this to PayPal support to trace a failed call. */
+  debugId?: string;
 }
 
 export async function captureOrder(orderId: string): Promise<CaptureResult> {
@@ -86,9 +114,17 @@ export async function captureOrder(orderId: string): Promise<CaptureResult> {
     purchase_units?: {
       payments?: { captures?: { id: string; amount?: { value: string } }[] };
     }[];
-  };
+  } & PayPalError;
   if (!res.ok || data.status !== "COMPLETED") {
-    return { ok: false, status: data.status };
+    const reason = paypalReason(data);
+    console.error("[paypal.captureOrder] not completed", {
+      orderId,
+      httpStatus: res.status,
+      status: data.status,
+      reason,
+      debugId: data.debug_id,
+    });
+    return { ok: false, status: data.status, reason, debugId: data.debug_id };
   }
   const cap = data.purchase_units?.[0]?.payments?.captures?.[0];
   return {
