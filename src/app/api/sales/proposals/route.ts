@@ -6,6 +6,7 @@ import {
   createProposal,
   nextDocNumber,
 } from "@/lib/offers/repo";
+import { reconcileOfferPricing } from "@/lib/offers/pricing";
 import type { OfferDraft } from "@/lib/offers/types";
 
 export const runtime = "nodejs";
@@ -45,11 +46,8 @@ function normalizeManualOffer(
   if (scope_lines.length === 0)
     return { error: "at least one scope line required" };
 
-  const price = scope_lines.reduce((s, l) => s + l.price, 0);
-
-  // Schedule: keep sales-provided stages if they sum to the total; else one stage.
   const stagesIn = Array.isArray(o.schedule) ? o.schedule : [];
-  let schedule = stagesIn
+  const scheduleIn = stagesIn
     .map((s) => {
       const x = (s ?? {}) as Record<string, unknown>;
       return {
@@ -59,12 +57,6 @@ function normalizeManualOffer(
       };
     })
     .filter((s) => s.label);
-  const schedSum = schedule.reduce((s, x) => s + x.amount, 0);
-  if (schedule.length === 0 || schedSum !== price) {
-    schedule = [
-      { label: "გადახდა", amount: price, when: "ხელშეკრულების გაფორმებისას" },
-    ];
-  }
 
   const monthly_price =
     Number(o.monthly_price) > 0 ? Number(o.monthly_price) : undefined;
@@ -81,13 +73,13 @@ function normalizeManualOffer(
     })
     .filter((l) => l.label);
 
-  const offer: OfferDraft = {
+  const draft: OfferDraft = {
     client_name,
     summary: typeof o.summary === "string" ? o.summary : "",
     scope_lines,
-    price,
+    price: 0, // reconciled below from scope_lines (the SSOT)
     currency: "GEL",
-    schedule,
+    schedule: scheduleIn,
     monthly_price,
     monthly_opex:
       typeof o.monthly_opex === "string"
@@ -98,6 +90,9 @@ function normalizeManualOffer(
     timeline: typeof o.timeline === "string" ? o.timeline : "",
     addons: addons.length ? addons : undefined,
   };
+  // Same reconciliation the draft-edit PATCH uses: price = Σ scope_lines,
+  // schedule rescaled to match. One code path, no divergence.
+  const { offer } = reconcileOfferPricing(draft);
   return { offer };
 }
 

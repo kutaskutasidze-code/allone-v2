@@ -6,6 +6,7 @@ import {
   updateProposal,
   deleteProposalAndDocuments,
 } from "@/lib/offers/repo";
+import { reconcileOfferPricing } from "@/lib/offers/pricing";
 import type { OfferDraft } from "@/lib/offers/types";
 
 export const runtime = "nodejs";
@@ -58,9 +59,20 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: "bad json" }, { status: 400 });
     }
 
+    // Pricing single-source-of-truth: whenever the offer is edited, derive the
+    // canonical price from the scope lines and propagate it to BOTH the offer
+    // JSON and the proposals.price column. The client-sent `price` is ignored —
+    // scope lines are the only place the total is authored, so they can never
+    // drift apart. (See lib/offers/pricing.ts.)
     const patch: { offer?: OfferDraft; price?: number } = {};
-    if (body.offer !== undefined) patch.offer = body.offer;
-    if (typeof body.price === "number") patch.price = body.price;
+    if (body.offer !== undefined) {
+      const merged: OfferDraft = { ...current.offer, ...body.offer };
+      const { offer, price } = reconcileOfferPricing(merged);
+      patch.offer = offer;
+      patch.price = price;
+    } else if (typeof body.price === "number") {
+      patch.price = body.price;
+    }
 
     const proposal = await updateProposal(id, patch);
     return NextResponse.json({ proposal });

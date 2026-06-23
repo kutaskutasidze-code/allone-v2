@@ -370,11 +370,16 @@ function SendPanel({ proposal, onSent }: SendPanelProps) {
 
 function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
   const [proposal, setProposal] = useState<Proposal>(initial);
-  const [price, setPrice] = useState<string>(
-    initial.price !== null ? String(initial.price) : "",
-  );
   const [scopeLines, setScopeLines] = useState<OfferScopeLine[]>(
     initial.offer?.scope_lines ?? [],
+  );
+  const [summary, setSummary] = useState<string>(initial.offer?.summary ?? "");
+
+  // Headline total is derived from the scope lines — it is the single source of
+  // truth (the server recomputes it the same way and ignores any client price).
+  const derivedTotal = scopeLines.reduce(
+    (s, l) => s + (Number(l.price) || 0),
+    0,
   );
   const [saving, setSaving] = useState(false);
   const [approving, setApproving] = useState(false);
@@ -398,15 +403,14 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
     try {
       const updatedOffer: OfferDraft = {
         ...proposal.offer,
+        summary,
         scope_lines: scopeLines,
       };
+      // Price is derived server-side from scope_lines; no separate price field.
       const res = await fetch(`/api/sales/proposals/${proposal.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          price: price !== "" ? parseFloat(price) : undefined,
-          offer: updatedOffer,
-        }),
+        body: JSON.stringify({ offer: updatedOffer }),
       });
       if (!res.ok) {
         const json = (await res.json()) as { error?: string };
@@ -485,6 +489,27 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
     );
   }
 
+  function updateScopeField(
+    index: number,
+    field: "label" | "description",
+    val: string,
+  ) {
+    setScopeLines((prev) =>
+      prev.map((line, i) => (i === index ? { ...line, [field]: val } : line)),
+    );
+  }
+
+  function addScopeLine() {
+    setScopeLines((prev) => [
+      ...prev,
+      { label: "", description: "", price: 0 },
+    ]);
+  }
+
+  function removeScopeLine(index: number) {
+    setScopeLines((prev) => prev.filter((_, i) => i !== index));
+  }
+
   // Close deal — permanent: deletes the PDFs + the proposal row (and revokes
   // the client's in-chat access). Behind an explicit confirm.
   const [closed, setClosed] = useState(false);
@@ -527,75 +552,128 @@ function ProposalCard({ proposal: initial }: { proposal: Proposal }) {
         <span className={statusBadge(proposal.status)}>{proposal.status}</span>
       </div>
 
-      {/* Summary */}
-      {proposal.offer?.summary && (
-        <p className="mb-4 text-xs leading-relaxed text-[var(--ink-600)]">
-          {proposal.offer.summary}
-        </p>
+      {/* Summary — editable in draft */}
+      {isDraft ? (
+        <div className="mb-4">
+          <label className="mb-1 block text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+            შეჯამება (კლიენტი ხედავს)
+          </label>
+          <textarea
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            rows={3}
+            placeholder="შეთავაზების შესავალი ტექსტი…"
+            className="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-2 text-xs leading-relaxed text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+          />
+        </div>
+      ) : (
+        proposal.offer?.summary && (
+          <p className="mb-4 text-xs leading-relaxed text-[var(--ink-600)]">
+            {proposal.offer.summary}
+          </p>
+        )
       )}
 
-      {/* Scope lines */}
-      {scopeLines.length > 0 && (
-        <div className="mb-4 overflow-x-auto rounded-[var(--radius-sm)] border border-[var(--allone-line)]">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b border-[var(--allone-line)] text-left text-[10px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
-                <th className="px-3 py-2 font-medium">სერვისი</th>
-                <th className="px-3 py-2 font-medium">ფასი (₾)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {scopeLines.map((line, i) => (
-                <tr
-                  key={i}
-                  className="border-b border-[var(--bg-sunken)] last:border-b-0"
-                >
-                  <td className="px-3 py-2 text-[var(--ink-900)]">
+      {/* Scope lines — editable in draft (label + description + price) */}
+      {(scopeLines.length > 0 || isDraft) && (
+        <div className="mb-3 space-y-2">
+          {scopeLines.map((line, i) =>
+            isDraft ? (
+              <div
+                key={i}
+                className="rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] p-2.5"
+              >
+                <div className="flex items-start gap-2">
+                  <div className="flex-1 space-y-1.5">
+                    <input
+                      type="text"
+                      value={line.label}
+                      onChange={(e) =>
+                        updateScopeField(i, "label", e.target.value)
+                      }
+                      placeholder="სერვისის დასახელება"
+                      className="w-full rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1 text-xs font-medium text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+                    />
+                    <textarea
+                      value={line.description}
+                      onChange={(e) =>
+                        updateScopeField(i, "description", e.target.value)
+                      }
+                      rows={2}
+                      placeholder="აღწერა (კლიენტი ხედავს)"
+                      className="w-full resize-y rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1 text-[11px] leading-relaxed text-[var(--ink-700)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <input
+                      type="number"
+                      min={0}
+                      value={String(line.price)}
+                      onChange={(e) => updateScopePrice(i, e.target.value)}
+                      className="w-24 rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1 text-xs focus:border-[var(--ao-accent)] focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeScopeLine(i)}
+                      className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)] hover:text-red-500"
+                    >
+                      წაშლა
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div
+                key={i}
+                className="flex items-start justify-between gap-3 border-b border-[var(--bg-sunken)] pb-2 last:border-b-0"
+              >
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-[var(--ink-900)]">
                     {line.label}
-                  </td>
-                  <td className="px-3 py-2">
-                    {isDraft ? (
-                      <input
-                        type="number"
-                        min={0}
-                        value={String(line.price)}
-                        onChange={(e) => updateScopePrice(i, e.target.value)}
-                        className="w-24 rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-2 py-1 text-xs focus:border-[var(--ao-accent)] focus:outline-none"
-                      />
-                    ) : (
-                      <span className="text-[var(--ink-700)]">
-                        {line.price} ₾
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </p>
+                  {line.description && (
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-[var(--ink-500)]">
+                      {line.description}
+                    </p>
+                  )}
+                </div>
+                <span className="whitespace-nowrap text-xs text-[var(--ink-700)]">
+                  {line.price} ₾
+                </span>
+              </div>
+            ),
+          )}
+          {isDraft && (
+            <button
+              type="button"
+              onClick={addScopeLine}
+              className="text-[11px] font-mono uppercase tracking-wider text-[var(--ao-accent)] hover:underline"
+            >
+              + სერვისის დამატება
+            </button>
+          )}
         </div>
       )}
 
-      {/* Headline price */}
+      {/* Headline total — DERIVED from scope lines (single source of truth) */}
       <div className="mb-4 flex items-center gap-3">
         <label className="text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
           სულ ფასი
         </label>
-        {isDraft ? (
-          <input
-            type="number"
-            min={0}
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="w-32 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-1.5 text-sm focus:border-[var(--ao-accent)] focus:outline-none"
-          />
-        ) : (
-          <span className="text-sm font-semibold text-[var(--ink-900)]">
-            {proposal.price} ₾
-          </span>
-        )}
+        <span className="text-sm font-semibold text-[var(--ink-900)]">
+          {(isDraft ? derivedTotal : (proposal.price ?? 0)).toLocaleString(
+            "en-US",
+          )}{" "}
+          ₾
+        </span>
         <span className="text-[11px] text-[var(--ink-400)]">
           {proposal.currency}
         </span>
+        {isDraft && (
+          <span className="text-[10px] text-[var(--ink-400)]">
+            (სერვისების ჯამი)
+          </span>
+        )}
       </div>
 
       {/* PDF link (offer — approved) */}
