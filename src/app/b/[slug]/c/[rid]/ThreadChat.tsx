@@ -92,6 +92,23 @@ export function ThreadChat({
     }
   }
 
+  // Offer confirmation is a local acknowledgement — it must NOT POST to the
+  // intake bot (/chat), which would restart the questionnaire below the offer
+  // (#10). We just echo the selection and point the client to sign + pay.
+  function ackConfirm(sel: { items: string[]; total: number }) {
+    const v = `ვირჩევ: ${sel.items.join(", ")} — სულ ${sel.total.toLocaleString("en-US")} ₾`;
+    apiRef.current = [...apiRef.current, { role: "user", content: v }];
+    setConv((c) => [
+      ...c,
+      { role: "user", text: v },
+      {
+        role: "bot",
+        text: "მადლობა! თქვენი არჩევანი დაფიქსირდა. გასაგრძელებლად გთხოვთ ხელი მოაწეროთ ხელშეკრულებას და გადაიხადოთ ქვემოთ. 👇",
+        streaming: true,
+      },
+    ]);
+  }
+
   useEffect(() => {
     async function poll() {
       try {
@@ -173,11 +190,7 @@ export function ThreadChat({
                   offer={thread.offer}
                   docNumber={thread.doc_number ?? ""}
                   dateLabel={new Date().toLocaleDateString("ka-GE")}
-                  onConfirm={(sel) =>
-                    void send(
-                      `ვირჩევ: ${sel.items.join(", ")} — სულ ${sel.total.toLocaleString("en-US")} ₾`,
-                    )
-                  }
+                  onConfirm={(sel) => ackConfirm(sel)}
                 />
               </li>
             )}
