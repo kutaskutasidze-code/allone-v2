@@ -3,6 +3,7 @@ import { requireSalesAuth } from "@/lib/sales-auth";
 import { AuthError } from "@/lib/auth";
 import { getProposal, updateProposal } from "@/lib/offers/repo";
 import { getResponse } from "@/lib/bots/repo";
+import { renderClientEmail } from "@/lib/offers/email-template";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -185,15 +186,22 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
   // Resolve the bot thread link (if this proposal came from a bot response)
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://allonelabs.com";
-  let emailHtml = html;
+  let threadUrl: string | null = null;
   if (proposal.source_response_id) {
     const botResp = await getResponse(proposal.source_response_id);
     if (botResp?.bot_slug) {
-      emailHtml +=
-        `<p><a href="${base}/b/${botResp.bot_slug}/c/${proposal.source_response_id}">` +
-        `ნახეთ ჩატში →</a></p>`;
+      threadUrl = `${base}/b/${botResp.bot_slug}/c/${proposal.source_response_id}`;
     }
   }
+
+  // Wrap the sales-authored message in the branded, email-safe shell so the
+  // client's inbox matches the premium of the attached PDFs.
+  const emailHtml = renderClientEmail({
+    bodyHtml: html,
+    docNumber: proposal.doc_number,
+    docKinds: chatDocuments.map((d) => d.kind),
+    threadUrl,
+  });
 
   // Proxy to service — NO DB write before this succeeds
   let svcData: ServiceSendResponse;
