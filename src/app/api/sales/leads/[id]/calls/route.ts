@@ -131,41 +131,31 @@ export async function POST(request: Request, { params }: RouteParams) {
       return error("Failed to create call");
     }
 
-    // Guarded lead auto-sync from the disposition, so the pipeline reflects what
-    // happened on the call. Best-effort — never fail the recorded call over this.
-    if (validated.outcome === "contacted" && validated.disposition) {
+    // Auto-sync the lead from a reached call. A "Contacted" call must never
+    // leave a lead on 'New' — the disposition refines it further. Best-effort:
+    // never fail the recorded call over this.
+    if (validated.outcome === "contacted") {
       const status = lead.status as string;
-      let statusChanged = false;
+      const now = new Date().toISOString();
+      let newStatus: string | null = null;
+      const extra: Record<string, unknown> = {};
       try {
         if (validated.disposition === "not_interested") {
           // Never overwrite a closed lead (won/lost).
           if (status !== "won" && status !== "lost") {
-            await supabase
-              .from("leads")
-              .update({
-                status: "lost",
-                lost_reason: "not_interested",
-                updated_at: new Date().toISOString(),
-              })
-              .eq("id", id);
-            statusChanged = true;
-            // Mirror the per-lead PUT: entering 'lost' tears down any live demo.
-            teardownDemosForLead(id).catch(() => {});
+            newStatus = "lost";
+            extra.lost_reason = "not_interested";
           }
         } else if (validated.disposition === "interested") {
           // Advance-only — never regress Proposal/On-hold/Won back to Interested.
-          if (status === "new" || status === "in_process") {
-            await supabase
-              .from("leads")
-              .update({
-                status: "interested",
-                updated_at: new Date().toISOString(),
-              })
-              .eq("id", id);
-            statusChanged = true;
-          }
-        } else if (validated.disposition === "callback_requested") {
-          // Follow-up task for tomorrow 10:00 Tbilisi time.
+          if (status === "new" || status === "in_process") newStatus = "interested";
+        } else if (status === "new") {
+          // Callback or no disposition: contact was made, so take it off 'New'.
+          newStatus = "in_process";
+        }
+
+        // A callback always schedules a follow-up task for tomorrow 10:00 Tbilisi.
+        if (validated.disposition === "callback_requested") {
           const due = new Date(
             tbilisiDayStart().getTime() + 24 * 3600_000 + 10 * 3600_000,
           );
@@ -176,17 +166,24 @@ export async function POST(request: Request, { params }: RouteParams) {
             due_at: due.toISOString(),
           });
         }
+
+        if (newStatus) {
+          await supabase
+            .from("leads")
+            .update({ status: newStatus, ...extra, updated_at: now })
+            .eq("id", id);
+          // Mirror the per-lead PUT: entering 'lost' tears down any live demo.
+          if (newStatus === "lost") teardownDemosForLead(id).catch(() => {});
+          // A status change must refresh cached views.
+          revalidatePath("/sales/leads");
+          revalidatePath("/sales");
+        }
       } catch (syncErr) {
         logger.error("Lead auto-sync from call disposition failed", {
           error: syncErr instanceof Error ? syncErr.message : String(syncErr),
           resourceId: id,
           disposition: validated.disposition,
         });
-      }
-      if (statusChanged) {
-        // Match the per-lead PUT: a status change must refresh cached views.
-        revalidatePath("/sales/leads");
-        revalidatePath("/sales");
       }
     }
 

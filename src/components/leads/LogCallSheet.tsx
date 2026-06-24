@@ -142,7 +142,7 @@ export function LogCallSheet({ leadId, open, onClose, onLogged }: Props) {
               })}
             </div>
             <p className="mt-2 text-[11px] leading-relaxed text-[var(--ink-400)]">
-              Not interested marks the lead Lost · Wants a callback adds a follow-up task
+              Reaching someone moves a New lead to In Process · Not interested marks it Lost · Callback adds a follow-up task
             </p>
           </div>
         )}
