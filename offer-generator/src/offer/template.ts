@@ -33,7 +33,11 @@ function scopeRows(lines: OfferScopeLine[]): string {
           <div class="row-title">${esc(l.label)}</div>
           <div class="row-desc">${esc(l.description)}</div>
         </div>
-        <div class="row-price mono">${fmt(l.price)} <span class="cur">₾</span></div>
+        <div class="row-price mono">${
+          l.price > 0
+            ? `${fmt(l.price)} <span class="cur">₾</span>`
+            : `<span class="muted">შედის</span>`
+        }</div>
       </div>`,
     )
     .join("");
@@ -120,6 +124,10 @@ export function renderOfferHtml(offer: OfferDraft, docNumber?: string): string {
     : offer.monthly_opex
       ? esc(offer.monthly_opex)
       : "";
+
+  // Subscription offer: no one-time implementation fee, value is the recurring
+  // monthly. Lead the investment with the monthly amount and mark setup free.
+  const isSubscription = (offer.price ?? 0) <= 0 && hasMonthly;
 
   const addonsBlock =
     offer.addons && offer.addons.length > 0
@@ -279,7 +287,7 @@ export function renderOfferHtml(offer: OfferDraft, docNumber?: string): string {
   <!-- HERO -->
   <div class="hero">
     <div class="eyebrow">კომერციული შეთავაზება</div>
-    <h1>${esc(offer.client_name)} <span class="accent">ციფრული გარდაქმნა</span></h1>
+    <h1>${esc(offer.client_name)} <span class="accent">${esc(offer.headline || "ციფრული გარდაქმნა")}</span></h1>
     ${summaryParas(offer.summary)}
   </div>
 
@@ -293,14 +301,31 @@ export function renderOfferHtml(offer: OfferDraft, docNumber?: string): string {
   <section class="sec">
     <div class="sec-head"><h2>ინვესტიცია</h2></div>
     <div class="inv">
-      <div class="inv-line inv-total">
+      ${
+        isSubscription
+          ? `<div class="inv-line inv-total">
+        <div>
+          <div class="inv-k">ყოველთვიური ღირებულება</div>
+          <div class="inv-sub">სრული მომსახურება — ყველა ზემოთ ჩამოთვლილი ერთ პაკეტში</div>
+        </div>
+        <div class="inv-amt mono">${monthlyDisplay}<span class="cur"> /თვე</span></div>
+      </div>
+      <div class="inv-line">
+        <div>
+          <div class="inv-k">ერთჯერადი დანერგვა</div>
+          <div class="inv-sub">პლატფორმის გაშვება, კონფიგურაცია და ინტეგრაცია</div>
+        </div>
+        <div class="inv-m mono">უფასო</div>
+      </div>`
+          : `<div class="inv-line inv-total">
         <div>
           <div class="inv-k">სრული ღირებულება — ერთჯერადი</div>
           <div class="inv-sub">ყველა ზემოთ ჩამოთვლილი სამუშაო, შეთანხმებულ მოცულობაში</div>
         </div>
         <div class="inv-amt mono">${fmt(offer.price)} <span class="cur">₾</span></div>
       </div>
-      ${monthlyLine}
+      ${monthlyLine}`
+      }
     </div>
   </section>
 
@@ -316,7 +341,7 @@ export function renderOfferHtml(offer: OfferDraft, docNumber?: string): string {
   <section class="sec">
     <div class="sec-head"><h2>ვადა და პირობები</h2></div>
     <div class="pills">
-      <div class="pill"><div class="pl">პროექტის ვადა</div><div class="pv">${esc(offer.timeline)}</div></div>
+      <div class="pill"><div class="pl">${isSubscription ? "თანამშრომლობა" : "პროექტის ვადა"}</div><div class="pv">${esc(offer.timeline)}</div></div>
       ${monthlyDisplay ? `<div class="pill"><div class="pl">ყოველთვიური</div><div class="pv">${monthlyDisplay}</div></div>` : ""}
     </div>
     <ul class="terms">

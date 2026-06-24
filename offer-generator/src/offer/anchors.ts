@@ -12,6 +12,7 @@ export interface OfferStage {
 
 export interface OfferDraft {
   client_name: string;
+  headline?: string; // hero accent phrase (e.g. "მარკეტინგის ავტომატიზაცია"); defaults to "ციფრული გარდაქმნა"
   summary: string; // 2-4 Georgian sentences
   scope_lines: OfferScopeLine[];
   price: number; // one-time total GEL
