@@ -251,9 +251,11 @@ export function renderOfferHtml(offer: OfferDraft, docNumber?: string): string {
       color:var(--ink-2); border-bottom:1px solid var(--line); }
     .terms li::before { content:"→"; position:absolute; left:0; color:var(--accent); font-weight:700; }
 
-    /* footer — dark band with the big wordmark (site signature) */
-    .footer { background:var(--dark); color:var(--on-dark); margin-top:30px;
-      padding:34mm 20mm 16mm; break-inside:avoid; }
+    /* footer — full-bleed dark CLOSING PAGE; content anchored to the bottom so
+       it never orphans at the top of a page with blank space below. */
+    .footer { background:var(--dark); color:var(--on-dark);
+      min-height:100vh; display:flex; flex-direction:column; justify-content:flex-end;
+      padding:24mm 20mm 18mm; break-before:page; break-inside:avoid; }
     .footer-cta { font-family:var(--head); font-weight:700; font-size:30px;
       letter-spacing:-.02em; max-width:18ch; }
     .footer-cta .accent { color:var(--accent); }

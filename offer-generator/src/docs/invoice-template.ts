@@ -108,13 +108,13 @@ const CSS = `
     font-family: "Geist", "Noto Sans Georgian", system-ui, sans-serif;
     color: var(--ink-2);
     background: var(--bg);
-    font-size: 11px;
-    line-height: 1.6;
+    font-size: 10.5px;
+    line-height: 1.5;
     letter-spacing: -0.005em;
   }
   .brand-head {
     display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 18px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 12px;
   }
   .brand-head .logo { height: 26px; width: auto; color: var(--ink); display: block; }
   .brand-head .kind {
@@ -124,7 +124,7 @@ const CSS = `
   .page {
     width: 210mm;
     min-height: 297mm;
-    padding: 18mm 18mm 16mm;
+    padding: 12mm 16mm 10mm;
     position: relative;
     page-break-after: always;
     display: flex;
@@ -141,7 +141,7 @@ const CSS = `
   }
   .doc-subtitle {
     font-family: var(--head); font-size: 18px; font-weight: 700;
-    letter-spacing: -0.02em; margin-bottom: 10px; color: var(--ink);
+    letter-spacing: -0.02em; margin-bottom: 6px; color: var(--ink);
   }
   .doc-meta-line {
     font-family: var(--mono); font-size: 10px; color: var(--faint);
@@ -151,21 +151,21 @@ const CSS = `
 
   hr.divider {
     border: none; border-top: 1px solid var(--line);
-    margin: 14px 0;
+    margin: 9px 0;
   }
 
   /* party blocks */
   .party-head {
     font-family: var(--head); font-size: 16px; font-weight: 700;
-    letter-spacing: -0.02em; margin-bottom: 8px; color: var(--ink);
+    letter-spacing: -0.02em; margin-bottom: 5px; color: var(--ink);
   }
-  .party-line { font-size: 11px; line-height: 1.7; }
+  .party-line { font-size: 10.5px; line-height: 1.5; }
   .party-line strong { font-weight: 600; }
 
   /* service table */
   .section-head {
-    font-size: 16px; font-weight: 700;
-    letter-spacing: -0.02em; margin-bottom: 10px;
+    font-size: 15px; font-weight: 700;
+    letter-spacing: -0.02em; margin-bottom: 6px;
   }
   .doc-table {
     width: 100%; border-collapse: collapse;
@@ -176,10 +176,10 @@ const CSS = `
     font-size: 9.5px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--faint); text-align: left;
-    padding: 9px 12px; border-bottom: 1px solid var(--line);
+    padding: 6px 12px; border-bottom: 1px solid var(--line);
   }
   .doc-table td {
-    padding: 11px 12px; vertical-align: top;
+    padding: 7px 12px; vertical-align: top;
     border-bottom: 1px solid var(--line);
   }
   .doc-table tbody tr:last-child td { border-bottom: none; }
@@ -207,14 +207,14 @@ const CSS = `
   th.th-due    { width: 16%; }
 
   /* conditions */
-  .conditions { margin-top: 14px; }
+  .conditions { margin-top: 9px; }
   .conditions ol { padding-left: 18px; }
-  .conditions li { font-size: 11px; line-height: 1.7; margin-bottom: 2px; }
+  .conditions li { font-size: 10.5px; line-height: 1.5; margin-bottom: 1px; }
 
   /* signatures */
   .sig-section-head {
     font-size: 16px; font-weight: 700;
-    letter-spacing: -0.02em; margin-bottom: 12px;
+    letter-spacing: -0.02em; margin-bottom: 8px;
   }
   .sig-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
@@ -223,7 +223,7 @@ const CSS = `
     font-size: 13px; font-weight: 700;
     margin-bottom: 6px; letter-spacing: -0.01em;
   }
-  .sig-line { font-size: 11px; line-height: 1.8; }
+  .sig-line { font-size: 10.5px; line-height: 1.5; }
   .sig-line strong { font-weight: 600; }
   .sig-blank {
     display: inline-block; border-bottom: 1px solid var(--ink);
