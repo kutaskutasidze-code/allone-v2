@@ -106,6 +106,62 @@ export default function RevenuePage() {
         ))}
       </div>
 
+      {/* Monthly summary (no project detail) */}
+      {months.length > 0 && (
+        <div>
+          <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)] mb-2 px-1">
+            By month
+          </div>
+          <div className={`${CARD} overflow-x-auto p-0`}>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[var(--allone-line)] text-left">
+                  <th className={TH}>Month</th>
+                  <th className={`${TH} text-right`}>Revenue</th>
+                  <th className={`${TH} text-right`}>Collected</th>
+                  <th className={`${TH} text-right`}>Outstanding</th>
+                </tr>
+              </thead>
+              <tbody>
+                {months.map((m) => (
+                  <tr
+                    key={m.key}
+                    className="border-b border-[var(--allone-line-soft)] last:border-0 hover:bg-[var(--bg-surface-alt)]"
+                  >
+                    <td className="px-4 py-2.5 font-medium text-[var(--ink-900)]">
+                      {m.label}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-[var(--ink-700)]">
+                      {fmt(m.revenue)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-emerald-600">
+                      {fmt(m.collected)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-amber-600">
+                      {fmt(m.outstanding)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              {totals && (
+                <tfoot>
+                  <tr className="border-t-2 border-[var(--allone-line)] font-semibold text-[var(--ink-900)]">
+                    <td className="px-4 py-2.5">Total</td>
+                    <td className="px-4 py-2.5 text-right">{fmt(totals.revenue)}</td>
+                    <td className="px-4 py-2.5 text-right text-emerald-600">
+                      {fmt(totals.collected)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-amber-600">
+                      {fmt(totals.outstanding)}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </div>
+      )}
+
       {months.length === 0 ? (
         <div className={`${CARD} text-center text-sm text-[var(--ink-500)] py-12`}>
           No closed deals yet.
