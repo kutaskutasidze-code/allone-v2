@@ -2,6 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 interface Deal {
   leadId: string;
@@ -105,6 +115,60 @@ export default function RevenuePage() {
           </div>
         ))}
       </div>
+
+      {/* Chart: revenue per month, split into collected (paid) + outstanding */}
+      {months.length > 0 && (
+        <div className={CARD}>
+          <div className="text-[11px] uppercase tracking-wider text-[var(--ink-500)] mb-3">
+            Revenue by month
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={[...months]
+                  .reverse()
+                  .map((m) => ({
+                    name: m.label.split(" ")[0].slice(0, 3),
+                    Collected: m.collected,
+                    Outstanding: m.outstanding,
+                  }))}
+                margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: "#9ca3af" }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={52}
+                  tickFormatter={(v) =>
+                    `₾${(Number(v) / 1000).toLocaleString(undefined, { maximumFractionDigits: 1 })}k`
+                  }
+                />
+                <Tooltip
+                  cursor={{ fill: "rgba(0,0,0,0.03)" }}
+                  contentStyle={{
+                    backgroundColor: "#fff",
+                    border: "1px solid #f3f4f6",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)",
+                  }}
+                  formatter={(value, name) => [fmt(Number(value)), name]}
+                />
+                <Legend wrapperStyle={{ fontSize: "12px" }} />
+                <Bar dataKey="Collected" stackId="a" fill="#10b981" />
+                <Bar dataKey="Outstanding" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       {/* Monthly summary (no project detail) */}
       {months.length > 0 && (
