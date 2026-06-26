@@ -46,6 +46,32 @@ const CARD =
 const TH =
   "px-4 py-2.5 text-[11px] uppercase tracking-wider text-[var(--ink-500)] font-medium";
 
+// Muted chart palette (not the bright emerald/amber).
+const COLLECTED_COLOR = "#5c8a72";
+const OUTSTANDING_COLOR = "#c2a878";
+
+// Build a fixed 12-month window starting from the earliest month that has data,
+// so the chart always reads as a full year (empty months render as ₾0).
+function buildYearChart(months: Month[]) {
+  const real = months.filter((m) => m.key !== "undated");
+  const map = new Map(real.map((m) => [m.key, m]));
+  const startKey = real.length
+    ? [...real.map((m) => m.key)].sort()[0]
+    : new Date().toISOString().slice(0, 7);
+  const [sy, sm] = startKey.split("-").map(Number);
+  const out: { name: string; Collected: number; Outstanding: number }[] = [];
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(Date.UTC(sy, sm - 1 + i, 1));
+    const m = map.get(d.toISOString().slice(0, 7));
+    out.push({
+      name: d.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" }),
+      Collected: m ? m.collected : 0,
+      Outstanding: m ? m.outstanding : 0,
+    });
+  }
+  return out;
+}
+
 export default function RevenuePage() {
   const [months, setMonths] = useState<Month[]>([]);
   const [totals, setTotals] = useState<Totals | null>(null);
@@ -125,19 +151,14 @@ export default function RevenuePage() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={[...months]
-                  .reverse()
-                  .map((m) => ({
-                    name: m.label.split(" ")[0].slice(0, 3),
-                    Collected: m.collected,
-                    Outstanding: m.outstanding,
-                  }))}
+                data={buildYearChart(months)}
                 margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 12, fill: "#6b7280" }}
+                  interval={0}
+                  tick={{ fontSize: 11, fill: "#6b7280" }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -162,8 +183,13 @@ export default function RevenuePage() {
                   formatter={(value, name) => [fmt(Number(value)), name]}
                 />
                 <Legend wrapperStyle={{ fontSize: "12px" }} />
-                <Bar dataKey="Collected" stackId="a" fill="#10b981" />
-                <Bar dataKey="Outstanding" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Collected" stackId="a" fill={COLLECTED_COLOR} />
+                <Bar
+                  dataKey="Outstanding"
+                  stackId="a"
+                  fill={OUTSTANDING_COLOR}
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
