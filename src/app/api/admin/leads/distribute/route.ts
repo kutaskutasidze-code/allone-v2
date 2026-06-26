@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const admin = createAdminClient();
 
     // Resolve target reps.
-    let repsQuery = admin.from('sales_users').select('id, name').order('name', { ascending: true });
+    let repsQuery = admin.from('sales_users').select('id, name').neq('role', 'admin').order('name', { ascending: true });
     if (repIds && repIds.length > 0) {
       repsQuery = repsQuery.in('id', repIds);
     } else {

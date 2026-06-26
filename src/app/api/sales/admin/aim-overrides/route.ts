@@ -19,6 +19,7 @@ export async function GET() {
       supabase
         .from("sales_users")
         .select("id, name, email, role")
+        .neq("role", "admin")
         .order("name"),
       supabase
         .from("aim_growth_overrides")

@@ -27,7 +27,8 @@ export async function GET(request: NextRequest) {
 
     const { data: salesUsers, error: usersErr } = await supabase
       .from('sales_users')
-      .select('id, name, email, role');
+      .select('id, name, email, role')
+      .neq('role', 'admin');
     if (usersErr) throw new Error(usersErr.message);
 
     const allLeads = await fetchAllRows<{

@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
     const { data: salesUsers, error: usersErr } = await admin
       .from('sales_users')
       .select('id, name, email, role, is_active, daily_target, industries')
+      .neq('role', 'admin')
       .order('name', { ascending: true });
 
     if (usersErr) {

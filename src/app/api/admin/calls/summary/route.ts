@@ -23,7 +23,8 @@ export async function GET(request: NextRequest) {
 
     const { data: users, error: usersErr } = await admin
       .from('sales_users')
-      .select('id, is_active');
+      .select('id, is_active')
+      .neq('role', 'admin');
     if (usersErr) {
       logger.error('calls/summary: failed to load reps', { error: usersErr.message });
       return NextResponse.json({ error: 'Failed to load call summary' }, { status: 500 });

@@ -95,7 +95,8 @@ export async function POST(request: NextRequest) {
     // Resolve rep metadata + figure out how many to take from each.
     const { data: salesUsers, error: usersErr } = await admin
       .from('sales_users')
-      .select('id, name, is_active');
+      .select('id, name, is_active')
+      .neq('role', 'admin');
     if (usersErr) {
       logger.error('rebalance: load reps failed', { error: usersErr.message });
       return NextResponse.json({ error: 'Failed to load reps' }, { status: 500 });

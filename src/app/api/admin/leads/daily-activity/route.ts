@@ -66,6 +66,7 @@ export async function GET(request: Request) {
     const { data: reps } = await admin
       .from("sales_users")
       .select("id, name, email, role, daily_target")
+      .neq("role", "admin")
       .order("name", { ascending: true });
 
     if (!reps || reps.length === 0) {

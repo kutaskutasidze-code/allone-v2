@@ -27,7 +27,8 @@ export async function GET(request: NextRequest) {
     // Active reps (is_active null is treated as active, matching the team route).
     const { data: users, error: usersErr } = await admin
       .from('sales_users')
-      .select('id, is_active');
+      .select('id, is_active')
+      .neq('role', 'admin');
     if (usersErr) {
       logger.error('team/summary: failed to load reps', { error: usersErr.message });
       return NextResponse.json({ error: 'Failed to load team summary' }, { status: 500 });

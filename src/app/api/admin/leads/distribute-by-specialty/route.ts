@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
     const { data: repsRaw, error: repsErr } = await admin
       .from('sales_users')
       .select('id, name, industries, is_active')
+      .neq('role', 'admin')
       .eq('is_active', true);
     if (repsErr) {
       logger.error('distribute-by-specialty: failed to load reps', { error: repsErr.message });
