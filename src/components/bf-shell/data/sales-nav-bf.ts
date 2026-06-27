@@ -88,6 +88,7 @@ export const adminNavBF: NavConfig = {
         },
         { label: "Receivables", href: "/admin/receivables", icon: "receipt" },
         { label: "Revenue", href: "/admin/revenue", icon: "wallet" },
+        { label: "P&L", href: "/admin/financials", icon: "scale" },
       ],
     },
     {
