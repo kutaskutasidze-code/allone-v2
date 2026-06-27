@@ -74,7 +74,6 @@ export async function GET() {
 
     // Build the actual columns month by month (running cumulatives).
     const actualCols: (Record<string, number> | null)[] = [];
-    let cumNI = 0;
     let cumProj = 0;
     for (let idx = 1; idx <= PNL_MONTHS; idx++) {
       if (idx > activeCount) {
@@ -91,9 +90,30 @@ export async function GET() {
       // it's already loaded above from pnl_actual.
       cumProj += col.new_projects;
       col.cumulative_projects = cumProj;
-      computeColumn(col, cumNI);
-      cumNI = col.cumulative_net_income;
+      computeColumn(col);
       actualCols.push(col);
+    }
+
+    // Running rows: cumulative net income, plus an Investment Remaining "runway"
+    // that BOTH operating losses and CapEx draw down (Investment + cumNI − cumCapEx).
+    // Applied to actual and (overriding the imported figures) plan, so they match.
+    let aCumNI = 0;
+    let aCumCap = 0;
+    for (const col of actualCols) {
+      if (!col) continue;
+      aCumNI += col.net_income;
+      aCumCap += col.total_capex;
+      col.cumulative_net_income = aCumNI;
+      col.investment_remaining = TOTAL_INVESTMENT_USD + aCumNI - aCumCap;
+    }
+    let pCumNI = 0;
+    let pCumCap = 0;
+    for (let idx = 1; idx <= PNL_MONTHS; idx++) {
+      pCumNI += plan["net_income"]?.[idx] ?? 0;
+      pCumCap += plan["total_capex"]?.[idx] ?? 0;
+      (plan["cumulative_net_income"] ??= {})[idx] = pCumNI;
+      (plan["investment_remaining"] ??= {})[idx] = TOTAL_INVESTMENT_USD + pCumNI - pCumCap;
+      (planText["payback"] ??= {})[idx] = pCumNI >= TOTAL_INVESTMENT_USD ? "Yes" : "No";
     }
 
     const round2 = (n: number) => Math.round(n * 100) / 100;

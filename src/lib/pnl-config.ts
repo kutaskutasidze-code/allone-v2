@@ -94,14 +94,12 @@ export const PNL_LINE_BY_KEY: Record<string, PnlLine> = Object.fromEntries(
 export const PNL_INPUT_KEYS = PNL_LINES.filter((l) => l.kind === "input").map((l) => l.key);
 
 /**
- * Derive the computed rows for one month from a column of values keyed by line.
+ * Derive the per-month computed rows from a column of values keyed by line.
  * `col` must already contain the input + autofed values. Mutates and returns it.
- * `cumulativeNI` is the running net income BEFORE this month.
+ * Running rows (cumulative net income, investment remaining) are computed by the
+ * caller across months.
  */
-export function computeColumn(
-  col: Record<string, number>,
-  prevCumulativeNI: number,
-): Record<string, number> {
+export function computeColumn(col: Record<string, number>): Record<string, number> {
   const v = (k: string) => col[k] || 0;
   const revenue = v("revenue");
 
@@ -121,8 +119,5 @@ export function computeColumn(
 
   col.total_capex = v("capex_hardware") + v("capex_software") + v("capex_infra");
   col.total_expenses = col.total_cogs + col.total_opex + col.total_capex;
-
-  col.cumulative_net_income = prevCumulativeNI + col.net_income;
-  col.investment_remaining = TOTAL_INVESTMENT_USD - col.cumulative_net_income;
   return col;
 }
