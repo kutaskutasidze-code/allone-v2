@@ -52,7 +52,7 @@ export const PNL_LINES: PnlLine[] = [
   { key: "revenue", label: "Total Revenue", section: "Revenue", kind: "autofeed", format: "money", total: true },
 
   { key: "cogs_infra", label: "Infrastructure", section: "Cost of Revenue", kind: "input", format: "money" },
-  { key: "cogs_commission", label: "Sales Commission", section: "Cost of Revenue", kind: "autofeed", format: "money" },
+  { key: "cogs_commission", label: "Sales Commission", section: "Cost of Revenue", kind: "input", format: "money" },
   { key: "total_cogs", label: "Total COGS", section: "Cost of Revenue", kind: "computed", format: "money", total: true },
 
   { key: "gross_profit", label: "Gross Profit", section: "Gross Profit", kind: "computed", format: "money", total: true },

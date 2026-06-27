@@ -43,7 +43,7 @@ const ROW_TO_KEY = {
   51: "cumulative_net_income", 52: "investment_remaining", 53: "payback",
 };
 const INPUT_KEYS = new Set([
-  "headcount_sales", "headcount_tech", "cogs_infra",
+  "headcount_sales", "headcount_tech", "cogs_infra", "cogs_commission",
   "opex_tech_salaries", "opex_founders", "opex_accountant", "opex_mktg_mgr",
   "opex_payroll_tax", "opex_pension", "opex_marketing", "opex_other",
   "capex_hardware", "capex_software", "capex_infra",

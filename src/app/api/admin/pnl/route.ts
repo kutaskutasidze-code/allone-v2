@@ -18,8 +18,6 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const COMMISSION_RATE = 0.1; // model: 10% of revenue to affiliates
-
 // How many months are "realized" (≤ current calendar month, or have entered data).
 function currentMonthIdx(): number {
   const now = new Date();
@@ -35,11 +33,15 @@ export async function GET() {
     await requireRole(["admin", "supervisor"]);
     const admin = createAdminClient();
 
-    // Plan (fixed) + stored actual inputs.
-    const [{ data: planRows }, { data: actualRows }] = await Promise.all([
-      admin.from("pnl_plan").select("line_key, month_idx, value, text_value"),
-      admin.from("pnl_actual").select("line_key, month_idx, value"),
-    ]);
+    // Plan (fixed) + stored actual inputs + editable settings.
+    const [{ data: planRows }, { data: actualRows }, { data: settingRows }] =
+      await Promise.all([
+        admin.from("pnl_plan").select("line_key, month_idx, value, text_value"),
+        admin.from("pnl_actual").select("line_key, month_idx, value"),
+        admin.from("pnl_settings").select("key, value"),
+      ]);
+    const rate =
+      Number(settingRows?.find((s) => s.key === "usd_gel_rate")?.value) || USD_GEL_RATE;
 
     const plan: Record<string, Record<number, number | null>> = {};
     const planText: Record<string, Record<number, string | null>> = {};
@@ -82,10 +84,11 @@ export async function GET() {
       const col: Record<string, number> = {};
       for (const key of PNL_INPUT_KEYS) col[key] = storedActual[key]?.[idx] ?? 0;
       const mkey = monthIdxToKey(idx);
-      const rev = (gelRevByMonth[mkey] || 0) / USD_GEL_RATE;
+      const rev = (gelRevByMonth[mkey] || 0) / rate;
       col.revenue = rev;
       col.new_projects = wonCountByMonth[mkey] || 0;
-      col.cogs_commission = COMMISSION_RATE * rev;
+      // cogs_commission is an entered input (not all revenue carries commission) —
+      // it's already loaded above from pnl_actual.
       cumProj += col.new_projects;
       col.cumulative_projects = cumProj;
       computeColumn(col, cumNI);
@@ -143,7 +146,7 @@ export async function GET() {
           key: monthIdxToKey(i + 1),
         })),
         lines,
-        rate: USD_GEL_RATE,
+        rate,
         investment: TOTAL_INVESTMENT_USD,
         activeActualCount: activeCount,
       },
@@ -161,6 +164,19 @@ export async function PATCH(request: Request) {
   try {
     await requireRole(["admin"]);
     const body = await request.json();
+    const admin = createAdminClient();
+
+    // Update the editable USD/GEL rate.
+    if (body?.rate !== undefined) {
+      const newRate = Number(body.rate);
+      if (!Number.isFinite(newRate) || newRate <= 0)
+        return NextResponse.json({ error: "Invalid rate" }, { status: 400 });
+      await admin
+        .from("pnl_settings")
+        .upsert({ key: "usd_gel_rate", value: newRate }, { onConflict: "key" });
+      return NextResponse.json({ data: { ok: true } });
+    }
+
     const lineKey = String(body?.line_key || "");
     const monthIdx = Number(body?.month_idx);
     const value = body?.value === null || body?.value === "" ? null : Number(body?.value);
@@ -172,7 +188,6 @@ export async function PATCH(request: Request) {
     if (value !== null && !Number.isFinite(value))
       return NextResponse.json({ error: "Invalid value" }, { status: 400 });
 
-    const admin = createAdminClient();
     if (value === null) {
       await admin.from("pnl_actual").delete().eq("line_key", lineKey).eq("month_idx", monthIdx);
     } else {

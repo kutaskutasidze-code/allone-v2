@@ -70,6 +70,17 @@ export default function FinancialsPage() {
     load();
   };
 
+  const saveRate = async (raw: string) => {
+    const rate = Number(raw);
+    if (!Number.isFinite(rate) || rate <= 0) return;
+    await fetch("/api/admin/pnl", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rate }),
+    });
+    load();
+  };
+
   if (loading)
     return (
       <div className="flex items-center justify-center h-64 text-sm text-[var(--ink-400)]">
@@ -111,8 +122,8 @@ export default function FinancialsPage() {
           P&amp;L
         </h1>
         <p className="mt-1 text-sm text-[var(--ink-500)]">
-          Monthly P&amp;L vs the investor plan (USD · rate {data.rate}). Plan is fixed;
-          revenue, projects, and commission auto-feed from won deals.
+          Monthly P&amp;L vs the investor plan (USD). Plan is fixed; revenue and
+          projects auto-feed from won deals.
         </p>
       </div>
 
@@ -158,6 +169,20 @@ export default function FinancialsPage() {
             Editable cells are blue — type to update; computed rows recalc.
           </span>
         )}
+        <label className="flex items-center gap-1.5 text-xs text-[var(--ink-500)] ml-auto">
+          USD/GEL rate
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            defaultValue={data.rate}
+            key={`rate-${data.rate}`}
+            onBlur={(e) => {
+              if (Number(e.target.value) !== data.rate) saveRate(e.target.value);
+            }}
+            className="w-20 text-right px-1.5 py-1 rounded border border-[var(--allone-line)] focus:border-[var(--ao-accent)] focus:outline-none"
+          />
+        </label>
       </div>
 
       <div className={`${CARD} overflow-x-auto`}>
