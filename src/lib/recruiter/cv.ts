@@ -8,11 +8,14 @@ export async function extractCvText(
 ): Promise<string> {
   const ext = filename.toLowerCase().split(".").pop();
   if (ext === "pdf") {
-    // pdf-parse v2 default export parses a Buffer and returns { text }
-    const pdfParse = (await import("pdf-parse")).default as (
-      b: Buffer,
-    ) => Promise<{ text: string }>;
-    const { text } = await pdfParse(buffer);
+    // pdf-parse v2: named export PDFParse class, takes { data: buffer }
+    const { PDFParse } = (await import("pdf-parse")) as unknown as {
+      PDFParse: new (opts: { data: Buffer }) => {
+        getText(): Promise<{ text: string }>;
+      };
+    };
+    const parser = new PDFParse({ data: buffer });
+    const { text } = await parser.getText();
     return text.trim();
   }
   if (ext === "docx" || ext === "doc") {

@@ -1,7 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
-import { recruiterConfig } from "./config";
+import { callBridge } from "@/lib/claude-bridge";
 import type { Verdict, Vacancy } from "./types";
 
 export const VerdictSchema = z.object({
@@ -21,7 +19,20 @@ Score the candidate against the role's job description. Be specific and fair.
 - "meeting" only if they clearly merit an interview; otherwise "reject".
 - Detect the language the candidate wrote in and set "language" to its ISO-639-1 code.
 - Write emailSubject/emailBody IN THAT LANGUAGE: a warm meeting-interest note (no times — a human will propose them) for "meeting", or a brief, kind rejection for "reject".
-- Set confidence low if the CV is thin, unparseable, or the fit is genuinely borderline.`;
+- Set confidence low if the CV is thin, unparseable, or the fit is genuinely borderline.
+
+You MUST respond with ONLY a valid JSON object matching this schema (no prose, no markdown fences):
+{
+  "score": <number 0-100>,
+  "decision": <"meeting"|"reject">,
+  "confidence": <number 0.0-1.0>,
+  "language": <ISO-639-1 code, e.g. "en">,
+  "strengths": [<string>, ...],
+  "gaps": [<string>, ...],
+  "rationale": <string>,
+  "emailSubject": <string>,
+  "emailBody": <string>
+}`;
 
 export async function evaluateCandidate(args: {
   vacancy: Vacancy;
@@ -29,7 +40,6 @@ export async function evaluateCandidate(args: {
   note?: string | null;
   projects?: string | null;
 }): Promise<Verdict> {
-  const client = new Anthropic(); // reads ANTHROPIC_API_KEY
   const userContent = [
     `# Role: ${args.vacancy.title}`,
     `## Job description\n${args.vacancy.description_md ?? "(none provided)"}`,
@@ -40,19 +50,31 @@ export async function evaluateCandidate(args: {
     .filter(Boolean)
     .join("\n\n");
 
-  const res = await client.messages.parse({
-    model: recruiterConfig.model,
-    max_tokens: 16000,
-    thinking: { type: "adaptive" },
+  const raw = await callBridge({
     system: SYSTEM,
     messages: [{ role: "user", content: userContent }],
-    output_config: { format: zodOutputFormat(VerdictSchema) },
   });
 
-  if (!res.parsed_output) {
+  // Strip markdown fences if the model wraps the JSON anyway
+  const cleaned = raw
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (e) {
     throw new Error(
-      `evaluateCandidate: no parsed output (stop_reason=${res.stop_reason})`,
+      `evaluateCandidate: bridge returned non-JSON — ${(e as Error).message} — raw: ${cleaned.slice(0, 200)}`,
     );
   }
-  return res.parsed_output as Verdict;
+
+  const result = VerdictSchema.safeParse(parsed);
+  if (!result.success) {
+    throw new Error(
+      `evaluateCandidate: schema mismatch — ${result.error.message}`,
+    );
+  }
+  return result.data;
 }
