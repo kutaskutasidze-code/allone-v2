@@ -1,5 +1,6 @@
 // src/app/api/recruiter/ingest/web/route.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { evaluateCandidate } from "@/lib/recruiter/evaluate";
 
 vi.mock("@/lib/recruiter/evaluate", () => ({
   evaluateCandidate: vi.fn(async () => ({
@@ -113,5 +114,33 @@ describe("POST /api/recruiter/ingest/web", () => {
       decision: "meeting",
     });
     expect(update).toHaveBeenCalled();
+  });
+
+  it("holds an application with low confidence (0.3) without throwing", async () => {
+    vi.mocked(evaluateCandidate).mockResolvedValueOnce({
+      score: 40,
+      decision: "reject",
+      confidence: 0.3,
+      language: "en",
+      strengths: [],
+      gaps: ["x"],
+      rationale: "low confidence",
+      emailSubject: "s",
+      emailBody: "b",
+    });
+    const res = await POST(
+      req({
+        record: {
+          id: "a3",
+          name: "N",
+          email: "e@test.com",
+          cv_path: "x/cv.pdf",
+          vacancy_id: "v1",
+        },
+      }),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toMatchObject({ held: true });
   });
 });

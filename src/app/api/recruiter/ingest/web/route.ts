@@ -13,7 +13,7 @@ export const runtime = "nodejs"; // pdf-parse/mammoth need Node, not edge
 type Row = {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   phone?: string | null;
   vacancy_id?: string | null;
   vacancy_title?: string | null;
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     source: "web",
     externalId: row.id,
     name: row.name,
-    email: row.email,
+    email: row.email ?? "",
     phone: row.phone,
     vacancyId: row.vacancy_id,
     cvPath: row.cv_path,
@@ -87,12 +87,17 @@ export async function POST(req: Request) {
   if (!vacancy) return fail("no_matching_vacancy");
 
   // 3. Evaluate
-  const verdict = await evaluateCandidate({
-    vacancy,
-    cvText,
-    note: row.note,
-    projects: row.projects,
-  });
+  let verdict;
+  try {
+    verdict = await evaluateCandidate({
+      vacancy,
+      cvText,
+      note: row.note,
+      projects: row.projects,
+    });
+  } catch (e) {
+    return fail(`evaluate_failed: ${(e as Error).message}`);
+  }
 
   // 4. Guardrail: low confidence → hold (no auto-action even in later increments)
   const held = verdict.confidence < recruiterConfig.confThreshold || !row.email;
@@ -107,12 +112,17 @@ export async function POST(req: Request) {
   }
 
   // 6. Plane card
-  const issue = await createCandidateIssue({
-    candidate,
-    vacancyTitle: vacancy.title,
-    verdict,
-    cvUrl,
-  });
+  let issue;
+  try {
+    issue = await createCandidateIssue({
+      candidate,
+      vacancyTitle: vacancy.title,
+      verdict,
+      cvUrl,
+    });
+  } catch (e) {
+    return fail(`plane_create_failed: ${(e as Error).message}`);
+  }
 
   // 7. Mirror into the CRM row. DRY-RUN: never email; status reflects decision unless held.
   const status = held
