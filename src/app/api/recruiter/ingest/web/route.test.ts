@@ -17,6 +17,10 @@ vi.mock("@/lib/recruiter/evaluate", () => ({
 }));
 vi.mock("@/lib/recruiter/plane", () => ({
   createCandidateIssue: vi.fn(async () => ({ id: "issue_1" })),
+  firstStateInGroup: vi.fn(async () => "state_todo"),
+}));
+vi.mock("@/lib/recruiter/notify", () => ({
+  sendCandidateEmail: vi.fn(async () => ({ sent: true })),
 }));
 vi.mock("@/lib/recruiter/cv", () => ({
   extractCvText: vi.fn(async () => "cv text"),

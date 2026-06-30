@@ -16,6 +16,10 @@ type AppWithAI = JobApplication & {
   ai_score?: number | null;
   ai_decision?: string | null;
   ai_confidence?: number | null;
+  ai_rationale?: string | null;
+  ai_email_status?: string | null;
+  meeting_status?: string | null;
+  meeting_starts_at?: string | null;
 };
 
 const inputCls =
@@ -25,6 +29,7 @@ const statusStyle: Record<ApplicationStatus, string> = {
   new: "bg-sky-50 text-sky-700 ring-sky-200",
   reviewing: "bg-amber-50 text-amber-700 ring-amber-200",
   shortlisted: "bg-violet-50 text-violet-700 ring-violet-200",
+  interview: "bg-indigo-50 text-indigo-700 ring-indigo-200",
   rejected: "bg-[var(--bg-surface-alt)] text-[var(--ink-500)] ring-gray-200",
   hired: "bg-emerald-50 text-emerald-700 ring-emerald-200",
 };
@@ -222,12 +227,31 @@ function ApplicationsContent() {
                   {a.ai_score != null ? (
                     <span
                       className="text-xs text-[var(--ink-700)]"
-                      title={a.ai_decision ?? ""}
+                      title={a.ai_rationale ?? a.ai_decision ?? ""}
                     >
                       {a.ai_score}/100 · {a.ai_decision ?? "—"}
                     </span>
                   ) : (
                     <span className="text-xs text-[var(--ink-400)]">—</span>
+                  )}
+                  {a.meeting_status && (
+                    <span
+                      className="text-xs text-violet-700"
+                      title={a.meeting_starts_at ?? ""}
+                    >
+                      · meeting {a.meeting_status}
+                      {a.meeting_starts_at
+                        ? ` ${new Date(a.meeting_starts_at).toLocaleString()}`
+                        : ""}
+                    </span>
+                  )}
+                  {a.ai_email_status && (
+                    <span className="text-xs text-[var(--ink-500)]">
+                      · email{" "}
+                      {a.ai_email_status.startsWith("failed")
+                        ? "failed"
+                        : a.ai_email_status}
+                    </span>
                   )}
                 </div>
               </div>

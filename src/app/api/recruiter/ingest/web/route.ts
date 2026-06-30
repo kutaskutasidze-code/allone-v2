@@ -5,7 +5,9 @@ import { recruiterConfig } from "@/lib/recruiter/config";
 import { extractCvText, UnsupportedCvError } from "@/lib/recruiter/cv";
 import { getOpenVacancies, matchVacancy } from "@/lib/recruiter/vacancies";
 import { evaluateCandidate } from "@/lib/recruiter/evaluate";
-import { createCandidateIssue } from "@/lib/recruiter/plane";
+import { createCandidateIssue, firstStateInGroup } from "@/lib/recruiter/plane";
+import { proposeSlots } from "@/lib/recruiter/slots";
+import { sendCandidateEmail } from "@/lib/recruiter/notify";
 import type { Candidate } from "@/lib/recruiter/types";
 
 export const runtime = "nodejs"; // pdf-parse/mammoth need Node, not edge
@@ -99,8 +101,10 @@ export async function POST(req: Request) {
     return fail(`evaluate_failed: ${(e as Error).message}`);
   }
 
-  // 4. Guardrail: low confidence → hold (no auto-action even in later increments)
+  // 4. Guardrail: low confidence or missing email → hold (no auto-action).
   const held = verdict.confidence < recruiterConfig.confThreshold || !row.email;
+  const isMeeting = !held && verdict.decision === "meeting";
+  const isReject = !held && verdict.decision === "reject";
 
   // 5. CV signed URL for the Plane card
   let cvUrl: string | null = null;
@@ -111,7 +115,28 @@ export async function POST(req: Request) {
     cvUrl = data?.signedUrl ?? null;
   }
 
-  // 6. Plane card
+  // 6. Meeting candidates get proposed slots + an "awaiting approval" card
+  // (placed in the unstarted/"Todo" Plane state). Reject/held cards keep the
+  // project default state.
+  const slots = isMeeting
+    ? proposeSlots(new Date(), {
+        count: recruiterConfig.slotCount,
+        slotHourLocal: recruiterConfig.slotHourLocal,
+        tzOffsetHours: recruiterConfig.tzOffsetHours,
+        durationMin: recruiterConfig.meetingDurationMin,
+      })
+    : [];
+
+  let stateId: string | null = null;
+  if (isMeeting) {
+    try {
+      stateId = await firstStateInGroup("unstarted");
+    } catch {
+      stateId = null; // non-fatal: card just lands in the default state
+    }
+  }
+
+  // 7. Plane card
   let issue;
   try {
     issue = await createCandidateIssue({
@@ -119,31 +144,50 @@ export async function POST(req: Request) {
       vacancyTitle: vacancy.title,
       verdict,
       cvUrl,
+      slots,
+      stateId,
     });
   } catch (e) {
     return fail(`plane_create_failed: ${(e as Error).message}`);
   }
 
-  // 7. Mirror into the CRM row. DRY-RUN: never email; status reflects decision unless held.
-  const status = held
-    ? "reviewing"
-    : verdict.decision === "meeting"
-      ? "shortlisted"
-      : "rejected";
+  // 8. Mirror into the CRM row.
+  const status = held ? "reviewing" : isMeeting ? "shortlisted" : "rejected";
+  const update: Record<string, unknown> = {
+    ai_score: verdict.score,
+    ai_decision: verdict.decision,
+    ai_confidence: verdict.confidence,
+    ai_language: verdict.language,
+    ai_rationale: verdict.rationale,
+    ai_strengths: verdict.strengths,
+    ai_gaps: verdict.gaps,
+    plane_issue_id: issue.id,
+    ai_ranked_at: new Date().toISOString(),
+    status,
+  };
+  if (isMeeting) {
+    update.proposed_slots = slots;
+    update.meeting_status = "proposed";
+  }
+
+  // 9. Increment 2 — auto-send rejection (gated by the global kill-switch).
+  //    Meetings are NOT emailed here; that waits for human approval (the cron).
+  let emailResult: { sent: boolean; reason?: string } | null = null;
+  if (isReject && recruiterConfig.sendingEnabled() && row.email) {
+    emailResult = await sendCandidateEmail({
+      to: row.email,
+      subject: verdict.emailSubject,
+      body: verdict.emailBody,
+    });
+    update.ai_emailed_at = new Date().toISOString();
+    update.ai_email_status = emailResult.sent
+      ? "sent"
+      : `failed:${emailResult.reason ?? "unknown"}`;
+  }
+
   const { error } = await supabase
     .from("job_applications")
-    .update({
-      ai_score: verdict.score,
-      ai_decision: verdict.decision,
-      ai_confidence: verdict.confidence,
-      ai_language: verdict.language,
-      ai_rationale: verdict.rationale,
-      ai_strengths: verdict.strengths,
-      ai_gaps: verdict.gaps,
-      plane_issue_id: issue.id,
-      ai_ranked_at: new Date().toISOString(),
-      status,
-    })
+    .update(update)
     .eq("id", row.id);
   if (error)
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -153,5 +197,8 @@ export async function POST(req: Request) {
     decision: verdict.decision,
     held,
     plane_issue_id: issue.id,
+    sending_enabled: recruiterConfig.sendingEnabled(),
+    emailed: emailResult?.sent ?? false,
+    proposed_slots: slots.length,
   });
 }
