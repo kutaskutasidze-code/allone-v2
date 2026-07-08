@@ -254,7 +254,7 @@ function SendPanel({ proposal, onSent }: SendPanelProps) {
         <div className="border-t border-sky-100 p-4 space-y-3">
           {/* To */}
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-mono uppercase tracking-wider text-sky-600">
+            <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
               მიმღები (email) *
             </label>
             <input
@@ -262,40 +262,40 @@ function SendPanel({ proposal, onSent }: SendPanelProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="client@example.com"
-              className="rounded-[var(--radius-xs)] border border-sky-200 bg-white px-2 py-1.5 text-xs text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-sky-400 focus:outline-none"
+              className="rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1.5 text-xs text-[var(--ink-900)] placeholder:text-[var(--ink-300)] focus:border-[var(--ao-accent)] focus:outline-none"
             />
           </div>
 
           {/* Subject */}
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-mono uppercase tracking-wider text-sky-600">
+            <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
               სათაური *
             </label>
             <input
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="rounded-[var(--radius-xs)] border border-sky-200 bg-white px-2 py-1.5 text-xs text-[var(--ink-900)] focus:border-sky-400 focus:outline-none"
+              className="rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1.5 text-xs text-[var(--ink-900)] focus:border-[var(--ao-accent)] focus:outline-none"
             />
           </div>
 
           {/* Body */}
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-mono uppercase tracking-wider text-sky-600">
+            <label className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
               ტექსტი *
             </label>
             <textarea
               rows={5}
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              className="rounded-[var(--radius-xs)] border border-sky-200 bg-white px-2 py-1.5 text-xs text-[var(--ink-900)] focus:border-sky-400 focus:outline-none resize-y"
+              className="rounded-[var(--radius-xs)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-2 py-1.5 text-xs text-[var(--ink-900)] focus:border-[var(--ao-accent)] focus:outline-none resize-y"
             />
           </div>
 
           {/* Document checkboxes — only show if the URL exists */}
           {(hasOffer || hasContract || hasInvoice) && (
             <div className="flex flex-col gap-1">
-              <p className="text-[10px] font-mono uppercase tracking-wider text-sky-600">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
                 თანდართული დოკუმენტები
               </p>
               <div className="flex flex-wrap gap-4 pt-0.5">
