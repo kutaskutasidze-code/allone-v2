@@ -24,7 +24,12 @@ export function PreferencesBoot() {
       const root = document.documentElement;
       if (typeof p.accent === "string") root.style.setProperty("--ao-accent", p.accent);
       if (typeof p.density === "string") root.dataset.density = p.density;
-      if (typeof p.theme === "string") root.dataset.theme = p.theme;
+      if (typeof p.theme === "string") {
+        root.dataset.theme = p.theme;
+        // Keep the `.dark` class in sync with the theme attribute so the
+        // utility-override layer in globals.css activates on first paint.
+        root.classList.toggle("dark", p.theme === "dark");
+      }
       if (typeof p.chatSide === "string") root.dataset.chatSide = p.chatSide;
     } catch { /* ignore */ }
   }, []);

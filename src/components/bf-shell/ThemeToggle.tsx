@@ -23,6 +23,12 @@ function readTheme(): Theme {
 
 function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme;
+  // Also toggle the `.dark` class so the utility-override layer in globals.css
+  // (`.dark .bg-white`, `.dark .text-white`, colored-chip recolors, etc.)
+  // activates. Without this, only CSS-variable-based surfaces theme; hardcoded
+  // Tailwind utilities stay light. Keeping both in sync is the single source of
+  // truth for dark mode across the /sales and /admin dashboards.
+  document.documentElement.classList.toggle("dark", theme === "dark");
   try {
     const raw = window.localStorage.getItem(KEY);
     const prev = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
