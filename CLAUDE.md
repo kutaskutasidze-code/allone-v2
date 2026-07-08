@@ -1,5 +1,10 @@
 # Allone Website
 
+> **On the `optimization` branch?** Read **`OPTIMIZATION.md`** first — it has the
+> mission, the local dev setup for this machine (use `--webpack`, not Turbopack),
+> test login, and the candidate optimization tracks with real signals. Step 0 is
+> to sync this branch with `master` (it's a few commits behind).
+
 ## Build & Dev Commands
 ```bash
 pnpm install          # Install dependencies (NOT npm — Vercel uses pnpm)
