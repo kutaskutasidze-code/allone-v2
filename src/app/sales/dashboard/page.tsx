@@ -30,7 +30,40 @@ async function getSalesUser() {
 
 // Every sales user — including supervisors/admins — only sees their own
 // pipeline on /sales/*. Team-wide views live behind /admin.
+//
+// One GROUP BY round-trip via the sales_lead_stats RPC (see
+// 20260709000001_sales_perf_functions.sql). Falls back to the previous
+// per-status count fan-out if the function isn't present yet.
 async function getLeadStats(salesUserId: string) {
+  const supabase = createAdminClient();
+
+  const stats: Record<string, number> = {
+    new: 0, in_process: 0, interested: 0, proposal: 0, won: 0, lost: 0, on_hold: 0,
+    pipelineValue: 0, wonValue: 0,
+  };
+
+  const { data: rows, error } = await supabase.rpc('sales_lead_stats', {
+    p_uid: salesUserId,
+  });
+
+  if (error || !rows) {
+    return getLeadStatsFanout(salesUserId, stats);
+  }
+
+  const PIPELINE = new Set(['in_process', 'interested', 'proposal']);
+  for (const row of rows as Array<{ status: string; cnt: number; total_value: number }>) {
+    if (row.status in stats) stats[row.status] = Number(row.cnt) || 0;
+    const value = Number(row.total_value) || 0;
+    if (PIPELINE.has(row.status)) stats.pipelineValue += value;
+    if (row.status === 'won') stats.wonValue = value;
+  }
+
+  return stats;
+}
+
+// Fallback: the original per-status count fan-out (9 round-trips). Retained so
+// the dashboard keeps working before the sales_lead_stats migration is applied.
+async function getLeadStatsFanout(salesUserId: string, stats: Record<string, number>) {
   const supabase = createAdminClient();
   const statuses = ['new', 'in_process', 'interested', 'proposal', 'won', 'lost', 'on_hold'];
 
@@ -49,11 +82,6 @@ async function getLeadStats(salesUserId: string) {
   const { data: wonData } = await supabase.from('leads').select('value')
     .eq('sales_user_id', salesUserId)
     .eq('status', 'won');
-
-  const stats: Record<string, number> = {
-    new: 0, in_process: 0, interested: 0, proposal: 0, won: 0, lost: 0, on_hold: 0,
-    pipelineValue: 0, wonValue: 0,
-  };
 
   statuses.forEach((s, i) => { stats[s] = results[i].count || 0; });
   stats.pipelineValue = (pipelineData || []).reduce((sum, l) => sum + (l.value || 0), 0);
