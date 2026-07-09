@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Copy,
@@ -14,6 +14,7 @@ import {
   Power,
   ExternalLink,
   ShieldAlert,
+  Trash2,
 } from "lucide-react";
 import { ConfirmDialog } from "@/components/admin";
 import { toast } from "@/components/bf-shell/Toast";
@@ -52,6 +53,7 @@ interface Detail {
   link: string;
   password: string | null;
   submissions: SubmissionRow[];
+  canDelete: boolean;
 }
 
 function CopyRow({ label, value }: { label: string; value: string }) {
@@ -83,6 +85,7 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 export default function CompanyDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
+  const router = useRouter();
   const { t, locale } = useLocale();
 
   const [detail, setDetail] = useState<Detail | null>(null);
@@ -186,11 +189,22 @@ export default function CompanyDetailPage() {
     setBusy(null);
   }
 
+  async function del() {
+    setBusy("delete");
+    const res = await fetch(`/api/sales/companies/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      router.push("/sales/companies");
+      return;
+    }
+    setBusy(null);
+    toast(t("feedback.admin.loadError"), "err");
+  }
+
   if (notAuthorized) {
     return (
       <div className="mx-auto mt-20 flex w-full max-w-3xl flex-col items-center gap-3 text-center text-[var(--ink-500)]">
         <ShieldAlert className="h-8 w-8" />
-        <p className="text-sm">Admins &amp; supervisors only.</p>
+        <p className="text-sm">You do not have access to this page.</p>
       </div>
     );
   }
@@ -317,6 +331,21 @@ export default function CompanyDetailPage() {
               }
             }}
           />
+          {detail.canDelete && (
+            <ActionBtn
+              icon={Trash2}
+              label={t("feedback.admin.detail.delete")}
+              busy={busy === "delete"}
+              danger
+              onClick={() =>
+                setConfirm({
+                  title: t("feedback.admin.detail.delete"),
+                  message: t("feedback.admin.detail.deleteConfirm"),
+                  run: del,
+                })
+              }
+            />
+          )}
         </div>
       </section>
 

@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireRole } from "@/lib/sales-auth";
+import { requireSalesAuth, requireRole, isSupervisor } from "@/lib/sales-auth";
 import {
   authErrorResponse,
   success,
@@ -45,7 +45,7 @@ function publicCompany(c: FeedbackCompany) {
 // GET — full detail incl. the (decrypted) magic link + password + submissions.
 export async function GET(request: NextRequest, { params }: Ctx) {
   try {
-    await requireRole(["admin", "supervisor"]);
+    const { salesUser } = await requireSalesAuth();
     const { id } = await params;
     const company = await getCompanyById(id);
     if (!company) return notFound("Company");
@@ -58,7 +58,13 @@ export async function GET(request: NextRequest, { params }: Ctx) {
       plane_url: s.plane_issue_id ? issueUrl(s.plane_issue_id) : null,
     }));
 
-    return success({ company: publicCompany(company), link, password, submissions });
+    return success({
+      company: publicCompany(company),
+      link,
+      password,
+      submissions,
+      canDelete: isSupervisor(salesUser),
+    });
   } catch (err) {
     return authErrorResponse(err);
   }
@@ -73,7 +79,7 @@ const patchSchema = z.object({
 // PATCH — admin actions on a company.
 export async function PATCH(request: NextRequest, { params }: Ctx) {
   try {
-    await requireRole(["admin", "supervisor"]);
+    await requireSalesAuth();
     const { id } = await params;
     const parsed = patchSchema.safeParse(await request.json());
     if (!parsed.success) return validationError(parsed.error);
@@ -132,6 +138,20 @@ export async function PATCH(request: NextRequest, { params }: Ctx) {
       default:
         return error("Unknown action", 400);
     }
+  } catch (err) {
+    return authErrorResponse(err);
+  }
+}
+
+// DELETE — remove a company + its submissions (FK cascade). Admin/supervisor only.
+export async function DELETE(_request: NextRequest, { params }: Ctx) {
+  try {
+    await requireRole(["admin", "supervisor"]);
+    const { id } = await params;
+    const supabase = createAdminClient();
+    const { error: dbErr } = await supabase.from("feedback_companies").delete().eq("id", id);
+    if (dbErr) return error(dbErr.message || "Failed to delete company");
+    return success({ deleted: true });
   } catch (err) {
     return authErrorResponse(err);
   }

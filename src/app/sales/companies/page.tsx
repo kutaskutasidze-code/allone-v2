@@ -123,7 +123,7 @@ export default function CompaniesPage() {
     return (
       <div className="mx-auto mt-20 flex w-full max-w-3xl flex-col items-center gap-3 text-center text-[var(--ink-500)]">
         <ShieldAlert className="h-8 w-8" />
-        <p className="text-sm">Admins &amp; supervisors only.</p>
+        <p className="text-sm">You do not have access to this page.</p>
       </div>
     );
   }

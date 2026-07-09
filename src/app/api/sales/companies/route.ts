@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { requireRole } from "@/lib/sales-auth";
+import { requireSalesAuth } from "@/lib/sales-auth";
 import { authErrorResponse, success, error, validationError } from "@/lib/api-response";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { listCompanies, uniqueSlug } from "@/lib/feedback/db";
@@ -23,7 +23,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // GET — list companies (admin/supervisor). Secrets are never returned here.
 export async function GET() {
   try {
-    await requireRole(["admin", "supervisor"]);
+    await requireSalesAuth();
     const companies = await listCompanies();
     const data = companies.map((c) => ({
       id: c.id,
@@ -51,7 +51,7 @@ const createSchema = z.object({
 // POST — create a company: generate link + creds + Plane label, insert, email onboarding.
 export async function POST(request: NextRequest) {
   try {
-    await requireRole(["admin", "supervisor"]);
+    await requireSalesAuth();
     const parsed = createSchema.safeParse(await request.json());
     if (!parsed.success) return validationError(parsed.error);
 
