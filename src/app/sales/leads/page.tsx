@@ -7,7 +7,6 @@ import {
   X,
   Users,
   Sun,
-  Moon,
   Inbox,
   PhoneCall,
   Layers,
@@ -29,7 +28,6 @@ import {
   HOTLINE_PHONE_PREFIX_PARAM,
 } from "@/lib/validations/leads";
 import { useDebounce } from "@/lib/hooks/useDebounce";
-import { useSalesTheme } from "@/app/sales/SalesThemeContext";
 
 type ScopeMode = "today" | "mine" | "callbacks" | "done";
 
@@ -37,7 +35,6 @@ function LeadsPageContent() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const initialStatus = searchParams.get("status") || "all";
-  const { theme, toggleTheme } = useSalesTheme();
   const [taskForLeadId, setTaskForLeadId] = useState<string | null>(null);
   const initialScopeParam = searchParams.get("scope");
 
@@ -295,21 +292,6 @@ function LeadsPageContent() {
             >
               <Download className="h-4 w-4" />
               {exporting ? "Exporting…" : "Export"}
-            </button>
-            <button
-              onClick={toggleTheme}
-              aria-label={
-                theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
-              }
-              className="inline-flex items-center justify-center w-10 h-10 text-[var(--ink-700)] bg-[var(--bg-surface)] border border-[var(--allone-line)] rounded-[var(--radius-sm)] shadow-[var(--shadow-xs)] hover:border-[var(--allone-line-strong)] active:scale-[0.98] transition-all duration-150"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
             </button>
           </>
         }

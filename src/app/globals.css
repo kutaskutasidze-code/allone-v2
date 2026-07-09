@@ -101,10 +101,12 @@ html.dark body {
 .dark .focus\:ring-black:focus {
   --tw-ring-color: var(--admin-text);
 }
-/* Light-mode text-white means white on a dark button (e.g. bg-gray-900 button).
-   In dark mode those buttons become light-on-dark-text — invert text-white too. */
+/* Keep white text white in dark mode by default, so labels on genuinely
+   COLORED buttons (emerald/red/accent/sky) stay legible. Buttons whose surface
+   FLIPS from dark to light (bg-gray-900/800, bg-[var(--ink-900)]) force their
+   own dark label below, winning by source order. */
 .dark .text-white {
-  color: var(--admin-bg);
+  color: #ffffff;
 }
 
 .dark .border-gray-100 {
@@ -226,6 +228,125 @@ html.dark body {
 }
 .dark .bg-amber-500 {
   background-color: #d97706;
+}
+
+/* ── Additional alert/badge tints used on the sales panel ────────────────
+   Proposals status pills (draft=yellow, approved=emerald, sent=sky) plus the
+   emerald/rose accents on the dashboard. Light -50 fills + -700 text + -200
+   borders get dark equivalents so the chips read on the near-black surfaces. */
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.15);
+}
+.dark .bg-emerald-100 {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+.dark .text-emerald-700 {
+  color: #6ee7b7;
+}
+.dark .text-emerald-600 {
+  color: #34d399;
+}
+.dark .text-emerald-500 {
+  color: #34d399;
+}
+.dark .border-emerald-200 {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+.dark .border-emerald-300 {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+.dark .bg-sky-50 {
+  background-color: rgba(56, 189, 248, 0.15);
+}
+.dark .text-sky-700 {
+  color: #7dd3fc;
+}
+.dark .border-sky-200 {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+.dark .border-sky-100 {
+  border-color: var(--allone-line);
+}
+/* "Send to client" panel on proposals uses a translucent sky tint that reads
+   as a dark-blue block in dark mode. Make it a neutral sunken surface like the
+   other mini-forms on the page. (The `/40` opacity variant is its own class,
+   so the plain .bg-sky-50 rule above doesn't cover it.) */
+.dark .bg-sky-50\/40 {
+  background-color: var(--bg-sunken);
+}
+
+/* Dashboard StatCard tone tints use `/40` opacity variants of light -50 fills,
+   which render as washed-out LIGHT patches on the dark surface. Replace with
+   faint dark-tinted glows + matching borders so tone stays legible as accent,
+   not as a light card. */
+.dark .bg-emerald-50\/40 {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+.dark .bg-amber-50\/40 {
+  background-color: rgba(245, 158, 11, 0.1);
+}
+.dark .bg-rose-50\/40 {
+  background-color: rgba(244, 63, 94, 0.1);
+}
+.dark .border-emerald-300\/40 {
+  border-color: rgba(16, 185, 129, 0.35);
+}
+.dark .border-amber-300\/40 {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+.dark .border-rose-300\/40 {
+  border-color: rgba(244, 63, 94, 0.35);
+}
+.dark .bg-yellow-50 {
+  background-color: rgba(234, 179, 8, 0.15);
+}
+.dark .border-yellow-200 {
+  border-color: rgba(234, 179, 8, 0.3);
+}
+.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.15);
+}
+.dark .border-amber-200 {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.dark .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.15);
+}
+.dark .text-rose-700 {
+  color: #fda4af;
+}
+.dark .text-rose-600 {
+  color: #fb7185;
+}
+.dark .text-rose-500 {
+  color: #fb7185;
+}
+.dark .border-rose-200 {
+  border-color: rgba(244, 63, 94, 0.3);
+}
+.dark .border-rose-300 {
+  border-color: rgba(244, 63, 94, 0.4);
+}
+.dark .text-slate-600 {
+  color: #cbd5e1;
+}
+.dark .text-slate-500 {
+  color: #94a3b8;
+}
+
+/* Solid buttons whose surface FLIPS from dark to light in dark mode:
+   bg-gray-900/800 (via the admin overrides above) and bg-[var(--ink-900)] (via
+   the token flip — the canonical sales primary button). Their text-white label
+   would be invisible on the now-light surface, so force a dark label. Placed
+   after `.dark .text-white` so it wins by source order. White text on COLORED
+   buttons (emerald/red/accent/sky) is left untouched and stays white. */
+.dark .bg-gray-900,
+.dark .bg-gray-800,
+.dark .bg-\[var\(--ink-900\)\] {
+  color: #0a1420;
+}
+.dark .bg-\[var\(--ink-900\)\] * {
+  color: inherit;
 }
 
 /* Lenis smooth scroll */
@@ -418,6 +539,30 @@ html[data-theme="dark"] {
   --allone-line: rgba(255, 255, 255, 0.08);
   --allone-line-soft: rgba(255, 255, 255, 0.05);
   --allone-line-strong: rgba(255, 255, 255, 0.16);
+
+  /* ── ALLONE cold-clarity tokens — dark flips ──────────────────────────
+     The :root block above defines these for light mode only; without dark
+     values, inherited body text (e.g. the /sales greeting) stayed dark-blue
+     (#071d2f) in dark mode. Flip them here so every surface/text token that
+     the sales + admin dashboards inherit reads correctly on dark. */
+  --background: #0a0a0a;
+  --surface: #161618;
+  --surface-2: #1f1f22;
+  --surface-3: #1f1f22;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.06);
+  --text: #f5f5f7; /* was #071d2f — primary text now light */
+  --heading: #ffffff; /* headings pure white on dark */
+  --black: #f5f5f7; /* var(--black) text (e.g. logo wordmark) flips to light */
+  --muted: #9aa7b4; /* subtitles a shade lighter than the light-mode slate */
+  --accent-light: rgba(94, 142, 255, 0.16);
+  --accent-50: rgba(94, 142, 255, 0.12);
+  --accent-100: rgba(94, 142, 255, 0.18);
+
+  /* Slightly lift the dimmest ink shades so muted/subtitle text stays
+     readable on the near-black surfaces. */
+  --ink-500: #a6a6ac;
+  --ink-400: #8a8a90;
 
   --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.4);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 1px rgba(0, 0, 0, 0.5);
