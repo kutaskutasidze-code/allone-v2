@@ -7,15 +7,51 @@ import {
 import { fetchAllRows } from '@/lib/supabase/paginate';
 
 /**
- * Builds the pipeline summary: one read of the working-pipeline leads (the ~24k
- * `new` leads are never selected), tallied per stage in JS into a count + total
- * value. Paged so the per-stage totals aren't truncated by PostgREST's
- * 1000-row response cap.
+ * Builds the pipeline summary: count + total value per working-pipeline stage
+ * (the ~42k `new` leads are never included).
+ *
+ * Uses the pipeline_stage_agg RPC — a single GROUP BY in Postgres — instead of
+ * paging every matching lead into Node to tally in JS. Falls back to the old
+ * fetchAllRows() tally if the function isn't present yet.
  *
  * @param admin a service-role Supabase client (RLS-bypassing)
- * @param opts.salesUserId scope to a single rep's leads (sales portal)
+ * @param opts.salesUserId scope to a single rep's leads (sales portal); omit for
+ *   the team-wide admin funnel
  */
 export async function buildPipeline(
+  admin: SupabaseClient,
+  opts: { salesUserId?: string } = {},
+): Promise<{ stages: PipelineStageData[] }> {
+  const { data, error } = await admin.rpc('pipeline_stage_agg', {
+    p_uid: opts.salesUserId ?? null,
+  });
+
+  if (error || !data) {
+    return buildPipelineFanout(admin, opts);
+  }
+
+  const byStatus = new Map(
+    (data as Array<{ status: PipelineStatus; cnt: number; total_value: number }>).map(
+      (r) => [r.status, r],
+    ),
+  );
+
+  const stages: PipelineStageData[] = PIPELINE_STAGES.map((status) => {
+    const row = byStatus.get(status);
+    return {
+      status,
+      count: Number(row?.cnt ?? 0),
+      totalValue: Number(row?.total_value ?? 0),
+    };
+  });
+
+  return { stages };
+}
+
+// Fallback: the original full-slice pull + JS tally. Paged so the per-stage
+// totals aren't truncated by PostgREST's 1000-row response cap. Retained so the
+// funnel keeps working before the pipeline_stage_agg migration is applied.
+async function buildPipelineFanout(
   admin: SupabaseClient,
   opts: { salesUserId?: string } = {},
 ): Promise<{ stages: PipelineStageData[] }> {

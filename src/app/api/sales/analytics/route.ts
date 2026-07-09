@@ -1,43 +1,110 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSalesAuth } from "@/lib/sales-auth";
 import { leadStatusSchema } from "@/lib/validations/leads";
 import { fetchAllRows } from "@/lib/supabase/paginate";
 import { tbilisiDayStart, tbilisiWeekStart, tbilisiMonthStart } from "@/lib/time";
 
-export async function GET(request: NextRequest) {
-  try {
-    const { salesUser } = await requireSalesAuth();
-    const supabase = createAdminClient();
+const KNOWN_SERVICES = [
+  "chatbots",
+  "custom_ai",
+  "automation",
+  "website",
+  "consulting",
+] as const;
 
-    const days = parseInt(request.nextUrl.searchParams.get("days") || "30", 10);
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
+type LeadAggregates = {
+  total: number;
+  withPhone: number;
+  withEmail: number;
+  newInPeriod: number;
+  byStatus: Record<string, number>;
+  byService: Record<string, number>;
+  dailyTrend: Record<string, number>;
+};
 
-    const statuses = [...leadStatusSchema.options];
-    const services = [
-      "chatbots",
-      "custom_ai",
-      "automation",
-      "website",
-      "consulting",
-    ];
+// Lead-derived analytics in one round-trip via the sales_analytics_leads RPC
+// (single GROUP BY in Postgres). Falls back to the previous count fan-out +
+// full-row daily-trend pull if the function isn't present yet.
+async function getLeadAggregates(
+  supabase: SupabaseClient,
+  salesUserId: string,
+  startDate: Date,
+): Promise<LeadAggregates> {
+  const { data, error } = await supabase.rpc("sales_analytics_leads", {
+    p_uid: salesUserId,
+    p_since: startDate.toISOString(),
+  });
 
-    // Every sales user — including supervisors/admins — only sees their own
-    // numbers on /sales/*. Team-wide analytics live behind /admin.
-    const scope = <T extends ReturnType<typeof supabase.from>>(q: T) =>
-      q.eq("sales_user_id", salesUser.id);
+  if (error || !data) {
+    return leadAggregatesFanout(supabase, salesUserId, startDate);
+  }
 
-    const [
-      totalRes,
-      phoneRes,
-      emailRes,
-      newInPeriodRes,
-      ...statusAndServiceResults
-    ] = await Promise.all([
-      scope(
-        supabase.from("leads").select("id", { count: "exact", head: true }),
-      ),
+  const d = data as {
+    total: number;
+    withPhone: number;
+    withEmail: number;
+    newInPeriod: number;
+    byStatus: Record<string, number>;
+    byService: Record<string, number>;
+    dailyTrend: Record<string, number>;
+  };
+
+  const total = Number(d.total) || 0;
+
+  // Keep only the known statuses (matches the old fixed-list iteration); the RPC
+  // only emits statuses with count > 0 already.
+  const byStatus: Record<string, number> = {};
+  for (const s of leadStatusSchema.options) {
+    const c = Number(d.byStatus?.[s]) || 0;
+    if (c > 0) byStatus[s] = c;
+  }
+
+  // Keep only the 5 known services, then derive "unclassified" the same way the
+  // old code did: total minus the sum of the known-service counts.
+  const byService: Record<string, number> = {};
+  for (const s of KNOWN_SERVICES) {
+    const c = Number(d.byService?.[s]) || 0;
+    if (c > 0) byService[s] = c;
+  }
+  const classifiedTotal = Object.values(byService).reduce((sum, v) => sum + v, 0);
+  if (total > classifiedTotal) {
+    byService["unclassified"] = total - classifiedTotal;
+  }
+
+  const dailyTrend: Record<string, number> = {};
+  for (const [k, v] of Object.entries(d.dailyTrend ?? {})) {
+    dailyTrend[k] = Number(v) || 0;
+  }
+
+  return {
+    total,
+    withPhone: Number(d.withPhone) || 0,
+    withEmail: Number(d.withEmail) || 0,
+    newInPeriod: Number(d.newInPeriod) || 0,
+    byStatus,
+    byService,
+    dailyTrend,
+  };
+}
+
+// Fallback: the original per-status/service count fan-out (16 counts) plus a
+// paged pull of every lead in the period to bucket by day in JS. Retained so
+// analytics keeps working before the sales_analytics_leads migration is applied.
+async function leadAggregatesFanout(
+  supabase: SupabaseClient,
+  salesUserId: string,
+  startDate: Date,
+): Promise<LeadAggregates> {
+  const statuses = [...leadStatusSchema.options];
+  const services = [...KNOWN_SERVICES];
+  const scope = <T extends ReturnType<typeof supabase.from>>(q: T) =>
+    q.eq("sales_user_id", salesUserId);
+
+  const [totalRes, phoneRes, emailRes, newInPeriodRes, ...statusAndServiceResults] =
+    await Promise.all([
+      scope(supabase.from("leads").select("id", { count: "exact", head: true })),
       scope(
         supabase.from("leads").select("id", { count: "exact", head: true }),
       ).not("phone", "is", null),
@@ -59,45 +126,62 @@ export async function GET(request: NextRequest) {
       ),
     ]);
 
-    const total = totalRes.count || 0;
-    const withPhone = phoneRes.count || 0;
-    const withEmail = emailRes.count || 0;
-    const newInPeriod = newInPeriodRes.count || 0;
+  const total = totalRes.count || 0;
 
-    const byStatus: Record<string, number> = {};
-    statuses.forEach((s, i) => {
-      const count = statusAndServiceResults[i].count || 0;
-      if (count > 0) byStatus[s] = count;
-    });
+  const byStatus: Record<string, number> = {};
+  statuses.forEach((s, i) => {
+    const count = statusAndServiceResults[i].count || 0;
+    if (count > 0) byStatus[s] = count;
+  });
 
-    const byService: Record<string, number> = {};
-    services.forEach((s, i) => {
-      const count = statusAndServiceResults[statuses.length + i].count || 0;
-      if (count > 0) byService[s] = count;
-    });
+  const byService: Record<string, number> = {};
+  services.forEach((s, i) => {
+    const count = statusAndServiceResults[statuses.length + i].count || 0;
+    if (count > 0) byService[s] = count;
+  });
 
-    // Unclassified count
-    const classifiedTotal = Object.values(byService).reduce(
-      (sum, v) => sum + v,
-      0,
-    );
-    if (total > classifiedTotal) {
-      byService["unclassified"] = total - classifiedTotal;
-    }
+  const classifiedTotal = Object.values(byService).reduce((sum, v) => sum + v, 0);
+  if (total > classifiedTotal) {
+    byService["unclassified"] = total - classifiedTotal;
+  }
 
-    // Daily trend - fetch just dates from the period (limit higher)
-    const recentDates = await fetchAllRows<{ created_at: string }>((from, to) =>
-      scope(supabase.from("leads").select("created_at"))
-        .gte("created_at", startDate.toISOString())
-        .order("created_at", { ascending: true })
-        .range(from, to),
-    );
+  const recentDates = await fetchAllRows<{ created_at: string }>((from, to) =>
+    scope(supabase.from("leads").select("created_at"))
+      .gte("created_at", startDate.toISOString())
+      .order("created_at", { ascending: true })
+      .range(from, to),
+  );
 
-    const dailyTrend: Record<string, number> = {};
-    for (const row of recentDates) {
-      const date = new Date(row.created_at).toISOString().split("T")[0];
-      dailyTrend[date] = (dailyTrend[date] || 0) + 1;
-    }
+  const dailyTrend: Record<string, number> = {};
+  for (const row of recentDates) {
+    const date = new Date(row.created_at).toISOString().split("T")[0];
+    dailyTrend[date] = (dailyTrend[date] || 0) + 1;
+  }
+
+  return {
+    total,
+    withPhone: phoneRes.count || 0,
+    withEmail: emailRes.count || 0,
+    newInPeriod: newInPeriodRes.count || 0,
+    byStatus,
+    byService,
+    dailyTrend,
+  };
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { salesUser } = await requireSalesAuth();
+    const supabase = createAdminClient();
+
+    const days = parseInt(request.nextUrl.searchParams.get("days") || "30", 10);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Lead-derived aggregates (overview, byStatus, byService, dailyTrend) in a
+    // single RPC round-trip, with a fallback to the old fan-out (see helpers).
+    const { total, withPhone, withEmail, newInPeriod, byStatus, byService, dailyTrend } =
+      await getLeadAggregates(supabase, salesUser.id, startDate);
 
     // Goal progress — daily / weekly / monthly call & won counts vs target.
     // `daily_target` is configured per-rep on sales_users; week = 5×, month = 21×.
@@ -129,9 +213,10 @@ export async function GET(request: NextRequest) {
       return count ?? 0;
     };
     const wonRange = async (since: Date) => {
-      const { count } = await scope(
-        supabase.from("leads").select("id", { count: "exact", head: true }),
-      )
+      const { count } = await supabase
+        .from("leads")
+        .select("id", { count: "exact", head: true })
+        .eq("sales_user_id", salesUser.id)
         .eq("status", "won")
         .gte("status_changed_at", since.toISOString());
       return count ?? 0;
