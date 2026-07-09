@@ -59,6 +59,7 @@ export const salesNavBF: NavConfig = {
           href: "/sales/commissions",
           icon: "dollar-sign",
         },
+        { label: "Companies", href: "/sales/companies", icon: "building" },
       ],
     },
   ],
