@@ -1,22 +1,26 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { getCompanySession } from "@/lib/feedback/session";
+import type { Locale } from "@/lib/i18n/dict";
+import FeedbackShell from "./FeedbackShell";
 
 export const metadata: Metadata = {
   title: "AllOne Feedback",
   robots: { index: false, follow: false },
 };
 
-// Standalone light/monochrome shell for the client portal — deliberately NOT the
-// marketing header or the sales AppShell. Renders inside the root <body>.
-export default function FeedbackLayout({ children }: { children: React.ReactNode }) {
+// Standalone light/monochrome shell for the client portal. Reads the active
+// locale server-side (fb_locale cookie, set to the company's language at login)
+// so the header toggle + pages render without a flash.
+export default async function FeedbackLayout({ children }: { children: React.ReactNode }) {
+  const store = await cookies();
+  const c = store.get("fb_locale")?.value;
+  const initialLocale: Locale = c === "en" || c === "ka" ? c : "ka";
+  const authed = Boolean(await getCompanySession());
+
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 font-body">
-      <header className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex max-w-2xl items-center gap-2 px-5 py-4">
-          <span className="text-[15px] font-semibold tracking-tight">AllOne</span>
-          <span className="text-[13px] text-neutral-400">Feedback</span>
-        </div>
-      </header>
-      <main className="mx-auto max-w-2xl px-5 py-10">{children}</main>
-    </div>
+    <FeedbackShell initialLocale={initialLocale} authed={authed}>
+      {children}
+    </FeedbackShell>
   );
 }

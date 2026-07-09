@@ -34,5 +34,7 @@ export async function POST(request: NextRequest) {
   const res = NextResponse.json({ success: true });
   const jwt = signSession({ kind: "company", sub: company.id, name: company.name });
   res.cookies.set(SESSION_COOKIE, jwt, cookieOptions());
+  // Default the portal to the company's language (the header toggle can override).
+  res.cookies.set("fb_locale", company.comms_language, { path: "/", maxAge: 31536000, sameSite: "lax" });
   return res;
 }

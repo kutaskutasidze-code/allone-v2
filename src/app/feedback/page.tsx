@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { translate, LOCALES, LOCALE_LABEL, type Locale, type TranslationKey } from "@/lib/i18n/dict";
+import type { TranslationKey } from "@/lib/i18n/dict";
+import { useFeedbackLocale } from "./FeedbackShell";
 
 interface ErrState {
   key: TranslationKey;
@@ -11,13 +12,11 @@ interface ErrState {
 
 export default function FeedbackLoginPage() {
   const router = useRouter();
-  const [locale, setLocale] = useState<Locale>("ka");
+  const { t } = useFeedbackLocale();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<ErrState | null>(null);
-
-  const t = (k: TranslationKey, vars?: Record<string, string | number>) => translate(locale, k, vars);
 
   // Read any ?error= code from the magic-link redirect (avoids useSearchParams Suspense).
   useEffect(() => {
@@ -58,21 +57,6 @@ export default function FeedbackLoginPage() {
 
   return (
     <div className="mx-auto max-w-sm">
-      <div className="mb-6 flex justify-end gap-1">
-        {LOCALES.map((l) => (
-          <button
-            key={l}
-            type="button"
-            onClick={() => setLocale(l)}
-            className={`rounded-full px-2.5 py-1 text-[12px] transition ${
-              locale === l ? "bg-neutral-900 text-white" : "text-neutral-500 hover:text-neutral-900"
-            }`}
-          >
-            {LOCALE_LABEL[l]}
-          </button>
-        ))}
-      </div>
-
       <h1 className="text-lg font-semibold text-neutral-900">{t("feedback.portal.login.title")}</h1>
       <p className="mb-6 mt-1 text-[13px] text-neutral-500">{t("feedback.portal.login.subtitle")}</p>
 

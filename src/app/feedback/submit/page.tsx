@@ -14,5 +14,5 @@ export default async function SubmitPage() {
   const company = await getCompanyById(session.sub);
   if (!company || !company.is_active) redirect("/feedback?error=inactive");
 
-  return <SubmitForm companyName={company.name} locale={company.comms_language} />;
+  return <SubmitForm companyName={company.name} />;
 }

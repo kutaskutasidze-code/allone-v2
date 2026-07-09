@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { translate, type Locale, type TranslationKey } from "@/lib/i18n/dict";
+import type { TranslationKey } from "@/lib/i18n/dict";
+import { useFeedbackLocale } from "../FeedbackShell";
 import ScreenshotField from "@/components/feedback/ScreenshotField";
 
 const TYPES = ["bug", "feature", "feedback"] as const;
 const PRIORITIES = ["urgent", "high", "medium", "low", "none"] as const;
 
-export default function SubmitForm({ companyName, locale }: { companyName: string; locale: Locale }) {
-  const t = (k: TranslationKey, vars?: Record<string, string | number>) => translate(locale, k, vars);
+export default function SubmitForm({ companyName }: { companyName: string }) {
+  const { t, locale } = useFeedbackLocale();
 
   const [type, setType] = useState<string>("feedback");
   const [priority, setPriority] = useState<string>("medium");
@@ -62,36 +63,29 @@ export default function SubmitForm({ companyName, locale }: { companyName: strin
       <div className="mx-auto max-w-md text-center">
         <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-emerald-500" />
         <p className="text-sm text-neutral-700">{t("feedback.portal.submit.success")}</p>
-        <div className="mt-6 flex justify-center gap-3">
-          <button
-            onClick={reset}
-            className="rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800"
-          >
-            {t("feedback.portal.submit.another")}
-          </button>
-          <a
-            href="/feedback/logout"
-            className="rounded-lg px-4 py-2.5 text-sm text-neutral-500 transition hover:text-neutral-900"
-          >
-            {t("feedback.portal.submit.logout")}
-          </a>
-        </div>
+        <button
+          onClick={reset}
+          className="mt-6 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800"
+        >
+          {t("feedback.portal.submit.another")}
+        </button>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-neutral-900">{t("feedback.portal.submit.title")}</h1>
-          <p className="mt-1 text-[13px] text-neutral-500">{t("feedback.portal.submit.subtitle")}</p>
-        </div>
-        <a href="/feedback/logout" className="text-[12px] text-neutral-400 transition hover:text-neutral-900">
-          {t("feedback.portal.submit.logout")}
-        </a>
+      <div className="mb-8 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 sm:text-[28px]">
+          {t("feedback.portal.submit.title")}
+        </h1>
+        <p className="mx-auto mt-2 max-w-md text-[15px] leading-relaxed text-neutral-500">
+          {t("feedback.portal.submit.subtitle")}
+        </p>
+        <p className="mt-3 text-[13px] text-neutral-400">
+          {t("feedback.portal.submit.greeting", { name: companyName })}
+        </p>
       </div>
-      <p className="mb-4 text-[13px] text-neutral-500">{t("feedback.portal.submit.greeting", { name: companyName })}</p>
 
       {error && (
         <div className="mb-4 rounded-lg border border-red-100 bg-red-50 px-3 py-2.5 text-[13px] text-red-600">
