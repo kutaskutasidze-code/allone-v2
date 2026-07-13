@@ -62,8 +62,8 @@ export const PNL_LINES: PnlLine[] = [
   { key: "opex_founders", label: "Founder Salaries", section: "Operating Expenses", kind: "input", format: "money" },
   { key: "opex_accountant", label: "Accountant Salary", section: "Operating Expenses", kind: "input", format: "money" },
   { key: "opex_mktg_mgr", label: "Marketing Manager Salary", section: "Operating Expenses", kind: "input", format: "money" },
-  { key: "opex_payroll_tax", label: "Payroll Tax", section: "Operating Expenses", kind: "input", format: "money" },
-  { key: "opex_pension", label: "Pension", section: "Operating Expenses", kind: "input", format: "money" },
+  { key: "opex_payroll_tax", label: "Payroll Tax", section: "Operating Expenses", kind: "computed", format: "money" },
+  { key: "opex_pension", label: "Pension", section: "Operating Expenses", kind: "computed", format: "money" },
   { key: "opex_marketing", label: "Marketing", section: "Operating Expenses", kind: "input", format: "money" },
   { key: "opex_other", label: "Other Expenses", section: "Operating Expenses", kind: "input", format: "money" },
   { key: "total_opex", label: "Total OpEx", section: "Operating Expenses", kind: "computed", format: "money", total: true },
@@ -107,9 +107,17 @@ export function computeColumn(col: Record<string, number>): Record<string, numbe
   col.gross_profit = revenue - col.total_cogs;
   col.gross_margin = revenue ? col.gross_profit / revenue : 0;
 
+  // Payroll tax + pension replicate the investor Excel exactly (verified against
+  // all 24 plan months). Salaries are entered NET; commission is taxed too.
+  //   tax     = 20% of gross = 25% of net, on salaries + commission
+  //   pension = 4% of gross (net/0.784) on salaries, + commission * 0.01/0.98
+  const salaries =
+    v("opex_tech_salaries") + v("opex_founders") + v("opex_accountant") + v("opex_mktg_mgr");
+  col.opex_payroll_tax = 0.25 * (salaries + v("cogs_commission"));
+  col.opex_pension = salaries * (0.04 / 0.784) + v("cogs_commission") * (0.01 / 0.98);
+
   col.total_opex =
-    v("opex_tech_salaries") + v("opex_founders") + v("opex_accountant") +
-    v("opex_mktg_mgr") + v("opex_payroll_tax") + v("opex_pension") +
+    salaries + col.opex_payroll_tax + col.opex_pension +
     v("opex_marketing") + v("opex_other");
 
   col.ebitda = col.gross_profit - col.total_opex;
