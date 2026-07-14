@@ -31,6 +31,7 @@ export async function GET() {
       slug: c.slug,
       login_email: c.login_email,
       contact_email: c.contact_email,
+      phone: c.phone,
       comms_language: c.comms_language,
       is_active: c.is_active,
       created_at: c.created_at,

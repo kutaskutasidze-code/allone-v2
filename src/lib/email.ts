@@ -319,3 +319,120 @@ export async function sendSelfServeOfferNotice(
     console.error("[self-serve offer] notify error", err);
   }
 }
+
+interface FollowupReminder {
+  to: string;
+  repName?: string | null;
+  leadLabel: string;
+  taskTitle: string;
+  dueAt?: string | null;
+  /** Relative path (e.g. /sales/leads/<id>) — made absolute here. */
+  leadUrl: string;
+}
+
+/**
+ * Email a sales rep that a lead follow-up is due. Sent to the rep's own inbox.
+ * Best-effort: throws on hard failure so the caller can count it, but callers
+ * wrap this so one bad send never aborts the batch.
+ */
+export async function sendFollowupReminderEmail(
+  r: FollowupReminder,
+): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from =
+    process.env.SMTP_FROM || "ALLONE Sales <no-reply@allonelabs.com>";
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://allonelabs.com";
+  const url = r.leadUrl.startsWith("http") ? r.leadUrl : `${base}${r.leadUrl}`;
+  const hello = r.repName?.trim() ? r.repName.trim().split(/\s+/)[0] : "there";
+  const dueText = r.dueAt
+    ? new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Tbilisi",
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(r.dueAt))
+    : null;
+
+  if (!apiKey) {
+    console.log(
+      "[followup reminder]",
+      r.to,
+      "→",
+      r.leadLabel,
+      `(${r.taskTitle})`,
+      url,
+    );
+    return;
+  }
+
+  const text = [
+    `Hi ${hello},`,
+    "",
+    `It's time to follow up with ${r.leadLabel}.`,
+    `Task: ${r.taskTitle}`,
+    dueText ? `Due: ${dueText}` : "",
+    "",
+    `Open the lead: ${url}`,
+    "",
+    "— ALLONE CRM",
+  ]
+    .filter((line) => line !== "")
+    .join("\n");
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+    <body style="margin:0;padding:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background-color:#f8fafc;">
+      <div style="max-width:560px;margin:0 auto;padding:40px 20px;">
+        <div style="background-color:#0f172a;padding:28px 32px;border-radius:16px 16px 0 0;">
+          <h1 style="margin:0;color:white;font-size:20px;font-weight:700;">ALLONE CRM</h1>
+          <p style="margin:6px 0 0;color:#94a3b8;font-size:13px;">Follow-up reminder</p>
+        </div>
+        <div style="background-color:white;padding:32px;border-radius:0 0 16px 16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+          <p style="margin:0 0 16px;color:#0f172a;font-size:16px;">Hi ${escapeHtml(hello)},</p>
+          <p style="margin:0 0 20px;color:#0f172a;font-size:16px;line-height:1.6;">
+            It's time to follow up with <strong>${escapeHtml(r.leadLabel)}</strong>.
+          </p>
+          <div style="margin:0 0 24px;padding:16px 18px;background-color:#f1f5f9;border-radius:12px;">
+            <p style="margin:0 0 4px;color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;">Task</p>
+            <p style="margin:0;color:#0f172a;font-size:15px;font-weight:500;">${escapeHtml(r.taskTitle)}</p>
+            ${
+              dueText
+                ? `<p style="margin:12px 0 4px;color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;">Due</p>
+                   <p style="margin:0;color:#0f172a;font-size:15px;">${escapeHtml(dueText)}</p>`
+                : ""
+            }
+          </div>
+          <a href="${escapeHtml(url)}" style="display:inline-block;background-color:#0ea5e9;color:white;font-size:15px;font-weight:600;text-decoration:none;padding:12px 24px;border-radius:10px;">
+            Open the lead →
+          </a>
+        </div>
+      </div>
+    </body>
+    </html>`;
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+      // Cloudflare in front of Resend rejects default runtime UAs (see memory).
+      "User-Agent": "Mozilla/5.0 (compatible; AlloneBot/1.0)",
+    },
+    body: JSON.stringify({
+      from,
+      to: [r.to],
+      subject: `Time to follow up: ${r.leadLabel}`,
+      text,
+      html,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Resend API error: ${res.status} ${err}`);
+  }
+}

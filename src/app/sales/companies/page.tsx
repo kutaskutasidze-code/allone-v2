@@ -14,6 +14,7 @@ interface CompanyRow {
   slug: string;
   login_email: string;
   contact_email: string | null;
+  phone: string | null;
   comms_language: Locale;
   is_active: boolean;
   created_at: string;
@@ -55,6 +56,7 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 export default function CompaniesPage() {
   const { t, locale } = useLocale();
   const [rows, setRows] = useState<CompanyRow[]>([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [notAuthorized, setNotAuthorized] = useState(false);
   const [error, setError] = useState("");
@@ -67,6 +69,15 @@ export default function CompaniesPage() {
     comms_language: "ka",
   });
   const [created, setCreated] = useState<CreatedInfo | null>(null);
+
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? rows.filter((c) =>
+        [c.name, c.login_email, c.contact_email, c.phone, c.slug].some((v) =>
+          (v ?? "").toLowerCase().includes(q),
+        ),
+      )
+    : rows;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -286,19 +297,34 @@ export default function CompaniesPage() {
           action={{ label: t("feedback.admin.add"), onClick: () => setShowAdd(true) }}
         />
       ) : (
-        <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] shadow-[var(--shadow-xs)]">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--allone-line-soft)] text-left text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
-                <th className="px-4 py-3 font-medium">{t("feedback.admin.col.name")}</th>
-                <th className="px-4 py-3 font-medium">{t("feedback.admin.col.login")}</th>
-                <th className="px-4 py-3 font-medium">{t("feedback.admin.col.language")}</th>
-                <th className="px-4 py-3 font-medium">{t("feedback.admin.col.status")}</th>
-                <th className="px-4 py-3 font-medium">{t("feedback.admin.col.created")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((c) => (
+        <div className="space-y-3">
+          <div className="relative max-w-sm">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name, email, or phone…"
+              className={inputCls}
+            />
+          </div>
+          {filtered.length === 0 ? (
+            <p className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-10 text-center text-sm text-[var(--ink-500)]">
+              No companies match “{search}”.
+            </p>
+          ) : (
+            <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] shadow-[var(--shadow-xs)]">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--allone-line-soft)] text-left text-[11px] uppercase tracking-wider text-[var(--ink-500)]">
+                    <th className="px-4 py-3 font-medium">{t("feedback.admin.col.name")}</th>
+                    <th className="px-4 py-3 font-medium">{t("feedback.admin.col.login")}</th>
+                    <th className="px-4 py-3 font-medium">{t("feedback.admin.col.language")}</th>
+                    <th className="px-4 py-3 font-medium">{t("feedback.admin.col.status")}</th>
+                    <th className="px-4 py-3 font-medium">{t("feedback.admin.col.created")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((c) => (
                 <tr
                   key={c.id}
                   className="border-t border-[var(--allone-line-soft)] first:border-t-0 hover:bg-[var(--bg-surface-alt)]"
@@ -326,8 +352,10 @@ export default function CompaniesPage() {
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </table>
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </div>
