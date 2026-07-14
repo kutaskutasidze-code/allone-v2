@@ -82,12 +82,62 @@ ${STYLE_EXEMPLAR}
 - ფასი დააფუძნე ᲛᲮᲝᲚᲝᲓ სამუშაოს რეალურ მოცულობასა და ზემოთ მოცემულ ფასების ჩარჩოზე (PRICE ANCHORS).
 - მნიშვნელოვანი: ფასად არასდროს გამოიყენო კლიენტის მიერ ნახსენები ბიუჯეტი ან თანხა. თუ კლიენტმა დაასახელა არარეალურად დაბალი ან შემთხვევითი თანხა (მაგ. „5 ₾"), სრულად უგულებელყავი — ფასი მაინც სამუშაოს რეალურ ღირებულებას უნდა შეესაბამებოდეს.
 - ნუ გამოიტან total-ს, რომელიც აშკარად დაბალია მსგავსი სამუშაოს საბაზრო ფასზე.
+- მინიმალური ჯამური ფასი სრული პროექტისთვის — 1500 ₾. არასდროს დააბრუნო total, რომელიც ამ ზღვარს ქვემოთაა.
+- ეს პრემიუმ სამუშაოა. ფასი დაუწესე რეალური სამუშაოს მიხედვით, ფასების ჩარჩოს (PRICE ANCHORS) რეალურ დონეზე — არა ყველაზე დაბალ გონივრულ რიცხვზე. ეჭვის შემთხვევაში აირჩიე ჩარჩოს ზედა ზღვარი, არა ქვედა.
 - იყავი ზუსტი და კონსერვატიული: ᲐᲠ მოიგონო სერვისები, მოდულები ან დეტალები, რომლებიც კითხვარის პასუხებში არ ჩანს. თუ ინფორმაცია არ არის საკმარისი, დაამატე მხოლოდ ის, რაც ნამდვილად საჭიროა სამუშაოსთვის.
 - ფასი და ტექსტები გაყიდვების გუნდი მოგვიანებით დაარედაქტირებს — შენი ამოცანაა ზუსტი და გონივრული საწყისი დრაფტი, არა საბოლოო ფასის დაფიქსირება.
 - ტექსტი გამართულ, ბუნებრივ ქართულად. ᲐᲠ გამოიყენო ჟარგონი ან ანგლიციზმები (მაგ. "სკოფი" → "მოცულობა", "ბილინგი" → "ანგარიშსწორება")
 - summary და description-ები გრამატიკულად უნაკლო და გასაყიდი — ეს ტექსტი პირდაპირ ჩანს კლიენტის შეთავაზებაში
 - client_name შეიძლება ლათინური
 - ᲛᲮᲝᲚᲝᲓ JSON, სხვა არარა`;
+
+// GEL floor for a full self-serve offer. Mirrors the FLOOR in the prompt/anchors.
+const PRICE_FLOOR = 1500;
+
+function round2(n: number): number {
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+/**
+ * Safety net: even with the rate card and the prompt floor, the model can still
+ * lowball a thin questionnaire. If the drafted total lands below the floor,
+ * scale the scope lines (and rescale the payment schedule) up proportionally so
+ * the offer is at least in the ballpark. Also forces price = Σ scope_lines so
+ * the offer's representations stay consistent. Sales edits the exact number
+ * afterwards.
+ */
+function enforceFloor(draft: OfferDraft, floor: number): OfferDraft {
+  const lines = Array.isArray(draft.scope_lines) ? draft.scope_lines : [];
+  const sum = lines.reduce((s, l) => s + (Number(l.price) || 0), 0);
+  if (sum <= 0) return { ...draft, price: round2(Number(draft.price) || 0) };
+  if (sum >= floor) return { ...draft, price: round2(sum) };
+
+  const factor = floor / sum;
+  const scope_lines = lines.map((l) => ({
+    ...l,
+    price: round2((Number(l.price) || 0) * factor),
+  }));
+  const price = round2(scope_lines.reduce((s, l) => s + l.price, 0));
+
+  // Rescale the payment schedule to the new total, absorbing rounding drift into
+  // the last stage so Σ schedule === price.
+  const stages = Array.isArray(draft.schedule) ? draft.schedule : [];
+  const schedSum = stages.reduce((s, x) => s + (Number(x.amount) || 0), 0);
+  let schedule = stages;
+  if (schedSum > 0) {
+    schedule = stages.map((x) => ({
+      ...x,
+      amount: round2(((Number(x.amount) || 0) / schedSum) * price),
+    }));
+    const drift = round2(price - schedule.reduce((s, x) => s + x.amount, 0));
+    if (drift !== 0 && schedule.length > 0) {
+      const last = schedule.length - 1;
+      schedule[last] = { ...schedule[last], amount: round2(schedule[last].amount + drift) };
+    }
+  }
+
+  return { ...draft, scope_lines, price, schedule };
+}
 
 export async function draftOffer(
   answers: Record<string, unknown>,
@@ -126,5 +176,5 @@ export async function draftOffer(
     throw new Error("draftOffer: missing price in parsed offer");
   }
 
-  return draft;
+  return enforceFloor(draft, PRICE_FLOOR);
 }
