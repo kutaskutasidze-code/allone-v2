@@ -126,9 +126,7 @@ export function NotificationsMenu() {
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
         {unread > 0 && (
-          <span className="absolute right-0.5 top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--allonce-err)] px-1 text-[9px] font-semibold text-white">
-            {unread > 9 ? '9+' : unread}
-          </span>
+          <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-[var(--allonce-err)] ring-2 ring-[var(--bg-surface-alt)]" />
         )}
       </button>
 
@@ -171,8 +169,18 @@ export function NotificationsMenu() {
             )}
           </div>
 
-          <div className="border-t border-[var(--allonce-line-soft)] bg-[var(--bg-surface-alt)] px-4 py-2 text-[11.5px] text-[var(--ink-500)]">
-            {items.length} total · {unread} unread
+          <div className="flex items-center justify-between border-t border-[var(--allonce-line-soft)] bg-[var(--bg-surface-alt)] px-4 py-2 text-[11.5px] text-[var(--ink-500)]">
+            <span>{items.length} total</span>
+            {unread > 0 ? (
+              <span className="inline-flex items-center gap-1.5">
+                <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--allonce-err)] px-1 text-[9px] font-semibold text-white">
+                  {unread > 9 ? '9+' : unread}
+                </span>
+                unread
+              </span>
+            ) : (
+              <span>All read</span>
+            )}
           </div>
         </div>
       )}
