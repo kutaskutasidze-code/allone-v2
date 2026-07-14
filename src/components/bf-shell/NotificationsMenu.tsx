@@ -126,7 +126,7 @@ export function NotificationsMenu() {
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
         {unread > 0 && (
-          <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-[var(--allonce-err)] ring-2 ring-[var(--bg-surface-alt)]" />
+          <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-[var(--bg-surface-alt)]" />
         )}
       </button>
 
@@ -173,7 +173,7 @@ export function NotificationsMenu() {
             <span>{items.length} total</span>
             {unread > 0 ? (
               <span className="inline-flex items-center gap-1.5">
-                <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--allonce-err)] px-1 text-[9px] font-semibold text-white">
+                <span className="flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-semibold text-white">
                   {unread > 9 ? '9+' : unread}
                 </span>
                 unread
@@ -199,7 +199,7 @@ function NotificationRow({ n, onClick }: { n: NotificationItem; onClick: () => v
       : n.kind === 'firing'
       ? 'bg-[var(--allonce-warn)]'
       : n.kind === 'billing'
-      ? 'bg-[var(--allonce-err)]'
+      ? 'bg-red-500'
       : 'bg-[var(--ink-400)]';
 
   const content = (
