@@ -39,6 +39,14 @@ export async function runFollowupReminders(
     errors: 0,
   };
 
+  // Only remind for follow-ups that came due recently. Anything older than this
+  // grace window is stale backlog — reminding it would blast the whole overdue
+  // queue at once, which is never what we want. New follow-ups get reminded as
+  // they come due (the cron runs every few minutes); the window only tolerates
+  // cron downtime.
+  const GRACE_MS = 12 * 60 * 60 * 1000; // 12h
+  const graceIso = new Date(Date.parse(nowIso) - GRACE_MS).toISOString();
+
   const { data, error } = await supabase
     .from("tasks")
     .select(
@@ -46,8 +54,8 @@ export async function runFollowupReminders(
     )
     .eq("status", "open")
     .lte("due_at", nowIso)
+    .gte("due_at", graceIso)
     .is("reminded_at", null)
-    .not("due_at", "is", null)
     .not("sales_user_id", "is", null)
     .order("due_at", { ascending: true })
     .limit(200);
