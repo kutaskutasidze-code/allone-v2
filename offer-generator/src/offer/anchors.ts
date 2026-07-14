@@ -24,14 +24,17 @@ export interface OfferDraft {
   addons?: OfferScopeLine[]; // optional suggested extras
 }
 
-// Real anchors from past offers (GEL). Passed into the drafter prompt so the
-// suggested price is grounded, not invented.
+// Rate card (GEL) grounded in Allone Labs' real sold prices — proposals land in
+// the ~800–2,500 range and typical full projects sell around 1,500+, so these
+// anchors are set to keep drafts realistic rather than lowballing. Passed into
+// the drafter prompt so the suggested price is grounded, not invented.
 export const PRICE_ANCHORS = `
-Web build: simple 5-page static ~500; full e-commerce rebuild ~800; full modernization+AI+workflow ~2000 (4x500 monthly).
-Modular: full website 800; AI layer (chatbot + pgvector personalization + admin-agent) 400; catalog migration (~775 products) 300.
-Add-ons: Stripe 300-400; Instagram Shop 250-400; Meta Pixel+Conversion API 200-300; blog (CMS+10 articles) 600-800; photo reshoot 800-1200.
+Web build (one-time, GEL): simple 5-page site ~2400; full e-commerce rebuild ~4000; full modernization + AI + workflow ~8000.
+Modular components: full website 2400; AI layer (chatbot + pgvector personalization + admin-agent) 3000; catalog migration (~775 products) 1600.
+Add-ons: Stripe / payments 1200-1600; Instagram Shop 1000-1600; Meta Pixel + Conversion API 800-1200; blog (CMS + 10 articles) 2000-3000; photo reshoot 1600-3000.
 Recurring: support 100-200/mo; infra opex ~7-200/mo.
-Payment: advance/middle/final (e.g. 200/800/500) or equal monthly stages. Timeline ~4 working weeks for a full build.
+FLOOR: never quote a full project below 1500 GEL, no matter how small the scope looks. These are premium builds — price them like real work, not the cheapest plausible number.
+Payment: advance / middle / final (proportional) or equal monthly stages. Timeline ~4 working weeks for a full build.
 `.trim();
 
 // Distilled from Allone Labs' best real offers (Tama AL-2026-028 — the
