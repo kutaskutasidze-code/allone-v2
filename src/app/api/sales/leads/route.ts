@@ -135,7 +135,7 @@ export async function GET(request: Request) {
       const sanitized = search.replace(/[%_,()]/g, "").slice(0, 100);
       if (sanitized.length > 0) {
         query = query.or(
-          `name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company.ilike.%${sanitized}%`,
+          `name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,company.ilike.%${sanitized}%,phone.ilike.%${sanitized}%,city.ilike.%${sanitized}%`,
         );
       }
     }

@@ -6,7 +6,6 @@ import { NotificationsMenu } from "./NotificationsMenu";
 import { AccountMenu } from "./AccountMenu";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageToggle } from "./LanguageToggle";
-import { RealtimeStatusPill } from "./RealtimeStatusPill";
 
 interface AppTopbarProps {
   breadcrumb?: Array<{ label: string; href?: string }>;
@@ -187,7 +186,6 @@ export function AppTopbar({
         )}
 
         <LanguageToggle />
-        <RealtimeStatusPill />
         <ThemeToggle />
         <div className="flex items-center gap-1.5 sm:gap-2">
           <NotificationsMenu />

@@ -144,7 +144,7 @@ export const LEAD_STATUS_STYLES: Record<string, string> = {
   interested: 'bg-purple-100 text-purple-700',
   proposal: 'bg-indigo-100 text-indigo-700',
   won: 'bg-green-100 text-green-700',
-  lost: 'bg-gray-100 text-gray-500',
+  lost: 'bg-red-100 text-red-700',
   on_hold: 'bg-orange-100 text-orange-700',
   // legacy
   contacted: 'bg-yellow-100 text-yellow-700',
@@ -176,7 +176,7 @@ export const LEAD_STATUS_COLORS: Record<string, string> = {
   interested: '#a855f7',
   proposal: '#6366f1',
   won: '#22c55e',
-  lost: '#9ca3af',
+  lost: '#dc2626',
   on_hold: '#f97316',
   // legacy
   contacted: '#eab308',
