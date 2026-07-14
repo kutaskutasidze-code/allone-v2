@@ -1,11 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { sendFollowupReminderEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
 
 export interface FollowupReminderSummary {
   due: number;
   notified: number;
-  emailed: number;
   skipped: number;
   errors: number;
 }
@@ -17,15 +15,14 @@ interface DueTaskRow {
   lead_id: string | null;
   sales_user_id: string | null;
   lead: { company: string | null; name: string | null } | null;
-  rep: { name: string | null; email: string | null } | null;
 }
 
 /**
- * Deliver follow-up reminders for tasks whose due_at has passed and that have
- * not been reminded yet. For each: claim it (set reminded_at once), create an
- * in-app notification for the owning rep, and email them. Idempotent — the
- * reminded_at claim guarantees a task fires at most once even if this runs
- * concurrently or is retried.
+ * Create in-app notifications for follow-up tasks whose due_at has passed and
+ * that have not been reminded yet. For each: claim it (set reminded_at once)
+ * and create an in-app notification for the owning rep — this drives the bell.
+ * No email is sent. Idempotent: the reminded_at claim guarantees a task fires
+ * at most once even if this runs concurrently or is retried.
  */
 export async function runFollowupReminders(
   supabase: SupabaseClient,
@@ -34,13 +31,12 @@ export async function runFollowupReminders(
   const summary: FollowupReminderSummary = {
     due: 0,
     notified: 0,
-    emailed: 0,
     skipped: 0,
     errors: 0,
   };
 
   // Only remind for follow-ups that came due recently. Anything older than this
-  // grace window is stale backlog — reminding it would blast the whole overdue
+  // grace window is stale backlog — reminding it would surface the whole overdue
   // queue at once, which is never what we want. New follow-ups get reminded as
   // they come due (the cron runs every few minutes); the window only tolerates
   // cron downtime.
@@ -50,7 +46,7 @@ export async function runFollowupReminders(
   const { data, error } = await supabase
     .from("tasks")
     .select(
-      "id, title, due_at, lead_id, sales_user_id, lead:leads(company, name), rep:sales_users(name, email)",
+      "id, title, due_at, lead_id, sales_user_id, lead:leads(company, name)",
     )
     .eq("status", "open")
     .lte("due_at", nowIso)
@@ -102,7 +98,7 @@ export async function runFollowupReminders(
     const taskTitle = task.title?.trim() || "Follow up";
     const href = task.lead_id ? `/sales/leads/${task.lead_id}` : "/sales/follow-ups";
 
-    // In-app notification (drives the bell). Best-effort per task.
+    // In-app notification only (drives the bell). No email.
     const { error: notifyError } = await supabase.from("notifications").insert({
       sales_user_id: task.sales_user_id,
       type: "followup_due",
@@ -119,27 +115,6 @@ export async function runFollowupReminders(
       summary.errors++;
     } else {
       summary.notified++;
-    }
-
-    // Email the rep at their own inbox. Never let a send failure abort the batch.
-    if (task.rep?.email) {
-      try {
-        await sendFollowupReminderEmail({
-          to: task.rep.email,
-          repName: task.rep.name,
-          leadLabel,
-          taskTitle,
-          dueAt: task.due_at,
-          leadUrl: href,
-        });
-        summary.emailed++;
-      } catch (err) {
-        logger.error("Follow-up reminders: email failed", {
-          error: err instanceof Error ? err.message : String(err),
-          resourceId: task.id,
-        });
-        summary.errors++;
-      }
     }
   }
 
