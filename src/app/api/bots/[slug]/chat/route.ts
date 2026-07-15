@@ -25,7 +25,7 @@ export const dynamic = "force-dynamic";
 const SEED_PREFIX = "(ვიზიტორმა"; // hidden opening seed — not a real client turn
 // Hard stop so a looping conversation always reaches the thread (and can never
 // grow into the 60KB request cap as a raw error).
-const FORCE_COMPLETE_AFTER_TURNS = 12;
+const FORCE_COMPLETE_AFTER_TURNS = 20;
 
 function transcriptOf(messages: ChatMessage[]): string {
   return messages
