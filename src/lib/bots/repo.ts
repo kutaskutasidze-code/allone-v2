@@ -66,6 +66,7 @@ export async function createBotConfig(input: {
   questions: unknown;
   lead_id: string | null;
   created_by: string | null;
+  knowledge?: string | null;
 }): Promise<BotConfig> {
   const db = createAdminClient();
   const { data, error } = await db

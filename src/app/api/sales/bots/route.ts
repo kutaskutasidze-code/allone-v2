@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
     intro?: unknown;
     language?: unknown;
     lead_id?: unknown;
+    knowledge?: unknown;
   };
   try {
     body = await req.json();
@@ -73,6 +74,12 @@ export async function POST(req: NextRequest) {
     questions: body.questions,
     lead_id: typeof body.lead_id === "string" ? body.lead_id : null,
     created_by: salesUser?.id ?? null,
+    // When set, the bot becomes a bilingual FAQ/website bot answering from this
+    // knowledge (and must capture contact) instead of the Georgian intake bot.
+    knowledge:
+      typeof body.knowledge === "string" && body.knowledge.trim()
+        ? body.knowledge.trim()
+        : null,
   });
 
   return NextResponse.json({ bot });
