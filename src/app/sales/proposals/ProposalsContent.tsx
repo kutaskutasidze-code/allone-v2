@@ -48,6 +48,17 @@ function statusBadge(status: string) {
 function ResponseCard({ response }: { response: QuestionnaireResponse }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const answers = (response.answers ?? {}) as Record<string, unknown>;
+  const answerEntries = Object.entries(answers)
+    .map(
+      ([k, v]) =>
+        [
+          k,
+          Array.isArray(v) ? v.join(", ") : v == null ? "" : String(v),
+        ] as const,
+    )
+    .filter(([, v]) => v.trim().length > 0);
 
   async function handleDraft() {
     setLoading(true);
@@ -82,35 +93,62 @@ function ResponseCard({ response }: { response: QuestionnaireResponse }) {
     : "—";
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-3">
-      <div>
-        <p className="text-sm font-medium text-[var(--ink-900)]">
-          {displayName}
-        </p>
-        <p className="mt-0.5 font-mono text-[11px] text-[var(--ink-400)]">
-          {response.bot_slug} · {date}
-        </p>
-      </div>
-      <div className="flex flex-col items-end gap-1">
-        <button
-          type="button"
-          onClick={() => void handleDraft()}
-          disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--ink-900)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
-        >
-          {loading ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
-          ) : (
-            <ClipboardList className="h-3 w-3" />
-          )}
-          {loading ? "დრაფტი…" : "Draft offer"}
-        </button>
-        {error && (
-          <p className="max-w-xs rounded-[var(--radius-xs)] border border-red-100 bg-red-50 px-2 py-1 text-[11px] text-red-700">
-            {error}
+    <div className="rounded-[var(--radius-md)] border border-[var(--allone-line)] bg-[var(--bg-surface)] px-4 py-3">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-[var(--ink-900)]">
+            {displayName}
           </p>
-        )}
+          <p className="mt-0.5 font-mono text-[11px] text-[var(--ink-400)]">
+            {response.bot_slug} · {date}
+          </p>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-2">
+            {answerEntries.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setExpanded((e) => !e)}
+                className="text-[11px] text-[var(--ink-500)] underline hover:text-[var(--ink-800)]"
+              >
+                {expanded
+                  ? "Hide answers"
+                  : `View answers (${answerEntries.length})`}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => void handleDraft()}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--ink-900)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+            >
+              {loading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <ClipboardList className="h-3 w-3" />
+              )}
+              {loading ? "დრაფტი…" : "Draft offer"}
+            </button>
+          </div>
+          {error && (
+            <p className="max-w-xs rounded-[var(--radius-xs)] border border-red-100 bg-red-50 px-2 py-1 text-[11px] text-red-700">
+              {error}
+            </p>
+          )}
+        </div>
       </div>
+      {expanded && answerEntries.length > 0 && (
+        <dl className="mt-3 space-y-1.5 border-t border-[var(--allone-line)] pt-3">
+          {answerEntries.map(([k, v]) => (
+            <div key={k} className="text-[12px] leading-snug">
+              <dt className="font-mono text-[10.5px] uppercase tracking-wide text-[var(--ink-400)]">
+                {k.replace(/_/g, " ")}
+              </dt>
+              <dd className="whitespace-pre-wrap text-[var(--ink-800)]">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </div>
   );
 }
