@@ -43,6 +43,14 @@
     {
       "path": "/api/cron/followups",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/assign-leads",
+      "schedule": "0 */2 * * *"
+    },
+    {
+      "path": "/api/cron/campaigns",
+      "schedule": "0 9 * * 1-5"
     }
   ]
 }
