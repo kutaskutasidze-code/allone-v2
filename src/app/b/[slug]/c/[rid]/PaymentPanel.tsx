@@ -60,6 +60,23 @@ export function PaymentPanel({
   const rendered = useRef(false);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState(paid);
+  // GEL→USD rate from the server (same source PayPal is charged at) so the shown
+  // estimate can't drift from the actual charge. Falls back to 2.7 until loaded.
+  const [gelPerUsd, setGelPerUsd] = useState(2.7);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/paypal/rate")
+      .then((r) => r.json())
+      .then((d: { gelPerUsd?: number }) => {
+        if (!cancelled && typeof d.gelPerUsd === "number" && d.gelPerUsd > 0)
+          setGelPerUsd(d.gelPerUsd);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (done || rendered.current || !CLIENT_ID || !ref.current) return;
@@ -127,7 +144,7 @@ export function PaymentPanel({
     );
   }
 
-  const usdApprox = (amountGel / 2.7).toFixed(0);
+  const usdApprox = (amountGel / gelPerUsd).toFixed(0);
 
   return (
     // Brand-accent scoped to match the in-chat offer + sign panel (one blue).

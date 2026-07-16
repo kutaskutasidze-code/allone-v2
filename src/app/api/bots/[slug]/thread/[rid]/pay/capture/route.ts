@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getResponse } from "@/lib/bots/repo";
-import { getProposalByResponseId, updateProposal } from "@/lib/offers/repo";
+import {
+  getProposalByResponseId,
+  updateProposal,
+  markInstallmentPaid,
+} from "@/lib/offers/repo";
 import { captureOrder, gelToUsd } from "@/lib/paypal";
 
 export const runtime = "nodejs";
@@ -64,6 +68,10 @@ export async function POST(
       paypal_order_id: body.orderID,
       paypal_capture_id: cap.captureId ?? null,
     });
+
+    // Reflect the advance in the lead's payment ledger so Paid/Owed is correct
+    // (best-effort — never blocks the payment response).
+    await markInstallmentPaid(proposal.lead_id, gel);
 
     return NextResponse.json({ ok: true });
   } catch (err) {

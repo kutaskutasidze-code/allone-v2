@@ -93,6 +93,56 @@ export async function getProposal(id: string): Promise<Proposal | null> {
   return flattenLeadEmail(data as ProposalRow);
 }
 
+export async function getProposalByDocNumber(
+  docNumber: string,
+): Promise<Proposal | null> {
+  const db = createAdminClient();
+  const { data, error } = await db
+    .from("proposals")
+    .select("*, leads(email)")
+    .eq("doc_number", docNumber)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return flattenLeadEmail(data as ProposalRow);
+}
+
+/**
+ * Best-effort ledger reconciliation: mark the earliest unpaid lead_payments
+ * installment of this amount as paid, so an in-chat PayPal payment (the advance)
+ * is reflected in the lead's Paid/Owed. No-op when the lead has no matching row
+ * (e.g. self-serve offers never seeded the schedule). Never throws — a ledger
+ * miss must not fail a real payment.
+ */
+export async function markInstallmentPaid(
+  leadId: string | null | undefined,
+  amountGel: number,
+): Promise<boolean> {
+  if (!leadId || !(amountGel > 0)) return false;
+  const db = createAdminClient();
+  try {
+    const { data } = await db
+      .from("lead_payments")
+      .select("id")
+      .eq("lead_id", leadId)
+      .is("paid_at", null)
+      .eq("amount", amountGel)
+      .limit(1)
+      .maybeSingle();
+    if (!data?.id) return false;
+    const { error } = await db
+      .from("lead_payments")
+      .update({ paid_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .is("paid_at", null);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
 export async function createProposal(
   input: CreateProposalInput,
 ): Promise<Proposal> {
