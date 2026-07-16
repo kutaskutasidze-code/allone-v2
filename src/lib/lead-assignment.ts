@@ -109,6 +109,12 @@ export async function assignNewLeadPool(
   const reps = await loadReps(db);
   if (reps.length === 0) return { assigned: 0, scanned: 0, noReps: true };
 
+  // Refresh lead scores so we work the highest-intent leads first.
+  await db.rpc("rescore_new_leads").then(
+    () => {},
+    () => {},
+  );
+
   const load = await loadLoads(
     db,
     reps.map((r) => r.id),
@@ -119,7 +125,7 @@ export async function assignNewLeadPool(
     .select("id, industry")
     .is("sales_user_id", null)
     .eq("status", "new")
-    .order("relevance_score", { ascending: false, nullsFirst: false })
+    .order("lead_score", { ascending: false, nullsFirst: false })
     .limit(limit);
   if (error) {
     logger.error("assignNewLeadPool: pool load failed", {
