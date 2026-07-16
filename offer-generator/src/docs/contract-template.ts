@@ -179,10 +179,19 @@ const CSS = `
   }
 `;
 
+export interface SignatureInfo {
+  name?: string | null;
+  id_code?: string | null;
+  signature_image?: string | null; // data: URL (PNG)
+  signed_at?: string | null; // ISO
+  ip?: string | null;
+}
+
 export function renderContractHtml(
   proposal: ProposalLike,
   recipient: Recipient,
   dateLabel: string,
+  signature?: SignatureInfo | null,
 ): string {
   const { doc_number, language, offer } = proposal;
   const issuer = issuerName(language);
@@ -285,7 +294,17 @@ ${scheduleList(offer.schedule)}
       <div class="sig-row">${esc(clientName)}</div>
       ${recipient.id_code ? `<div class="sig-row">პ/ნ ${esc(recipient.id_code)}</div>` : ""}
       ${recipient.address ? `<div class="sig-row">მის: ${esc(recipient.address)}</div>` : `<div class="sig-row">მის: <span class="sig-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>`}
-      <div class="sig-row" style="margin-top:10px;">ხელმოწერა: <span class="sig-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+      ${
+        signature && (signature.signature_image || signature.name)
+          ? `<div class="sig-row" style="margin-top:10px;">ხელმოწერა:${
+              signature.signature_image
+                ? ` <img src="${signature.signature_image}" alt="ხელმოწერა" style="height:44px;max-width:220px;object-fit:contain;vertical-align:middle;margin-left:6px;" />`
+                : ` <strong>${esc(signature.name || clientName)}</strong>`
+            }</div>
+      <div class="sig-row" style="font-size:10px;color:#555;margin-top:4px;">ხელმომწერი: ${esc(signature.name || clientName)}${signature.id_code ? ` · პ/ნ ${esc(signature.id_code)}` : ""}</div>
+      <div class="sig-row" style="font-size:10px;color:#555;">ელექტრონული ხელმოწერა${signature.signed_at ? ` · ${esc(new Date(signature.signed_at).toLocaleString("ka-GE"))}` : ""}${signature.ip ? ` · IP ${esc(signature.ip)}` : ""}</div>`
+          : `<div class="sig-row" style="margin-top:10px;">ხელმოწერა: <span class="sig-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>`
+      }
     </div>
     <div>
       <div class="sig-col-head">შემსრულებელი</div>
