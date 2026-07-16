@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ClipboardList,
   Loader2,
@@ -45,10 +45,50 @@ function statusBadge(status: string) {
 // Open-response card
 // ---------------------------------------------------------------------------
 
+interface AiBrief {
+  headline: string;
+  needs: string[];
+  budget_timeline: string | null;
+  objections: string[];
+  sentiment: "hot" | "warm" | "cool" | "unknown";
+  next_step: string;
+}
+
+const SENTIMENT: Record<AiBrief["sentiment"], { label: string; cls: string }> =
+  {
+    hot: { label: "Hot", cls: "text-red-700 bg-red-100" },
+    warm: { label: "Warm", cls: "text-amber-700 bg-amber-100" },
+    cool: { label: "Cool", cls: "text-sky-700 bg-sky-100" },
+    unknown: {
+      label: "—",
+      cls: "text-[var(--ink-500)] bg-[var(--bg-surface)]",
+    },
+  };
+
 function ResponseCard({ response }: { response: QuestionnaireResponse }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [brief, setBrief] = useState<AiBrief | null>(null);
+  const [briefState, setBriefState] = useState<"idle" | "loading" | "error">(
+    "idle",
+  );
+
+  // Load the AI conversation brief the first time the card is expanded.
+  useEffect(() => {
+    if (!expanded || brief || briefState !== "idle") return;
+    setBriefState("loading");
+    fetch(`/api/sales/responses/${response.id}/summary`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d: { summary?: AiBrief }) => {
+        if (d.summary) {
+          setBrief(d.summary);
+          setBriefState("idle");
+        } else setBriefState("error");
+      })
+      .catch(() => setBriefState("error"));
+  }, [expanded, brief, briefState, response.id]);
+
   const answers = (response.answers ?? {}) as Record<string, unknown>;
   const answerEntries = Object.entries(answers)
     .map(
@@ -137,6 +177,64 @@ function ResponseCard({ response }: { response: QuestionnaireResponse }) {
           )}
         </div>
       </div>
+      {expanded && (
+        <div className="ai-brief mt-3 rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-sunken,#f7f7f8)] p-3">
+          <div className="mb-1.5 flex items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--ink-500)]">
+              AI brief
+            </span>
+            {brief && (
+              <span
+                className={`inline-block rounded-full px-1.5 py-0.5 font-mono text-[9.5px] font-semibold uppercase tracking-wide ${SENTIMENT[brief.sentiment].cls}`}
+              >
+                {SENTIMENT[brief.sentiment].label}
+              </span>
+            )}
+          </div>
+          {briefState === "loading" && (
+            <p className="flex items-center gap-1.5 text-[12.5px] text-[var(--ink-500)]">
+              <Loader2 className="h-3 w-3 animate-spin" /> Reading the
+              conversation…
+            </p>
+          )}
+          {briefState === "error" && (
+            <p className="text-[12.5px] text-[var(--ink-500)]">
+              Couldn&apos;t generate a brief for this one.
+            </p>
+          )}
+          {brief && (
+            <div className="space-y-2 text-[13px]">
+              <p className="font-medium text-[var(--ink-900)]">
+                {brief.headline}
+              </p>
+              {brief.needs.length > 0 && (
+                <p>
+                  <span className="text-[var(--ink-500)]">Needs: </span>
+                  {brief.needs.join(" · ")}
+                </p>
+              )}
+              {brief.budget_timeline && (
+                <p>
+                  <span className="text-[var(--ink-500)]">
+                    Budget/timeline:{" "}
+                  </span>
+                  {brief.budget_timeline}
+                </p>
+              )}
+              {brief.objections.length > 0 && (
+                <p>
+                  <span className="text-[var(--ink-500)]">Watch: </span>
+                  {brief.objections.join(" · ")}
+                </p>
+              )}
+              <p className="rounded bg-[var(--bg-surface)] px-2 py-1.5 text-[var(--ink-900)]">
+                <span className="text-[var(--ink-500)]">Next: </span>
+                {brief.next_step}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
       {expanded && answerEntries.length > 0 && (
         <dl className="mt-3 space-y-1.5 border-t border-[var(--allone-line)] pt-3">
           {answerEntries.map(([k, v]) => (
