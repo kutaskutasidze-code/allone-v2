@@ -16,6 +16,7 @@ export function buildResponseRow(
   clientName: string | null,
   answers: Record<string, string | string[]>,
   userAgent: string | null,
+  transcript?: { role: string; content: string }[] | null,
 ) {
   const respondent =
     typeof answers.respondent === "string"
@@ -28,6 +29,7 @@ export function buildResponseRow(
     respondent_name: respondent,
     answers,
     user_agent: userAgent?.slice(0, 500) ?? null,
+    transcript: transcript ?? null,
   };
 }
 
