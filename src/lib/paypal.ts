@@ -134,3 +134,41 @@ export async function captureOrder(orderId: string): Promise<CaptureResult> {
     status: data.status,
   };
 }
+
+// Verify an inbound PayPal webhook against PAYPAL_WEBHOOK_ID. Fails closed: if
+// the webhook id is unset or PayPal doesn't return SUCCESS, returns false so the
+// route can reject. This is what stops a forged "payment completed" POST.
+export async function verifyWebhookSignature(
+  headers: Headers,
+  rawBody: string,
+): Promise<boolean> {
+  const webhookId = process.env.PAYPAL_WEBHOOK_ID;
+  if (!webhookId) return false;
+  try {
+    const token = await accessToken();
+    const res = await fetch(
+      `${base()}/v1/notifications/verify-webhook-signature`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          auth_algo: headers.get("paypal-auth-algo"),
+          cert_url: headers.get("paypal-cert-url"),
+          transmission_id: headers.get("paypal-transmission-id"),
+          transmission_sig: headers.get("paypal-transmission-sig"),
+          transmission_time: headers.get("paypal-transmission-time"),
+          webhook_id: webhookId,
+          webhook_event: JSON.parse(rawBody),
+        }),
+      },
+    );
+    const data = (await res.json()) as { verification_status?: string };
+    return res.ok && data.verification_status === "SUCCESS";
+  } catch (err) {
+    console.error("[paypal.verifyWebhookSignature] failed", err);
+    return false;
+  }
+}
