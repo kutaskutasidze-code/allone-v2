@@ -81,7 +81,10 @@ export function BotChat({
         const res2 = await fetch(`/api/bots/${slug}/submit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ answers: data.answers }),
+          body: JSON.stringify({
+            answers: data.answers,
+            messages: apiRef.current,
+          }),
         });
         const sub = (await res2.json()) as { response_id?: string };
         if (sub.response_id) {

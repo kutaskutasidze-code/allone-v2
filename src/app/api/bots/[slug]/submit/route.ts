@@ -28,7 +28,10 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  let body: { answers?: Record<string, string | string[]> };
+  let body: {
+    answers?: Record<string, string | string[]>;
+    messages?: { role?: unknown; content?: unknown }[];
+  };
   try {
     body = await req.json();
   } catch {
@@ -43,6 +46,20 @@ export async function POST(
     return NextResponse.json({ error: "answers too large" }, { status: 413 });
   }
 
+  // Sanitize + bound the conversation transcript (kept for QA / re-extraction /
+  // conversation intelligence). Only role+content strings, capped per message.
+  const transcript = Array.isArray(body.messages)
+    ? body.messages
+        .filter(
+          (m) => typeof m?.role === "string" && typeof m?.content === "string",
+        )
+        .slice(0, 120)
+        .map((m) => ({
+          role: String(m.role),
+          content: String(m.content).slice(0, 8000),
+        }))
+    : null;
+
   try {
     const cfg = await getBotConfigBySlug(slug);
     if (!cfg) return NextResponse.json({ error: "not found" }, { status: 404 });
@@ -53,6 +70,7 @@ export async function POST(
       cfg.client_name,
       body.answers,
       req.headers.get("user-agent"),
+      transcript,
     );
     const responseId = await insertResponse(row);
 
