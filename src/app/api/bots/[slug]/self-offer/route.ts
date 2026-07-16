@@ -10,6 +10,7 @@ import {
 } from "@/lib/offers/repo";
 import { extractContact, offerThreadUrl } from "@/lib/offers/self-offer";
 import { sendSelfServeOfferNotice } from "@/lib/email";
+import { notifySalesUser, ownerForLead } from "@/lib/notifications";
 import type { OfferDraft } from "@/lib/offers/types";
 import { selfOfferGuard, RL_WINDOW_MS, RL_MAX } from "./guard";
 
@@ -178,6 +179,24 @@ export async function POST(
     price: offer.price,
     offerUrl: offer_url,
   }).catch(() => {});
+
+  // Route the auto-generated offer to the owning rep's in-app bell — not just
+  // the shared-inbox email above — so a hot inbound offer can't sit unseen.
+  try {
+    const { salesUserId, label } = await ownerForLead(response!.lead_id);
+    if (salesUserId) {
+      await notifySalesUser({
+        salesUserId,
+        type: "offer_ready",
+        title: `Offer ${doc_number} ready: ${label || client_name}`,
+        body: `Auto-generated • ${offer.price} ${offer.currency ?? "GEL"}`,
+        leadId: response!.lead_id,
+        href: "/sales/proposals",
+      });
+    }
+  } catch {
+    // A notification must never fail the offer response.
+  }
 
   return NextResponse.json({ offer_url, pdf_url, doc_number });
 }
