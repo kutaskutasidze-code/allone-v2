@@ -65,13 +65,59 @@ export async function POST(
       req.headers.get("x-real-ip") ||
       null;
 
+    const signedAt = new Date().toISOString();
+    const idCode = (body.id_code ?? "").trim().slice(0, 60) || null;
     await updateProposal(proposal.id, {
-      contract_signed_at: new Date().toISOString(),
+      contract_signed_at: signedAt,
       signer_name: name.slice(0, 200),
-      signer_id_code: (body.id_code ?? "").trim().slice(0, 60) || null,
+      signer_id_code: idCode,
       signature_image: body.signature_image || null,
       signer_ip: ip,
     });
+
+    // Re-render the contract PDF with the signature embedded, so the "signed"
+    // contract actually shows the signature. Best-effort: the signature is
+    // already recorded above, so a render hiccup must not fail the signing.
+    try {
+      const OFFER_API_URL =
+        process.env.OFFER_API_URL ?? "http://localhost:3100";
+      const OFFER_API_KEY = process.env.OFFER_API_KEY ?? "";
+      const r = await fetch(`${OFFER_API_URL}/api/docs/sign`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${OFFER_API_KEY}`,
+        },
+        body: JSON.stringify({
+          proposal: {
+            doc_number: proposal.doc_number,
+            language: proposal.language,
+            offer: proposal.offer,
+            client_name: proposal.client_name,
+            recipient: proposal.recipient,
+          },
+          recipient: proposal.recipient ?? { name: proposal.client_name },
+          signature: {
+            name: name.slice(0, 200),
+            id_code: idCode,
+            signature_image: body.signature_image || null,
+            signed_at: signedAt,
+            ip,
+          },
+        }),
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (r.ok) {
+        const { contract_pdf_url } = (await r.json()) as {
+          contract_pdf_url?: string;
+        };
+        if (contract_pdf_url) {
+          await updateProposal(proposal.id, { contract_pdf_url });
+        }
+      }
+    } catch {
+      // best-effort re-render; signature already persisted
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

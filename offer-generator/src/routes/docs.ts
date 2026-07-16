@@ -7,7 +7,10 @@
 // contracts/<doc_number>.pdf and invoices/<doc_number>-INV.pdf.
 
 import { Router, type Request, type Response } from "express";
-import { renderContractHtml } from "../docs/contract-template.js";
+import {
+  renderContractHtml,
+  type SignatureInfo,
+} from "../docs/contract-template.js";
 import {
   renderInvoiceHtml,
   type ProposalLike,
@@ -129,6 +132,79 @@ router.post(
   },
 );
 
+// POST /api/docs/sign
+//   Body: { proposal, recipient?, date_label?, signature }
+//   Re-renders ONLY the contract with the e-signature embedded and overwrites
+//   contracts/<doc_number>.pdf. Returns { contract_pdf_url }.
+router.post(
+  "/api/docs/sign",
+  async (req: Request, res: Response): Promise<void> => {
+    const { proposal, recipient, date_label, signature } = req.body as {
+      proposal?: ProposalLike;
+      recipient?: Recipient;
+      date_label?: string;
+      signature?: SignatureInfo;
+    };
+
+    if (!proposal?.doc_number || !proposal?.offer) {
+      res
+        .status(400)
+        .json({ error: "proposal with doc_number + offer is required" });
+      return;
+    }
+    if (!signature || typeof signature !== "object") {
+      res.status(400).json({ error: "signature is required" });
+      return;
+    }
+
+    const effectiveRecipient: Recipient = recipient ??
+      proposal.recipient ?? { name: proposal.client_name };
+    const dateStr =
+      date_label ??
+      new Date().toLocaleDateString("ka-GE", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+    try {
+      const contractHtml = renderContractHtml(
+        proposal,
+        effectiveRecipient,
+        dateStr,
+        signature,
+      );
+      const contractBuf = await htmlToPdf(contractHtml);
+      const contractPath = `contracts/${proposal.doc_number}.pdf`;
+      const { error: uploadErr } = await supabase.storage
+        .from(BUCKET)
+        .upload(contractPath, contractBuf, {
+          contentType: "application/pdf",
+          upsert: true,
+        });
+      if (uploadErr) {
+        throw new Error(`Contract upload error: ${uploadErr.message}`);
+      }
+      const {
+        data: { publicUrl: contract_pdf_url },
+      } = supabase.storage.from(BUCKET).getPublicUrl(contractPath);
+      logger.info("POST /api/docs/sign: signed contract uploaded", {
+        doc_number: proposal.doc_number,
+        contract_pdf_url,
+      });
+      res.json({ contract_pdf_url });
+    } catch (err) {
+      logger.error("POST /api/docs/sign failed", {
+        error: err instanceof Error ? err.message : String(err),
+        doc_number: proposal.doc_number,
+      });
+      res
+        .status(500)
+        .json({ error: err instanceof Error ? err.message : "sign failed" });
+    }
+  },
+);
+
 // POST /api/docs/send
 //   Body: { to, from_name?, subject, html, attachments: [{url, filename}] }
 //   Returns: { ok: true, resendId } or 502 { error }
@@ -156,11 +232,9 @@ router.post(
       return;
     }
     if (!Array.isArray(attachments) || attachments.length === 0) {
-      res
-        .status(400)
-        .json({
-          error: "attachments must be a non-empty array of {url, filename}",
-        });
+      res.status(400).json({
+        error: "attachments must be a non-empty array of {url, filename}",
+      });
       return;
     }
 
