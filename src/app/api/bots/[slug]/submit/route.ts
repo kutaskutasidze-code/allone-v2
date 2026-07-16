@@ -1,12 +1,27 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import {
   getBotConfigBySlug,
   buildResponseRow,
   insertResponse,
 } from "@/lib/bots/repo";
+import { hasContact } from "@/lib/offers/self-offer";
+import { notifySalesUser, ownerForLead } from "@/lib/notifications";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// The post-response `after()` work fires the self-offer pipeline, whose LLM
+// draft legitimately takes ~50-90s. Give the instance room to finish it.
+export const maxDuration = 150;
+
+/** Absolute origin for internal route-to-route calls (Vercel-safe). */
+function resolveOrigin(req: NextRequest): string {
+  const env = process.env.NEXT_PUBLIC_APP_ORIGIN;
+  if (env) return env.replace(/\/$/, "");
+  const host = req.headers.get("host");
+  const proto = req.headers.get("x-forwarded-proto") ?? "https";
+  if (host) return `${proto}://${host}`;
+  return "https://app.allonelabs.com";
+}
 
 export async function POST(
   req: NextRequest,
@@ -40,6 +55,54 @@ export async function POST(
       req.headers.get("user-agent"),
     );
     const responseId = await insertResponse(row);
+
+    const answers = body.answers as Record<string, unknown>;
+    const canAutoOffer = hasContact(answers);
+    const xff = req.headers.get("x-forwarded-for") ?? "";
+    const origin = resolveOrigin(req);
+
+    // Runs after the response is sent, so the visitor is redirected to their
+    // thread immediately while this finishes server-side (a browser fetch would
+    // be aborted by that navigation).
+    after(async () => {
+      // 1. Notify the owning rep that a new intake response landed (the bell).
+      const { salesUserId, label } = await ownerForLead(cfg.lead_id);
+      if (salesUserId) {
+        await notifySalesUser({
+          salesUserId,
+          type: "bot_response",
+          title: `New intake response: ${label || cfg.client_name || slug}`,
+          body: canAutoOffer
+            ? "Chat completed — auto-generating an offer."
+            : "Chat completed — no contact captured, needs a manual offer.",
+          leadId: cfg.lead_id,
+          href: cfg.lead_id
+            ? `/sales/leads/${cfg.lead_id}`
+            : "/sales/proposals",
+        });
+      }
+
+      // 2. Auto-generate + deliver the offer when we have a contact to send to.
+      // self-offer is idempotent and rate-limited; a no-contact response would
+      // 422 there, so we skip it to avoid holding the instance open for nothing.
+      if (canAutoOffer) {
+        try {
+          await fetch(`${origin}/api/bots/${slug}/self-offer`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(xff ? { "x-forwarded-for": xff } : {}),
+            },
+            body: JSON.stringify({ response_id: responseId }),
+            signal: AbortSignal.timeout(140_000),
+          });
+        } catch {
+          // Best-effort: the manual sales path + the bell notification above
+          // remain as the fallback.
+        }
+      }
+    });
+
     return NextResponse.json({ ok: true, response_id: responseId });
   } catch (err) {
     console.error("[bots/submit] save failed", err);
