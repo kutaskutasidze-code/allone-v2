@@ -16,6 +16,7 @@ export function BotsContent({ bots }: { bots: BotConfig[] }) {
   const [draft, setDraft] = useState<BotQuestion[] | null>(null);
   const [clientName, setClientName] = useState("");
   const [brief, setBrief] = useState("");
+  const [knowledge, setKnowledge] = useState("");
   const [drafting, setDrafting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [draftError, setDraftError] = useState<string | null>(null);
@@ -55,7 +56,11 @@ export function BotsContent({ bots }: { bots: BotConfig[] }) {
       const res = await fetch("/api/sales/bots", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ client_name: clientName, questions: draft }),
+        body: JSON.stringify({
+          client_name: clientName,
+          questions: draft,
+          knowledge: knowledge.trim() || undefined,
+        }),
       });
       if (!res.ok) {
         const text = await res.text();
@@ -199,6 +204,22 @@ export function BotsContent({ bots }: { bots: BotConfig[] }) {
               onChange={(e) => setBrief(e.target.value)}
               placeholder="One line: what is this client / what do we want to learn?"
               rows={2}
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none resize-none"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-[11px] font-mono uppercase tracking-wider text-[var(--ink-500)]">
+              Knowledge{" "}
+              <span className="normal-case tracking-normal text-[var(--ink-400)]">
+                — optional
+              </span>
+            </label>
+            <textarea
+              value={knowledge}
+              onChange={(e) => setKnowledge(e.target.value)}
+              placeholder="Paste facts/FAQ to turn this into a bilingual website/FAQ bot that answers visitors and captures their contact. Leave empty for the standard Georgian intake bot."
+              rows={3}
               className="w-full rounded-[var(--radius-sm)] border border-[var(--allone-line)] bg-[var(--bg-surface-alt)] px-3 py-2 text-sm focus:border-[var(--ao-accent)] focus:outline-none resize-none"
             />
           </div>
