@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { notifySalesUser } from "@/lib/notifications";
 
 // Lazy-init: env vars are checked at request time, not module-load, so the
 // Vercel build doesn't crash in Preview environments where SUPABASE_URL
@@ -52,6 +53,31 @@ function escapeHtml(text: string): string {
 // and are viewed directly in the admin panel at /admin/leads
 async function sendResendEmail(_to: string, _subject: string, _html: string) {
   return false;
+}
+
+// In-app alert to admins/supervisors (the bell). The team uses in-app
+// notifications rather than email, so operational alerts go here.
+async function notifyStaff(
+  type: string,
+  title: string,
+  body: string,
+  href: string,
+): Promise<number> {
+  const { data } = await supabase
+    .from("sales_users")
+    .select("id")
+    .in("role", ["admin", "supervisor"])
+    .eq("is_active", true);
+  const staff = (data ?? []) as { id: string }[];
+  let n = 0;
+  for (const s of staff) {
+    const ok = await notifySalesUser(
+      { salesUserId: s.id, type, title, body, href },
+      supabase,
+    );
+    if (ok) n++;
+  }
+  return n;
 }
 
 // ========== ADDITIONAL SOURCES (for future scraping) ==========
@@ -178,12 +204,11 @@ async function checkStaleLeads() {
   const staleCount = count || 0;
 
   if (staleCount > 0) {
-    const contactEmail =
-      process.env.CONTACT_EMAIL || "kutaskutasidze@gmail.com";
-    await sendResendEmail(
-      contactEmail,
-      `[Allone] ${staleCount} stale leads need attention`,
-      `<p><strong>${staleCount} Georgian leads</strong> have been sitting as "new" for 48+ hours with no sales rep assigned.</p><p><a href="https://www.allone.ge/admin/leads">View in Admin</a></p>`,
+    await notifyStaff(
+      "stale_leads",
+      `${staleCount} stale leads need attention`,
+      `${staleCount} Georgian leads have sat as "new" for 48+ hours with no rep assigned.`,
+      "/admin/leads",
     );
   }
 
