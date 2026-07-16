@@ -46,6 +46,7 @@ export const salesNavBF: NavConfig = {
         { label: "Demos", href: "/sales/demos", icon: "globe" },
         { label: "Bots", href: "/sales/bots", icon: "message-circle" },
         { label: "Proposals", href: "/sales/proposals", icon: "file-text" },
+        { label: "Campaigns", href: "/sales/campaigns", icon: "send" },
         { label: "Pipeline", href: "/sales/pipeline", icon: "trending-up" },
       ],
     },
