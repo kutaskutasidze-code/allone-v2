@@ -1,8 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Bot, Copy, Check, Plus, Loader2, ExternalLink } from "lucide-react";
-import type { BotConfig, BotQuestion } from "@/lib/bots/types";
+import {
+  Bot,
+  Copy,
+  Check,
+  Plus,
+  Loader2,
+  ExternalLink,
+  MessageSquareDashed,
+  ChevronDown,
+} from "lucide-react";
+import type { BotConfig, BotQuestion, BotSession } from "@/lib/bots/types";
 
 interface DraftResponse {
   questions: BotQuestion[];
@@ -12,7 +21,83 @@ interface CreateResponse {
   bot: BotConfig;
 }
 
-export function BotsContent({ bots }: { bots: BotConfig[] }) {
+/** Unfinished conversations: the visitor answered real questions but never
+ *  reached the end, so there's no response row. Their answers are still here
+ *  and a rep can pick the lead up manually. */
+function AbandonedSessions({ sessions }: { sessions: BotSession[] }) {
+  const [open, setOpen] = useState<string | null>(null);
+  if (sessions.length === 0) return null;
+
+  return (
+    <div className="rounded-[var(--radius-lg)] border border-amber-200 bg-amber-50/40">
+      <div className="flex items-baseline justify-between border-b border-amber-200 px-5 py-3">
+        <div className="flex items-center gap-2">
+          <MessageSquareDashed className="h-4 w-4 text-amber-600" />
+          <h2 className="text-sm font-semibold text-[var(--ink-900)]">
+            Unfinished chats
+          </h2>
+        </div>
+        <span className="text-xs text-[var(--ink-500)]">
+          {sessions.length} dropped off before finishing
+        </span>
+      </div>
+      <ul>
+        {sessions.map((s) => {
+          const isOpen = open === s.id;
+          return (
+            <li
+              key={s.id}
+              className="border-b border-amber-100 last:border-b-0"
+            >
+              <button
+                type="button"
+                onClick={() => setOpen(isOpen ? null : s.id)}
+                className="flex w-full items-center gap-3 px-5 py-3 text-left hover:bg-amber-50 transition-colors"
+              >
+                <ChevronDown
+                  className={`h-3.5 w-3.5 shrink-0 text-[var(--ink-400)] transition-transform ${
+                    isOpen ? "rotate-0" : "-rotate-90"
+                  }`}
+                />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-[var(--ink-900)]">
+                  {s.client_name || s.bot_slug}
+                </span>
+                <span className="shrink-0 text-xs text-[var(--ink-500)]">
+                  {s.turns} answer{s.turns !== 1 ? "s" : ""}
+                </span>
+                <span className="shrink-0 text-xs text-[var(--ink-400)]">
+                  {new Date(s.updated_at).toLocaleString()}
+                </span>
+              </button>
+              {isOpen && (
+                <div className="space-y-3 bg-white px-5 py-4">
+                  {s.transcript.map((m, i) => (
+                    <div key={i} className="space-y-1">
+                      <div className="text-[11px] font-mono uppercase tracking-wider text-[var(--ink-400)]">
+                        {m.role === "user" ? "Client" : "Bot"}
+                      </div>
+                      <div className="whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--ink-700)]">
+                        {m.content}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+export function BotsContent({
+  bots,
+  abandoned = [],
+}: {
+  bots: BotConfig[];
+  abandoned?: BotSession[];
+}) {
   const [draft, setDraft] = useState<BotQuestion[] | null>(null);
   const [clientName, setClientName] = useState("");
   const [brief, setBrief] = useState("");
@@ -172,6 +257,8 @@ export function BotsContent({ bots }: { bots: BotConfig[] }) {
           </table>
         </div>
       )}
+
+      <AbandonedSessions sessions={abandoned} />
 
       {/* New bot form */}
       <div className="rounded-[var(--radius-lg)] border border-[var(--allone-line)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-xs)]">

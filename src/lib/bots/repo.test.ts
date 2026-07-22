@@ -1,27 +1,80 @@
 import { describe, it, expect } from "vitest";
-import { slugify, buildResponseRow } from "./repo";
+import { sanitizeTranscript, countRealTurns, SEED_PREFIX } from "./repo";
 
-describe("slugify", () => {
-  it("lowercases, strips punctuation, keeps a short hash suffix shape", () => {
-    expect(slugify("ანგელოზთა Museum!")).toMatch(/^[a-z0-9-]+$/);
+describe("sanitizeTranscript", () => {
+  it("keeps well-formed role/content pairs", () => {
+    expect(
+      sanitizeTranscript([
+        { role: "user", content: "გამარჯობა" },
+        { role: "assistant", content: "დღეს რით დაგეხმაროთ?" },
+      ]),
+    ).toEqual([
+      { role: "user", content: "გამარჯობა" },
+      { role: "assistant", content: "დღეს რით დაგეხმაროთ?" },
+    ]);
+  });
+
+  it("drops malformed entries instead of throwing", () => {
+    expect(
+      sanitizeTranscript([
+        { role: "user", content: "ok" },
+        { role: 5, content: "bad role" },
+        { role: "user" },
+        null,
+        "nope",
+      ]),
+    ).toEqual([{ role: "user", content: "ok" }]);
+  });
+
+  it("returns an empty transcript for non-array input", () => {
+    expect(sanitizeTranscript(undefined)).toEqual([]);
+    expect(sanitizeTranscript(null)).toEqual([]);
+    expect(sanitizeTranscript({ role: "user" })).toEqual([]);
+  });
+
+  it("caps message length so one turn can't bloat the row", () => {
+    const [msg] = sanitizeTranscript([
+      { role: "user", content: "x".repeat(20_000) },
+    ]);
+    expect(msg!.content.length).toBe(8000);
+  });
+
+  it("caps the number of stored turns", () => {
+    const many = Array.from({ length: 500 }, () => ({
+      role: "user",
+      content: "hi",
+    }));
+    expect(sanitizeTranscript(many).length).toBe(200);
   });
 });
 
-describe("buildResponseRow", () => {
-  it("pulls respondent_name from answers.respondent and keeps answers", () => {
-    const row = buildResponseRow(
-      "clinic-1",
-      null,
-      "Acme",
-      {
-        respondent: "ქეთა",
-        role: "დირექცია",
-      },
-      "UA/1.0",
-    );
-    expect(row.bot_slug).toBe("clinic-1");
-    expect(row.respondent_name).toBe("ქეთა");
-    expect(row.answers.role).toBe("დირექცია");
-    expect(row.user_agent).toBe("UA/1.0");
+describe("countRealTurns", () => {
+  it("counts visitor turns only", () => {
+    expect(
+      countRealTurns([
+        { role: "user", content: "one" },
+        { role: "assistant", content: "reply" },
+        { role: "user", content: "two" },
+      ]),
+    ).toBe(2);
+  });
+
+  it("excludes the hidden opening seed", () => {
+    expect(
+      countRealTurns([
+        { role: "user", content: `${SEED_PREFIX} გახსნა ჩატი)` },
+        { role: "assistant", content: "მოგესალმებით" },
+        { role: "user", content: "ჩვენ ვართ კლინიკა" },
+      ]),
+    ).toBe(1);
+  });
+
+  it("is zero for a conversation the visitor never spoke in", () => {
+    expect(
+      countRealTurns([
+        { role: "user", content: `${SEED_PREFIX} გახსნა ჩატი)` },
+        { role: "assistant", content: "მოგესალმებით" },
+      ]),
+    ).toBe(0);
   });
 });

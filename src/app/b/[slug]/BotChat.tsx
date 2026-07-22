@@ -36,12 +36,76 @@ export function BotChat({
   const [input, setInput] = useState("");
   const apiRef = useRef<ApiMsg[]>([{ role: "user", content: SEED }]);
   const startedRef = useRef(false);
+  const sessionRef = useRef<string | null>(null);
+  // Gate the opening turn until we know whether there's a session to resume.
+  const [resumeChecked, setResumeChecked] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
+  // Restore an interrupted conversation. The server saves the transcript every
+  // turn, so a refresh, a dead connection or a closed tab no longer throws away
+  // everything the visitor already answered.
   useEffect(() => {
-    const stored = localStorage.getItem(`bot_thread_${slug}`);
-    if (stored) window.location.assign(`/b/${slug}/c/${stored}`);
+    const done = localStorage.getItem(`bot_thread_${slug}`);
+    if (done) {
+      window.location.assign(`/b/${slug}/c/${done}`);
+      return;
+    }
+
+    const key = `bot_session_${slug}`;
+    const existing = localStorage.getItem(key);
+    if (!existing) {
+      const fresh = crypto.randomUUID();
+      localStorage.setItem(key, fresh);
+      sessionRef.current = fresh;
+      setResumeChecked(true);
+      return;
+    }
+
+    sessionRef.current = existing;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch(`/api/bots/${slug}/session/${existing}`);
+        if (res.ok && !cancelled) {
+          const data = (await res.json()) as {
+            transcript?: ApiMsg[];
+            response_id?: string | null;
+          };
+          if (data.response_id) {
+            localStorage.setItem(`bot_thread_${slug}`, data.response_id);
+            window.location.assign(`/b/${slug}/c/${data.response_id}`);
+            return;
+          }
+          const prior = (data.transcript ?? []).filter(
+            (m) => m.role === "user" || m.role === "assistant",
+          );
+          if (prior.length > 1) {
+            apiRef.current = prior;
+            setDisplay(
+              prior
+                .filter(
+                  (m) => !(m.role === "user" && m.content.startsWith("(")),
+                )
+                .map((m) => ({
+                  role:
+                    m.role === "user" ? ("user" as const) : ("bot" as const),
+                  text: m.content,
+                })),
+            );
+            // Already mid-conversation: don't fire an opening turn, wait for
+            // the visitor to carry on.
+            startedRef.current = true;
+          }
+        }
+      } catch {
+        // Resume is best-effort — fall through to a fresh conversation.
+      }
+      if (!cancelled) setResumeChecked(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [slug]);
 
   useEffect(() => {
@@ -58,7 +122,10 @@ export function BotChat({
       const res = await fetch(`/api/bots/${slug}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: apiRef.current }),
+        body: JSON.stringify({
+          messages: apiRef.current,
+          session_id: sessionRef.current,
+        }),
       });
       const data = (await res.json()) as {
         reply?: string;
@@ -84,6 +151,7 @@ export function BotChat({
           body: JSON.stringify({
             answers: data.answers,
             messages: apiRef.current,
+            session_id: sessionRef.current,
           }),
         });
         const sub = (await res2.json()) as { response_id?: string };
@@ -105,12 +173,13 @@ export function BotChat({
     }
   }, [slug]);
 
-  // Kick off the opening turn on mount.
+  // Kick off the opening turn — but only once the resume check has run, so a
+  // returning visitor continues their conversation instead of restarting it.
   useEffect(() => {
-    if (startedRef.current) return;
+    if (!resumeChecked || startedRef.current) return;
     startedRef.current = true;
     void turn();
-  }, [turn]);
+  }, [turn, resumeChecked]);
 
   function send(text: string) {
     const v = text.trim();

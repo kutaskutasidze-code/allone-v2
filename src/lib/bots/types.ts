@@ -33,6 +33,21 @@ export type PublicBotConfig = Pick<
   "slug" | "title" | "intro" | "language" | "questions"
 >;
 
+/** A live (or abandoned) intake conversation, saved on every turn so an
+ *  unfinished chat is never lost. `response_id` is set only once the session
+ *  completes; NULL means still open or abandoned. */
+export interface BotSession {
+  id: string;
+  bot_slug: string;
+  lead_id: string | null;
+  client_name: string | null;
+  transcript: { role: string; content: string }[];
+  turns: number;
+  response_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface QuestionnaireResponse {
   id: string;
   bot_slug: string;

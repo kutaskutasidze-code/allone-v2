@@ -3,6 +3,7 @@ import {
   getBotConfigBySlug,
   buildResponseRow,
   insertResponse,
+  closeSession,
 } from "@/lib/bots/repo";
 import { hasContact } from "@/lib/offers/self-offer";
 import { notifySalesUser, ownerForLead } from "@/lib/notifications";
@@ -31,6 +32,7 @@ export async function POST(
   let body: {
     answers?: Record<string, string | string[]>;
     messages?: { role?: unknown; content?: unknown }[];
+    session_id?: unknown;
   };
   try {
     body = await req.json();
@@ -83,6 +85,11 @@ export async function POST(
     // thread immediately while this finishes server-side (a browser fetch would
     // be aborted by that navigation).
     after(async () => {
+      // 0. Mark the session finished so it stops showing as abandoned.
+      if (typeof body.session_id === "string" && body.session_id) {
+        await closeSession(body.session_id, responseId);
+      }
+
       // 1. Notify the owning rep that a new intake response landed (the bell).
       const { salesUserId, label } = await ownerForLead(cfg.lead_id);
       if (salesUserId) {

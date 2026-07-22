@@ -1,5 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getBotConfigBySlug } from "@/lib/bots/repo";
+import { NextRequest, NextResponse, after } from "next/server";
+import {
+  getBotConfigBySlug,
+  saveSession,
+  countRealTurns,
+  sanitizeTranscript,
+  SEED_PREFIX,
+} from "@/lib/bots/repo";
 import { callBridge, bridgeConfigured } from "@/lib/claude-bridge";
 import {
   callGemini,
@@ -22,10 +28,18 @@ export const dynamic = "force-dynamic";
 //      structured call reads the transcript and returns STRICT JSON: only what
 //      the client actually said, null for anything not covered (no fabrication,
 //      no snapping to the nearest option).
-const SEED_PREFIX = "(ვიზიტორმა"; // hidden opening seed — not a real client turn
 // Hard stop so a looping conversation always reaches the thread (and can never
 // grow into the 60KB request cap as a raw error).
 const FORCE_COMPLETE_AFTER_TURNS = 20;
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Client-minted session ids are untrusted input and become a primary key —
+ *  only accept a well-formed UUID. */
+function isUuid(v: unknown): v is string {
+  return typeof v === "string" && UUID_RE.test(v);
+}
 
 function transcriptOf(messages: ChatMessage[]): string {
   return messages
@@ -84,7 +98,7 @@ export async function POST(
 ) {
   const { slug } = await params;
 
-  let body: { messages?: ChatMessage[] };
+  let body: { messages?: ChatMessage[]; session_id?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -109,6 +123,28 @@ export async function POST(
       { error: "chat brain not configured" },
       { status: 503 },
     );
+  }
+
+  // Durable session. The visitor's answers used to exist only in their browser
+  // tab until the model emitted <<COMPLETE>> (12+ turns in), so closing the tab
+  // early threw the whole conversation away. We now persist after every turn.
+  //
+  // `transcript` is mutated below to include this turn's reply; `after()` runs
+  // once, post-response, and reads the final value — so saving never delays the
+  // visitor and never fails the turn.
+  const sessionId = isUuid(body.session_id) ? body.session_id : null;
+  let transcript = sanitizeTranscript(messages);
+  if (sessionId) {
+    after(async () => {
+      await saveSession({
+        sessionId,
+        botSlug: slug,
+        leadId: cfg.lead_id,
+        clientName: cfg.client_name,
+        transcript,
+        userAgent: req.headers.get("user-agent"),
+      });
+    });
   }
 
   const questions = (cfg.questions as BotQuestion[]) ?? [];
@@ -138,14 +174,17 @@ export async function POST(
 
   const marker = raw.indexOf(COMPLETE_MARKER);
   const modelDone = marker !== -1;
-  const realUserTurns = messages.filter(
-    (m) => m.role === "user" && !m.content.startsWith(SEED_PREFIX),
-  ).length;
+  const realUserTurns = countRealTurns(transcript);
   const forced = !modelDone && realUserTurns >= FORCE_COMPLETE_AFTER_TURNS;
 
   // Not done yet → just return the reply and keep chatting.
   if (!modelDone && !forced) {
-    return NextResponse.json({ reply: raw.trim(), complete: false });
+    const reply = raw.trim();
+    transcript = sanitizeTranscript([
+      ...messages,
+      { role: "assistant", content: reply },
+    ]);
+    return NextResponse.json({ reply, complete: false, session_id: sessionId });
   }
 
   // 2. Completion → extract the structured answers.
@@ -158,6 +197,7 @@ export async function POST(
     ...messages,
     { role: "assistant", content: closing },
   ];
+  transcript = sanitizeTranscript(fullTranscript);
   let answers: Record<string, unknown>;
   try {
     answers = await extractAnswers(
@@ -168,8 +208,18 @@ export async function POST(
     );
   } catch {
     // Extraction failed — don't submit garbage; keep the conversation going.
-    return NextResponse.json({ reply: closing, complete: false });
+    // The transcript is still saved, so nothing the visitor said is lost.
+    return NextResponse.json({
+      reply: closing,
+      complete: false,
+      session_id: sessionId,
+    });
   }
 
-  return NextResponse.json({ reply: closing, complete: true, answers });
+  return NextResponse.json({
+    reply: closing,
+    complete: true,
+    answers,
+    session_id: sessionId,
+  });
 }
