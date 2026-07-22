@@ -49,9 +49,15 @@ function transcriptOf(messages: ChatMessage[]): string {
 }
 
 // Extract the answers JSON. Prefer Gemini's schema-validated output; fall back
-// to a bridge call that returns JSON (brace-sliced) if Gemini isn't available.
+// to a bridge call that returns JSON (brace-sliced).
 // `bridgeSuffix` is path-specific: Georgian bots get the Georgian suffix so
 // their behavior is byte-for-byte unchanged when Gemini is down.
+//
+// The fallback fires when Gemini is unconfigured OR when it FAILS — the same
+// resilience `converse()` already has. Without that symmetry a Gemini quota
+// window (three keys, all 429 on the free tier) let the conversation run to its
+// closing line via the bridge and then killed extraction, so the visitor was
+// told "we'll contact you" while nothing was ever saved.
 async function extractAnswers(
   messages: ChatMessage[],
   extractionSystem: string,
@@ -60,12 +66,17 @@ async function extractAnswers(
 ): Promise<Record<string, unknown>> {
   const userText = `ტრანსკრიპტი:\n${transcriptOf(messages)}`;
   if (geminiConfigured()) {
-    const out = await callGeminiStructured({
-      system: extractionSystem,
-      userText,
-      schema,
-    });
-    return out as Record<string, unknown>;
+    try {
+      const out = await callGeminiStructured({
+        system: extractionSystem,
+        userText,
+        schema,
+      });
+      return out as Record<string, unknown>;
+    } catch (err) {
+      if (!bridgeConfigured()) throw err;
+      console.error("[bots/chat] gemini extraction failed, using bridge", err);
+    }
   }
   const sys = `${extractionSystem}\n\n${bridgeSuffix}`;
   const raw = await callBridge({
@@ -206,12 +217,20 @@ export async function POST(
       prompts.schema,
       prompts.bridgeSuffix,
     );
-  } catch {
-    // Extraction failed — don't submit garbage; keep the conversation going.
-    // The transcript is still saved, so nothing the visitor said is lost.
+  } catch (err) {
+    // Both providers failed. We've already said goodbye to the visitor, so
+    // going quiet here is the worst option: they leave believing we have their
+    // brief while nothing reaches the sales team. Complete anyway with no
+    // extracted answers — submit still writes the row and notifies the rep, and
+    // the full transcript rides along, so a human can read it and follow up.
+    // No contact is extracted, so hasContact() is false and the automatic offer
+    // never fires on this degraded path.
+    console.error("[bots/chat] extraction failed on both providers", err);
     return NextResponse.json({
       reply: closing,
-      complete: false,
+      complete: true,
+      answers: {},
+      degraded: true,
       session_id: sessionId,
     });
   }

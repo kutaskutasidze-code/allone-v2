@@ -154,7 +154,9 @@ export function BotChat({
             session_id: sessionRef.current,
           }),
         });
-        const sub = (await res2.json()) as { response_id?: string };
+        const sub = (await res2.json().catch(() => ({}))) as {
+          response_id?: string;
+        };
         if (sub.response_id) {
           localStorage.setItem(`bot_thread_${slug}`, sub.response_id);
           // give the closing message a moment to render, then move to thread
@@ -162,6 +164,18 @@ export function BotChat({
             () => window.location.assign(`/b/${slug}/c/${sub.response_id}`),
             2200,
           );
+        } else {
+          // The save failed after we'd already thanked them. Say so rather than
+          // leaving them on a dead screen believing we have their brief — the
+          // transcript is stored server-side, so they can simply reload.
+          setBusy(false);
+          setDisplay((d) => [
+            ...d,
+            {
+              role: "bot",
+              text: "ბოდიში — პასუხების შენახვისას შეფერხება მოხდა. გთხოვთ, განაახლოთ გვერდი და საუბარი იქიდან გაგრძელდება, ან მოგვწერეთ info@allonelabs.com.",
+            },
+          ]);
         }
       }
     } catch {
