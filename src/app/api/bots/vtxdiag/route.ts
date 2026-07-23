@@ -1,38 +1,39 @@
 import { NextResponse } from "next/server";
-import {
-  vertexConfigured,
-  geminiConfigured,
-  callGeminiStructured,
-} from "@/lib/gemini";
+import { vertexConfigured, callGeminiStructured } from "@/lib/gemini";
+import { selectSystemPrompts } from "@/app/api/bots/[slug]/chat/select-prompts";
+import type { BotQuestion } from "@/lib/bots/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// TEMPORARY diagnostic — reports what the Gemini module sees at runtime and
-// attempts one Vertex-backed extraction. Delete after debugging.
+// TEMPORARY diagnostic — runs the REAL production extraction (full schema)
+// against a realistic transcript so we can see the exact error.
 export async function GET() {
-  const out: Record<string, unknown> = {
-    vertexConfigured: vertexConfigured(),
-    geminiConfigured: geminiConfigured(),
-    saEnvPresent: !!process.env.GEMINI_VERTEX_SA_JSON,
-    saEnvLen: (process.env.GEMINI_VERTEX_SA_JSON || "").length,
-    saStartsWithBrace: (process.env.GEMINI_VERTEX_SA_JSON || "").startsWith(
-      "{",
-    ),
-    aiStudioKeys: [
-      process.env.GEMINI_API_KEY,
-      process.env.GEMINI_API_KEY_2,
-      process.env.GEMINI_API_KEY_3,
-    ].filter(Boolean).length,
-  };
+  const out: Record<string, unknown> = { vertexConfigured: vertexConfigured() };
+
+  const questions: BotQuestion[] = [
+    { id: "services", text: "?", type: "text" },
+    { id: "patients", text: "?", type: "text" },
+    { id: "budget", text: "?", type: "text" },
+  ];
+  const prompts = selectSystemPrompts({
+    client_name: "Longevity Institute",
+    intro: null,
+    knowledge: null,
+    questions,
+  });
+  out.schemaKeys = Object.keys(
+    (prompts.schema as { properties?: object }).properties ?? {},
+  ).length;
+  out.schema = prompts.schema;
+
+  const transcript =
+    "კლიენტი: ჩვენ ვართ კლინიკა თბილისში, სერვისები: სკრინინგი. ბიუჯეტი 5000 ლარი, ვადა ორი თვე.";
   try {
     const ex = await callGeminiStructured({
-      system: "Extract fields; null if unstated.",
-      userText: "კლიენტი: ბიუჯეტი 5000 ლარი.",
-      schema: {
-        type: "OBJECT",
-        properties: { budget: { type: "STRING", nullable: true } },
-      },
+      system: prompts.extraction,
+      userText: `ტრანსკრიპტი:\n${transcript}`,
+      schema: prompts.schema,
     });
     out.extraction = ex;
     out.extractionOk = true;
