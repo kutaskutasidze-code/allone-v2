@@ -11,11 +11,32 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const out: Record<string, unknown> = { vertexConfigured: vertexConfigured() };
 
-  const questions: BotQuestion[] = [
-    { id: "services", text: "?", type: "text" },
-    { id: "patients", text: "?", type: "text" },
-    { id: "budget", text: "?", type: "text" },
+  const ids = [
+    "services",
+    "specialization",
+    "patients",
+    "products",
+    "website_goal",
+    "app_goal",
+    "chatbot_goal",
+    "booking",
+    "patient_portal",
+    "integrations",
+    "data_sensitivity",
+    "content_ready",
+    "existing_site",
+    "branding",
+    "references",
+    "languages",
+    "budget",
+    "timeline",
+    "success",
   ];
+  const questions: BotQuestion[] = ids.map((id) => ({
+    id,
+    text: "?",
+    type: "text",
+  }));
   const prompts = selectSystemPrompts({
     client_name: "Longevity Institute",
     intro: null,
@@ -27,8 +48,16 @@ export async function GET() {
   ).length;
   out.schema = prompts.schema;
 
-  const transcript =
-    "კლიენტი: ჩვენ ვართ კლინიკა თბილისში, სერვისები: სკრინინგი. ბიუჯეტი 5000 ლარი, ვადა ორი თვე.";
+  // A long, detailed Georgian transcript — the kind "deep adaptive intake"
+  // produces, and the kind that pushes the extraction output past 4096 tokens.
+  const transcript = [
+    "კლიენტი: ჩვენ ვართ Longevity Institute — პრევენციული და რეგენერაციული მედიცინის ცენტრი თბილისში, ვაკეში. დაარსდა 2023 წელს, 12 თანამშრომელი, 4 ექიმი.",
+    "კლიენტი: სერვისები: სრული ბიომარკერული სკრინინგი 120+ მაჩვენებელი, ჰორმონული პროფილი, გენეტიკური ტესტირება, IV ვიტამინური თერაპია, NAD+ ინფუზიები, პერსონალური კვების და ვარჯიშის გეგმა, ძილის მონიტორინგი.",
+    "კლიენტი: სამიზნე აუდიტორია 30-55 წლის შეძლებული პროფესიონალები, ტოპ-მენეჯერები, მეწარმეები. ასევე უცხოელი პაციენტები ისრაელიდან, ყაზახეთიდან.",
+    "კლიენტი: გვინდა ვებსაიტი: მთავარი, სერვისების აღწერა, პაკეტების შედარება, ექიმების პროფილები, ბლოგი, ონლაინ ჩაწერა კალენდარით, პაციენტის კაბინეტი ანალიზებით. ორენოვანი ქართული-ინგლისური.",
+    "კლიენტი: ინტეგრაციები: ლაბორატორიის სისტემა, CRM, SMS შეხსენებები, TBC ან BOG გადახდა, Google Calendar. ბრენდბუქი მზად გვაქვს. ბიუჯეტი 4000-6000 ლარი, ვადა ორი თვე.",
+    "კლიენტი: კონკურენტები Vita Clinic, Regenerate Tbilisi. წარმატება: თვეში 50 ონლაინ ჩაწერა, უცხოელი პაციენტების წილის ზრდა.",
+  ].join("\n");
   try {
     const ex = await callGeminiStructured({
       system: prompts.extraction,
