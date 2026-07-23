@@ -18,6 +18,10 @@ import { selectSystemPrompts, COMPLETE_MARKER } from "./select-prompts";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// A completing turn makes two sequential LLM calls (conversation + extraction).
+// Give the instance room so a slow provider turn can't abort extraction and
+// drop the visitor onto the degraded path.
+export const maxDuration = 60;
 
 // Conversational intake agent (Gemini primary, claude-bridge fallback).
 //

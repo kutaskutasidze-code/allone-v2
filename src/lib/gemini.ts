@@ -230,6 +230,11 @@ export async function callGemini(req: {
     generationConfig: {
       temperature: req.temperature ?? 0.4,
       maxOutputTokens: 2048,
+      // gemini-2.5-flash is a reasoning model; thinking tokens draw from the
+      // output budget and add latency. A warm one-question chat turn needs no
+      // reasoning, and the extra latency compounds with the extraction call in
+      // the same request. Turn it off for speed and predictability.
+      thinkingConfig: { thinkingBudget: 0 },
     },
   });
   if (!text) throw new Error("gemini: empty response");
@@ -248,9 +253,13 @@ export async function callGeminiStructured(req: {
     contents: [{ role: "user", parts: [{ text: req.userText }] }],
     generationConfig: {
       temperature: 0,
-      maxOutputTokens: 4096,
+      maxOutputTokens: 8192,
       responseMimeType: "application/json",
       responseSchema: req.schema,
+      // Extraction is mechanical: read the transcript, copy what was said into
+      // fields. Reasoning adds latency and its variable length occasionally
+      // exhausted the output budget, which failed the whole extraction. Off.
+      thinkingConfig: { thinkingBudget: 0 },
     },
   });
   if (!text) throw new Error("gemini: empty structured response");
